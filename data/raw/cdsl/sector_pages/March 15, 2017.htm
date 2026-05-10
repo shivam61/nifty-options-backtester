@@ -1,0 +1,2146 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+
+</title><meta http-equiv="X-UA-Compatible" content="IE=8; IE=edge" />
+    <script type="text/javascript">
+        function ExportDIVtoExcel() {
+            var html = '';
+            html += $("#dvFortnightly").html();
+            html = $.trim(html);
+            html = html.replace(/>/g, '&gt;');
+            html = html.replace(/</g, '&lt;');
+            $("input[id$='HdnValexceldata']").val(html);
+        }
+    </script>
+    <style>
+        table {
+            mso-displayed-decimal-separator: "\.";
+            mso-displayed-thousand-separator: "\,";
+        }
+
+        .font524240 {
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+        }
+
+        .font624240 {
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+        }
+
+        .font724240 {
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+        }
+
+        .font824240 {
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+        }
+
+        .font924240 {
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+        }
+
+        .xl1524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl6324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #8064A2;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FCD5B4;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl6924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #E6B9B8;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #E6B9B8;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #E6B9B8;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #E6B9B8;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl7924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl8024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl8124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl8224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl8324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl8424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl8524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl8624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl8724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border: 1.0pt solid windowtext;
+            background: #8064A2;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl8824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FCD5B4;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl8924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl9024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl9124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl9224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl9324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: top;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl9424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl9524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl9624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl9724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: general;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl9824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #8064A2;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl9924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: top;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #C5D9F1;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #E6B9B8;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl10624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: center;
+            vertical-align: bottom;
+            background: white;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl10724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl10824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl10924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            mso-background-source: auto;
+            mso-pattern: auto;
+            white-space: nowrap;
+        }
+
+        .xl11024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl11124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl11224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: "\#\,\#\#0";
+            text-align: right;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #DBE5F1;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl11324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #8064A2;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: white;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #8064A2;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: #7030A0;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FCD5B4;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: #7030A0;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FCD5B4;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: #7030A0;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FCD5B4;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl11924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl12324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl12424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl12524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: nowrap;
+        }
+
+        .xl12624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl12924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 11.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Calibri, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid black;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #9BBB59;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: top;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: top;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl13924240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: top;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid black;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14024240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14124240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 700;
+            font-style: italic;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: bottom;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: white;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14224240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14324240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14424240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            border-top: 1.0pt solid windowtext;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14524240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14624240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: none;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14724240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: 1.0pt solid windowtext;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+
+        .xl14824240 {
+            padding-top: 1px;
+            padding-right: 1px;
+            padding-left: 1px;
+            mso-ignore: padding;
+            color: black;
+            font-size: 8.0pt;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            mso-font-charset: 0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: top;
+            border-top: none;
+            border-right: 1.0pt solid windowtext;
+            border-bottom: 1.0pt solid windowtext;
+            border-left: none;
+            background: #FDE9D9;
+            mso-pattern: black none;
+            white-space: normal;
+        }
+    </style>
+</head>
+<body>
+    <script src="../Scripts/jquery-1.10.2.js" type="text/javascript"></script>
+    
+    <script src="../Scripts/dw_event.js" type="text/javascript"></script>
+    <script src="../Scripts/font.js" type="text/javascript"></script>
+    <form method="post" action="./FPI_Fortnightly.aspx?Date=Mar+15%2c+2017" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTE4MzI2MjI0OQ9kFgICAw9kFgICAQ8WAh4JaW5uZXJodG1sBYGdAzx0YWJsZSBib3JkZXI9MCBjZWxscGFkZGluZz0wIGNlbGxzcGFjaW5nPTAgd2lkdGg9MjA1OCBzdHlsZT0nYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3RhYmxlLWxheW91dDpmaXhlZDsnPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg3MjQyNDA+PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODcyNDI0MCB3aWR0aD0yMzc+PC90ZD48dGQgaGVpZ2h0PTIxIGNvbHNwYW49JzYnIGNsYXNzPXhsODcyNDI0MD5BVUMgYXMgb24gRmVicnVhcnkgMjgsIDIwMTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY29sc3Bhbj0nNicgY2xhc3M9eGw4NzI0MjQwPk5ldCBJbnZlc3RtZW50IEZlYnJ1YXJ5IDE2LTI4LCAyMDE3PC90ZD48dGQgaGVpZ2h0PTIxIGNvbHNwYW49JzYnIGNsYXNzPXhsODcyNDI0MD5OZXQgSW52ZXN0bWVudCBNYXJjaCAwMS0xNSwgMjAxNzwvdGQ+PHRkIGhlaWdodD0yMSBjb2xzcGFuPSc2JyBjbGFzcz14bDg3MjQyNDA+QVVDIGFzIG9uIE1hcmNoIDE1LCAyMDE3PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg4MjQyNDA+PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODgyNDI0MD48L3RkPjx0ZCBoZWlnaHQ9MjEgY29sc3Bhbj0nMycgY2xhc3M9eGw4ODI0MjQwPklOIElOUiBDci48L3RkPjx0ZCBoZWlnaHQ9MjEgY29sc3Bhbj0nMycgY2xhc3M9eGw4ODI0MjQwPklOIFVTRCBNbjwvdGQ+PHRkIGhlaWdodD0yMSBjb2xzcGFuPSczJyBjbGFzcz14bDg4MjQyNDA+SU4gSU5SIENyLjwvdGQ+PHRkIGhlaWdodD0yMSBjb2xzcGFuPSczJyBjbGFzcz14bDg4MjQyNDA+SU4gVVNEIE1uPC90ZD48dGQgaGVpZ2h0PTIxIGNvbHNwYW49JzMnIGNsYXNzPXhsODgyNDI0MD5JTiBJTlIgQ3IuPC90ZD48dGQgaGVpZ2h0PTIxIGNvbHNwYW49JzMnIGNsYXNzPXhsODgyNDI0MD5JTiBVU0QgTW48L3RkPjx0ZCBoZWlnaHQ9MjEgY29sc3Bhbj0nMycgY2xhc3M9eGw4ODI0MjQwPklOIElOUiBDci48L3RkPjx0ZCBoZWlnaHQ9MjEgY29sc3Bhbj0nMycgY2xhc3M9eGw4ODI0MjQwPklOIFVTRCBNbjwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPlNyLiBOby48L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPlNlY3RvcnM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4OTI0MjQwPkVxdWl0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+RGVidDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg5MjQyNDA+VG90YWw8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5BdXRvbW9iaWxlcyAmIEF1dG8gQ29tcG9uZW50czwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTQ2LDI3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzE3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNDYsNTk2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMSw5MTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQ4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMSw5NjY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01MTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01MTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi03NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTc3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42ODg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjY4ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTA1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMDU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE1Miw0Nzg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjMxNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTUyLDc5NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjMsMjc0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjMsMzIyPC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+VG90YWwgIEZpbmFuY2lhbCBTZXJ2aWNlczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTAwLDYyMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzUsNDc2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41MzYsMDk4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD43NSwwMTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsMzE2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD44MCwzMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjksNTg1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTI2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45LDQ1OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSw0MzY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSw0MTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQsMzAyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40ODE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQsNzgzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD42NTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjczPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD43MzA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUyMSw0NzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM1LDkyMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTU3LDM5MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NzksNTk2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41LDQ4MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+ODUsMDc5PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MmE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPkJhbmtzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yNDgsNDIzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zLDgwNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjUyLDIyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzcsMjI0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41NzA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM3LDc5NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OSw3ODI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OSw3NzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEsNDY2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MSw0NjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsOTQwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw5ODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQ0OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDU1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yNTgsODM3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zLDg1MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjYyLDY5MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzksNTA4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41ODg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQwLDA5NzwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjJiPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5PdGhlciBGaW5hbmNpYWwgU2VydmljZXM8Zm9udCBjbGFzcz1mb250NzExMDg3PjxzdXA+MTwvc3VwPjwvZm9udD48L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI1MiwxOTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMxLDY3MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjgzLDg2OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzcsNzkwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40LDc0NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDIsNTM1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTk3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTE2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMzEyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQ3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDM2MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDQxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDgwMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjA4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD42NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Mjc1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNjIsNjM1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zMiwwNjg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI5NCw3MDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQwLDA4ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NCw4OTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQ0LDk4MzwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPkNhcGl0YWwgR29vZHM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEyMCw1OTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg0NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTIxLDQ0MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTgsMDcwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMjc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE4LDE5NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzAwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zMDA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQ1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTI5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTIzLDI3ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODQ3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMjQsMTI1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xOCw4MTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTgsOTQ2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+Q2hlbWljYWxzICYgUGV0cm9jaGVtaWNhbHM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMxLDk0NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzEsOTQ3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40LDc4NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NCw3ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xNjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xNjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTI0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tOTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi05ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMxLDgwNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzEsODA2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40LDg1NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NCw4NTU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5Db2FsPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMyw4NDQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEzLDg0NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MiwwNzQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsMDc0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMTY1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMTY1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0yNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTIwNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTIwNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEyLDQ3ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTIsNDc4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xLDkwNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MSw5MDU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD42PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5Db21tZXJjaWFsIFNlcnZpY2VzICYgU3VwcGxpZXM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsMjUzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMDA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsNDUzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD43ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD44MTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQ0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41LDQ3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjAwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41LDY3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+ODM2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+ODY3PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+Q29uc3RydWN0aW9uIE1hdGVyaWFsczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTAsNDg3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42NDk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjUxLDEzNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Nyw1NjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjk3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43LDY2MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTgwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTU4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41NTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTIsNTQzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42NDk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjUzLDE5MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OCwwMjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjk5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44LDExOTwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MDI0MjQwPkNvbnN1bWVyIER1cmFibGVzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zLDUyNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Myw1Mjc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTI5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTI5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi00PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Myw2MjE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMsNjIxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41NTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU1MzwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPkRpdmVyc2lmaWVkPGZvbnQgY2xhc3M9Zm9udDcxMTA4Nz48c3VwPjI8L3N1cD48L2ZvbnQ+PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zLDYzMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Myw2MzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjU0NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTQ0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQ1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zLDcyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Myw3Mjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjU2OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTY5PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MTA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MDI0MjQwPkRpdmVyc2lmaWVkIENvbnN1bWVyIFNlcnZpY2VzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNjc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI2NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI2NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjY2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDE8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4xMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+Rm9vZCwgQmV2ZXJhZ2VzICYgVG9iYWNjbzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTUsODY2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTUsOTU1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNCwzNjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNCwzNzg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi03NjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi03NjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01NDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01NDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi04NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTg0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD45NiwxMTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD45NiwyMDU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE0LDY3MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE0LDY4NDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjEyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5Gb3Jlc3QgTWF0ZXJpYWxzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDM1MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSwzNTA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIwMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjAyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSwzNTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsMzUxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMDY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIwNjwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjEzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5HZW5lcmFsIEluZHVzdHJpYWxzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xOCw0OTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM4NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTgsODc4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDc3MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsODI5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tNjYyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tNjYyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tOTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi05OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE4LDU3NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mzg1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xOCw5NjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsODM1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw4OTQ8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4xNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+SGFyZHdhcmUgVGVjaG5vbG9neSAmIEVxdWlwbWVudDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4xNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+SGVhbHRoY2FyZSBFcXVpcG1lbnQgJiBTdXBwbGllczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjE2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5IZWFsdGhjYXJlIFNlcnZpY2VzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45LDU0ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+OSw1NDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsNDMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDQzMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTU5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xNTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSwxMjg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsMTI4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xNzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE3MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTAsMDI0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMCwwMjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsNTMwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDUzMDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjE3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5Ib3RlbHMsIFJlc3RhdXJhbnRzICYgVG91cmlzbTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSw4OTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEyNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NiwwMjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg4MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjkwMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQ4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMDY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEwNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42LDEzODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTI1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42LDI2MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTM3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTU2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MDI0MjQwPkhvdXNlaG9sZCAmIFBlcnNvbmFsIFByb2R1Y3RzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD43Miw2MDc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjcyLDYwNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTAsODgwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMCw4ODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi00MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MzQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjczLDkyNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NzMsOTI2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMSwyODQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjExLDI4NDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjE5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5NZWRpYTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzQsOTc4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43NDU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM1LDcyMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSwyNDE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjExMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSwzNTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi05NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTk1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjAxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMDE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzYsMzQwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43NDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM3LDA4MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSw1NDc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjExMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSw2NjA8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4yMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+TWV0YWxzICYgTWluaW5nPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40MCw5ODk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUyMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDEsNTA5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD42LDE0MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Nzg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsMjIwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsNjc5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDY3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjU2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQyLDYyMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTE4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD40MywxMzk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsNTA2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD43OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Niw1ODU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4yMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+T2lsICYgR2FzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNTYsMjk1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTU2LDMyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjMsNDE5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMyw0MjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEsNDMyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xLDQzMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsNzEzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDcxMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDE0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40MTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE2MSw4MDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNjEsODM2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yNCw2OTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI0LDcwMjwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjIyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5QaGFybWFjZXV0aWNhbHMgJiBCaW90ZWNobm9sb2d5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMzIsMDU3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMzIsMDU3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xOSw3ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE5LDc4NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTEsODEwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMSw4MTA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi05OTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi05OTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xNTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xNTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEzMSw3ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEzMSw3ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIwLDExNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjAsMTE2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPlJlYWx0eTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTUsODEyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41NzU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE2LDM4NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MiwzNjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDQ1NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNDI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE0MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MjI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNiwzMDI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjU3NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTYsODc3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDQ4ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIsNTc2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MDI0MjQwPlJldGFpbGluZzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NiwyMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsMjI5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45MzM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjkzMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi00PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NiwzMjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsMzIzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45NjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjk2NTwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MDI0MjQwPjI1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjcyNDI0MD5Tb2Z0d2FyZSAmIFNlcnZpY2VzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMzEsMDA1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMzEsMDA1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zNCw2MTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM0LDYxNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjU0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xLDEwMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MSwxMDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE2ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTY4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMzIsODg3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yMzIsODg3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zNSw1NDc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM1LDU0NzwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5MTI0MjQwPjI2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5UZWxlY29tIFNlcnZpY2VzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zNywyODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsOTM5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zOSwyMTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsNTg2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yOTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsODc3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yNzk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjQyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDIyMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSwyMjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE4NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTg2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zNyw3MzU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsOTM5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zOSw2NzQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjUsNzYwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yOTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsMDU2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+Mjc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPlRlbGVjb21tdW5pY2F0aW9ucyBFcXVpcG1lbnQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI4NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mjg1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjMwNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzA1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDY8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4yODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+VGV4dGlsZXMsIEFwcGFyZWxzICYgQWNjZXNzb3JpZXM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIzLDczMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjMsNzMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zLDU1NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Myw1NTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTIzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEzMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI0LDc4MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjQsNzgxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zLDc4MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Myw3ODM8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4yOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+VHJhbnNwb3J0YXRpb248L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjMxLDg3MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NzE5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zMiw1OTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQsNzc2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjQsODgzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjYxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD42MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzIsOTc5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD43MTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjMzLDY5OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSwwMzQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjExMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NSwxNDQ8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4yOSBhPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5BaXJsaW5lczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjgwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD42OTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjk3OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEwNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTQ3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjMyMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Njk5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDAxOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NDk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEwNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTU2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MjkgYjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+TG9naXN0aWNzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDUwMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw1MDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM3NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mzc1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMzk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0zOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi02PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0yPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDYwODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw2MDk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM5ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mzk4PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MjkgYzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcwMjQyNDA+TWFyaW5lIFBvcnQgJiBTZXJ2aWNlczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTgsNTEwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xOCw1MTA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIsNzczPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yLDc3MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTI0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+NTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjU3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xOSwxMjk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE5LDEyOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Miw5MjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIsOTIwPC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MjkgZDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+Um9hZHMgJiBIaWdod2F5czwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw2Mjc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDY0NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mzk0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zOTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi00ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTQ4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjI2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Miw3NzQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjIwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yLDc5NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDIzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40MjY8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4yOSBlPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5TaGlwcGluZzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSw0MzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjEsNDMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMTQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIxNDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDQ1OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSw0NTk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjIyMzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjIzPC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MjkgZjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+U3VyZmFjZSBUcmFuc3BvcnRhdGlvbjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjM2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+Mzk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjY8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTEyNDI0MD4yOSBnPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzAyNDI0MD5UcmFuc3BvcnQgUmVsYXRlZCBTZXJ2aWNlczwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Niw0ODU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsNDg1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD45NzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjk3MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQ2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tNDY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi03PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4tMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+Niw2NDk8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjYsNjQ5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xLDAxNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MSwwMTU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTAyNDI0MD4zMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY3MjQyNDA+VXRpbGl0aWVzPGZvbnQgY2xhc3M9Zm9udDcxMTA4Nz48c3VwPjM8L3N1cD48L2ZvbnQ+PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44Myw0NjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjUsOTMxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD44OSwzOTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEyLDUwNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODg5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMywzOTU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01MTY8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTUzMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTc3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTc5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tNTM1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4tNDM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01Nzg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi04MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi04ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NzksNjAyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41LDg1ODwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODUsNDYwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMiwxNTA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjg5NDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTMsMDQ0PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkxMjQyNDA+MzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MDI0MjQwPlNvdmVyZWlnbjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTU2LDcyNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTU2LDcyNjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjMsNDg0PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4yMyw0ODQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi0yNzE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPi00MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+LTQxPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4wPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD44NTI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjg1MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MTMwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzEyNDI0MD4xMzA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE1OCw5MTI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjE1OCw5MTI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3MTI0MjQwPjI0LDI1NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDcxMjQyNDA+MjQsMjU2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDkwMjQyNDA+MzI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2NzI0MjQwPk90aGVyczxmb250IGNsYXNzPWZvbnQ3MTEwODc+PHN1cD40PC9zdXA+PC9mb250PjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MzgwLDk2MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTA0LDkwMTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NDg1LDg2MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NTcsMDgzPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xNSw3MTg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjcyLDgwMjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+LTE5MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+ODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xMTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0yOTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi0xNzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MSw4NDc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi01NjU8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjEsMjgyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4yODI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPi04NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+MTk2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4zOTAsMDg2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD4xMDQsNzY5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD40OTQsODU1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNjkyNDI0MD41OSw1NDI8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw2OTI0MjQwPjE1LDk5MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDY5MjQyNDA+NzUsNTM0PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc1MjQyNDA+PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzYyNDI0MD5HcmFuZCBUb3RhbDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+MiwyNTUsMjAyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4zMTAsMTc4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4yLDU2NSwzODA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjMzNyw5MjE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjQ2LDQ3NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+Mzg0LDM5OTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+Niw5NTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPi0zMzA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjYsNjI4PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4xLDA0MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+LTQ5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD45OTM8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjEzLDg2MjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+NzI1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4xNCw1ODc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjIsMTE2PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4xMTE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjIsMjI3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4yLDMwNiw4NzA8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjMxMiw2MDE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw3NzI0MjQwPjIsNjE5LDQ3MTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+MzUyLDExNTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDc3MjQyNDA+NDcsNzE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsNzcyNDI0MD4zOTksODMwPC90ZD48L3RyPjwvdGFibGU+PC9icj48dGFibGUgc3R5bGU9J2JvcmRlcjogMXB4IHNvbGlkIGJsYWNrO3BhZGRpbmc6IDVweDtiYWNrZ3JvdW5kOiNmZGU5ZDk7Zm9udC1zaXplOjEwcHQ7Jz48dHI+PHRkIGNvbHNwYW49NT48c3VwPjE8L3N1cD4gJzxiPk90aGVyIEZpbmFuY2lhbCBTZXJ2aWNlczwvYj4nIGluY2x1ZGVzIEZpbmFuY2lhbCBTZWN0b3Igb3RoZXIgdGhhbiA8L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTU+J0JhbmsnLiBTdWItY2F0ZWdvcnkgdW5kZXIgICdPdGhlciBGaW5hbmNpYWwgU2VydmljZXMnIGFyZSBhcyA8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NT5mb2xsb3dzOjwvYnI+PC90ZD48L3RyPjx0cj48dGQgY29sc3Bhbj01IHN0eWxlPSd0ZXh0LWFsaWduOmxlZnQ7Jz4gLSBGaW5hbmNpYWwgSW5zdGl0dXRpb25zPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPiAtIEhvbGRpbmcgQ29tcGFuaWVzPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPiAtIEhvdXNpbmcgRmluYW5jZSBDb21wYW5pZXM8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+IC0gSW52ZXN0bWVudCBDb21wYW5pZXM8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+IC0gT3RoZXIgRmluYW5jZSBjb21wYW5pZXMgKGluY2x1ZGluZyBOQkZDcyk8L2JyPjwvdGQ+PC90cj48L3RhYmxlPjwvYnI+PHRhYmxlIHN0eWxlPSdib3JkZXI6IDFweCBzb2xpZCBibGFjaztwYWRkaW5nOiA1cHg7YmFja2dyb3VuZDojZmRlOWQ5O2ZvbnQtc2l6ZToxMHB0Oyc+PHRyPjx0ZCBjb2xzcGFuPTU+PHN1cD4yPC9zdXA+IEFTIHBlciBCU0UgQ2xhc3NpZmljYXRpb24gQ29tcGFuaWVzIHVuZGVyICAnPGI+RGl2ZXJzaWZpZWQ8L2I+JyBhcmUgYXMgPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTU+Zm9sbG93czo8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBNZXJjYXRvciBMaW1pdGVkPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPi0gS3V0Y2ggU2FsdCAmIEFsbGllZCBJbmR1c3RyaWVzIEx0ZC48L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBTVkFSVENPUlA8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBBZHZhbmNlZCBNaWNyb25pYyBEZXZpY2VzIEx0ZC48L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBWQkMgSW5kdXN0cmllcyBMdGQ8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBDb3NjbyAoSW5kaWEpIGx0ZC48L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBEQ00gU2hyaXJhbSBDb25zb2xpZGF0ZWQgTHRkLjwvYnI+PC90ZD48L3RyPjx0cj48dGQgY29sc3Bhbj01IHN0eWxlPSd0ZXh0LWFsaWduOmxlZnQ7Jz4tIENpbW1jbyBMdGQ8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBHaWxsYW5kZXJzIEFyYnV0aG5vdCAmIENvLiBMdGQuPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPi0gQURJVFlBIEJJUkxBIE5VVk8gTFRELjwvYnI+PC90ZD48L3RyPjx0cj48dGQgY29sc3Bhbj01IHN0eWxlPSd0ZXh0LWFsaWduOmxlZnQ7Jz4tIEtFU09SQU0gSU5EPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPi0gRW1waXJlIEluZHVzdHJpZXMgTHRkLiw8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSBCQUxNRVIgTEFXUkk8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+LSAzTSBJTkRJQSBMVEQ8L2JyPjwvdGQ+PC90cj48L3RhYmxlPjwvYnI+PHRhYmxlIHN0eWxlPSdib3JkZXI6IDFweCBzb2xpZCBibGFjaztwYWRkaW5nOiA1cHg7YmFja2dyb3VuZDojZmRlOWQ5O2ZvbnQtc2l6ZToxMHB0Oyc+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPjxzdXA+Mzwvc3VwPiBTdWItY2F0ZWdvcnkgdW5kZXIgICc8Yj5VdGlsaXRpZXM8L2I+JyBhcmUgYXMgZm9sbG93czo8L2JyPjwvdGQ+PC90cj48dHI+PHRkIGNvbHNwYW49NSBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+IC0gRWxlY3RyaWMgVXRpbGl0aWVzPC9icj48L3RkPjwvdHI+PHRyPjx0ZCBjb2xzcGFuPTUgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPi0gT3RoZXIgVXRpbGl0aWVzIChJbmNsdWRpbmcgUGlwZWxpbmVzKTwvYnI+PC90ZD48L3RyPjwvdGFibGU+PC9icj48Zm9udCBjbGFzcz0nZm9udDkyNDI0MCc+PHN1cD40PC9zdXA+IEFVQyBvZiBUb3AgMTAgY29tcGFuaWVzIHVuZGVyIE90aGVycyBDYXRlZ29yeSBpbiBEZWJ0IGlzIGFzIGJlbG93PC9mb250Pjx0YWJsZSBzdHlsZT0nYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3RhYmxlLWxheW91dDpmaXhlZDsnPjx0ciBoZWlnaHQ9MzI+PHRkIGNsYXNzPXhsODcyNDI0MCBzdHlsZT0ncGFkZGluZzogNXB4Oyc+U3IuIE5vLjwvdGQ+PHRkIGNsYXNzPXhsNjMyNDI0MCBzdHlsZT0ncGFkZGluZzogNXB4Oyc+Q29tcGFuaWVzPC90ZD48dGQgY2xhc3M9eGw5ODI0MjQwIHN0eWxlPSdwYWRkaW5nOiA1cHg7Jz5BcyBvbiBNYXJjaCAxNSwgMjAxNyBpbiBJTlIgQ3IuPC90ZD48dGQgY2xhc3M9eGw2MzI0MjQwIHN0eWxlPSdwYWRkaW5nOiA1cHg7Jz5Db21wYW5pZXM8L3RkPjx0ZCBjbGFzcz14bDYzMjQyNDAgc3R5bGU9J3BhZGRpbmc6IDVweDsnPkFzIG9uIEZlYnJ1YXJ5IDI4LCAyMDE3IGluIElOUiBDci48L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTQyNDI0MD4xPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODMyNDI0MD5UaGUgSW5kaWEgRGVidCBPcHBvcnR1bml0aWVzIEZ1bmQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDcyNDI0MD42LDI5NjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDgzMjQyNDA+VGhlIEluZGlhIERlYnQgT3Bwb3J0dW5pdGllcyBGdW5kPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA3MjQyNDA+NiwyOTY8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTUyNDI0MD4yPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5FbXBvd2VyIFJlc2VhcmNoIEtub3dsZWRnZSBTZXJ2aWNlcyBQcml2YXRlIExpbWl0ZWQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDgyNDI0MD40LDYwMDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg0MjQyNDA+RW1wb3dlciBSZXNlYXJjaCBLbm93bGVkZ2UgU2VydmljZXMgUHJpdmF0ZSBMaW1pdGVkPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA4MjQyNDA+NCw2MDA8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTQyNDI0MD4zPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODMyNDI0MD5GT09EIENPUlBPUkFUSU9OIE9GIElORElBPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA3MjQyNDA+Myw2NDg8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4MzI0MjQwPkZPT0QgQ09SUE9SQVRJT04gT0YgSU5ESUE8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDcyNDI0MD4zLDY0ODwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5NTI0MjQwPjQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw4NDI0MjQwPlRPWU9UQSBGSU5BTkNJQUwgU0VSVklDRVMgSU5ESUEgTElNSVRFRDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwODI0MjQwPjIsNTE1PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5CSVJMQSBTVU4gTElGRSBNVVRVQUwgRlVORDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwODI0MjQwPjIsNTYyPC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDk0MjQyNDA+NTwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDgzMjQyNDA+TVlMQU4gTEFCT1JBVE9SSUVTIExJTUlURUQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDcyNDI0MD4yLDQ4MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDgzMjQyNDA+VE9ZT1RBIEZJTkFOQ0lBTCBTRVJWSUNFUyBJTkRJQSBMSU1JVEVEPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA3MjQyNDA+Miw1MTU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTUyNDI0MD42PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5CSVJMQSBTVU4gTElGRSBNVVRVQUwgRlVORDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwODI0MjQwPjIsMzgyPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5NWUxBTiBMQUJPUkFUT1JJRVMgTElNSVRFRDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwODI0MjQwPjIsNDgwPC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDk0MjQyNDA+NzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDgzMjQyNDA+SERGQyBNVVRVQUwgRlVORDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwNzI0MjQwPjIsMjg5PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODMyNDI0MD5IREZDIE1VVFVBTCBGVU5EPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA3MjQyNDA+MiwzMDM8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTUyNDI0MD44PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5FTUdGTCBMdGQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDgyNDI0MD4yLDI2MDwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg0MjQyNDA+RU1HRkwgTHRkPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsMTA4MjQyNDA+MiwyNjA8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTQyNDI0MD45PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODMyNDI0MD5KLlAuIE1PUkdBTjwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDEwNzI0MjQwPjIsMDAwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODMyNDI0MD5FWElNIEJhbms8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDcyNDI0MD4yLDAyNTwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5NTI0MjQwPjEwPC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsODQyNDI0MD5KQU5BTEFLU0hNSSBGSU5BTkNJQUwgU0VSVklDRVMgUFJJVkFURSBMVEQ8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDgyNDI0MD4xLDk5MzwvdGQ+PHRkIGhlaWdodD0yMSBjbGFzcz14bDg0MjQyNDA+Si5QLiBNT1JHQU48L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGwxMDgyNDI0MD4yLDAwMDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCAgaGVpZ2h0PTIxIGNsYXNzPXhsOTQyNDI0MD48L3RkPjx0ZCAgaGVpZ2h0PTIxIGNsYXNzPXhsODUyNDI0MD5Ub3RhbDwvdGQ+PHRkICBoZWlnaHQ9MjEgY2xhc3M9eGwxMTIyNDI0MD4zMCw0NjQ8L3RkPjx0ZCAgaGVpZ2h0PTIxIGNsYXNzPXhsODUyNDI0MD5Ub3RhbDwvdGQ+PHRkICBoZWlnaHQ9MjEgY2xhc3M9eGwxMTEyNDI0MD4zMCw2OTA8L3RkPjwvdHI+PC90YWJsZT48L2JyPjx0YWJsZSBzdHlsZT0nYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3RhYmxlLWxheW91dDpmaXhlZDsnPjx0ciBoZWlnaHQ9MjE+PHRkIGNvbHNwYW49JzInIGhlaWdodD0yMSBjbGFzcz14bDEzNDI0MjQwIHN0eWxlPSdib3JkZXItcmlnaHQ6IGJsYWNrIDFwdCBzb2xpZDsnPk5vdGU6IFJCSSByZWZlcmVuY2UgcmF0ZSBpcyB1c2VkIGZvciBjb252ZXJzaW9uIGZyb20gSU5SIHRvIFVTRDwvdGQ+PC90cj48dHIgaGVpZ2h0PTIxPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5OTI0MjQwIHN0eWxlPSd0ZXh0LWFsaWduOmxlZnQ7Jz5BVUMgYXMgb24gRmVicnVhcnkgMjgsIDIwMTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5OTI0MjQwIHN0eWxlPSdib3JkZXItcmlnaHQ6IGJsYWNrIDFwdCBzb2xpZDsnPjY2LjczNzU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTkyNDI0MCBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+TmV0IEludmVzdG1lbnQgRmVicnVhcnkgMTYtMjgsIDIwMTc8L3RkPjx0ZCBoZWlnaHQ9MjEgY2xhc3M9eGw5OTI0MjQwIHN0eWxlPSdib3JkZXItcmlnaHQ6IGJsYWNrIDFwdCBzb2xpZDsnPjY2LjczNzU8L3RkPjwvdHI+PHRyIGhlaWdodD0yMT48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTkyNDI0MCBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0Oyc+QVVDIGFzIG9uIE1hcmNoIDE1LCAyMDE3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTkyNDI0MCBzdHlsZT0nYm9yZGVyLXJpZ2h0OiBibGFjayAxcHQgc29saWQ7Jz42NS41MTQ2PC90ZD48L3RyPjx0ciBoZWlnaHQ9MjE+PHRkIGhlaWdodD0yMSBjbGFzcz14bDk5MjQyNDAgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPk5ldCBJbnZlc3RtZW50IE1hcmNoIDAxLTE1LCAyMDE3PC90ZD48dGQgaGVpZ2h0PTIxIGNsYXNzPXhsOTkyNDI0MCBzdHlsZT0nYm9yZGVyLXJpZ2h0OiBibGFjayAxcHQgc29saWQ7Jz42NS41MTQ2PC90ZD48L3RyPjx0cj48dGQgY2xhc3M9eGwxMzcyNDI0MCBjb2xzcGFuPScyJyBoZWlnaHQ9NDYgc3R5bGU9J2JvcmRlci1yaWdodDogYmxhY2sgMXB0IHNvbGlkO3RleHQtYWxpZ246bGVmdDsnPklOUiB0byBVU0QgY29udmVyc2lvbiBvZiBGUEkvRklJIG5ldCBJbnZlc3RtZW50IGRldGFpbHMgb24gTlNETCB3ZWJzaXRlIGlzIDwvYnI+ZG9uZSBvbiB0aGUgYmFzaXMgb2YgZGFpbHkgUkJJIHJlZmVyZW5jZSByYXRlLiBIb3dldmVyIGhlcmUgUkJJIHJlZmVyZW5jZSA8L2JyPnJhdGUgb2YgZW5kIG9mIHBlcmlvZCBpcyB1c2VkIGZvciBjb252ZXJzaW9uIGZyb20gSU5SIHRvIFVTRC48L3RkPjwvdHI+PC90YWJsZT48L2JyPjx0YWJsZSBzdHlsZT0nYm9yZGVyOiAxcHggc29saWQgYmxhY2s7cGFkZGluZzogNXB4O2JhY2tncm91bmQ6I2ZkZTlkOTtmb250LXNpemU6MTBwdDsnPjx0cj48dGQgc3R5bGU9J3RleHQtYWxpZ246bGVmdDsnPjwvYnI+Tm90ZTogQlNFIGhhZCBjbGFzc2lmaWVkIG1vcmUgdGhhbiAzNDAwIG51bWJlciBvZiBpc3N1ZXJzIGludG8gMzEgc2VjdG9ycy4gU0VCSSBoYXMgZGVjaWRlZCB0byByZWx5IG9uIHRoZSBCU0UgY2xhc3NpZmljYXRpb24uIEFueSBGSUkgaW52ZXN0bWVudCBvdXRzaWRlIHRob3NlIDM0MDAgaXNzdWVyZXMsIGlzIGNsYXNzaWZpZWQgdW5kZXIgJ090aGVycycuPC90ZD48L3RyPjwvdGFibGU+ZGT+4duCWFHVUHQCQ3bEP7mt5c9fjhQM1dBk+BZYnesE0w==" />
+</div>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="DAC97FA7" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAN1mb379NjbeQ4SiP2+VtUdTaFXXVCSK7QcHRgHFH/DU2rw0n5QEvW/D1XEdQcU0wYOHc8GfwAVSEvdcQp990EeZtIsnktpHbM/YJ2FcANicg==" />
+</div>
+        <div id="dvFortnightly"><table border=0 cellpadding=0 cellspacing=0 width=2058 style='border-collapse:collapse;table-layout:fixed;'><tr height=21><td height=21 class=xl8724240></td><td height=21 class=xl8724240 width=237></td><td height=21 colspan='6' class=xl8724240>AUC as on February 28, 2017</td><td height=21 colspan='6' class=xl8724240>Net Investment February 16-28, 2017</td><td height=21 colspan='6' class=xl8724240>Net Investment March 01-15, 2017</td><td height=21 colspan='6' class=xl8724240>AUC as on March 15, 2017</td></tr><tr height=21><td height=21 class=xl8824240></td><td height=21 class=xl8824240></td><td height=21 colspan='3' class=xl8824240>IN INR Cr.</td><td height=21 colspan='3' class=xl8824240>IN USD Mn</td><td height=21 colspan='3' class=xl8824240>IN INR Cr.</td><td height=21 colspan='3' class=xl8824240>IN USD Mn</td><td height=21 colspan='3' class=xl8824240>IN INR Cr.</td><td height=21 colspan='3' class=xl8824240>IN USD Mn</td><td height=21 colspan='3' class=xl8824240>IN INR Cr.</td><td height=21 colspan='3' class=xl8824240>IN USD Mn</td></tr><tr height=21><td height=21 class=xl8924240>Sr. No.</td><td height=21 class=xl8924240>Sectors</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td><td height=21 class=xl8924240>Equity</td><td height=21 class=xl8924240>Debt</td><td height=21 class=xl8924240>Total</td></tr><tr height=21><td height=21 class=xl9024240>1</td><td height=21 class=xl6724240>Automobiles & Auto Components</td><td height=21 class=xl6924240>146,279</td><td height=21 class=xl6924240>317</td><td height=21 class=xl6924240>146,596</td><td height=21 class=xl6924240>21,918</td><td height=21 class=xl6924240>48</td><td height=21 class=xl6924240>21,966</td><td height=21 class=xl6924240>-516</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-516</td><td height=21 class=xl6924240>-77</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-77</td><td height=21 class=xl6924240>688</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>688</td><td height=21 class=xl6924240>105</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>105</td><td height=21 class=xl6924240>152,478</td><td height=21 class=xl6924240>317</td><td height=21 class=xl6924240>152,795</td><td height=21 class=xl6924240>23,274</td><td height=21 class=xl6924240>48</td><td height=21 class=xl6924240>23,322</td></tr><tr height=21><td height=21 class=xl9124240>2</td><td height=21 class=xl7024240>Total  Financial Services</td><td height=21 class=xl7124240>500,622</td><td height=21 class=xl7124240>35,476</td><td height=21 class=xl7124240>536,098</td><td height=21 class=xl7124240>75,014</td><td height=21 class=xl7124240>5,316</td><td height=21 class=xl7124240>80,329</td><td height=21 class=xl7124240>9,585</td><td height=21 class=xl7124240>-126</td><td height=21 class=xl7124240>9,459</td><td height=21 class=xl7124240>1,436</td><td height=21 class=xl7124240>-19</td><td height=21 class=xl7124240>1,417</td><td height=21 class=xl7124240>4,302</td><td height=21 class=xl7124240>481</td><td height=21 class=xl7124240>4,783</td><td height=21 class=xl7124240>657</td><td height=21 class=xl7124240>73</td><td height=21 class=xl7124240>730</td><td height=21 class=xl7124240>521,472</td><td height=21 class=xl7124240>35,921</td><td height=21 class=xl7124240>557,393</td><td height=21 class=xl7124240>79,596</td><td height=21 class=xl7124240>5,483</td><td height=21 class=xl7124240>85,079</td></tr><tr height=21><td height=21 class=xl9024240>2a</td><td height=21 class=xl6724240>Banks</td><td height=21 class=xl6924240>248,423</td><td height=21 class=xl6924240>3,806</td><td height=21 class=xl6924240>252,229</td><td height=21 class=xl6924240>37,224</td><td height=21 class=xl6924240>570</td><td height=21 class=xl6924240>37,794</td><td height=21 class=xl6924240>9,782</td><td height=21 class=xl6924240>-11</td><td height=21 class=xl6924240>9,771</td><td height=21 class=xl6924240>1,466</td><td height=21 class=xl6924240>-2</td><td height=21 class=xl6924240>1,464</td><td height=21 class=xl6924240>2,940</td><td height=21 class=xl6924240>40</td><td height=21 class=xl6924240>2,980</td><td height=21 class=xl6924240>449</td><td height=21 class=xl6924240>6</td><td height=21 class=xl6924240>455</td><td height=21 class=xl6924240>258,837</td><td height=21 class=xl6924240>3,853</td><td height=21 class=xl6924240>262,691</td><td height=21 class=xl6924240>39,508</td><td height=21 class=xl6924240>588</td><td height=21 class=xl6924240>40,097</td></tr><tr height=21><td height=21 class=xl9124240>2b</td><td height=21 class=xl7024240>Other Financial Services<font class=font711087><sup>1</sup></font></td><td height=21 class=xl7124240>252,199</td><td height=21 class=xl7124240>31,670</td><td height=21 class=xl7124240>283,869</td><td height=21 class=xl7124240>37,790</td><td height=21 class=xl7124240>4,745</td><td height=21 class=xl7124240>42,535</td><td height=21 class=xl7124240>-197</td><td height=21 class=xl7124240>-116</td><td height=21 class=xl7124240>-312</td><td height=21 class=xl7124240>-29</td><td height=21 class=xl7124240>-17</td><td height=21 class=xl7124240>-47</td><td height=21 class=xl7124240>1,362</td><td height=21 class=xl7124240>441</td><td height=21 class=xl7124240>1,803</td><td height=21 class=xl7124240>208</td><td height=21 class=xl7124240>67</td><td height=21 class=xl7124240>275</td><td height=21 class=xl7124240>262,635</td><td height=21 class=xl7124240>32,068</td><td height=21 class=xl7124240>294,703</td><td height=21 class=xl7124240>40,088</td><td height=21 class=xl7124240>4,895</td><td height=21 class=xl7124240>44,983</td></tr><tr height=21><td height=21 class=xl9024240>3</td><td height=21 class=xl6724240>Capital Goods</td><td height=21 class=xl6924240>120,594</td><td height=21 class=xl6924240>847</td><td height=21 class=xl6924240>121,442</td><td height=21 class=xl6924240>18,070</td><td height=21 class=xl6924240>127</td><td height=21 class=xl6924240>18,197</td><td height=21 class=xl6924240>300</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>300</td><td height=21 class=xl6924240>45</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>45</td><td height=21 class=xl6924240>129</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>129</td><td height=21 class=xl6924240>20</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>20</td><td height=21 class=xl6924240>123,278</td><td height=21 class=xl6924240>847</td><td height=21 class=xl6924240>124,125</td><td height=21 class=xl6924240>18,817</td><td height=21 class=xl6924240>129</td><td height=21 class=xl6924240>18,946</td></tr><tr height=21><td height=21 class=xl9124240>4</td><td height=21 class=xl7024240>Chemicals & Petrochemicals</td><td height=21 class=xl7124240>31,947</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>31,947</td><td height=21 class=xl7124240>4,787</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>4,787</td><td height=21 class=xl7124240>-160</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-160</td><td height=21 class=xl7124240>-24</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-24</td><td height=21 class=xl7124240>-98</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-98</td><td height=21 class=xl7124240>-15</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-15</td><td height=21 class=xl7124240>31,806</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>31,806</td><td height=21 class=xl7124240>4,855</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>4,855</td></tr><tr height=21><td height=21 class=xl9024240>5</td><td height=21 class=xl6724240>Coal</td><td height=21 class=xl6924240>13,844</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>13,844</td><td height=21 class=xl6924240>2,074</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>2,074</td><td height=21 class=xl6924240>-165</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-165</td><td height=21 class=xl6924240>-25</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-25</td><td height=21 class=xl6924240>-205</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-205</td><td height=21 class=xl6924240>-31</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-31</td><td height=21 class=xl6924240>12,478</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>12,478</td><td height=21 class=xl6924240>1,905</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>1,905</td></tr><tr height=21><td height=21 class=xl9124240>6</td><td height=21 class=xl7024240>Commercial Services & Supplies</td><td height=21 class=xl7124240>5,253</td><td height=21 class=xl7124240>200</td><td height=21 class=xl7124240>5,453</td><td height=21 class=xl7124240>787</td><td height=21 class=xl7124240>30</td><td height=21 class=xl7124240>817</td><td height=21 class=xl7124240>44</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>44</td><td height=21 class=xl7124240>7</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>7</td><td height=21 class=xl7124240>57</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>57</td><td height=21 class=xl7124240>9</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>9</td><td height=21 class=xl7124240>5,479</td><td height=21 class=xl7124240>200</td><td height=21 class=xl7124240>5,679</td><td height=21 class=xl7124240>836</td><td height=21 class=xl7124240>31</td><td height=21 class=xl7124240>867</td></tr><tr height=21><td height=21 class=xl9024240>7</td><td height=21 class=xl6724240>Construction Materials</td><td height=21 class=xl6924240>50,487</td><td height=21 class=xl6924240>649</td><td height=21 class=xl6924240>51,136</td><td height=21 class=xl6924240>7,565</td><td height=21 class=xl6924240>97</td><td height=21 class=xl6924240>7,662</td><td height=21 class=xl6924240>180</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>180</td><td height=21 class=xl6924240>27</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>27</td><td height=21 class=xl6924240>558</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>558</td><td height=21 class=xl6924240>85</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>85</td><td height=21 class=xl6924240>52,543</td><td height=21 class=xl6924240>649</td><td height=21 class=xl6924240>53,192</td><td height=21 class=xl6924240>8,020</td><td height=21 class=xl6924240>99</td><td height=21 class=xl6924240>8,119</td></tr><tr height=21><td height=21 class=xl9124240>8</td><td height=21 class=xl7024240>Consumer Durables</td><td height=21 class=xl7124240>3,527</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3,527</td><td height=21 class=xl7124240>529</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>529</td><td height=21 class=xl7124240>-6</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-6</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>-29</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-29</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>3,621</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3,621</td><td height=21 class=xl7124240>553</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>553</td></tr><tr height=21><td height=21 class=xl9024240>9</td><td height=21 class=xl6724240>Diversified<font class=font711087><sup>2</sup></font></td><td height=21 class=xl6924240>3,632</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>3,632</td><td height=21 class=xl6924240>544</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>544</td><td height=21 class=xl6924240>-9</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-9</td><td height=21 class=xl6924240>-1</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-1</td><td height=21 class=xl6924240>45</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>45</td><td height=21 class=xl6924240>7</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>7</td><td height=21 class=xl6924240>3,729</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>3,729</td><td height=21 class=xl6924240>569</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>569</td></tr><tr height=21><td height=21 class=xl9124240>10</td><td height=21 class=xl7024240>Diversified Consumer Services</td><td height=21 class=xl7124240>267</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>267</td><td height=21 class=xl7124240>40</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>40</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>266</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>266</td><td height=21 class=xl7124240>41</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>41</td></tr><tr height=21><td height=21 class=xl9024240>11</td><td height=21 class=xl6724240>Food, Beverages & Tobacco</td><td height=21 class=xl6924240>95,866</td><td height=21 class=xl6924240>89</td><td height=21 class=xl6924240>95,955</td><td height=21 class=xl6924240>14,365</td><td height=21 class=xl6924240>13</td><td height=21 class=xl6924240>14,378</td><td height=21 class=xl6924240>-765</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-765</td><td height=21 class=xl6924240>-115</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-115</td><td height=21 class=xl6924240>-548</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-548</td><td height=21 class=xl6924240>-84</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-84</td><td height=21 class=xl6924240>96,116</td><td height=21 class=xl6924240>89</td><td height=21 class=xl6924240>96,205</td><td height=21 class=xl6924240>14,671</td><td height=21 class=xl6924240>14</td><td height=21 class=xl6924240>14,684</td></tr><tr height=21><td height=21 class=xl9124240>12</td><td height=21 class=xl7024240>Forest Materials</td><td height=21 class=xl7124240>1,350</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,350</td><td height=21 class=xl7124240>202</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>202</td><td height=21 class=xl7124240>19</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>19</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>15</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>15</td><td height=21 class=xl7124240>2</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>2</td><td height=21 class=xl7124240>1,351</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,351</td><td height=21 class=xl7124240>206</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>206</td></tr><tr height=21><td height=21 class=xl9024240>13</td><td height=21 class=xl6724240>General Industrials</td><td height=21 class=xl6924240>18,493</td><td height=21 class=xl6924240>385</td><td height=21 class=xl6924240>18,878</td><td height=21 class=xl6924240>2,771</td><td height=21 class=xl6924240>58</td><td height=21 class=xl6924240>2,829</td><td height=21 class=xl6924240>-662</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-662</td><td height=21 class=xl6924240>-99</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-99</td><td height=21 class=xl6924240>87</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>87</td><td height=21 class=xl6924240>13</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>13</td><td height=21 class=xl6924240>18,575</td><td height=21 class=xl6924240>385</td><td height=21 class=xl6924240>18,960</td><td height=21 class=xl6924240>2,835</td><td height=21 class=xl6924240>59</td><td height=21 class=xl6924240>2,894</td></tr><tr height=21><td height=21 class=xl9124240>14</td><td height=21 class=xl7024240>Hardware Technology & Equipment</td><td height=21 class=xl7124240>35</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>35</td><td height=21 class=xl7124240>5</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>5</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>36</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>36</td><td height=21 class=xl7124240>5</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>5</td></tr><tr height=21><td height=21 class=xl9024240>15</td><td height=21 class=xl6724240>Healthcare Equipment & Supplies</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td></tr><tr height=21><td height=21 class=xl9124240>16</td><td height=21 class=xl7024240>Healthcare Services</td><td height=21 class=xl7124240>9,548</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>9,548</td><td height=21 class=xl7124240>1,431</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,431</td><td height=21 class=xl7124240>159</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>159</td><td height=21 class=xl7124240>24</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>24</td><td height=21 class=xl7124240>1,128</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,128</td><td height=21 class=xl7124240>172</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>172</td><td height=21 class=xl7124240>10,024</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>10,024</td><td height=21 class=xl7124240>1,530</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,530</td></tr><tr height=21><td height=21 class=xl9024240>17</td><td height=21 class=xl6724240>Hotels, Restaurants & Tourism</td><td height=21 class=xl6924240>5,895</td><td height=21 class=xl6924240>125</td><td height=21 class=xl6924240>6,020</td><td height=21 class=xl6924240>883</td><td height=21 class=xl6924240>19</td><td height=21 class=xl6924240>902</td><td height=21 class=xl6924240>48</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>48</td><td height=21 class=xl6924240>7</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>7</td><td height=21 class=xl6924240>106</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>106</td><td height=21 class=xl6924240>16</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>16</td><td height=21 class=xl6924240>6,138</td><td height=21 class=xl6924240>125</td><td height=21 class=xl6924240>6,263</td><td height=21 class=xl6924240>937</td><td height=21 class=xl6924240>19</td><td height=21 class=xl6924240>956</td></tr><tr height=21><td height=21 class=xl9124240>18</td><td height=21 class=xl7024240>Household & Personal Products</td><td height=21 class=xl7124240>72,607</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>72,607</td><td height=21 class=xl7124240>10,880</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>10,880</td><td height=21 class=xl7124240>-272</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-272</td><td height=21 class=xl7124240>-41</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-41</td><td height=21 class=xl7124240>34</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>34</td><td height=21 class=xl7124240>5</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>5</td><td height=21 class=xl7124240>73,926</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>73,926</td><td height=21 class=xl7124240>11,284</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>11,284</td></tr><tr height=21><td height=21 class=xl9024240>19</td><td height=21 class=xl6724240>Media</td><td height=21 class=xl6924240>34,978</td><td height=21 class=xl6924240>745</td><td height=21 class=xl6924240>35,723</td><td height=21 class=xl6924240>5,241</td><td height=21 class=xl6924240>112</td><td height=21 class=xl6924240>5,353</td><td height=21 class=xl6924240>-97</td><td height=21 class=xl6924240>2</td><td height=21 class=xl6924240>-95</td><td height=21 class=xl6924240>-15</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-14</td><td height=21 class=xl6924240>201</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>201</td><td height=21 class=xl6924240>31</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>31</td><td height=21 class=xl6924240>36,340</td><td height=21 class=xl6924240>743</td><td height=21 class=xl6924240>37,083</td><td height=21 class=xl6924240>5,547</td><td height=21 class=xl6924240>113</td><td height=21 class=xl6924240>5,660</td></tr><tr height=21><td height=21 class=xl9124240>20</td><td height=21 class=xl7024240>Metals & Mining</td><td height=21 class=xl7124240>40,989</td><td height=21 class=xl7124240>521</td><td height=21 class=xl7124240>41,509</td><td height=21 class=xl7124240>6,142</td><td height=21 class=xl7124240>78</td><td height=21 class=xl7124240>6,220</td><td height=21 class=xl7124240>20</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>20</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>1,679</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,679</td><td height=21 class=xl7124240>256</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>256</td><td height=21 class=xl7124240>42,621</td><td height=21 class=xl7124240>518</td><td height=21 class=xl7124240>43,139</td><td height=21 class=xl7124240>6,506</td><td height=21 class=xl7124240>79</td><td height=21 class=xl7124240>6,585</td></tr><tr height=21><td height=21 class=xl9024240>21</td><td height=21 class=xl6724240>Oil & Gas</td><td height=21 class=xl6924240>156,295</td><td height=21 class=xl6924240>34</td><td height=21 class=xl6924240>156,329</td><td height=21 class=xl6924240>23,419</td><td height=21 class=xl6924240>5</td><td height=21 class=xl6924240>23,424</td><td height=21 class=xl6924240>1,432</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>1,432</td><td height=21 class=xl6924240>215</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>215</td><td height=21 class=xl6924240>2,713</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>2,713</td><td height=21 class=xl6924240>414</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>414</td><td height=21 class=xl6924240>161,803</td><td height=21 class=xl6924240>34</td><td height=21 class=xl6924240>161,836</td><td height=21 class=xl6924240>24,697</td><td height=21 class=xl6924240>5</td><td height=21 class=xl6924240>24,702</td></tr><tr height=21><td height=21 class=xl9124240>22</td><td height=21 class=xl7024240>Pharmaceuticals & Biotechnology</td><td height=21 class=xl7124240>132,057</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>132,057</td><td height=21 class=xl7124240>19,787</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>19,787</td><td height=21 class=xl7124240>-1,810</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1,810</td><td height=21 class=xl7124240>-271</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-271</td><td height=21 class=xl7124240>-991</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-991</td><td height=21 class=xl7124240>-151</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-151</td><td height=21 class=xl7124240>131,787</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>131,787</td><td height=21 class=xl7124240>20,116</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>20,116</td></tr><tr height=21><td height=21 class=xl9024240>23</td><td height=21 class=xl6724240>Realty</td><td height=21 class=xl6924240>15,812</td><td height=21 class=xl6924240>575</td><td height=21 class=xl6924240>16,387</td><td height=21 class=xl6924240>2,369</td><td height=21 class=xl6924240>86</td><td height=21 class=xl6924240>2,455</td><td height=21 class=xl6924240>18</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>18</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>142</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>142</td><td height=21 class=xl6924240>22</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>22</td><td height=21 class=xl6924240>16,302</td><td height=21 class=xl6924240>575</td><td height=21 class=xl6924240>16,877</td><td height=21 class=xl6924240>2,488</td><td height=21 class=xl6924240>88</td><td height=21 class=xl6924240>2,576</td></tr><tr height=21><td height=21 class=xl9124240>24</td><td height=21 class=xl7024240>Retailing</td><td height=21 class=xl7124240>6,229</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>6,229</td><td height=21 class=xl7124240>933</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>933</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>25</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>25</td><td height=21 class=xl7124240>4</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>4</td><td height=21 class=xl7124240>6,323</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>6,323</td><td height=21 class=xl7124240>965</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>965</td></tr><tr height=21><td height=21 class=xl9024240>25</td><td height=21 class=xl6724240>Software & Services</td><td height=21 class=xl6924240>231,005</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>231,005</td><td height=21 class=xl6924240>34,614</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>34,614</td><td height=21 class=xl6924240>54</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>54</td><td height=21 class=xl6924240>8</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>8</td><td height=21 class=xl6924240>1,103</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>1,103</td><td height=21 class=xl6924240>168</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>168</td><td height=21 class=xl6924240>232,887</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>232,887</td><td height=21 class=xl6924240>35,547</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>35,547</td></tr><tr height=21><td height=21 class=xl9124240>26</td><td height=21 class=xl7024240>Telecom Services</td><td height=21 class=xl7124240>37,280</td><td height=21 class=xl7124240>1,939</td><td height=21 class=xl7124240>39,219</td><td height=21 class=xl7124240>5,586</td><td height=21 class=xl7124240>291</td><td height=21 class=xl7124240>5,877</td><td height=21 class=xl7124240>279</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>279</td><td height=21 class=xl7124240>42</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>42</td><td height=21 class=xl7124240>1,220</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,220</td><td height=21 class=xl7124240>186</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>186</td><td height=21 class=xl7124240>37,735</td><td height=21 class=xl7124240>1,939</td><td height=21 class=xl7124240>39,674</td><td height=21 class=xl7124240>5,760</td><td height=21 class=xl7124240>296</td><td height=21 class=xl7124240>6,056</td></tr><tr height=21><td height=21 class=xl9024240>27</td><td height=21 class=xl6724240>Telecommunications Equipment</td><td height=21 class=xl6924240>285</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>285</td><td height=21 class=xl6924240>43</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>43</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>305</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>305</td><td height=21 class=xl6924240>46</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>46</td></tr><tr height=21><td height=21 class=xl9124240>28</td><td height=21 class=xl7024240>Textiles, Apparels & Accessories</td><td height=21 class=xl7124240>23,731</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>23,731</td><td height=21 class=xl7124240>3,556</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3,556</td><td height=21 class=xl7124240>-23</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-23</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-4</td><td height=21 class=xl7124240>131</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>131</td><td height=21 class=xl7124240>20</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>20</td><td height=21 class=xl7124240>24,781</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>24,781</td><td height=21 class=xl7124240>3,783</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3,783</td></tr><tr height=21><td height=21 class=xl9024240>29</td><td height=21 class=xl6724240>Transportation</td><td height=21 class=xl6924240>31,871</td><td height=21 class=xl6924240>719</td><td height=21 class=xl6924240>32,591</td><td height=21 class=xl6924240>4,776</td><td height=21 class=xl6924240>108</td><td height=21 class=xl6924240>4,883</td><td height=21 class=xl6924240>13</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>13</td><td height=21 class=xl6924240>2</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>2</td><td height=21 class=xl6924240>61</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>61</td><td height=21 class=xl6924240>9</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>9</td><td height=21 class=xl6924240>32,979</td><td height=21 class=xl6924240>719</td><td height=21 class=xl6924240>33,699</td><td height=21 class=xl6924240>5,034</td><td height=21 class=xl6924240>110</td><td height=21 class=xl6924240>5,144</td></tr><tr height=21><td height=21 class=xl9124240>29 a</td><td height=21 class=xl7024240>Airlines</td><td height=21 class=xl7124240>280</td><td height=21 class=xl7124240>699</td><td height=21 class=xl7124240>979</td><td height=21 class=xl7124240>42</td><td height=21 class=xl7124240>105</td><td height=21 class=xl7124240>147</td><td height=21 class=xl7124240>23</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>23</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>320</td><td height=21 class=xl7124240>699</td><td height=21 class=xl7124240>1,019</td><td height=21 class=xl7124240>49</td><td height=21 class=xl7124240>107</td><td height=21 class=xl7124240>156</td></tr><tr height=21><td height=21 class=xl9024240>29 b</td><td height=21 class=xl6724240>Logistics</td><td height=21 class=xl6924240>2,503</td><td height=21 class=xl6924240>1</td><td height=21 class=xl6924240>2,503</td><td height=21 class=xl6924240>375</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>375</td><td height=21 class=xl6924240>-39</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-39</td><td height=21 class=xl6924240>-6</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-6</td><td height=21 class=xl6924240>-14</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-14</td><td height=21 class=xl6924240>-2</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-2</td><td height=21 class=xl6924240>2,608</td><td height=21 class=xl6924240>1</td><td height=21 class=xl6924240>2,609</td><td height=21 class=xl6924240>398</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>398</td></tr><tr height=21><td height=21 class=xl9124240>29 c</td><td height=21 class=xl7024240>Marine Port & Services</td><td height=21 class=xl7124240>18,510</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>18,510</td><td height=21 class=xl7124240>2,773</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>2,773</td><td height=21 class=xl7124240>124</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>124</td><td height=21 class=xl7124240>19</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>19</td><td height=21 class=xl7124240>57</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>57</td><td height=21 class=xl7124240>9</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>9</td><td height=21 class=xl7124240>19,129</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>19,129</td><td height=21 class=xl7124240>2,920</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>2,920</td></tr><tr height=21><td height=21 class=xl9024240>29 d</td><td height=21 class=xl6724240>Roads & Highways</td><td height=21 class=xl6924240>2,627</td><td height=21 class=xl6924240>20</td><td height=21 class=xl6924240>2,647</td><td height=21 class=xl6924240>394</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>397</td><td height=21 class=xl6924240>-48</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-48</td><td height=21 class=xl6924240>-7</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>-7</td><td height=21 class=xl6924240>26</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>26</td><td height=21 class=xl6924240>4</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>4</td><td height=21 class=xl6924240>2,774</td><td height=21 class=xl6924240>20</td><td height=21 class=xl6924240>2,794</td><td height=21 class=xl6924240>423</td><td height=21 class=xl6924240>3</td><td height=21 class=xl6924240>426</td></tr><tr height=21><td height=21 class=xl9124240>29 e</td><td height=21 class=xl7024240>Shipping</td><td height=21 class=xl7124240>1,431</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,431</td><td height=21 class=xl7124240>214</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>214</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-1</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>3</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,459</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,459</td><td height=21 class=xl7124240>223</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>223</td></tr><tr height=21><td height=21 class=xl9024240>29 f</td><td height=21 class=xl6724240>Surface Transportation</td><td height=21 class=xl6924240>36</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>36</td><td height=21 class=xl6924240>5</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>5</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>1</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>1</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>39</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>39</td><td height=21 class=xl6924240>6</td><td height=21 class=xl6924240>0</td><td height=21 class=xl6924240>6</td></tr><tr height=21><td height=21 class=xl9124240>29 g</td><td height=21 class=xl7024240>Transport Related Services</td><td height=21 class=xl7124240>6,485</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>6,485</td><td height=21 class=xl7124240>972</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>972</td><td height=21 class=xl7124240>-46</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-46</td><td height=21 class=xl7124240>-7</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-7</td><td height=21 class=xl7124240>-15</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-15</td><td height=21 class=xl7124240>-2</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-2</td><td height=21 class=xl7124240>6,649</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>6,649</td><td height=21 class=xl7124240>1,015</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>1,015</td></tr><tr height=21><td height=21 class=xl9024240>30</td><td height=21 class=xl6724240>Utilities<font class=font711087><sup>3</sup></font></td><td height=21 class=xl6924240>83,464</td><td height=21 class=xl6924240>5,931</td><td height=21 class=xl6924240>89,395</td><td height=21 class=xl6924240>12,506</td><td height=21 class=xl6924240>889</td><td height=21 class=xl6924240>13,395</td><td height=21 class=xl6924240>-516</td><td height=21 class=xl6924240>-15</td><td height=21 class=xl6924240>-530</td><td height=21 class=xl6924240>-77</td><td height=21 class=xl6924240>-2</td><td height=21 class=xl6924240>-79</td><td height=21 class=xl6924240>-535</td><td height=21 class=xl6924240>-43</td><td height=21 class=xl6924240>-578</td><td height=21 class=xl6924240>-82</td><td height=21 class=xl6924240>-7</td><td height=21 class=xl6924240>-88</td><td height=21 class=xl6924240>79,602</td><td height=21 class=xl6924240>5,858</td><td height=21 class=xl6924240>85,460</td><td height=21 class=xl6924240>12,150</td><td height=21 class=xl6924240>894</td><td height=21 class=xl6924240>13,044</td></tr><tr height=21><td height=21 class=xl9124240>31</td><td height=21 class=xl7024240>Sovereign</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>156,726</td><td height=21 class=xl7124240>156,726</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>23,484</td><td height=21 class=xl7124240>23,484</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-271</td><td height=21 class=xl7124240>-271</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>-41</td><td height=21 class=xl7124240>-41</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>852</td><td height=21 class=xl7124240>852</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>130</td><td height=21 class=xl7124240>130</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>158,912</td><td height=21 class=xl7124240>158,912</td><td height=21 class=xl7124240>0</td><td height=21 class=xl7124240>24,256</td><td height=21 class=xl7124240>24,256</td></tr><tr height=21><td height=21 class=xl9024240>32</td><td height=21 class=xl6724240>Others<font class=font711087><sup>4</sup></font></td><td height=21 class=xl6924240>380,960</td><td height=21 class=xl6924240>104,901</td><td height=21 class=xl6924240>485,861</td><td height=21 class=xl6924240>57,083</td><td height=21 class=xl6924240>15,718</td><td height=21 class=xl6924240>72,802</td><td height=21 class=xl6924240>-193</td><td height=21 class=xl6924240>80</td><td height=21 class=xl6924240>-113</td><td height=21 class=xl6924240>-29</td><td height=21 class=xl6924240>12</td><td height=21 class=xl6924240>-17</td><td height=21 class=xl6924240>1,847</td><td height=21 class=xl6924240>-565</td><td height=21 class=xl6924240>1,282</td><td height=21 class=xl6924240>282</td><td height=21 class=xl6924240>-86</td><td height=21 class=xl6924240>196</td><td height=21 class=xl6924240>390,086</td><td height=21 class=xl6924240>104,769</td><td height=21 class=xl6924240>494,855</td><td height=21 class=xl6924240>59,542</td><td height=21 class=xl6924240>15,992</td><td height=21 class=xl6924240>75,534</td></tr><tr height=21><td height=21 class=xl7524240></td><td height=21 class=xl7624240>Grand Total</td><td height=21 class=xl7724240>2,255,202</td><td height=21 class=xl7724240>310,178</td><td height=21 class=xl7724240>2,565,380</td><td height=21 class=xl7724240>337,921</td><td height=21 class=xl7724240>46,477</td><td height=21 class=xl7724240>384,399</td><td height=21 class=xl7724240>6,957</td><td height=21 class=xl7724240>-330</td><td height=21 class=xl7724240>6,628</td><td height=21 class=xl7724240>1,042</td><td height=21 class=xl7724240>-49</td><td height=21 class=xl7724240>993</td><td height=21 class=xl7724240>13,862</td><td height=21 class=xl7724240>725</td><td height=21 class=xl7724240>14,587</td><td height=21 class=xl7724240>2,116</td><td height=21 class=xl7724240>111</td><td height=21 class=xl7724240>2,227</td><td height=21 class=xl7724240>2,306,870</td><td height=21 class=xl7724240>312,601</td><td height=21 class=xl7724240>2,619,471</td><td height=21 class=xl7724240>352,115</td><td height=21 class=xl7724240>47,715</td><td height=21 class=xl7724240>399,830</td></tr></table></br><table style='border: 1px solid black;padding: 5px;background:#fde9d9;font-size:10pt;'><tr><td colspan=5><sup>1</sup> '<b>Other Financial Services</b>' includes Financial Sector other than </td></tr><tr><td colspan=5>'Bank'. Sub-category under  'Other Financial Services' are as </br></td></tr><tr><td colspan=5>follows:</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Financial Institutions</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Holding Companies</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Housing Finance Companies</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Investment Companies</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Other Finance companies (including NBFCs)</br></td></tr></table></br><table style='border: 1px solid black;padding: 5px;background:#fde9d9;font-size:10pt;'><tr><td colspan=5><sup>2</sup> AS per BSE Classification Companies under  '<b>Diversified</b>' are as </br></td></tr><tr><td colspan=5>follows:</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Mercator Limited</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Kutch Salt & Allied Industries Ltd.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- SVARTCORP</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Advanced Micronic Devices Ltd.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- VBC Industries Ltd</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Cosco (India) ltd.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- DCM Shriram Consolidated Ltd.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Cimmco Ltd</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Gillanders Arbuthnot & Co. Ltd.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- ADITYA BIRLA NUVO LTD.</br></td></tr><tr><td colspan=5 style='text-align:left;'>- KESORAM IND</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Empire Industries Ltd.,</br></td></tr><tr><td colspan=5 style='text-align:left;'>- BALMER LAWRI</br></td></tr><tr><td colspan=5 style='text-align:left;'>- 3M INDIA LTD</br></td></tr></table></br><table style='border: 1px solid black;padding: 5px;background:#fde9d9;font-size:10pt;'><tr><td colspan=5 style='text-align:left;'><sup>3</sup> Sub-category under  '<b>Utilities</b>' are as follows:</br></td></tr><tr><td colspan=5 style='text-align:left;'> - Electric Utilities</br></td></tr><tr><td colspan=5 style='text-align:left;'>- Other Utilities (Including Pipelines)</br></td></tr></table></br><font class='font924240'><sup>4</sup> AUC of Top 10 companies under Others Category in Debt is as below</font><table style='border-collapse:collapse;table-layout:fixed;'><tr height=32><td class=xl8724240 style='padding: 5px;'>Sr. No.</td><td class=xl6324240 style='padding: 5px;'>Companies</td><td class=xl9824240 style='padding: 5px;'>As on March 15, 2017 in INR Cr.</td><td class=xl6324240 style='padding: 5px;'>Companies</td><td class=xl6324240 style='padding: 5px;'>As on February 28, 2017 in INR Cr.</td></tr><tr height=21><td height=21 class=xl9424240>1</td><td height=21 class=xl8324240>The India Debt Opportunities Fund</td><td height=21 class=xl10724240>6,296</td><td height=21 class=xl8324240>The India Debt Opportunities Fund</td><td height=21 class=xl10724240>6,296</td></tr><tr height=21><td height=21 class=xl9524240>2</td><td height=21 class=xl8424240>Empower Research Knowledge Services Private Limited</td><td height=21 class=xl10824240>4,600</td><td height=21 class=xl8424240>Empower Research Knowledge Services Private Limited</td><td height=21 class=xl10824240>4,600</td></tr><tr height=21><td height=21 class=xl9424240>3</td><td height=21 class=xl8324240>FOOD CORPORATION OF INDIA</td><td height=21 class=xl10724240>3,648</td><td height=21 class=xl8324240>FOOD CORPORATION OF INDIA</td><td height=21 class=xl10724240>3,648</td></tr><tr height=21><td height=21 class=xl9524240>4</td><td height=21 class=xl8424240>TOYOTA FINANCIAL SERVICES INDIA LIMITED</td><td height=21 class=xl10824240>2,515</td><td height=21 class=xl8424240>BIRLA SUN LIFE MUTUAL FUND</td><td height=21 class=xl10824240>2,562</td></tr><tr height=21><td height=21 class=xl9424240>5</td><td height=21 class=xl8324240>MYLAN LABORATORIES LIMITED</td><td height=21 class=xl10724240>2,480</td><td height=21 class=xl8324240>TOYOTA FINANCIAL SERVICES INDIA LIMITED</td><td height=21 class=xl10724240>2,515</td></tr><tr height=21><td height=21 class=xl9524240>6</td><td height=21 class=xl8424240>BIRLA SUN LIFE MUTUAL FUND</td><td height=21 class=xl10824240>2,382</td><td height=21 class=xl8424240>MYLAN LABORATORIES LIMITED</td><td height=21 class=xl10824240>2,480</td></tr><tr height=21><td height=21 class=xl9424240>7</td><td height=21 class=xl8324240>HDFC MUTUAL FUND</td><td height=21 class=xl10724240>2,289</td><td height=21 class=xl8324240>HDFC MUTUAL FUND</td><td height=21 class=xl10724240>2,303</td></tr><tr height=21><td height=21 class=xl9524240>8</td><td height=21 class=xl8424240>EMGFL Ltd</td><td height=21 class=xl10824240>2,260</td><td height=21 class=xl8424240>EMGFL Ltd</td><td height=21 class=xl10824240>2,260</td></tr><tr height=21><td height=21 class=xl9424240>9</td><td height=21 class=xl8324240>J.P. MORGAN</td><td height=21 class=xl10724240>2,000</td><td height=21 class=xl8324240>EXIM Bank</td><td height=21 class=xl10724240>2,025</td></tr><tr height=21><td height=21 class=xl9524240>10</td><td height=21 class=xl8424240>JANALAKSHMI FINANCIAL SERVICES PRIVATE LTD</td><td height=21 class=xl10824240>1,993</td><td height=21 class=xl8424240>J.P. MORGAN</td><td height=21 class=xl10824240>2,000</td></tr><tr height=21><td  height=21 class=xl9424240></td><td  height=21 class=xl8524240>Total</td><td  height=21 class=xl11224240>30,464</td><td  height=21 class=xl8524240>Total</td><td  height=21 class=xl11124240>30,690</td></tr></table></br><table style='border-collapse:collapse;table-layout:fixed;'><tr height=21><td colspan='2' height=21 class=xl13424240 style='border-right: black 1pt solid;'>Note: RBI reference rate is used for conversion from INR to USD</td></tr><tr height=21><td height=21 class=xl9924240 style='text-align:left;'>AUC as on February 28, 2017</td><td height=21 class=xl9924240 style='border-right: black 1pt solid;'>66.7375</td></tr><tr height=21><td height=21 class=xl9924240 style='text-align:left;'>Net Investment February 16-28, 2017</td><td height=21 class=xl9924240 style='border-right: black 1pt solid;'>66.7375</td></tr><tr height=21><td height=21 class=xl9924240 style='text-align:left;'>AUC as on March 15, 2017</td><td height=21 class=xl9924240 style='border-right: black 1pt solid;'>65.5146</td></tr><tr height=21><td height=21 class=xl9924240 style='text-align:left;'>Net Investment March 01-15, 2017</td><td height=21 class=xl9924240 style='border-right: black 1pt solid;'>65.5146</td></tr><tr><td class=xl13724240 colspan='2' height=46 style='border-right: black 1pt solid;text-align:left;'>INR to USD conversion of FPI/FII net Investment details on CDSL website is </br>done on the basis of daily RBI reference rate. However here RBI reference </br>rate of end of period is used for conversion from INR to USD.</td></tr></table></br><table style='width:364px;border: 1px solid black;padding: 5px;background:#fde9d9;font-size:10pt;'><tr><td style='text-align:left;'></br>Note: BSE had classified more than 3400 number of issuers into 31 sectors. SEBI has decided to rely on the BSE classification. Any FII investment outside those 3400 issueres, is classified under 'Others'.</td></tr></table></div>
+        <input type="hidden" name="HdnValexceldata" id="HdnValexceldata" />
+        <br />
+        <input type="submit" name="btnExport" value="Export To Excel" onclick="ExportDIVtoExcel();" id="btnExport" class="blu_center01 blu_Text01" style="display:none;height: 30px; padding-top: 0px; padding-left: 10px; padding-right: 10px; background: #666666; margin-left: 5px;" />
+    </form>
+</body>
+</html>

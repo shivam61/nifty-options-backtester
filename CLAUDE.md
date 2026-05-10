@@ -1,0 +1,114 @@
+# CLAUDE.md — Nifty Options Backtester
+
+## What This Is
+
+A Python backtester + live-signal system for **NSE Nifty 50 index options selling** (Indian market). Fetches 17 years of data (2009–present) from Yahoo Finance, engineers 100+ features, trains per-regime GBM models to time entries, then runs a combined **monthly (70% capital) + weekly (30% capital)** options backtest. Capital base ₹5L INR, lot size 65. Every run auto-appends to `BACKTEST_CHANGELOG.md` and `backtest_runs.jsonl`.
+
+---
+
+## Layer Map
+
+| Layer | Folder | Key File | Role |
+|-------|--------|----------|------|
+| Data | `data/` | `market_data.py` | Fetches 16 Yahoo Finance tickers → builds 100+ column DataFrame; parquet cache in `data/.cache/` |
+| Strategy | `strategies/` | `multi_strategy.py` | 8 strategy classes + `RegimeAdaptiveStrategy` which routes ML picks to sub-strategies via `force_strategy_selection()` |
+| Backtester | `backtester/` | `combined_engine.py` | `CombinedBacktestEngine` runs monthly + weekly tracks concurrently with DD kill-switch, VIX gates, production safety rules |
+| ML | `models/` | `trade_learner.py` | `FeatureExtractor` (52 features, 8 groups) + `TradeLearner` (win-prob classifier + P&L regressor); cached in `data/.cache/` |
+
+---
+
+## Key Constants
+
+| Constant | Value | Source |
+|----------|-------|--------|
+| `lot_size` | 65 | `config.BacktestConfig` |
+| `initial_capital` | ₹500,000 | `config.BacktestConfig` |
+| `_MONDAY_CUTOVER` | 2024-04-04 | `data/expiry_calendar.py` — NSE switched from Thursday to Monday expiry |
+| `entry_threshold` | 0.48 | `run_backtest_combined()`, `CombinedBacktestEngine` |
+| `monthly_max_lots_cap` | 30 | `CombinedBacktestEngine.__init__` (`safe_monthly_cap`) |
+| `monthly_budget_pct` | 70% | `run_backtest_combined()` |
+| `weekly_budget_pct` | 30% | `run_backtest_combined()` |
+| `vix_simultaneous_cap` | 25.0 | `run_backtest_combined()` — blocks weekly entries when VIX > 25 and monthly trade is open |
+| `dd_kill_pct` | 0.20 | `ProductionRulesConfig` in `run_backtest_combined()` |
+| `dd_recovery_pct` | 0.16 | same — engine re-enables after kill-switch when DD recovers to this level |
+| `BWB max_vix` default | 30.0 | `BrokenWingButterflyStrategy(max_vix=30)` — aligns with router's VIX 22–30 zone |
+| Circuit breaker — 50d drawdown | -18% | `RegimeAdaptiveStrategy.get_eligible_strategies()` |
+| Circuit breaker — crash score v2 | ≥ 0.80 | same |
+| Circuit breaker — multi-asset stress | ≥ 0.80 | same |
+| Weekly `stop_loss_pct` | 80% | `config.WeeklyBacktestConfig` |
+
+---
+
+## CLI Quick Reference
+
+```bash
+python main.py --mode evolve              # Grid-search params + train all ML models (run first)
+python main.py --mode backtest-combined   # Monthly 70% + weekly 30% combined backtest
+python main.py --mode backtest            # Monthly-only backtest
+python main.py --mode signal-combined     # Live combined signal (Fyers API)
+python main.py --mode signal              # Live monthly signal (Yahoo + NSE chain)
+python main.py --mode monitor             # ML exit scoring for active trades in JSON journal
+python main.py --mode validate            # Walk-forward + permutation tests
+python main.py --mode ablation            # Drop-one-out strategy contribution analysis
+python main.py --mode stress              # Crisis period replay (2008, 2020, 2022, 2025)
+python main.py --start 2019-01-01 --capital 1000000 --lots 25 --run-label "v5 test"
+```
+
+**Model caches** (`data/.cache/*.pkl`) must exist before running backtest/signal modes. Run `--mode evolve` first or after any strategy/feature changes.
+
+---
+
+## Data Flow (5 Steps)
+
+1. **Fetch** → `MarketDataFetcher.build_combined_dataset()` — 16 tickers (Nifty, India VIX, Crude, USD/INR, Gold, DXY, US VIX, US 10Y, S&P 500, Bank Nifty, Silver, Nifty IT, EEM, Hang Seng, EuroStoxx50); parquet cache per ticker+date range
+2. **Features** → 100+ derived columns: returns, RSI, Bollinger, SMA, drawdown, crash scores (V1+V2), VRP, multi-asset stress, cross-geo composites (`crude_inr_composite`, `dxy_crude_composite`, `vix_premium_over_us`, `fii_flow_proxy`)
+3. **Regime + ML** → `RegimeAwareLearner` classifies day into LOW_VOL/HIGH_VOL/CRASH/TRENDING; GBM+RF ensemble scores win probability; entry allowed if `win_prob ≥ entry_threshold`
+4. **Entry** → `RegimeAdaptiveStrategy.get_eligible_strategies()` filters by VIX zone and circuit breakers → `ExpirySelector.select_best()` scores 2–3 upcoming expiries via EV + theta quality formula → `force_strategy_selection()` activates chosen strategy
+5. **Exit** → `ExitStrategyEngine` (GBM) re-scores daily; also rule-based: 50% profit target, 2× credit stop-loss, DTE limit, trailing peak/drop, VIX-adaptive thresholds
+
+---
+
+## ML Model Map
+
+| Model | File | Cache | Purpose |
+|-------|------|-------|---------|
+| `RegimeClassifier` | `models/regime_classifier.py` | `data/.cache/entry_model_v4.pkl` | 4-class GBM regime label (used as feature in v4) |
+| `RegimeAwareLearner` | `models/regime_aware_learner.py` | `data/.cache/entry_model_v4.pkl` | Win-prob + strategy selector; single model v4 with regime as feature |
+| `ExitStrategyEngine` | `models/trade_monitor.py` | `data/.cache/exit_model.pkl` | GBM should-exit decision; top features: pnl_pct, credit_captured_pct, pnl_velocity |
+| `WeeklyRiskEngine` | `models/weekly_risk_engine.py` | `data/.cache/weekly_risk_engine.pkl` | Tail-loss risk scorer for weekly entry gates; AUC ~0.62 |
+
+---
+
+## Test Suite (220 tests, ~4s)
+
+```
+tests/conftest.py          — Shared fixtures: synthetic 200-day market_data (seeded, no network)
+tests/test_black_scholes.py — Option pricing, Greeks sign-correctness, IV smile shape
+tests/test_strategies.py   — Entry/exit logic, leg generation, circuit breaker for all strategies
+tests/test_models.py       — Regime labeling, feature extraction shape/NaN handling, classifier
+tests/test_base.py         — Leg/Trade P&L math, net credit, max loss properties
+tests/test_data.py         — Expiry calendar (era-aware: Thursday pre-2024, Monday post-2024), config
+tests/test_multi_expiry.py — Calendar roll logic, AdjustmentAction, ExpirySelector scoring
+tests/test_position_sizer.py — Position sizing across regimes, drawdown, confidence tiers
+tests/test_fixes.py        — Regression: bug fixes #1–#6 + CAGR improvements #1–#6
+```
+
+Run: `source .venv/bin/activate && python -m pytest tests/ -q`
+
+---
+
+## Key Gotchas
+
+- **NSE expiry cutover (2024-04-04)** — Before this date expiry = last Thursday; on/after = last Monday. Always pass `ref_date` to `get_monthly_expiry()` when backtesting periods that straddle this boundary. `BacktestEngine._get_expiry_date()` uses `get_best_expiry_for_dte()` which handles this automatically.
+
+- **`overnight_gap_pct` column name** — `market_data.py` produces this column (renamed from an older `nifty_gap_pct`). `FeatureExtractor` reads `overnight_gap_pct`. Any cached parquet written before the rename will produce NaN for this feature — delete cache and regenerate.
+
+- **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
+
+- **ML entry model AUC ~0.50** — The `RegimeAwareLearner` v4 CV AUC is ~0.50 (effectively random on the held-out folds). The model still improves backtest results through regime-based strategy selection even when win-prob is near-random. Don't mistake low AUC for a broken pipeline — options selling alpha comes from correct regime filtering, not precise probability estimation.
+
+- **Capital utilization ~62%** — At default settings, 38% of capital is idle (VIX gates + no concurrent monthly trades). The main idle-capital levers are: `vix_simultaneous_cap` (currently 25), `safe_monthly_cap` (currently 30), and the `dd_recovery_pct` (currently 0.16).
+
+- **Black-Scholes as pricing proxy** — No real NSE option chain history before 2019. Premiums estimated via `price_option()` + `iv_from_vix()` linear skew model. Pre-2019 P&L is directionally indicative only. `iv_from_vix()` returns IV as a **percentage** (e.g., `18.5` = 18.5%); `price_option()` divides by 100 internally — never divide again before calling it.
+
+- **`--mode evolve` must run before backtest/signal** — Deleting `data/.cache/*.pkl` requires a full retrain. Evolve takes ~15–20 min on 17yr data. Feature column changes or strategy changes → always retrain.
