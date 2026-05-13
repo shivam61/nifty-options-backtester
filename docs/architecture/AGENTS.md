@@ -189,6 +189,31 @@ Tests are organized by module:
 - `tests/test_data.py` — feature engineering, expiry calendar, sentiment scoring
 - `tests/test_multi_expiry.py` — diagonal spread, calendar roll, adjustment mechanics, ExpirySelector
 
+## Shared Agent Workflow
+
+### Graphify
+
+- `graphify-out/` is generated code graph context for agents.
+- Run `scripts/update_graphify.sh` after source/docs/script changes, or
+  `scripts/watch_graphify.sh` during active editing.
+- Enable committed hooks in each checkout with `git config core.hooksPath .githooks`.
+  The pre-commit hook refreshes and stages `graphify-out/` so commits carry the
+  graph that matches the committed files.
+- If the graph intentionally shrinks after deleting/refactoring code, run with
+  `GRAPHIFY_FORCE_UPDATE=1 scripts/update_graphify.sh`.
+
+### Pitfall Memory
+
+- `docs/AGENT_MEMORY.md` is the human-readable memory index.
+- `docs/agent_memory.jsonl` is the source of truth.
+- Add repeatable, evidence-backed pitfalls:
+  `python3 scripts/agent_memory.py add --agent codex --tags area bug --summary "..." --pitfall "..." --prevention "..." --evidence "..."`
+- Mark records as they prove useful or stale:
+  `python3 scripts/agent_memory.py mark <id> --helpful`
+  `python3 scripts/agent_memory.py mark <id> --stale`
+- Decay old records with `python3 scripts/agent_memory.py decay`; low-score or
+  repeatedly stale memories move to `docs/agent_memory.archive.jsonl`.
+
 ## Common Pitfalls for AI Agents
 
 1. **`iv_from_vix` returns IV as percentage** (e.g., 18.5 means 18.5%), but

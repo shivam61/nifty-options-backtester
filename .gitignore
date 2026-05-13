@@ -36,6 +36,11 @@ results/
 *.log
 *.html
 *.jsonl
+!docs/agent_memory.jsonl
+!docs/agent_memory.archive.jsonl
+!graphify-out/graph.html
+graphify-out/.graphify_root
+graphify-out/.rebuild.lock
 backtest_report*.html
 backtest_runs*.jsonl
 fyersApi.log

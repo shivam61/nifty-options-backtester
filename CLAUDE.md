@@ -97,6 +97,19 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
 ---
 
+## Agent Workflow
+
+- Keep `graphify-out/` current. Run `scripts/update_graphify.sh` for a one-shot
+  refresh or `scripts/watch_graphify.sh` while editing. This checkout is wired
+  to `.githooks/` with `git config core.hooksPath .githooks`; the pre-commit
+  hook refreshes and stages `graphify-out/`.
+- Check `docs/AGENT_MEMORY.md` before non-trivial changes. Add repeatable
+  pitfalls with `python3 scripts/agent_memory.py add ...`, mark useful memories
+  with `--helpful`, mark stale ones with `--stale`, and run
+  `python3 scripts/agent_memory.py decay` to archive low-signal records.
+
+---
+
 ## Key Gotchas
 
 - **NSE expiry cutover (2024-04-04)** — Before this date expiry = last Thursday; on/after = last Monday. Always pass `ref_date` to `get_monthly_expiry()` when backtesting periods that straddle this boundary. `BacktestEngine._get_expiry_date()` uses `get_best_expiry_for_dte()` which handles this automatically.

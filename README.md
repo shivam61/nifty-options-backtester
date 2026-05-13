@@ -76,7 +76,20 @@ python main.py --mode optimize
 - **[Monitor Workflow](docs/guides/MONITOR_WORKFLOW.md)** - Trade monitoring and management
 - **[Fyers Integration](docs/fyers/INTEGRATION.md)** - API setup and usage
 - **[AI Codebase Guide](docs/architecture/AGENTS.md)** - For AI agents working on this codebase
+- **[Agent Memory](docs/AGENT_MEMORY.md)** - Decaying record of repo-specific pitfalls for Claude/Codex sessions
 - **[Backtest Changelog](docs/analysis/BACKTEST_CHANGELOG.md)** - Optimization history
+
+## Agent Automation
+
+Enable repo-local hooks once per checkout:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The pre-commit hook refreshes and stages `graphify-out/`. For live updates while
+editing, run `scripts/watch_graphify.sh`. To record or decay cross-agent lessons,
+use `python3 scripts/agent_memory.py`.
 
 ## Project Structure
 
