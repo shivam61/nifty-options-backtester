@@ -235,7 +235,9 @@ class KillSwitchState:
     cooldown_until: Optional[date] = None
     total_activations: int = 0
     weekly_force_closes: int = 0
+    monthly_force_closes: int = 0
     entries_blocked: int = 0
+    just_activated: bool = False
 
 
 class DrawdownKillSwitch:
@@ -268,6 +270,7 @@ class DrawdownKillSwitch:
         Returns True if all trading should halt.
         """
         if self.state.is_active:
+            self.state.just_activated = False
             if self.state.cooldown_until and current_date < self.state.cooldown_until:
                 self.state.entries_blocked += 1
                 return True
@@ -287,17 +290,18 @@ class DrawdownKillSwitch:
             self.state.activated_dd_pct = dd_pct
             self.state.cooldown_until = current_date + timedelta(days=self.cooldown_days)
             self.state.total_activations += 1
+            self.state.just_activated = True
             return True
 
         return False
 
     def should_force_close_weekly(self) -> bool:
         """True on the activation tick — close weekly positions immediately."""
-        return (self.state.is_active and
-                self.state.activated_date is not None and
-                self.state.total_activations > 0 and
-                self.state.cooldown_until is not None and
-                self.state.cooldown_until == self.state.activated_date + timedelta(days=self.cooldown_days))
+        return self.state.is_active and self.state.just_activated
+
+    def should_force_close_monthly(self) -> bool:
+        """True on the activation tick — close monthly positions immediately."""
+        return self.state.is_active and self.state.just_activated
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -308,8 +312,8 @@ class DrawdownKillSwitch:
 class ProductionRulesConfig:
     """All production safety parameters in one place."""
     max_spread_width_pct: float = 3.0
-    dd_kill_pct: float = 0.10
-    dd_recovery_pct: float = 0.05
+    dd_kill_pct: float = 0.20
+    dd_recovery_pct: float = 0.16
     dd_cooldown_days: int = 5
     block_events: bool = True
     enforce_no_naked: bool = True

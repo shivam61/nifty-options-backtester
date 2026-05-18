@@ -92,11 +92,12 @@ class BacktestConfig:
     monthly_min_short_dist_pct_trending: float = 2.5
     monthly_min_short_dist_pct_high_vol: float = 3.5
     monthly_min_short_dist_pct_crash: float = 5.0
-    monthly_max_loss_to_credit_ratio: float = 12.0
+    monthly_max_loss_to_credit_ratio: float = 6.0
     monthly_min_raw_ev: float = -250.0
     monthly_min_tail_adjusted_ev: float = -1000.0
     monthly_max_margin_per_trade_pct: float = 20.0
-    monthly_max_risk_per_trade_pct: float = 20.0
+    monthly_max_risk_per_trade_pct: float = 10.0
+    monthly_hard_max_loss_pct: float = 15.0
     monthly_entry_threshold: float = 0.48
     monthly_exit_min_hold_days: int = 0
     monthly_exit_profit_target_scale: float = 1.0

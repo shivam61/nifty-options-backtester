@@ -779,7 +779,7 @@ class RegimeAdaptiveStrategy(BaseStrategy):
                  max_profit_threshold: float = 0.85,
                  allow_bwb: bool = True,
                  crash_risk_v2_block: float = 0.80,
-                 multi_asset_stress_block: float = 0.80,
+                 multi_asset_stress_block: float = 1.50,
                  correction_50d_block: float = -18.0,
                  vix_accel_block: float = 50.0,
                  crude_shock_block: float = 30.0):
@@ -1003,7 +1003,7 @@ class RegimeAdaptiveStrategy(BaseStrategy):
 
         if crash_risk_v2 >= 0.80:
             return None
-        if multi_stress >= 0.80:
+        if multi_stress >= self.multi_asset_stress_block:
             return None
         if correction_50d < -18.0:
             return None
@@ -1049,7 +1049,7 @@ class RegimeAdaptiveStrategy(BaseStrategy):
         # VIX 18-22: PCS primary, IC if calm, BWB on strong downtrends (v4.1)
         if 18 <= vix < 22:
             if vol_expansion > 1.35 or vix_5d > 0.08:
-                return None
+                return "iron_condor"
             if abs(nifty_5d) < 0.015 and vix_5d <= 0:
                 return "iron_condor"
             if nifty_20d < -0.03 and self.allow_bwb:
@@ -1065,7 +1065,7 @@ class RegimeAdaptiveStrategy(BaseStrategy):
         # VIX 22-30: defensive — PCS when VIX falling sharply, else BWB
         if 22 <= vix < 30:
             if vol_expansion > 1.4 or vix_5d > 0.10:
-                return None
+                return "broken_wing_butterfly" if self.allow_bwb else "iron_condor"
             if vix_5d < -0.05 and nifty_20d > 0:
                 return "put_credit_wide"
             if abs(nifty_5d) < 0.015 and vix_5d <= 0:

@@ -1,16 +1,16 @@
-# Graph Report - nifty-options-backtester  (2026-05-13)
+# Graph Report - nifty-options-backtester  (2026-05-18)
 
 ## Corpus Check
-- 159 files · ~169,790 words
+- 164 files · ~281,012 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2998 nodes · 5937 edges · 231 communities (202 shown, 29 thin omitted)
-- Extraction: 68% EXTRACTED · 32% INFERRED · 0% AMBIGUOUS · INFERRED: 1893 edges (avg confidence: 0.64)
+- 3261 nodes · 6321 edges · 249 communities (220 shown, 29 thin omitted)
+- Extraction: 68% EXTRACTED · 32% INFERRED · 0% AMBIGUOUS · INFERRED: 2015 edges (avg confidence: 0.63)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c7c79fb3`
+- Built from commit: `1e25257b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -209,43 +209,59 @@
 - [[_COMMUNITY_Community 191|Community 191]]
 - [[_COMMUNITY_Community 192|Community 192]]
 - [[_COMMUNITY_Community 193|Community 193]]
+- [[_COMMUNITY_Community 194|Community 194]]
 - [[_COMMUNITY_Community 195|Community 195]]
 - [[_COMMUNITY_Community 196|Community 196]]
+- [[_COMMUNITY_Community 197|Community 197]]
+- [[_COMMUNITY_Community 198|Community 198]]
+- [[_COMMUNITY_Community 199|Community 199]]
+- [[_COMMUNITY_Community 200|Community 200]]
+- [[_COMMUNITY_Community 201|Community 201]]
+- [[_COMMUNITY_Community 202|Community 202]]
+- [[_COMMUNITY_Community 203|Community 203]]
+- [[_COMMUNITY_Community 204|Community 204]]
+- [[_COMMUNITY_Community 205|Community 205]]
+- [[_COMMUNITY_Community 206|Community 206]]
+- [[_COMMUNITY_Community 207|Community 207]]
+- [[_COMMUNITY_Community 208|Community 208]]
+- [[_COMMUNITY_Community 209|Community 209]]
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
-- [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 214|Community 214]]
-- [[_COMMUNITY_Community 215|Community 215]]
-- [[_COMMUNITY_Community 216|Community 216]]
-- [[_COMMUNITY_Community 217|Community 217]]
-- [[_COMMUNITY_Community 218|Community 218]]
-- [[_COMMUNITY_Community 219|Community 219]]
-- [[_COMMUNITY_Community 220|Community 220]]
-- [[_COMMUNITY_Community 221|Community 221]]
-- [[_COMMUNITY_Community 222|Community 222]]
-- [[_COMMUNITY_Community 223|Community 223]]
-- [[_COMMUNITY_Community 225|Community 225]]
-- [[_COMMUNITY_Community 226|Community 226]]
-- [[_COMMUNITY_Community 227|Community 227]]
 - [[_COMMUNITY_Community 228|Community 228]]
 - [[_COMMUNITY_Community 229|Community 229]]
 - [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 232|Community 232]]
+- [[_COMMUNITY_Community 233|Community 233]]
+- [[_COMMUNITY_Community 234|Community 234]]
+- [[_COMMUNITY_Community 235|Community 235]]
+- [[_COMMUNITY_Community 236|Community 236]]
+- [[_COMMUNITY_Community 237|Community 237]]
+- [[_COMMUNITY_Community 238|Community 238]]
+- [[_COMMUNITY_Community 239|Community 239]]
+- [[_COMMUNITY_Community 240|Community 240]]
+- [[_COMMUNITY_Community 241|Community 241]]
+- [[_COMMUNITY_Community 243|Community 243]]
+- [[_COMMUNITY_Community 244|Community 244]]
+- [[_COMMUNITY_Community 245|Community 245]]
+- [[_COMMUNITY_Community 246|Community 246]]
+- [[_COMMUNITY_Community 247|Community 247]]
+- [[_COMMUNITY_Community 248|Community 248]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `main()` - 114 edges
-2. `BacktestConfig` - 100 edges
-3. `RegimeAdaptiveStrategy` - 88 edges
-4. `Leg` - 86 edges
-5. `CombinedBacktestEngine` - 79 edges
-6. `Trade` - 77 edges
-7. `FeatureExtractor` - 75 edges
-8. `price_option()` - 73 edges
-9. `TradeAction` - 71 edges
-10. `OptionType` - 64 edges
+2. `BacktestConfig` - 111 edges
+3. `Leg` - 96 edges
+4. `RegimeAdaptiveStrategy` - 94 edges
+5. `Trade` - 87 edges
+6. `CombinedBacktestEngine` - 85 edges
+7. `FeatureExtractor` - 81 edges
+8. `TradeAction` - 77 edges
+9. `price_option()` - 73 edges
+10. `TradeResult` - 65 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_backtest_combined_uses_final_caches_only()` --calls--> `BacktestConfig`  [INFERRED]
-  tests/test_backtest_integrity.py → config.py
 - `run_backtest()` --calls--> `MarketDataFetcher`  [INFERRED]
   main.py → data/market_data.py
 - `run_backtest()` --calls--> `WalkForwardManager`  [INFERRED]
@@ -254,72 +270,74 @@
   main.py → strategies/multi_strategy.py
 - `run_backtest()` --calls--> `SmartBacktestEngine`  [INFERRED]
   main.py → backtester/engine.py
+- `run_backtest()` --calls--> `BacktestReporter`  [INFERRED]
+  main.py → analysis/reporter.py
 
-## Communities (231 total, 29 thin omitted)
+## Communities (249 total, 29 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.05
-Nodes (29): ABC, Fetch option chain with best available data.         target_expiry: "DD-Mon-YYYY, discover(), SourceAdapter, SourceMetadata, build_source_inventory(), CDSLAdapter, _coerce_parenthesized_number() (+21 more)
+Cohesion: 0.04
+Nodes (64): BacktestEngine, Event-driven backtesting engine.     Steps through each trading day, checks entr, Result of a single completed trade., TradeResult, DrawdownKillSwitch, KillSwitchState, Tracks the DD kill switch state across the backtest., Hard circuit breaker that activates at max_dd_pct drawdown.      When triggered: (+56 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.06
-Nodes (30): PositionSizer, Position sizing: margin-based compounding, vol-target, regime scaling, drawdown, Computes position size using margin/vol base with regime, drawdown,     and ML c, Store trade result with the equity at the time of entry for vol-target., Resolve regime scaling from config when present.          This keeps the default, Size so portfolio annualised vol stays near target.          Uses exponential-de, Margin-based compounding (the original sizing logic)., Transparent record of how lot count was determined. (+22 more)
+Cohesion: 0.05
+Nodes (27): ConservativeFillModel, FillSnapshot, Execution/fill abstractions for separating theoretical marking from executable f, Keeps Black-Scholes as the theoretical mark, but worsens actual fills     throug, Train exit model using CAUSAL labels (no future information leakage).          T, _d1(), _d2(), iv_from_vix() (+19 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (30): compute_geopolitical_risk_index(), compute_price_action_sentiment(), News sentiment scorer for market analysis. Uses keyword-based NLP to score finan, Score multiple headlines and aggregate., Derive a sentiment proxy from price action when news data isn't available.     U, Compute a geopolitical risk proxy from market data.     Spikes in crude + gold +, Score a single news headline., score_headline() (+22 more)
+Cohesion: 0.06
+Nodes (31): AdjustmentAction, Leg, Apply an adjustment: close specified legs, add new ones, track cost., Apply an adjustment: close specified legs, add new ones, track cost., Check if the trade should be adjusted instead of exited.         Returns an Adju, Check if the trade should be adjusted instead of exited.         Returns an Adju, Describes a mid-trade adjustment (roll, add hedge, widen, etc.)., Complete multi-leg trade. (+23 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.08
-Nodes (31): FeatureExtractor, Extracts ML features including cross-geo disruption and macro indicators.      M, ConditionalGapModel, DynamicWeeklyExit, _get_cache_dir(), load_risk_engine(), Weekly Risk Engine — replaces the prediction-based WeeklyEntryLearner.  Philosop, Returns P(tail event) in [0, 1]. Higher = more dangerous. (+23 more)
+Cohesion: 0.06
+Nodes (34): ExitStrategy, Fixed85ExitStrategy, HybridExitStrategy, OriginalExitStrategy, Base class for different exit approaches., Current approach: 50% profit target only., Fixed 85% max profit booking., Hybrid approach:     1. Circuit breaker at 75% (hard stop)     2. ML-simulated a (+26 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.06
-Nodes (30): Result of a single completed trade., TradeResult, DrawdownKillSwitch, Hard circuit breaker that activates at max_dd_pct drawdown.      When triggered:, True on the activation tick — close weekly positions immediately., Configuration for weekly (3-8 DTE) options backtesting., WeeklyBacktestConfig, test_combined_engine_pending_monthly_entry_fills_next_bar() (+22 more)
+Cohesion: 0.05
+Nodes (32): CombinedResult, BaseStrategy, IronCondorStrategy, BaseStrategy, generate_legs(), Abstract base class for option strategies., Abstract base class for option strategies., should_enter() (+24 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.06
-Nodes (22): Simulate a circuit breaker trigger with multi-asset stress., test_circuit_breaker_output(), Test with moderate stress (only 2-3 assets stressed)., Test with only one extreme factor (deep correction only)., Test with low stress (all assets normal)., test_low_stress(), test_moderate_stress(), test_single_factor_extreme() (+14 more)
+Cohesion: 0.05
+Nodes (31): compute_geopolitical_risk_index(), compute_price_action_sentiment(), News sentiment scorer for market analysis. Uses keyword-based NLP to score finan, Score multiple headlines and aggregate., Derive a sentiment proxy from price action when news data isn't available.     U, Compute a geopolitical risk proxy from market data.     Spikes in crude + gold +, Score a single news headline., score_headline() (+23 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.09
-Nodes (24): AdjustmentAction, Leg, Apply an adjustment: close specified legs, add new ones, track cost., Apply an adjustment: close specified legs, add new ones, track cost., Check if the trade should be adjusted instead of exited.         Returns an Adju, Check if the trade should be adjusted instead of exited.         Returns an Adju, Describes a mid-trade adjustment (roll, add hedge, widen, etc.)., Complete multi-leg trade. (+16 more)
+Cohesion: 0.08
+Nodes (32): EntryDecision, _estimate_win_prob(), ExpirySelector, _min_short_distance_pct(), NoEntry, Multi-expiry strategy evaluator.  Instead of locking into a single target DTE, e, Penalise structures that are too asymmetric for the regime or too close     to s, Heuristic win probability based on strike distance, VIX, and DTE.     Not a repl (+24 more)
 
 ### Community 7 - "Community 7"
+Cohesion: 0.07
+Nodes (31): FeatureExtractor, Extracts ML features including cross-geo disruption and macro indicators.      M, ConditionalGapModel, DynamicWeeklyExit, _get_cache_dir(), load_risk_engine(), Weekly Risk Engine — replaces the prediction-based WeeklyEntryLearner.  Philosop, Returns P(tail event) in [0, 1]. Higher = more dangerous. (+23 more)
+
+### Community 8 - "Community 8"
+Cohesion: 0.07
+Nodes (47): OptionChainSnapshot, StrikeData, _append_changelog_entry(), _build_strategy_breakdown(), _build_weekly_trade_stats(), _check_fyers_token_and_warn(), _expiry_matches(), _get_git_hash() (+39 more)
+
+### Community 9 - "Community 9"
+Cohesion: 0.07
+Nodes (35): _all_weekday_in_month(), _expiry_weekday(), format_expiry_label(), get_all_expiries(), get_all_thursdays(), get_best_expiry_for_dte(), get_monthly_expiries(), get_monthly_expiry() (+27 more)
+
+### Community 10 - "Community 10"
+Cohesion: 0.04
+Nodes (44): 6 Fixes Explained, Architecture Verification, Code Changes, Code Quality, code:block1 (Total Tests: 276 passing), code:bash (python3 main.py --mode backtest-combined --start 2020-01-01 ), code:bash (python3 main.py --mode stress), code:bash (python3 main.py --mode signal-combined  # Live signals with ) (+36 more)
+
+### Community 11 - "Community 11"
 Cohesion: 0.04
 Nodes (44): 1. Core Module, 1. Initial Setup, 2. Token Generator, 2. Validation Test, 3. Documentation, 3. Python API Usage, 4. Examples, API Limits & Best Practices (+36 more)
 
-### Community 8 - "Community 8"
+### Community 12 - "Community 12"
 Cohesion: 0.06
 Nodes (29): FyersLiveDataClient, Fyers Live Market Data Integration Fetches real-time quotes for Nifty options us, Check if expiry_date is a monthly contract by querying Fyers option chain., Given a target date, return the nearest valid Nifty expiry.         Useful when, Get quotes for one or more symbols.                  Args:             symbols:, Get current Nifty 50 spot price.                  Returns:             Current N, Get current India VIX value.                  Returns:             Current India, Get quotes for an option chain (multiple strikes).                  Args: (+21 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.1
-Nodes (28): ExitStrategy, Fixed85ExitStrategy, HybridExitStrategy, OriginalExitStrategy, Base class for different exit approaches., Current approach: 50% profit target only., Fixed 85% max profit booking., Hybrid approach:     1. Circuit breaker at 75% (hard stop)     2. ML-simulated a (+20 more)
+### Community 13 - "Community 13"
+Cohesion: 0.06
+Nodes (34): _budget_dates(), build_event_calendar(), _election_dates(), EventCalendar, MarketEvent, _monthly_expiry_dates(), NakedPositionError, ProductionGate (+26 more)
 
-### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (17): _d1(), _d2(), OptionGreeks, OptionPrice, price_option(), price_spread(), Black-Scholes option pricing model for estimating Nifty option premiums. Used in, Price a vertical spread (bull put or bear call). (+9 more)
-
-### Community 11 - "Community 11"
+### Community 14 - "Community 14"
 Cohesion: 0.05
 Nodes (41): Adding New Trades, Best Practices, Check Token Status, code:bash (python main.py --mode monitor), code:json ({), code:bash (python scripts/generate_fyers_token.py), code:bash (python scripts/refresh_fyers_token.py), code:bash (python scripts/diagnose_live_prices.py) (+33 more)
 
-### Community 12 - "Community 12"
-Cohesion: 0.07
-Nodes (32): _budget_dates(), build_event_calendar(), _election_dates(), EventCalendar, KillSwitchState, MarketEvent, _monthly_expiry_dates(), NakedPositionError (+24 more)
-
-### Community 13 - "Community 13"
-Cohesion: 0.08
-Nodes (21): CombinedResult, Weekly options backtesting engine.  Simplified engine for 3-8 DTE weekly Nifty o, WeeklyBacktestResult, WeeklyTradeResult, BaseStrategy, OptionType, BaseStrategy, generate_legs() (+13 more)
-
-### Community 14 - "Community 14"
-Cohesion: 0.07
-Nodes (12): BrokenWingButterflyStrategy, _nan(), PutCreditSpreadStrategy, Multi-strategy module: Iron Butterfly, Put Credit Spread, Broken Wing Butterfly,, Bull Put Credit Spread: Sell OTM put, buy further OTM put.     Single-direction,, Broken Wing Butterfly (Put side): Asymmetric risk.     Short 2x ATM puts, Long 1, Ratio Put Spread (1:2): Sell 1 ATM/slightly-OTM put, buy 2 far-OTM puts.      Th, RatioPutSpreadStrategy (+4 more)
-
 ### Community 15 - "Community 15"
 Cohesion: 0.08
-Nodes (25): _all_weekday_in_month(), _expiry_weekday(), get_all_expiries(), get_all_thursdays(), get_best_expiry_for_dte(), get_monthly_expiries(), get_monthly_expiry(), get_next_monthly_expiry() (+17 more)
+Nodes (23): Simulate a single trade from entry to exit., Run rolling simulations for all strategies and parameter variations., Weekly Trade Simulator — generates training samples for the weekly ML entry mode, Simulates overlapping weekly option trades for ML training data.      Entry on M, WeeklyRollingSimulator, WeeklySimTrade, ExitRecommendation, Analyze any multi-leg trade and recommend action.          Args:             liv (+15 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.05
@@ -338,688 +356,760 @@ Cohesion: 0.05
 Nodes (36): 1. Morning Routine (Before 9:15 AM) - REQUIRED, 2. Monitor Active Trades, 3. Generate Trade Signal, 4. Combined Signal (Monthly + Weekly), Add New Trade, Backtesting, Close Trade, code:bash (cd nifty-options-backtester) (+28 more)
 
 ### Community 20 - "Community 20"
+Cohesion: 0.09
+Nodes (16): CombinedBacktestEngine, Combined monthly + weekly options backtesting engine.  Runs both tracks concurre, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly. (+8 more)
+
+### Community 21 - "Community 21"
+Cohesion: 0.1
+Nodes (17): Print detailed per-regime training report., Factory: create TradeLearner for the active version., Train regime classifier + per-regime entry models.          Args:             tr, ML model that learns from multi-strategy backtests to predict: 1. WHEN to trade, Multi-strategy ML model that learns from regime-adaptive backtests.      Learns:, Train trade-quality filter on backtest results.          Key design changes from, Leakage-safe threshold sweep using out-of-fold scores only., Learn which features drive success for each strategy. (+9 more)
+
+### Community 22 - "Community 22"
 Cohesion: 0.06
 Nodes (35): Agent Automation, Backtesting, Backtesting & Analysis, CLI Modes, code:bash (git clone <repository-url>), code:bash (python scripts/generate_fyers_token.py), code:bash (python main.py --mode monitor), code:bash (python main.py --mode signal-combined) (+27 more)
 
-### Community 21 - "Community 21"
-Cohesion: 0.08
-Nodes (19): Simulate a single trade from entry to exit., Run rolling simulations for all strategies and parameter variations., Weekly Trade Simulator — generates training samples for the weekly ML entry mode, Simulates overlapping weekly option trades for ML training data.      Entry on M, WeeklyRollingSimulator, WeeklySimTrade, GapDistribution, GapRiskModel (+11 more)
-
-### Community 22 - "Community 22"
-Cohesion: 0.08
-Nodes (16): should_enter(), IronCondorStrategy, Iron Condor strategy with configurable parameters. Adapts strike selection based, Entry rules:         1. VIX must be above 14 (enough premium to collect), Exit rules:         1. Profit target reached (default 50% of max credit), Iron Condor: Sell OTM Call + Sell OTM Put, Buy further OTM Call + Put as hedges., Standalone put credit spread — used when call side is too risky     (e.g., stron, Calculate strike distance from spot based on VIX and DTE. (+8 more)
-
 ### Community 23 - "Community 23"
-Cohesion: 0.06
-Nodes (34): A: **NO. Use Fixed 85% instead.**, Bottom Line, code:python (if vix < 15:), code:python (def should_exit_monthly(trade, spot, vix, dte):), code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), Cost-Benefit Analysis, Detailed Results, Executive Summary (+26 more)
+Cohesion: 0.11
+Nodes (29): Rolling Window Trade Simulator — generates 1000+ training samples from 7 years o, Simulates overlapping trades across the full dataset.      For each entry date (, RollingWindowSimulator, SimConfig, WalkForwardWindow, WeeklySimConfig, _filter_trades_in_window(), LayeredEvolveArtifacts (+21 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.12
-Nodes (18): EntryDecision, _estimate_win_prob(), ExpirySelector, _min_short_distance_pct(), Multi-expiry strategy evaluator.  Instead of locking into a single target DTE, e, Penalise structures that are too asymmetric for the regime or too close     to s, Heuristic win probability based on strike distance, VIX, and DTE.     Not a repl, Composite score blending EV, tail risk, regime suitability, capital     efficien (+10 more)
+Cohesion: 0.09
+Nodes (14): Simulate a circuit breaker trigger with multi-asset stress., test_circuit_breaker_output(), Meta-strategy that selects the best sub-strategy based on current market regime., Propagate lot count change to all sub-strategies (for compounding)., Pre-select a strategy (typically from ML recommendation),         bypassing the, RegimeAdaptiveStrategy, A -16% 50d drawdown should NOT trigger the circuit breaker (threshold is -18%)., _calm_market() (+6 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.06
-Nodes (33): 1. Data Collection, 2. Enhanced Display, 3. Smart Layout, Backward Compatibility, Benefits, Bid-Ask Spread, code:block1 (LEGS:), code:block2 (LEGS:) (+25 more)
+Nodes (34): A: **NO. Use Fixed 85% instead.**, Bottom Line, code:python (if vix < 15:), code:python (def should_exit_monthly(trade, spot, vix, dte):), code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), Cost-Benefit Analysis, Detailed Results, Executive Summary (+26 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.12
-Nodes (18): EvolvedStrategy, load_from_cache(), Strategy Evolver — data-driven optimization of strategy parameters per market re, Run the full evolution pipeline with out-of-sample validation.          Optimiza, Save evolved strategies to disk for fast loading in signal mode., Convert evolved strategies to STRATEGY_CONFIGS format for RollingWindowSimulator, Compare evolved strategies against baseline (hand-tuned) configs., A strategy configuration discovered by the evolver. (+10 more)
+Cohesion: 0.14
+Nodes (16): IntEnum, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, validate_regime_classifier(), Regime Classifier: Labels each trading day into one of 4 regimes.  Regimes:   LO, ML-backed regime classifier with rule-based fallback.      Training: uses rule-b, Apply rule-based labels to entire dataset., Hard override: if VIX is in vol crush, never classify as HIGH_VOL or CRASH., Predict regime for a single row. Falls back to rules if ML unavailable. (+8 more)
 
 ### Community 27 - "Community 27"
-Cohesion: 0.1
-Nodes (17): EntryDecision, EntryDecisionEngine, EntryDecisionEngine — single authoritative entry gate shared by backtest, signal, Update the loss-streak counter after a trade closes., Used only if check() itself raises an unexpected exception., Result returned by EntryDecisionEngine.check()., Single authoritative entry gate used by backtest, signal, and monitor.      Inst, Run the full entry gate and return an EntryDecision.          Flow:           1. (+9 more)
+Cohesion: 0.06
+Nodes (33): 1. Data Collection, 2. Enhanced Display, 3. Smart Layout, Backward Compatibility, Benefits, Bid-Ask Spread, code:block1 (LEGS:), code:block2 (LEGS:) (+25 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.06
-Nodes (31): 1. **Capital Allocation (70/30 split)**, 2. **Monthly Track (70% Budget)**, 3. **Weekly Track (30% Budget)**, 4. **Cross-Track Risk Management**, Architecture, CLI Usage, code:bash (python main.py --mode backtest-combined                    #), code:block2 (Initial Capital: ₹500,000) (+23 more)
+Cohesion: 0.09
+Nodes (15): find_liquid_strikes(), GrowwOptionChainFetcher, NSEOptionChainFetcher, print_oi_analysis(), Live NSE Option Chain fetcher with OI analysis, liquidity scoring, and buildup d, Fetches option chain data with live NSE prices.      Strategy:       1. NSE allI, Hit NSE homepage to get session cookies., Fetch live spot/VIX from NSE allIndices (works reliably). (+7 more)
 
 ### Community 29 - "Community 29"
 Cohesion: 0.06
-Nodes (31): Best Risk-Adjusted Returns (Sharpe), code:block1 (Profit trajectory: ———— (linear decay up to max profit)), code:block2 (Profit trajectory: ∿∿∿∿ (oscillates as spot moves in range)), code:python (def should_exit(trade, spot, vix, dte, max_profit_per_unit):), Comparison: Weekly vs Monthly, Detailed Results, Executive Summary, Final Recommendations (+23 more)
+Nodes (31): 1. **Capital Allocation (70/30 split)**, 2. **Monthly Track (70% Budget)**, 3. **Weekly Track (30% Budget)**, 4. **Cross-Track Risk Management**, Architecture, CLI Usage, code:bash (python main.py --mode backtest-combined                    #), code:block2 (Initial Capital: ₹500,000) (+23 more)
 
 ### Community 30 - "Community 30"
+Cohesion: 0.06
+Nodes (31): Best Risk-Adjusted Returns (Sharpe), code:block1 (Profit trajectory: ———— (linear decay up to max profit)), code:block2 (Profit trajectory: ∿∿∿∿ (oscillates as spot moves in range)), code:python (def should_exit(trade, spot, vix, dte, max_profit_per_unit):), Comparison: Weekly vs Monthly, Detailed Results, Executive Summary, Final Recommendations (+23 more)
+
+### Community 31 - "Community 31"
 Cohesion: 0.14
 Nodes (6): _hash_snapshot(), MonthlyDiagnosticsCollector, Monthly-only trade funnel and exit attribution recorder., _safe_float(), _safe_float(), _render_markdown()
 
-### Community 31 - "Community 31"
-Cohesion: 0.11
-Nodes (12): CombinedBacktestEngine, Combined monthly + weekly options backtesting engine.  Runs both tracks concurre, Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly. (+4 more)
-
 ### Community 32 - "Community 32"
-Cohesion: 0.09
-Nodes (23): Source discovery helpers and adapters., Enrichment and sector proxy helpers., entry_date(), entry_vix(), evaluate_exit(), ExitDecision, _LegAdapter, legs() (+15 more)
+Cohesion: 0.1
+Nodes (26): _cached_parquet_paths(), crude(), _fetch_yfinance(), _load_best_cached_overlap(), _load_best_cached_series(), nifty(), _normalize_index(), Fetches and caches historical market data for backtesting. Sources: Yahoo Financ (+18 more)
 
 ### Community 33 - "Community 33"
+Cohesion: 0.12
+Nodes (16): EvolvedStrategy, load_from_cache(), Strategy Evolver — data-driven optimization of strategy parameters per market re, Run the full evolution pipeline with out-of-sample validation.          Optimiza, Save evolved strategies to disk for fast loading in signal mode., Convert evolved strategies to STRATEGY_CONFIGS format for RollingWindowSimulator, Compare evolved strategies against baseline (hand-tuned) configs., A strategy configuration discovered by the evolver. (+8 more)
+
+### Community 34 - "Community 34"
+Cohesion: 0.06
+Nodes (30): 6 Fixes Implemented, Backtest Verification, code:python (# OLD (per-unit %): pnl_pct = -50% at 1 lot and 20 lots (sam), code:python (# OLD (too loose for 21-45 DTE):), code:python (# OLD: monthly_max_risk_per_trade_pct: float = 20.0), code:python (if days_in_trade >= 10 and trade.total_pnl < 0:), code:block5 (tests/test_fixes.py::TestMonthlyStopLossRupeeScaling), code:block6 ([✓] Market data loads: 1236 trading days) (+22 more)
+
+### Community 35 - "Community 35"
 Cohesion: 0.06
 Nodes (30): code:block1 (Day 0: Entry (premium collected)), code:python (def should_exit_monthly_pcs(trade, max_profit_per_unit):), code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), Comparison Table, Conclusion, Decision Matrix, Detailed Results, Executive Summary (+22 more)
 
-### Community 34 - "Community 34"
-Cohesion: 0.11
-Nodes (21): main(), Test and validate Fyers API connection and data fetching., build_daily_sector_proxy(), main(), _build_engine(), _derive_root_cause(), _flatten_report(), main() (+13 more)
-
-### Community 35 - "Community 35"
-Cohesion: 0.11
-Nodes (15): Print detailed per-regime training report., Train regime classifier + per-regime entry models.          Args:             tr, ML model that learns from multi-strategy backtests to predict: 1. WHEN to trade, Multi-strategy ML model that learns from regime-adaptive backtests.      Learns:, Train trade-quality filter on backtest results.          Key design changes from, Leakage-safe threshold sweep using out-of-fold scores only., Learn which features drive success for each strategy., Build a regime x strategy performance matrix for ranking priors.          The ma (+7 more)
-
 ### Community 36 - "Community 36"
-Cohesion: 0.14
-Nodes (14): IntEnum, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, validate_regime_classifier(), Regime Classifier: Labels each trading day into one of 4 regimes.  Regimes:   LO, ML-backed regime classifier with rule-based fallback.      Training: uses rule-b, Apply rule-based labels to entire dataset., Hard override: if VIX is in vol crush, never classify as HIGH_VOL or CRASH., Predict regime for a single row. Falls back to rules if ML unavailable. (+6 more)
+Cohesion: 0.12
+Nodes (25): analyze_improvements(), determine_winner(), main(), print_comparison_table(), Test a single exit approach., Analyze improvements of each approach vs original., Determine which approach wins on different objectives., test_exit_approach() (+17 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.13
-Nodes (23): WeeklySimConfig, _filter_trades_in_window(), LayeredEvolveArtifacts, LayeredTrainStage, Layered evolve-time retraining pipeline.  This module keeps model training out o, Train monthly entry/exit models in staged walk-forward layers.      The strategy, run_layered_training(), _sample_stage_windows() (+15 more)
+Cohesion: 0.1
+Nodes (22): Source discovery helpers and adapters., Enrichment and sector proxy helpers., entry_date(), entry_vix(), evaluate_exit(), ExitDecision, _LegAdapter, legs() (+14 more)
 
 ### Community 38 - "Community 38"
-Cohesion: 0.11
-Nodes (25): Rolling Window Trade Simulator — generates 1000+ training samples from 7 years o, Simulates overlapping trades across the full dataset.      For each entry date (, RollingWindowSimulator, SimConfig, _generate_exit_snapshots(), permutation_test_entry_model(), permutation_test_exit_model(), permutation_test_weekly_entry() (+17 more)
+Cohesion: 0.12
+Nodes (15): EntryDecision, EntryDecisionEngine, EntryDecisionEngine — single authoritative entry gate shared by backtest, signal, Update the loss-streak counter after a trade closes., Used only if check() itself raises an unexpected exception., Result returned by EntryDecisionEngine.check()., Single authoritative entry gate used by backtest, signal, and monitor.      Inst, Run the full entry gate and return an EntryDecision.          Flow:           1. (+7 more)
 
 ### Community 39 - "Community 39"
 Cohesion: 0.12
-Nodes (25): _append_changelog_entry(), _build_strategy_breakdown(), _build_weekly_trade_stats(), _get_git_hash(), log_backtest_run(), main(), Return short git commit hash, or 'unknown' if not in a repo., Aggregate per-strategy stats from trade list. (+17 more)
+Nodes (24): analyze_verdict(), main(), print_comparison(), print_exit_distribution(), print_result(), Provide verdict on which approach is better., Print formatted backtest results., average_weekly_pnl() (+16 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.12
-Nodes (10): GrowwOptionChainFetcher, NSEOptionChainFetcher, Fetches option chain data with live NSE prices.      Strategy:       1. NSE allI, Hit NSE homepage to get session cookies., Fetch live spot/VIX from NSE allIndices (works reliably)., Find the closest expiry to the target date., Score each strike's liquidity (0-100)., Detect OI buildup patterns. (+2 more)
+Cohesion: 0.13
+Nodes (23): aggregate_reconstruction(), _aggregate_single_zip(), _aggregate_single_zip_star(), build_archive_month_index(), _clean_string_series(), _coerce_transaction_code(), expand_month_window(), iter_month_starts() (+15 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.13
-Nodes (24): _cached_parquet_paths(), crude(), _fetch_yfinance(), _load_best_cached_overlap(), _load_best_cached_series(), nifty(), _normalize_index(), Fetches and caches historical market data for backtesting. Sources: Yahoo Financ (+16 more)
-
-### Community 42 - "Community 42"
-Cohesion: 0.1
-Nodes (10): ConservativeFillModel, FillSnapshot, Execution/fill abstractions for separating theoretical marking from executable f, Keeps Black-Scholes as the theoretical mark, but worsens actual fills     throug, Train exit model using CAUSAL labels (no future information leakage).          T, iv_from_vix(), Estimate strike-level IV from VIX using an enhanced volatility smile model., Volatility skew: OTM puts have higher IV. (+2 more)
-
-### Community 43 - "Community 43"
-Cohesion: 0.14
-Nodes (17): Period-aware walk-forward model training and cache management., WalkForwardBundle, WalkForwardWindow, metadata_from_state(), ModelPeriodMetadata, Walk-forward validation for the weekly entry model (WeeklyEntryLearner).      Ex, walk_forward_weekly_entry_model(), cache_age_days() (+9 more)
-
-### Community 44 - "Community 44"
-Cohesion: 0.13
-Nodes (23): aggregate_reconstruction(), _aggregate_single_zip(), _aggregate_single_zip_star(), build_archive_month_index(), _clean_string_series(), _coerce_trade_date(), _coerce_transaction_code(), month_key_from_archive_record() (+15 more)
-
-### Community 45 - "Community 45"
 Cohesion: 0.08
 Nodes (25): Architecture Summary (for AI agents), code:block1 (main.py), DO NOT change these parameters (proven optimal via exhaustive testing):, Entry Model Evolution, Exit Model Evolution, Exit v1: Aggressive ML Expansion (REJECTED), Exit v2: Conservative ML Profit-Taking (REJECTED), Exit v3: Removed Profit Labels from Training (REJECTED) (+17 more)
 
-### Community 46 - "Community 46"
+### Community 42 - "Community 42"
 Cohesion: 0.08
 Nodes (25): Adjustment / Roll Framework, AGENTS.md — AI Codebase Guide, Architecture Overview, Black-Scholes as Historical Proxy, CLI Modes, code:block1 (main.py                    CLI entry point (10 modes)), code:block2 (Yahoo Finance (16 tickers: ^NSEI, ^INDIAVIX, BZ=F, INR=X, GC), code:block3 (For each (strategy, expiry) pair:) (+17 more)
 
+### Community 43 - "Community 43"
+Cohesion: 0.19
+Nodes (12): ABC, Fetch option chain with best available data.         target_expiry: "DD-Mon-YYYY, discover(), SourceAdapter, SourceMetadata, build_source_inventory(), FallbackThirdPartyAdapter, FYERSAdapter (+4 more)
+
+### Community 44 - "Community 44"
+Cohesion: 0.08
+Nodes (24): 1. Designed Systematic Fix Plan, 2. Implemented All 6 Fixes, 3. Created Regression Test Suite, 4. Ran Verification Backtest, 5. Created Documentation, Agent Handoff — Nifty Options Backtester Monthly Trading Fixes, code:bash (# Extend training date range to include more historical regi), code:bash (# Verify all fixes are in place) (+16 more)
+
+### Community 45 - "Community 45"
+Cohesion: 0.16
+Nodes (6): CDSLAdapter, parse_cdsl_archive_input(), raw_path(), write_bytes(), write_json(), write_text()
+
+### Community 46 - "Community 46"
+Cohesion: 0.08
+Nodes (23): Backtest Verification, Code Quality, code:python (# Before: if pnl_pct < -N (wrong unit space at scale)), code:python (# production_rules.py: KillSwitchState dataclass), code:python (# Before (weekly-calibrated):), code:python (# Before:), code:python (# config.py: two parameter changes), code:python (if days_in_trade >= 10 and trade.total_pnl < 0:) (+15 more)
+
 ### Community 47 - "Community 47"
 Cohesion: 0.15
-Nodes (17): add_trade(), add_trade_from_legs(), close_trade(), ClosedTradeRecord, _infer_strategy_code(), _is_supported_training_strategy(), load_active_trades(), load_actual_training_trades() (+9 more)
+Nodes (9): PositionSizer, Position sizing: margin-based compounding, vol-target, regime scaling, drawdown, Computes position size using margin/vol base with regime, drawdown,     and ML c, Size so portfolio annualised vol stays near target.          Uses exponential-de, Margin-based compounding (the original sizing logic)., PositionSizer with max_lots_cap=30 must allow up to 30 lots at high equity., Regression: old cap of 20 would have limited to 20., TestDrawdownIntegration (+1 more)
 
 ### Community 48 - "Community 48"
-Cohesion: 0.18
-Nodes (7): Thin compatibility wrapper — delegates entirely to EntryDecisionEngine., Adaptive exit using VIX-regime-based targets + trailing stop + ML override., Find the monthly expiry closest to target DTE, respecting the NSE Thursday→Monda, Execute the backtest., Enhanced backtest engine that uses the ML exit model for daily exit decisions., Execute backtest with ML-driven exit decisions., SmartBacktestEngine
-
-### Community 49 - "Community 49"
 Cohesion: 0.09
 Nodes (21): 1. Weekly 80% max-profit booking branch, 2. Post-routing threshold tweak, code:bash (PYTHONPATH=. ./.venv/bin/python main.py --mode backtest-comb), Current Default, Delta, Do Not Circle Back Without New Evidence, Engine A — Income Core (`weekly_pcs`), Engine B — Convex Booster (`weekly_ic`) (+13 more)
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.09
 Nodes (21): 1. Consistent Underperformance, 2. Score: 0/6 Metrics Improved, 3. Why It Doesn't Help, 4. Trade-by-Trade Impact, Approach Tested, Backtest Results, code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), code:block2 (Exit if: current_profit <= 0.80 * max_profit_seen) (+13 more)
 
-### Community 51 - "Community 51"
+### Community 50 - "Community 50"
 Cohesion: 0.09
 Nodes (21): 1. Hybrid Rules + ML Architecture, 2. Walk-Forward Validation, 3. Crash Detection (Two-Tier), 4. Black-Scholes as Historical Proxy, 5. Combined Strategy (Monthly + Weekly), Architecture Diagram, CLI Modes, code:block1 (main.py                    CLI entry point (10 modes)) (+13 more)
 
-### Community 52 - "Community 52"
-Cohesion: 0.16
-Nodes (8): Expanding-window retraining with period-aware caches.      Every OOS period uses, WalkForwardManager, _cache_path(), test_backtest_combined_uses_final_caches_only(), test_smart_engine_pending_entry_fills_next_bar(), test_walk_forward_bundle_is_strictly_oos(), test_walk_forward_cache_only_does_not_train_on_miss(), test_weekly_training_simulator_enters_next_bar()
+### Community 51 - "Community 51"
+Cohesion: 0.14
+Nodes (19): Print comprehensive comparison table., compare_strategies(), print_comparison(), print_final_summary(), Compare both exit priority approaches for PCS and IC., Print detailed comparison table., Current priority: ML first, then 85% rule.     This is what's already in the cod, Proposed priority: 85% rule first, then ML.          To implement this, we'll: (+11 more)
 
-### Community 53 - "Community 53"
+### Community 52 - "Community 52"
 Cohesion: 0.22
 Nodes (6): At VIX=23 with a monthly trade open, weekly should NOT be blocked (cap=25)., At VIX=26 with a monthly trade open, weekly must be blocked (cap=25)., BacktestEngine._get_expiry_date must delegate to expiry_calendar so that     pos, TestBacktestEngineExpiry, TestCombinedGateRelaxation, TestVixSimultaneousCap
 
-### Community 54 - "Community 54"
-Cohesion: 0.12
-Nodes (8): Regime-aware strategy selection., Route to global model's parameter prediction., Classify regime, then use global model (single-model architecture)., Recommend the best strategy for current conditions.         In hybrid mode, elig, Suggest optimal parameters based on conditions + macro., Extract features from a market data row.          Returns None if critical field, Score current market conditions as a trade-quality filter.          The model an, _DummyFeatureExtractor
+### Community 53 - "Community 53"
+Cohesion: 0.1
+Nodes (20): All Prior Fixes Verified, Backtest Results, Backtest Run Summary — 2026-05-18, Code Quality, code:block1 (Budget: Monthly 70% (₹350,000) + Weekly 30% (₹150,000)), code:bash ($ python3 -m pytest tests/test_fixes.py -q), Data Issues Fixed Today, Fix #7: Circuit Breaker Threshold (NEW) (+12 more)
 
-### Community 55 - "Community 55"
+### Community 54 - "Community 54"
 Cohesion: 0.12
 Nodes (10): BacktestReporter, Analysis and reporting module. Generates detailed reports, charts, and learnings, Print detailed trade-by-trade log., Extract actionable learnings from backtest results., Generates comprehensive reports from backtest results., Generate comprehensive HTML dashboard with all metrics., Year-by-year performance table., Summarize what each VIX regime means for trading. (+2 more)
 
+### Community 55 - "Community 55"
+Cohesion: 0.12
+Nodes (12): analyze_exit_logic(), Track which exit logic triggers in practice., BacktestConfig, test_backtest_combined_uses_final_caches_only(), test_smart_engine_pending_entry_fills_next_bar(), test_walk_forward_bundle_is_strictly_oos(), test_walk_forward_cache_only_does_not_train_on_miss(), VIX < 15: stop_loss = 50%. (+4 more)
+
 ### Community 56 - "Community 56"
+Cohesion: 0.21
+Nodes (7): Thin compatibility wrapper — delegates entirely to EntryDecisionEngine., Adaptive exit using VIX-regime-based targets + trailing stop + ML override., Find the monthly expiry closest to target DTE, respecting the NSE Thursday→Monda, Execute the backtest., Enhanced backtest engine that uses the ML exit model for daily exit decisions., Execute backtest with ML-driven exit decisions., SmartBacktestEngine
+
+### Community 57 - "Community 57"
 Cohesion: 0.22
 Nodes (6): _is_vol_crush(), label_regime_rules(), Rule-based regime labeling — used as ground truth for ML training.      NOTE: Th, Detect post-volatility-crush / mean reversion phase.      This is when VIX has d, TestLabelRegimeRules, TestVolCrush
 
-### Community 57 - "Community 57"
-Cohesion: 0.15
-Nodes (18): format_expiry_label(), get_upcoming_expiries(), Human-readable expiry label, e.g. '28 Apr 2026'., Next ``count`` *monthly* expiries with DTE info.     Weekday is Monday or Thursd, _expiry_matches(), _print_bs_fallback_trade(), _print_oi_guided_trade(), _print_strategy_bs_trade() (+10 more)
+### Community 58 - "Community 58"
+Cohesion: 0.16
+Nodes (13): WalkForwardBundle, Initialize Fyers client.                  Args:             client_id: Fyers App, Validate that the connection and authentication are working.                  Re, metadata_from_state(), ModelPeriodMetadata, cache_age_days(), load(), Regime-Aware Entry Model: trains separate TradeLearner per market regime.  Inste (+5 more)
 
 ### Community 59 - "Community 59"
-Cohesion: 0.17
-Nodes (17): average_weekly_pnl(), compute_correlation(), evaluate_decision_gate(), _fmt_currency(), _fmt_diff(), load_weekly_market_data(), main(), print_result() (+9 more)
-
-### Community 60 - "Community 60"
-Cohesion: 0.16
-Nodes (11): Price the current close-out debit for a multi-leg trade., Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, VIX-based strategy selection for weeklies., Calculate transaction costs for a trade., Execute weekly options backtest., Event-driven backtester for weekly options.      Key differences from SmartBackt, WeeklyBacktestEngine, get_weekly_expiry_in_range() (+3 more)
+Cohesion: 0.15
+Nodes (8): BrokenWingButterflyStrategy, Broken Wing Butterfly (Put side): Asymmetric risk.     Short 2x ATM puts, Long 1, BrokenWingButterflyStrategy previously hardcoded 'vix > 20' as its     ceiling,, TestBWBMaxVix, BWB accepts VIX between min_vix (18) and 20 — vix > 20 is blocked by should_ente, BWB blocks entry above max_vix (default 30)., BWB enters in the 22–30 VIX zone that the router routes to it., TestBrokenWingButterfly
 
 ### Community 61 - "Community 61"
-Cohesion: 0.14
-Nodes (9): MarketDataFetcher, Fetches and preprocesses all market data needed for backtesting., Merges all data sources into a single DataFrame for analysis., analyze_exit_logic(), Track which exit logic triggers in practice., FeatureExtractor.extract() must read 'overnight_gap_pct' (the column name     pr, The old stale column name must NOT be in the fixture data., TestFeatureExtractorGapColumn (+1 more)
+Cohesion: 0.23
+Nodes (16): Execute weekly options backtest., WeeklyTradeResult, build_tracker(), check_weekly_exit(), _legacy_exit_check(), Shared exit policy for weekly strategies.  The policy is deliberately runtime-sa, _redesigned_exit_check(), update_tracker() (+8 more)
 
 ### Community 62 - "Community 62"
-Cohesion: 0.12
-Nodes (15): find_liquid_strikes(), OptionChainSnapshot, print_oi_analysis(), Live NSE Option Chain fetcher with OI analysis, liquidity scoring, and buildup d, Find liquid strikes near a target area.     direction: "OTM" (out-of-money), "IT, Print detailed OI analysis around the spot price., StrikeData, _check_fyers_token_and_warn() (+7 more)
+Cohesion: 0.16
+Nodes (17): _generate_exit_snapshots(), permutation_test_entry_model(), permutation_test_exit_model(), permutation_test_weekly_entry(), Model Validation Suite — Walk-Forward Validation + Permutation Tests  Ensures ML, Score an entry model on a set of test trades., Run the complete production validation suite for ALL models:       1. Walk-forwa, Walk-forward validation for the exit model (ExitStrategyEngine).      Uses time- (+9 more)
 
 ### Community 63 - "Community 63"
-Cohesion: 0.23
-Nodes (12): Single shared function for multi-expiry optimisation.      Both ``SmartBacktestE, select_optimal_entry(), _DummyStrategy, _priced(), _put_spread(), Tests for the monthly expiry selector hard filters and no-trade handling., selector_patches(), test_high_loss_credit_candidate_is_rejected() (+4 more)
+Cohesion: 0.15
+Nodes (10): BacktestResult, Core backtesting engine. Iterates through historical data day-by-day, enters/exi, Aggregate results of a backtest run., Weekly options backtesting engine.  Simplified engine for 3-8 DTE weekly Nifty o, Price the current close-out debit for a multi-leg trade., Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, Calculate transaction costs for a trade., Event-driven backtester for weekly options.      Key differences from SmartBackt (+2 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.15
-Nodes (5): V1 Entry Model — GBM + RF Ensemble with binary win/loss labels.  This is the ORI, V1 predict: GBM + RF ensemble for win probability, regressor for         expecte, V1 multi-strategy ML model (GBM + RF ensemble).      Learns:     - WHEN to trade, Train v1 ensemble on backtest results.          Binary label: pnl > 0 → 1 (win),, TradeLearnerV1
+Cohesion: 0.18
+Nodes (5): Tests for strategies/base.py  Covers: - Leg P&L math (short vs long legs) - Trad, Naked short (no hedge) — max loss based on multiplier fallback., Naked short (no hedge) — max loss based on multiplier fallback., At entry, current_premium == entry_premium, so P&L should be zero., TestTrade
 
 ### Community 65 - "Community 65"
-Cohesion: 0.15
-Nodes (11): ActiveTrade, max_loss_total(), max_profit_total(), net_entry_credit(), A live trade with one or more legs., Return legs, converting from legacy format if needed., Group legs into spreads for max-loss calculation., Compute current P&L using Black-Scholes. (+3 more)
-
-### Community 66 - "Community 66"
 Cohesion: 0.33
 Nodes (15): append_records(), build_parser(), cmd_add(), cmd_decay(), cmd_mark(), cmd_render(), iso(), load_records() (+7 more)
 
-### Community 67 - "Community 67"
+### Community 66 - "Community 66"
 Cohesion: 0.2
 Nodes (13): main(), test_canonicalize_adds_required_columns(), test_net_consistency_flags_mismatch(), test_quality_report_detects_duplicate(), build_quality_report(), coverage_by_year(), detect_missing_dates(), detect_missing_months() (+5 more)
 
+### Community 67 - "Community 67"
+Cohesion: 0.17
+Nodes (4): V1 Entry Model — GBM + RF Ensemble with binary win/loss labels.  This is the ORI, V1 predict: GBM + RF ensemble for win probability, regressor for         expecte, V1 multi-strategy ML model (GBM + RF ensemble).      Learns:     - WHEN to trade, TradeLearnerV1
+
 ### Community 68 - "Community 68"
-Cohesion: 0.27
-Nodes (14): build_tracker(), check_weekly_exit(), _legacy_exit_check(), Shared exit policy for weekly strategies.  The policy is deliberately runtime-sa, _redesigned_exit_check(), update_tracker(), WeeklyExitTracker, _ic_trade() (+6 more)
+Cohesion: 0.18
+Nodes (10): close_trade(), ClosedTradeRecord, _infer_strategy_code(), _is_supported_training_strategy(), load_actual_training_trades(), load_closed_trades(), Active Trade Monitor & Exit Strategy Engine.  Supports ANY multi-leg options str, Archived realized trade used for actual-trade training inputs. (+2 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.18
-Nodes (14): Print comprehensive comparison table., Print detailed comparison table., Print side-by-side comparison with difference analysis., add_max_profit_tracking_to_engine(), add_max_profit_tracking_to_strategy(), main(), print_comparison(), Print side-by-side comparison. (+6 more)
+Cohesion: 0.12
+Nodes (15): Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats, Key Metrics, Key Metrics, Key Metrics (+7 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.21
-Nodes (4): Naked short (no hedge) — max loss based on multiplier fallback., Naked short (no hedge) — max loss based on multiplier fallback., At entry, current_premium == entry_premium, so P&L should be zero., TestTrade
+Cohesion: 0.14
+Nodes (6): Transparent record of how lot count was determined., SizingDecision, Tests for backtester/position_sizer.py  Covers: - Cold start (few trades): margi, With < 20 recorded trades, vol targeting can't estimate vol., TestColdStart, TestRegimeFromVix
 
 ### Community 71 - "Community 71"
-Cohesion: 0.22
-Nodes (12): _drawdown_scale(), Determine position size.          Parameters         ----------         equity, Config-aware drawdown scaling with the same band structure., Progressive de-risking based on portfolio drawdown percentage (0-1)., _regime_from_vix(), main(), _per_strategy_metrics(), _regime_from_vix() (+4 more)
+Cohesion: 0.18
+Nodes (4): Extract features from a market data row.          Returns None if critical field, FeatureExtractor.extract() must read 'overnight_gap_pct' (the column name     pr, The old stale column name must NOT be in the fixture data., TestFeatureExtractor
 
 ### Community 72 - "Community 72"
+Cohesion: 0.27
+Nodes (4): Period-aware walk-forward model training and cache management., Expanding-window retraining with period-aware caches.      Every OOS period uses, WalkForwardManager, _cache_path()
+
+### Community 73 - "Community 73"
 Cohesion: 0.13
 Nodes (14): Backtest Improvement Log, Cumulative Trajectory, Decision Lock — Weekly Exit Redesign (2026-04-17), Diagnosis, Engine Stats, Intermediate Run — Iron fly removed, diagonal still active, Key Metrics, Pending Investigations / Future Runs (+6 more)
 
-### Community 73 - "Community 73"
+### Community 74 - "Community 74"
+Cohesion: 0.14
+Nodes (8): Store trade result with the equity at the time of entry for vol-target., Stores a trade's P&L and the equity at entry for accurate return calc., _TradeReturn, Below _VOL_WARMUP trades → margin fallback., After _VOL_WARMUP trades, vol targeting kicks in., Volatile returns → smaller vol-target base lots., Vol-target uses equity_at_entry (not current equity) for return calc., TestVolTargeting
+
+### Community 75 - "Community 75"
+Cohesion: 0.15
+Nodes (7): Regime-aware strategy selection., Route to global model's parameter prediction., Classify regime, then use global model (single-model architecture)., Recommend the best strategy for current conditions.         In hybrid mode, elig, Suggest optimal parameters based on conditions + macro., Compute a bounded multiplicative prior from historical regime stats.          Th, Score current market conditions as a trade-quality filter.          The model an
+
+### Community 76 - "Community 76"
+Cohesion: 0.22
+Nodes (8): Walk-forward validation for the weekly entry model (WeeklyEntryLearner).      Ex, walk_forward_weekly_entry_model(), Weekly Entry Learner — lightweight ML quality gate for short-DTE weekly options., Extract features specific to short-DTE weekly trades., ML quality gate for weekly option entries.      Trained on simulated weekly trad, _sf(), WeeklyEntryLearner, test_weekly_entry_cache_requires_matching_period_metadata()
+
+### Community 77 - "Community 77"
+Cohesion: 0.2
+Nodes (13): Agent Memory, Graphify, May 12, 2026, May 13, 2026, May 17, 2026, May 18, 2026, Memory Context, [nifty-options-backtester] recent context, 2026-05-12 5:52pm UTC (+5 more)
+
+### Community 78 - "Community 78"
 Cohesion: 0.14
 Nodes (13): Analysis & Results, Architecture, code:block1 (docs/), Contributing, Document Structure, Documentation Index, External Resources, Fyers Integration (+5 more)
 
-### Community 74 - "Community 74"
-Cohesion: 0.18
-Nodes (7): CostModel, Volatility and moneyness-scaled slippage (v4)., Estimate total round-trip cost for a trade., Cost as percentage of credit collected., India options transaction cost model (per-leg, per-unit costs)., v4: Stress test — replay crisis periods with conservative fills., run_stress_test()
+### Community 79 - "Community 79"
+Cohesion: 0.21
+Nodes (3): CheckpointRecord, CheckpointStore, PipelinePaths
 
-### Community 75 - "Community 75"
-Cohesion: 0.22
-Nodes (5): Factory: create TradeLearner for the active version., Predict quality score for a weekly entry candidate.          Returns quality_sco, _DummyRegressor, Tests for models/regime_classifier.py and models/trade_learner.py  Covers: - Rul, TestTradeLearnerNoTrade
-
-### Community 76 - "Community 76"
+### Community 80 - "Community 80"
 Cohesion: 0.15
 Nodes (12): Agent Workflow, CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:bash (python main.py --mode evolve              # Grid-search para), code:block2 (tests/conftest.py          — Shared fixtures: synthetic 200-), Data Flow (5 Steps), Key Constants, Key Gotchas (+4 more)
 
-### Community 77 - "Community 77"
+### Community 81 - "Community 81"
 Cohesion: 0.18
-Nodes (9): BacktestEngine, BacktestResult, Core backtesting engine. Iterates through historical data day-by-day, enters/exi, Event-driven backtesting engine.     Steps through each trading day, checks entr, Aggregate results of a backtest run., compare_with_without(), Compare results with and without max profit booking., Verify the 85% max profit booking is working. (+1 more)
+Nodes (8): parse_leg(), Compute current P&L using Black-Scholes., A single leg of an options trade., Negative for sells (credit), positive for buys (debit)., Parse: "SELL 21500 PE 130 @ 361.95", TradeLeg, current_value(), entry_value()
 
-### Community 78 - "Community 78"
+### Community 82 - "Community 82"
 Cohesion: 0.17
 Nodes (11): Adding New Tools, code:bash (python -m tools.comparison.compare_exit_strategies), code:bash (python -m tools.debug.debug_exit_logic), code:bash (python -m tools.validation.main_validate), code:bash (# From project root), comparison/, debug/, Running Tools (+3 more)
 
-### Community 79 - "Community 79"
+### Community 83 - "Community 83"
+Cohesion: 0.27
+Nodes (6): canonicalize(), _build_official_reconstructed_frame(), _cache_path_for_record(), _find_profile(), _load_or_fetch_zip(), main()
+
+### Community 84 - "Community 84"
+Cohesion: 0.18
+Nodes (6): build_daily_sector_proxy(), main(), main(), main(), main(), write_dataframe_outputs()
+
+### Community 85 - "Community 85"
+Cohesion: 0.22
+Nodes (5): CostModel, Volatility and moneyness-scaled slippage (v4)., Estimate total round-trip cost for a trade., Cost as percentage of credit collected., India options transaction cost model (per-leg, per-unit costs).
+
+### Community 86 - "Community 86"
 Cohesion: 0.18
 Nodes (10): 1. No position sizer (Runs #1-#5), 2. Kelly Fraction as absolute lot count (Run #6, then reverted), 3. Kelly as multiplicative scale factor (Run #6 fix attempt), 4. Simplified sizer with confidence tier (Run #7 — CURRENT DEFAULT), Approaches Tried & Retired, code:block1 (final_lots = base_lots × regime_scale × dd_scale × confidenc), Configuration That Should NOT Be Changed Without Evidence, Current Default (as of Run #7, 2026-04-08) (+2 more)
 
-### Community 80 - "Community 80"
+### Community 87 - "Community 87"
+Cohesion: 0.24
+Nodes (4): _coerce_parenthesized_number(), _extract_cdsl_equity_subtotal(), _extract_cdsl_trade_date(), _read_excel_like_tables()
+
+### Community 89 - "Community 89"
 Cohesion: 0.2
 Nodes (3): market_data.py must now produce em_return_20d, china_return_5d,     china_return, conftest already produces em_etf / hang_seng / europe raw prices., TestCrossGeoFeatures
 
-### Community 81 - "Community 81"
-Cohesion: 0.24
-Nodes (9): Agent Memory, Graphify, May 12, 2026, May 13, 2026, Memory Context, [nifty-options-backtester] recent context, 2026-05-12 5:52pm UTC, [nifty-options-backtester] recent context, 2026-05-13 5:10am UTC, [nifty-options-backtester] recent context, 2026-05-13 5:11am UTC (+1 more)
+### Community 90 - "Community 90"
+Cohesion: 0.29
+Nodes (9): ActiveTrade, add_trade(), add_trade_from_legs(), load_active_trades(), A live trade with one or more legs., Add a multi-leg trade from --leg format strings., Legacy: add a single-spread trade., remove_trade() (+1 more)
 
-### Community 82 - "Community 82"
-Cohesion: 0.2
-Nodes (9): Engine Stats, Engine Stats, Engine Stats, Key Metrics, Key Metrics, Key Metrics, Run #20 — cache-only-verify, Run #3 — [COMBINED] (+1 more)
+### Community 91 - "Community 91"
+Cohesion: 0.22
+Nodes (8): strategy_name(), max_loss_total(), max_profit_total(), net_entry_credit(), Return legs, converting from legacy format if needed., Group legs into spreads for max-loss calculation., strategy_name(), total_qty()
 
-### Community 83 - "Community 83"
+### Community 92 - "Community 92"
 Cohesion: 0.2
 Nodes (10): `backtester/engine.py` — Multi-expiry architecture fix, Changes Made, Files Modified, Key Learnings, Result, Run #2 — Fix: Remove iron fly, restrict diagonal, fix engine flow, `strategies/expiry_selector.py` — Performance-aware scoring, `strategies/multi_strategy.py` — Strategy eligibility cleanup (+2 more)
 
-### Community 84 - "Community 84"
-Cohesion: 0.36
-Nodes (8): expand_month_window(), iter_month_starts(), _build_official_reconstructed_frame(), _cache_path_for_record(), _find_profile(), _load_or_fetch_zip(), main(), test_iter_month_starts_and_window_expansion()
-
-### Community 85 - "Community 85"
+### Community 93 - "Community 93"
 Cohesion: 0.33
-Nodes (8): analyze_improvements(), determine_winner(), main(), print_comparison_table(), Test a single exit approach., Analyze improvements of each approach vs original., Determine which approach wins on different objectives., test_exit_approach()
+Nodes (8): add_max_profit_tracking_to_engine(), add_max_profit_tracking_to_strategy(), main(), print_comparison(), Dynamically add 80% max profit booking to should_exit method., Add max profit tracking to the backtest engine., add_max_profit_booking_to_strategy(), Decorator to add max profit booking to any strategy.          Usage:         str
 
-### Community 86 - "Community 86"
-Cohesion: 0.33
-Nodes (8): compare_strategies(), print_comparison(), print_final_summary(), Compare both exit priority approaches for PCS and IC., Current priority: ML first, then 85% rule.     This is what's already in the cod, Proposed priority: 85% rule first, then ML.          To implement this, we'll:, run_backtest_current_priority(), run_backtest_proposed_priority()
+### Community 94 - "Community 94"
+Cohesion: 0.44
+Nodes (8): _regime_from_vix(), main(), _per_strategy_metrics(), _regime_from_vix(), _regime_matrix(), run_variant(), _trade_rows(), _variant_configs()
 
-### Community 87 - "Community 87"
-Cohesion: 0.22
-Nodes (3): crude_inr_composite, dxy_crude_composite, vix_premium_over_us, and     fii_flow_, Invoke just the derived-feature section of build_combined_dataset., TestCompositeFeatures
-
-### Community 88 - "Community 88"
-Cohesion: 0.25
-Nodes (7): parse_leg(), A single leg of an options trade., Negative for sells (credit), positive for buys (debit)., Parse: "SELL 21500 PE 130 @ 361.95", TradeLeg, current_value(), entry_value()
-
-### Community 89 - "Community 89"
+### Community 96 - "Community 96"
 Cohesion: 0.22
 Nodes (8): cdsl, fallback_third_party, fyers, nsdl_latest, nse_current, sebi_fpi_statistics, Source Inventory, third_party_moneycontrol
 
-### Community 90 - "Community 90"
+### Community 97 - "Community 97"
 Cohesion: 0.22
 Nodes (8): Coverage By Year, Data Quality Report, Duplicate Rows, Missing Dates, Missing Months, Net Mismatches, Summary, Suspicious Spikes
 
-### Community 91 - "Community 91"
+### Community 98 - "Community 98"
 Cohesion: 0.25
 Nodes (8): find_best_iron_condor_strikes(), Find the best liquid strikes for an Iron Condor.     Returns actual market price, _print_leg_details(), _print_live_trade(), _print_trade_summary(), Print trade using actual live prices from option chain., Print leg details with live data., Print trade summary, breakevens, and warnings.
 
-### Community 92 - "Community 92"
-Cohesion: 0.39
-Nodes (7): analyze_verdict(), main(), print_comparison(), print_exit_distribution(), print_result(), Provide verdict on which approach is better., Print formatted backtest results.
-
-### Community 94 - "Community 94"
+### Community 99 - "Community 99"
 Cohesion: 0.39
 Nodes (3): _confidence_scale(), Coarse 3-tier scaler from ML entry model's calibrated quality score.      Calibr, TestConfidenceScale
 
-### Community 95 - "Community 95"
+### Community 102 - "Community 102"
+Cohesion: 0.29
+Nodes (5): _drawdown_scale(), Determine position size.          Parameters         ----------         equity, Resolve regime scaling from config when present.          This keeps the default, Config-aware drawdown scaling with the same band structure., Progressive de-risking based on portfolio drawdown percentage (0-1).
+
+### Community 103 - "Community 103"
+Cohesion: 0.29
+Nodes (3): VIX-based strategy selection for weeklies., Return a shortlist of regime-appropriate strategies. The circuit breaker, Select best strategy for current regime.          Minimal black-swan circuit bre
+
+### Community 104 - "Community 104"
+Cohesion: 0.25
+Nodes (5): Verify new tighter stop-loss thresholds: 50/45/40/35 instead of 80/65/55/45., VIX 15-20: stop_loss = 45%., VIX 20-30: stop_loss = 40%., VIX >= 30: stop_loss = 35%., TestMonthlyStopLossThresholds
+
+### Community 105 - "Community 105"
 Cohesion: 0.25
 Nodes (8): Changes from Run #2, Engine Stats, Files Modified, Key Learnings, Key Metrics, New Feature Importance (CRASH regime), Run #3 — bear_call removed + 12 strategy features, Strategy Breakdown
 
-### Community 96 - "Community 96"
+### Community 106 - "Community 106"
+Cohesion: 0.33
+Nodes (5): _coerce_trade_date(), _safe_trade_date(), cell_column(), excel_serial_to_date(), iter_xlsx_rows()
+
+### Community 108 - "Community 108"
+Cohesion: 0.29
+Nodes (6): Test with moderate stress (only 2-3 assets stressed)., Test with only one extreme factor (deep correction only)., Test with low stress (all assets normal)., test_low_stress(), test_moderate_stress(), test_single_factor_extreme()
+
+### Community 109 - "Community 109"
 Cohesion: 0.43
 Nodes (4): build(), _normalize_value(), Helpers for period-aware model caches and strict out-of-sample guards., stable_config_hash()
 
-### Community 98 - "Community 98"
-Cohesion: 0.29
-Nodes (7): code:block5 (Date: 2020-01-06), code:block6 (Date: 2020-04-22), code:block7 (Date: 2020-07-03), Example 1: Small Profit Erosion, Example 2: Moderate Profit Erosion, Example 3: Significant Profit Erosion, Trade Examples: 85% Rule in Action
-
-### Community 99 - "Community 99"
-Cohesion: 0.29
-Nodes (6): Executive Summary, Exit Priority Comparison: Findings & Recommendation, Final Verdict, Iron Condor, Put Credit Spread, Results: ZERO DIFFERENCE
-
-### Community 100 - "Community 100"
+### Community 110 - "Community 110"
 Cohesion: 0.29
 Nodes (7): Actual Exit Attribution (Put Credit Spread, 20 trades), code:block1 (Daily Check Cycle:), code:block2 (Total Exit Checks: 62 (avg 3.1 checks per trade)), code:block3 (Trade Entry: Rs.67.01 credit), Exit Logic Flow (Per Trade), Key Finding: They Work in Tandem!, Why Zero Difference? Deep Dive Analysis
 
-### Community 101 - "Community 101"
-Cohesion: 0.53
-Nodes (5): main(), print_combined_result(), print_comparison(), Run budget split sensitivity experiments., _run_sensitivity()
+### Community 111 - "Community 111"
+Cohesion: 0.29
+Nodes (6): Executive Summary, Exit Priority Comparison: Findings & Recommendation, Final Verdict, Iron Condor, Put Credit Spread, Results: ZERO DIFFERENCE
 
-### Community 102 - "Community 102"
+### Community 112 - "Community 112"
+Cohesion: 0.29
+Nodes (7): code:block5 (Date: 2020-01-06), code:block6 (Date: 2020-04-22), code:block7 (Date: 2020-07-03), Example 1: Small Profit Erosion, Example 2: Moderate Profit Erosion, Example 3: Significant Profit Erosion, Trade Examples: 85% Rule in Action
+
+### Community 113 - "Community 113"
 Cohesion: 0.53
 Nodes (5): summarize_codes(), build_reconciliation_report(), main(), parse_official_daily_xls(), _rmse()
 
-### Community 103 - "Community 103"
+### Community 114 - "Community 114"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #37 — 10y-performance-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
-### Community 104 - "Community 104"
+### Community 115 - "Community 115"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #18 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #36 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
-### Community 105 - "Community 105"
+### Community 116 - "Community 116"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #21 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #35 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
-### Community 106 - "Community 106"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 107 - "Community 107"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 108 - "Community 108"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #26 — cache-fallback-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 109 - "Community 109"
+### Community 117 - "Community 117"
 Cohesion: 0.33
 Nodes (6): Engine Stats, Key Metrics, Run #24 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
-### Community 110 - "Community 110"
+### Community 118 - "Community 118"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #21 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 119 - "Community 119"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #26 — cache-fallback-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 120 - "Community 120"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #34 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 121 - "Community 121"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 122 - "Community 122"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 123 - "Community 123"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #18 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 124 - "Community 124"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 125 - "Community 125"
 Cohesion: 0.33
 Nodes (5): Best Current Profile, CDSL ZIP Reconstruction Report, Code Summary, Conclusion, Reconstruction Profiles
 
-### Community 111 - "Community 111"
+### Community 126 - "Community 126"
 Cohesion: 0.33
 Nodes (5): Backtest Integrity Remediation, Bias Removed, Expected Metric Drift, Remaining Realism Gaps, What Changed
 
-### Community 112 - "Community 112"
+### Community 127 - "Community 127"
 Cohesion: 0.4
 Nodes (4): Agent Memory, Current Active Memories, graphify-output-can-drift-without-committed-hooks, Workflow
 
-### Community 113 - "Community 113"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #12 — v1: GBM+RF ensemble, binary labels, all features, Strategy Breakdown
-
-### Community 114 - "Community 114"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #39, Strategy Breakdown
-
-### Community 115 - "Community 115"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #40 — v4.6 — BWB removed, PCS takes over high-VIX band, Strategy Breakdown
-
-### Community 116 - "Community 116"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #19 — v2-r7: PCS quality floor=0.60, regime gates, cooldown=2d, streak throttle, Strategy Breakdown
-
-### Community 117 - "Community 117"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #53, Strategy Breakdown
-
-### Community 118 - "Community 118"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #20, Strategy Breakdown
-
-### Community 119 - "Community 119"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #47, Strategy Breakdown
-
-### Community 120 - "Community 120"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #45, Strategy Breakdown
-
-### Community 121 - "Community 121"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #42, Strategy Breakdown
-
-### Community 122 - "Community 122"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #11 — v2_tuned-r3: fix confidence sizing (0.80/1.0/1.2), AUC gate=0.53, Strategy Breakdown
-
-### Community 123 - "Community 123"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #55, Strategy Breakdown
-
-### Community 124 - "Community 124"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #50, Strategy Breakdown
-
-### Community 125 - "Community 125"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #33 — v4.3 — conc 62%/18 (reverted), calendar VIX<22 kept, Strategy Breakdown
-
-### Community 126 - "Community 126"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #18 — v2-r6: deprioritize PCS in recommendation, regime gates, cooldown=2d, Strategy Breakdown
-
-### Community 127 - "Community 127"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #9 — v2_tuned: stricter threshold (0.58) + PCS penalty + regime AUC gate + 50th pctl labels, Strategy Breakdown
-
 ### Community 128 - "Community 128"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #51 — v4-final-cleanup-verify, Strategy Breakdown
-
-### Community 129 - "Community 129"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #13 — v2-consolidated: regime thresholds, 3d cooldown, loss-streak throttle, PCS=0.45, Strategy Breakdown
-
-### Community 130 - "Community 130"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #22 — v3 baseline — cost-adjusted + iron condor + MTM, Strategy Breakdown
-
-### Community 131 - "Community 131"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #49, Strategy Breakdown
 
-### Community 132 - "Community 132"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #36, Strategy Breakdown
-
-### Community 133 - "Community 133"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #44, Strategy Breakdown
-
-### Community 134 - "Community 134"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #32, Strategy Breakdown
-
-### Community 135 - "Community 135"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #28, Strategy Breakdown
-
-### Community 136 - "Community 136"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #46, Strategy Breakdown
-
-### Community 137 - "Community 137"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #25, Strategy Breakdown
-
-### Community 138 - "Community 138"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #14 — v2-r2: regime gates(0.53-0.56), cooldown=2d, streak=3L+0.03, AUC_min=0.52, Strategy Breakdown
-
-### Community 139 - "Community 139"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #16 — v2-r4: PCS_penalty=0.25, regime gates, cooldown=2d, streak=3L, Strategy Breakdown
-
-### Community 140 - "Community 140"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #29 — v4.1 — RPS removed, caps relaxed 62%/6K/60K, starvation guard, BWB<20, Strategy Breakdown
-
-### Community 141 - "Community 141"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #34, Strategy Breakdown
-
-### Community 142 - "Community 142"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #52, Strategy Breakdown
-
-### Community 143 - "Community 143"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #15 — v2-r3: block neg-PnL strategies, regime gates, cooldown=2d, AUC_min=0.52, Strategy Breakdown
-
-### Community 144 - "Community 144"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #56, Strategy Breakdown
-
-### Community 145 - "Community 145"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #48, Strategy Breakdown
-
-### Community 146 - "Community 146"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #41 — v4.1-FINAL — production version after 6 iteration attempts, Strategy Breakdown
-
-### Community 147 - "Community 147"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #37, Strategy Breakdown
-
-### Community 148 - "Community 148"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #23, Strategy Breakdown
-
-### Community 149 - "Community 149"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #30, Strategy Breakdown
-
-### Community 150 - "Community 150"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #43, Strategy Breakdown
-
-### Community 151 - "Community 151"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #6, Strategy Breakdown
-
-### Community 152 - "Community 152"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #21, Strategy Breakdown
-
-### Community 153 - "Community 153"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #35 — v4.4 — v4.1 base + quality threshold 0.46 (was 0.48), Strategy Breakdown
-
-### Community 154 - "Community 154"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #7, Strategy Breakdown
-
-### Community 155 - "Community 155"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #5, Strategy Breakdown
-
-### Community 156 - "Community 156"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #8 — v2 quality-filter: calibrated GBM + feature pruning + percentile labels, Strategy Breakdown
-
-### Community 157 - "Community 157"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #38 — v4.5 — threshold 0.46 (fixed in main.py + trade_learner), Strategy Breakdown
-
-### Community 158 - "Community 158"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #26 — v4 — walk-forward + Greeks caps + normalized exits + PCS tilt, Strategy Breakdown
-
-### Community 159 - "Community 159"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #54 — with-85%-max-profit-rule, Strategy Breakdown
-
-### Community 160 - "Community 160"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #17 — v2-r5: ranked fallback, PCS=0.25, regime gates, cooldown=2d, Strategy Breakdown
-
-### Community 161 - "Community 161"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #10 — v2_tuned-r2: threshold=0.52, pctl=45, PCS=0.60, AUC_gate=0.54, feats=20, Strategy Breakdown
-
-### Community 162 - "Community 162"
+### Community 129 - "Community 129"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #24, Strategy Breakdown
 
-### Community 163 - "Community 163"
+### Community 130 - "Community 130"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #32, Strategy Breakdown
+
+### Community 131 - "Community 131"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #55, Strategy Breakdown
+
+### Community 132 - "Community 132"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #47, Strategy Breakdown
+
+### Community 133 - "Community 133"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #31 — v4.2 — conc 68%/15, calendar VIX<22, vol_exp 1.05, Strategy Breakdown
 
-### Community 164 - "Community 164"
+### Community 134 - "Community 134"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #12 — v1: GBM+RF ensemble, binary labels, all features, Strategy Breakdown
+
+### Community 135 - "Community 135"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #43, Strategy Breakdown
+
+### Community 136 - "Community 136"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #41 — v4.1-FINAL — production version after 6 iteration attempts, Strategy Breakdown
+
+### Community 137 - "Community 137"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #38 — v4.5 — threshold 0.46 (fixed in main.py + trade_learner), Strategy Breakdown
+
+### Community 138 - "Community 138"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #27, Strategy Breakdown
 
+### Community 139 - "Community 139"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #14 — v2-r2: regime gates(0.53-0.56), cooldown=2d, streak=3L+0.03, AUC_min=0.52, Strategy Breakdown
+
+### Community 140 - "Community 140"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #15 — v2-r3: block neg-PnL strategies, regime gates, cooldown=2d, AUC_min=0.52, Strategy Breakdown
+
+### Community 141 - "Community 141"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #25, Strategy Breakdown
+
+### Community 142 - "Community 142"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #54 — with-85%-max-profit-rule, Strategy Breakdown
+
+### Community 143 - "Community 143"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #56, Strategy Breakdown
+
+### Community 144 - "Community 144"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #52, Strategy Breakdown
+
+### Community 145 - "Community 145"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #23, Strategy Breakdown
+
+### Community 146 - "Community 146"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #8 — v2 quality-filter: calibrated GBM + feature pruning + percentile labels, Strategy Breakdown
+
+### Community 147 - "Community 147"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #20, Strategy Breakdown
+
+### Community 148 - "Community 148"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #16 — v2-r4: PCS_penalty=0.25, regime gates, cooldown=2d, streak=3L, Strategy Breakdown
+
+### Community 149 - "Community 149"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #48, Strategy Breakdown
+
+### Community 150 - "Community 150"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #6, Strategy Breakdown
+
+### Community 151 - "Community 151"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #5, Strategy Breakdown
+
+### Community 152 - "Community 152"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #26 — v4 — walk-forward + Greeks caps + normalized exits + PCS tilt, Strategy Breakdown
+
+### Community 153 - "Community 153"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #51 — v4-final-cleanup-verify, Strategy Breakdown
+
+### Community 154 - "Community 154"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #34, Strategy Breakdown
+
+### Community 155 - "Community 155"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #9 — v2_tuned: stricter threshold (0.58) + PCS penalty + regime AUC gate + 50th pctl labels, Strategy Breakdown
+
+### Community 156 - "Community 156"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #17 — v2-r5: ranked fallback, PCS=0.25, regime gates, cooldown=2d, Strategy Breakdown
+
+### Community 157 - "Community 157"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #42, Strategy Breakdown
+
+### Community 158 - "Community 158"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #10 — v2_tuned-r2: threshold=0.52, pctl=45, PCS=0.60, AUC_gate=0.54, feats=20, Strategy Breakdown
+
+### Community 159 - "Community 159"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #29 — v4.1 — RPS removed, caps relaxed 62%/6K/60K, starvation guard, BWB<20, Strategy Breakdown
+
+### Community 160 - "Community 160"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #44, Strategy Breakdown
+
+### Community 161 - "Community 161"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #18 — v2-r6: deprioritize PCS in recommendation, regime gates, cooldown=2d, Strategy Breakdown
+
+### Community 162 - "Community 162"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #11 — v2_tuned-r3: fix confidence sizing (0.80/1.0/1.2), AUC gate=0.53, Strategy Breakdown
+
+### Community 163 - "Community 163"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #21, Strategy Breakdown
+
+### Community 164 - "Community 164"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #30, Strategy Breakdown
+
 ### Community 165 - "Community 165"
 Cohesion: 0.4
-Nodes (5): code:python (# In engine.py), Implementation Summary, What NOT to Do, What to Keep (Current Code), What to Monitor
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #22 — v3 baseline — cost-adjusted + iron condor + MTM, Strategy Breakdown
 
 ### Community 166 - "Community 166"
 Cohesion: 0.4
-Nodes (5): Appendix: Full Test Results, code:block10 (PROFIT_TARGET:   12 trades (60%)), Conclusion, Exit Reason Breakdown (PCS), Test Configuration
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #39, Strategy Breakdown
+
+### Community 167 - "Community 167"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #35 — v4.4 — v4.1 base + quality threshold 0.46 (was 0.48), Strategy Breakdown
+
+### Community 168 - "Community 168"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #45, Strategy Breakdown
 
 ### Community 169 - "Community 169"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #50, Strategy Breakdown
+
+### Community 170 - "Community 170"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #19 — v2-r7: PCS quality floor=0.60, regime gates, cooldown=2d, streak throttle, Strategy Breakdown
+
+### Community 171 - "Community 171"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #40 — v4.6 — BWB removed, PCS takes over high-VIX band, Strategy Breakdown
+
+### Community 172 - "Community 172"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #37, Strategy Breakdown
+
+### Community 173 - "Community 173"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #53, Strategy Breakdown
+
+### Community 174 - "Community 174"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #13 — v2-consolidated: regime thresholds, 3d cooldown, loss-streak throttle, PCS=0.45, Strategy Breakdown
+
+### Community 175 - "Community 175"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #33 — v4.3 — conc 62%/18 (reverted), calendar VIX<22 kept, Strategy Breakdown
+
+### Community 176 - "Community 176"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #36, Strategy Breakdown
+
+### Community 177 - "Community 177"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #46, Strategy Breakdown
+
+### Community 178 - "Community 178"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #28, Strategy Breakdown
+
+### Community 179 - "Community 179"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #7, Strategy Breakdown
+
+### Community 180 - "Community 180"
+Cohesion: 0.4
+Nodes (5): Appendix: Full Test Results, code:block10 (PROFIT_TARGET:   12 trades (60%)), Conclusion, Exit Reason Breakdown (PCS), Test Configuration
+
+### Community 181 - "Community 181"
+Cohesion: 0.4
+Nodes (5): code:python (# In engine.py), Implementation Summary, What NOT to Do, What to Keep (Current Code), What to Monitor
+
+### Community 182 - "Community 182"
 Cohesion: 0.5
 Nodes (3): generate_access_token(), Fyers Access Token Generator Generates a new access token for Fyers API v3 using, Generate Fyers access token using OAuth flow.
 
-### Community 170 - "Community 170"
+### Community 183 - "Community 183"
 Cohesion: 0.5
 Nodes (3): check_token_status(), Fyers Token Status Checker Quickly check if your Fyers access token is valid and, Check if the Fyers access token is valid.
 
-### Community 171 - "Community 171"
+### Community 184 - "Community 184"
 Cohesion: 0.5
 Nodes (3): generate_token_from_auth_code(), Generate Fyers Access Token from Auth Code Use this script when you already have, Generate access token from auth code.
 
-### Community 172 - "Community 172"
+### Community 185 - "Community 185"
+Cohesion: 0.5
+Nodes (3): Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on
+
+### Community 186 - "Community 186"
 Cohesion: 0.5
 Nodes (4): Priority Doesn't Matter (In This Case), System Design is Sound, The 85% Rule is Working, What We Learned
 
-### Community 173 - "Community 173"
+### Community 187 - "Community 187"
 Cohesion: 0.5
 Nodes (4): code:block8 (Exit Hierarchy (Natural, not forced):), ✓ KEEP CURRENT SETUP (No Changes Needed), Recommendation, What's Working Well
 
-### Community 174 - "Community 174"
+### Community 188 - "Community 188"
 Cohesion: 0.5
 Nodes (4): code:block4 (Scenario 1: ML wants to exit at 40% profit), Priority Doesn't Matter, The Math, Why Moving 85% to Top Makes NO Difference
 
-### Community 175 - "Community 175"
+### Community 189 - "Community 189"
 Cohesion: 0.5
 Nodes (4): Current Priority (What's in code now):, Proposed Priority (What we tested):, Test Period, Test Setup
 
-### Community 178 - "Community 178"
+### Community 191 - "Community 191"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #12 — weekly-exit-redesign-baseline — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #30 — [COMBINED]
 
-### Community 179 - "Community 179"
+### Community 192 - "Community 192"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #11 — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #3 — [COMBINED]
 
-### Community 180 - "Community 180"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #14 — analysis-exit-dist — [COMBINED]
-
-### Community 181 - "Community 181"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #19 — cache-only-verify
-
-### Community 182 - "Community 182"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #16 — [COMBINED]
-
-### Community 183 - "Community 183"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #17 — [COMBINED]
-
-### Community 184 - "Community 184"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #5 — [COMBINED]
-
-### Community 185 - "Community 185"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #4 — v4-testing — [COMBINED]
-
-### Community 186 - "Community 186"
+### Community 193 - "Community 193"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #9 — post-feature-fix-baseline — [COMBINED]
 
-### Community 187 - "Community 187"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #6 — [COMBINED]
-
-### Community 188 - "Community 188"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #13 — weekly-exit-redesign-opt1-combined-routing — [COMBINED]
-
-### Community 189 - "Community 189"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #7 — [COMBINED]
-
-### Community 190 - "Community 190"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #15 — weekly-exit-redesign-opt2-thresholds — [COMBINED]
-
-### Community 191 - "Community 191"
+### Community 194 - "Community 194"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #10 — [COMBINED]
 
-### Community 193 - "Community 193"
+### Community 195 - "Community 195"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #6 — [COMBINED]
+
+### Community 196 - "Community 196"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #33 — [COMBINED]
+
+### Community 197 - "Community 197"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #20 — cache-only-verify
+
+### Community 198 - "Community 198"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #4 — v4-testing — [COMBINED]
+
+### Community 199 - "Community 199"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #29 — [COMBINED]
+
+### Community 200 - "Community 200"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #19 — cache-only-verify
+
+### Community 201 - "Community 201"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #28 — [COMBINED]
+
+### Community 202 - "Community 202"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #15 — weekly-exit-redesign-opt2-thresholds — [COMBINED]
+
+### Community 203 - "Community 203"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #27
+
+### Community 204 - "Community 204"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #11 — [COMBINED]
+
+### Community 205 - "Community 205"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #31 — [COMBINED]
+
+### Community 206 - "Community 206"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #13 — weekly-exit-redesign-opt1-combined-routing — [COMBINED]
+
+### Community 207 - "Community 207"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #7 — [COMBINED]
+
+### Community 208 - "Community 208"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #32 — [COMBINED]
+
+### Community 209 - "Community 209"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #14 — analysis-exit-dist — [COMBINED]
+
+### Community 211 - "Community 211"
 Cohesion: 0.67
 Nodes (3): 85% Rule's Strengths, ML's Strengths, What IS Important: Having Both Rules
 
 ## Knowledge Gaps
-- **1179 isolated node(s):** `Check if Fyers token is valid during market hours and show helpful warning if ex`, `Return short git commit hash, or 'unknown' if not in a repo.`, `Aggregate per-strategy stats from trade list.`, `Aggregate sizing decisions from the engine for logging.`, `Append a structured entry to BACKTEST_CHANGELOG.md and backtest_runs.jsonl.` (+1174 more)
+- **1343 isolated node(s):** `Check if Fyers token is valid during market hours and show helpful warning if ex`, `Return short git commit hash, or 'unknown' if not in a repo.`, `Aggregate per-strategy stats from trade list.`, `Aggregate sizing decisions from the engine for logging.`, `Append a structured entry to BACKTEST_CHANGELOG.md and backtest_runs.jsonl.` (+1338 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `main()` connect `Community 34` to `Community 0`, `Community 1`, `Community 4`, `Community 5`, `Community 8`, `Community 9`, `Community 21`, `Community 26`, `Community 30`, `Community 31`, `Community 37`, `Community 38`, `Community 39`, `Community 43`, `Community 44`, `Community 52`, `Community 57`, `Community 59`, `Community 60`, `Community 61`, `Community 62`, `Community 67`, `Community 69`, `Community 71`, `Community 74`, `Community 77`, `Community 84`, `Community 85`, `Community 92`, `Community 101`, `Community 102`?**
-  _High betweenness centrality (0.066) - this node is a cross-community bridge._
-- **Why does `BacktestConfig` connect `Community 1` to `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 9`, `Community 13`, `Community 15`, `Community 24`, `Community 27`, `Community 31`, `Community 34`, `Community 37`, `Community 38`, `Community 39`, `Community 41`, `Community 43`, `Community 48`, `Community 52`, `Community 53`, `Community 61`, `Community 69`, `Community 71`, `Community 74`, `Community 77`, `Community 80`, `Community 85`, `Community 86`, `Community 87`, `Community 93`, `Community 94`, `Community 101`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `RegimeAdaptiveStrategy` connect `Community 5` to `Community 1`, `Community 3`, `Community 4`, `Community 6`, `Community 9`, `Community 13`, `Community 14`, `Community 22`, `Community 24`, `Community 27`, `Community 34`, `Community 37`, `Community 39`, `Community 52`, `Community 53`, `Community 57`, `Community 60`, `Community 61`, `Community 62`, `Community 71`, `Community 74`, `Community 80`, `Community 87`, `Community 101`?**
+- **Why does `main()` connect `Community 36` to `Community 0`, `Community 3`, `Community 8`, `Community 12`, `Community 15`, `Community 20`, `Community 23`, `Community 24`, `Community 31`, `Community 33`, `Community 39`, `Community 40`, `Community 43`, `Community 45`, `Community 51`, `Community 55`, `Community 58`, `Community 62`, `Community 63`, `Community 66`, `Community 72`, `Community 76`, `Community 79`, `Community 83`, `Community 84`, `Community 93`, `Community 94`, `Community 113`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
+- **Why does `BacktestConfig` connect `Community 55` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 20`, `Community 23`, `Community 32`, `Community 36`, `Community 38`, `Community 47`, `Community 51`, `Community 52`, `Community 56`, `Community 58`, `Community 59`, `Community 63`, `Community 70`, `Community 71`, `Community 72`, `Community 74`, `Community 85`, `Community 89`, `Community 93`, `Community 94`, `Community 99`, `Community 100`, `Community 101`, `Community 104`, `Community 107`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Why does `CombinedBacktestEngine` connect `Community 20` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 7`, `Community 8`, `Community 9`, `Community 13`, `Community 15`, `Community 31`, `Community 36`, `Community 47`, `Community 52`, `Community 55`, `Community 56`, `Community 185`, `Community 59`, `Community 61`, `Community 63`, `Community 70`, `Community 71`, `Community 85`, `Community 89`, `Community 104`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Are the 32 inferred relationships involving `main()` (e.g. with `BacktestConfig` and `WeeklyBacktestConfig`) actually correct?**
   _`main()` has 32 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 99 inferred relationships involving `BacktestConfig` (e.g. with `SizingDecision` and `_TradeReturn`) actually correct?**
-  _`BacktestConfig` has 99 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 68 inferred relationships involving `RegimeAdaptiveStrategy` (e.g. with `BaseStrategy` and `_DummyEntryModel`) actually correct?**
-  _`RegimeAdaptiveStrategy` has 68 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 85 inferred relationships involving `Leg` (e.g. with `FillSnapshot` and `ConservativeFillModel`) actually correct?**
-  _`Leg` has 85 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 110 inferred relationships involving `BacktestConfig` (e.g. with `SizingDecision` and `_TradeReturn`) actually correct?**
+  _`BacktestConfig` has 110 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 95 inferred relationships involving `Leg` (e.g. with `FillSnapshot` and `ConservativeFillModel`) actually correct?**
+  _`Leg` has 95 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 74 inferred relationships involving `RegimeAdaptiveStrategy` (e.g. with `BaseStrategy` and `_DummyEntryModel`) actually correct?**
+  _`RegimeAdaptiveStrategy` has 74 INFERRED edges - model-reasoned connections that need verification._
