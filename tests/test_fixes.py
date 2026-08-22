@@ -1563,3 +1563,174 @@ class TestMLPercentileLabels:
         )
         assert tl._label_p33 < 0.0, "p33 should be in the loss zone for this spread"
         assert tl._label_p67 > 0.0, "p67 should be in the positive zone for this spread"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 2 v3 — Multi-Strategy Sim Diversity Tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestMultiStrategySimDiversity:
+    """
+    Verify that RollingWindowSimulator produces valid trades for all 10 strategy
+    types introduced in Phase 2 v3 (multi-strategy sim diversity).
+
+    Uses a synthetic 120-day DataFrame with a single constant VIX level that
+    activates only the target strategy config, so each test is isolated.
+    """
+
+    # ── Synthetic data helpers ────────────────────────────────────────────
+
+    @staticmethod
+    def _make_data(n_days: int = 120, spot: float = 22000.0, vix: float = 14.0) -> "pd.DataFrame":
+        import pandas as pd, numpy as np
+        idx = pd.date_range("2020-01-01", periods=n_days, freq="B")
+        df  = pd.DataFrame({
+            "nifty_close":  spot * (1 + np.random.default_rng(42).normal(0, 0.005, n_days)).cumprod(),
+            "nifty_open":   spot * (1 + np.random.default_rng(99).normal(0, 0.003, n_days)).cumprod(),
+            "vix":          np.full(n_days, vix),
+        }, index=idx)
+        return df
+
+    @staticmethod
+    def _sim_for_configs(configs, vix: float = 14.0) -> list:
+        """Run simulator with a custom config list and return all trades."""
+        import pandas as pd
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        df  = TestMultiStrategySimDiversity._make_data(vix=vix)
+        sim = RollingWindowSimulator(df, SimConfig(entry_every_n_days=3, hold_days=21))
+        # Temporarily override STRATEGY_CONFIGS for isolation
+        import backtester.rolling_simulator as rs_mod
+        orig = rs_mod.STRATEGY_CONFIGS
+        rs_mod.STRATEGY_CONFIGS = configs
+        try:
+            trades = sim.simulate_all()
+        finally:
+            rs_mod.STRATEGY_CONFIGS = orig
+        return trades
+
+    # ── Per-strategy trade generation tests ──────────────────────────────
+
+    def test_iron_condor_generates_trades(self):
+        cfg = [{"name": "iron_condor", "type": "iron_condor",
+                "put_sd": 1.0, "call_sd": 1.0, "spread_width": 500,
+                "min_vix": 12, "max_vix": 28}]
+        trades = self._sim_for_configs(cfg, vix=18.0)
+        assert any(t.strategy == "iron_condor" for t in trades), \
+            "iron_condor should produce at least one trade at VIX 18"
+
+    def test_iron_butterfly_generates_trades(self):
+        cfg = [{"name": "iron_butterfly", "type": "iron_butterfly",
+                "wing_width": 500, "min_vix": 10, "max_vix": 15}]
+        trades = self._sim_for_configs(cfg, vix=12.0)
+        assert any(t.strategy == "iron_butterfly" for t in trades), \
+            "iron_butterfly should produce at least one trade at VIX 12"
+
+    def test_bwb_generates_trades(self):
+        # body_sd=0.8 (further OTM, sell 2), long_sd=0.5 (closer OTM, buy 1) → net credit
+        cfg = [{"name": "broken_wing_butterfly", "type": "bwb",
+                "body_sd": 0.8, "long_sd": 0.5, "min_vix": 18, "max_vix": 30}]
+        trades = self._sim_for_configs(cfg, vix=22.0)
+        assert any(t.strategy == "broken_wing_butterfly" for t in trades), \
+            "broken_wing_butterfly should produce at least one trade at VIX 22"
+
+    def test_calendar_generates_trades(self):
+        cfg = [{"name": "calendar_spread", "type": "calendar",
+                "near_dte": 21, "far_dte": 42, "min_vix": 10, "max_vix": 18}]
+        trades = self._sim_for_configs(cfg, vix=14.0)
+        assert any(t.strategy == "calendar_spread" for t in trades), \
+            "calendar_spread should produce at least one trade at VIX 14"
+
+    def test_diagonal_generates_trades(self):
+        cfg = [{"name": "diagonal_spread", "type": "diagonal",
+                "short_sd": 0.5, "long_sd": 1.0, "near_dte": 21, "far_dte": 42,
+                "min_vix": 12, "max_vix": 22}]
+        trades = self._sim_for_configs(cfg, vix=16.0)
+        assert any(t.strategy == "diagonal_spread" for t in trades), \
+            "diagonal_spread should produce at least one trade at VIX 16"
+
+    def test_jade_lizard_generates_trades(self):
+        cfg = [{"name": "jade_lizard", "type": "jade_lizard",
+                "put_sd": 0.8, "call_sd": 0.8, "call_width": 400,
+                "min_vix": 15, "max_vix": 28}]
+        trades = self._sim_for_configs(cfg, vix=20.0)
+        assert any(t.strategy == "jade_lizard" for t in trades), \
+            "jade_lizard should produce at least one trade at VIX 20"
+
+    def test_ratio_put_generates_trades(self):
+        cfg = [{"name": "ratio_put_spread", "type": "ratio_put",
+                "short_sd": 0.5, "long_sd": 1.2, "min_vix": 22, "max_vix": 100}]
+        trades = self._sim_for_configs(cfg, vix=26.0)
+        assert any(t.strategy == "ratio_put_spread" for t in trades), \
+            "ratio_put_spread should produce at least one trade at VIX 26"
+
+    def test_put_backspread_generates_trades(self):
+        cfg = [{"name": "put_backspread", "type": "put_backspread",
+                "short_sd": 0.3, "long_sd": 1.2, "min_vix": 22, "max_vix": 100}]
+        trades = self._sim_for_configs(cfg, vix=28.0)
+        assert any(t.strategy == "put_backspread" for t in trades), \
+            "put_backspread should produce at least one trade at VIX 28"
+
+    # ── Full-set diversity test ───────────────────────────────────────────
+
+    def test_full_set_has_multiple_strategy_types(self):
+        """simulate_all() with full STRATEGY_CONFIGS on varied-VIX data → ≥6 distinct strategies."""
+        import pandas as pd, numpy as np
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+
+        # Build 200-day data with VIX cycling through 11 → 30 to activate all strategies
+        n = 200
+        idx = pd.date_range("2019-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(7)
+        spot_series = 20000.0 * (1 + rng.normal(0, 0.005, n)).cumprod()
+        vix_series  = 11.0 + 19.0 * (np.sin(np.linspace(0, 4 * np.pi, n)) + 1) / 2  # oscillates 11–30
+        df = pd.DataFrame({
+            "nifty_close": spot_series,
+            "nifty_open":  spot_series * (1 + rng.normal(0, 0.001, n)),
+            "vix":         vix_series,
+        }, index=idx)
+        sim    = RollingWindowSimulator(df, SimConfig(entry_every_n_days=3, hold_days=21))
+        trades = sim.simulate_all()
+        strats = {t.strategy for t in trades}
+        assert len(strats) >= 6, f"Expected ≥6 distinct strategies, got {len(strats)}: {strats}"
+
+    # ── Correctness / safety tests ────────────────────────────────────────
+
+    def test_all_strategy_names_in_strategy_labels(self):
+        """Every strategy name produced by the simulator must be in STRATEGY_LABELS."""
+        import pandas as pd, numpy as np
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        from models.trade_learner import TradeLearner
+
+        n = 200
+        idx = pd.date_range("2019-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(7)
+        spot_series = 20000.0 * (1 + rng.normal(0, 0.005, n)).cumprod()
+        vix_series  = 11.0 + 19.0 * (np.sin(np.linspace(0, 4 * np.pi, n)) + 1) / 2
+        df = pd.DataFrame({
+            "nifty_close": spot_series,
+            "nifty_open":  spot_series * (1 + rng.normal(0, 0.001, n)),
+            "vix":         vix_series,
+        }, index=idx)
+        sim    = RollingWindowSimulator(df, SimConfig(entry_every_n_days=3, hold_days=21))
+        trades = sim.simulate_all()
+        unknown = {t.strategy for t in trades} - set(TradeLearner.STRATEGY_LABELS.keys())
+        assert unknown == set(), f"Unknown strategy names not in STRATEGY_LABELS: {unknown}"
+
+    def test_iron_condor_pnl_pct_bounded(self):
+        """Iron condor pnl_pct must be in [-500, 100] — sanity check on 4-leg arithmetic."""
+        cfg = [{"name": "iron_condor", "type": "iron_condor",
+                "put_sd": 1.0, "call_sd": 1.0, "spread_width": 500,
+                "min_vix": 12, "max_vix": 28}]
+        trades = self._sim_for_configs(cfg, vix=18.0)
+        for t in trades:
+            assert -500 <= t.pnl_pct <= 150, f"pnl_pct={t.pnl_pct:.1f} out of bounds for iron_condor"
+
+    def test_strategy_labels_has_10_strategies(self):
+        """STRATEGY_LABELS must now contain all 10 strategy types."""
+        from models.trade_learner import TradeLearner
+        assert len(TradeLearner.STRATEGY_LABELS) == 10, (
+            f"Expected 10 strategy labels, got {len(TradeLearner.STRATEGY_LABELS)}: "
+            f"{list(TradeLearner.STRATEGY_LABELS.keys())}"
+        )
+        for name in ("iron_butterfly", "diagonal_spread", "jade_lizard", "put_backspread"):
+            assert name in TradeLearner.STRATEGY_LABELS, f"{name} missing from STRATEGY_LABELS"

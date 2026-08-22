@@ -285,12 +285,17 @@ class TradeLearner:
     """
 
     STRATEGY_LABELS = {
-        "put_credit_spread": 0,
+        "put_credit_spread":     0,
         "broken_wing_butterfly": 1,
-        "put_credit_wide": 2,
-        "calendar_spread": 3,
-        "ratio_put_spread": 4,
-        "iron_condor": 5,
+        "put_credit_wide":       2,
+        "calendar_spread":       3,
+        "ratio_put_spread":      4,
+        "iron_condor":           5,
+        # Phase 2 v3: multi-strategy sim diversity additions
+        "iron_butterfly":        6,
+        "diagonal_spread":       7,
+        "jade_lizard":           8,
+        "put_backspread":        9,
     }
     STRATEGY_NAMES = {v: k for k, v in STRATEGY_LABELS.items()}
 

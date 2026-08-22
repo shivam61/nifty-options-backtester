@@ -260,8 +260,8 @@
     "hash": "676db75ee06f7164ec5de2fce4e050bb"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/rolling_simulator.py": {
-    "mtime": 1778607219.0546975,
-    "hash": "500d9718f60880f128ac3ee42b238242"
+    "mtime": 1787429686.988096,
+    "hash": "4f31163ac3d4357cbdeca20e067970b5"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/position_sizer.py": {
     "mtime": 1778607219.0546975,
@@ -376,8 +376,8 @@
     "hash": "7efa077e2d11e30698962f3d7c35e71e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_fixes.py": {
-    "mtime": 1787426105.4437618,
-    "hash": "5232396b39a9508cb9a714124f903334"
+    "mtime": 1787429722.3495142,
+    "hash": "7775cc1e9317007fb50261ac5aead84b"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_multi_expiry.py": {
     "mtime": 1778607221.8229246,
@@ -424,8 +424,8 @@
     "hash": "9b5c754aba68ce1e9ed9897bf9242049"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/models/trade_learner.py": {
-    "mtime": 1787426061.5434935,
-    "hash": "bfc2617d58d22e9090a7b1e1f12b1ee1"
+    "mtime": 1787429475.3636417,
+    "hash": "55437d448841843d63b4d424fd67c5cc"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/models/model_validator.py": {
     "mtime": 1778607221.817188,
