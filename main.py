@@ -2792,7 +2792,7 @@ def main():
         choices=[
             "backtest", "backtest-combined", "signal", "signal-combined", "evolve", "monitor", "validate",
             "add-trade", "close-trade", "remove-trade", "list-trades",
-            "ablation", "stress", "refresh-data",
+            "ablation", "stress", "refresh-data", "retrain-models",
         ],
         default="backtest",
         help="Run mode",
@@ -2887,6 +2887,8 @@ def main():
         run_validate(config)
     elif args.mode == "refresh-data":
         run_data_refresh(config)
+    elif args.mode == "retrain-models":
+        run_retrain_models(config)
 
 
 def _purge_short_parquets(required_start: date) -> int:
@@ -2960,6 +2962,95 @@ def run_data_refresh(config: BacktestConfig) -> pd.DataFrame:
     print(f"\n  ML model caches (.pkl) were NOT modified.")
     print(f"  Run --mode evolve to retrain models on the refreshed data if needed.\n")
     return data
+
+
+def run_retrain_models(config: BacktestConfig) -> None:
+    """
+    Retrain ML models (entry, exit, weekly-risk) on current feature data using
+    existing evolved strategy parameters — skips the 5-15 min strategy grid search.
+
+    Use this when:
+    - .pkl files are incompatible with the installed numpy/sklearn version
+    - A few months of new market data have accumulated since last --mode evolve
+    - Strategy logic has NOT changed (otherwise run --mode evolve to re-grid-search)
+
+    Prerequisites:
+    - data/.cache/evolved_strategies.json must exist (run --mode evolve once first)
+    - Feature data should be fresh (run --mode refresh-data --start 2009-01-01 first)
+
+    Time: ~10-20 min (vs 25-50 min for --mode evolve)
+    """
+    from data.market_data import MarketDataFetcher
+    from models.strategy_evolver import StrategyEvolver
+    from models.layered_evolve import run_layered_training
+    from models.weekly_risk_engine import save_risk_engine
+
+    print(f"\n{'=' * 70}")
+    print(f"  ML MODEL RETRAIN  (skip grid search, reuse evolved params)")
+    print(f"  Period : {config.start_date} → {config.end_date}")
+    print(f"{'=' * 70}\n")
+
+    # Step 1: Load existing evolved strategy params from cache
+    print("[1/3] Loading evolved strategy params from cache...")
+    cached_evolved = StrategyEvolver.load_from_cache()
+    cache_age = StrategyEvolver.cache_age_days()
+    if not cached_evolved:
+        print("  ERROR: data/.cache/evolved_strategies.json not found.")
+        print("  Run --mode evolve first to generate strategy parameters, then retry.")
+        return
+    print(f"  Loaded {len(cached_evolved)} evolved strategies "
+          f"(evolved {cache_age}d ago)")
+    for regime, strat in sorted(cached_evolved.items()):
+        print(f"    {regime}: {strat.direction} sd={strat.sd} w={strat.spread_width} "
+              f"pt={strat.profit_target_pct:.0f}% sl={strat.stop_loss_pct:.0f}%")
+    if cache_age and cache_age > 90:
+        print(f"  ⚠  Cache is {cache_age} days old — consider --mode evolve to re-optimise.")
+
+    # Step 2: Load feature data (from parquet cache, no Yahoo re-fetch needed)
+    print("\n[2/3] Loading feature data...")
+    import warnings
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        fetcher = MarketDataFetcher(config.start_date, config.end_date)
+        data = fetcher.build_combined_dataset()
+    print(f"  {len(data):,} trading days | {len(data.columns)} features "
+          f"| {data.index.min().date()} → {data.index.max().date()}")
+
+    # Step 3: Layered walk-forward ML retraining (same as evolve steps 4+5)
+    print("\n[3/3] Retraining ML models (layered walk-forward)...")
+    layered = run_layered_training(
+        data=data,
+        config=config,
+        evolved_strategies=cached_evolved,
+        verbose=True,
+    )
+
+    entry_model = layered.entry_model
+    exit_model  = layered.exit_model
+    risk_eng    = layered.weekly_risk_engine
+
+    entry_model.save()
+    exit_model.save()
+    print(f"\n  Saved entry model  → data/.cache/entry_model_v4.pkl")
+    print(f"  Saved exit model   → data/.cache/exit_model.pkl")
+    if risk_eng is not None:
+        save_risk_engine(risk_eng)
+        print(f"  Saved weekly risk  → data/.cache/weekly_risk_engine_v2.pkl")
+
+    print(f"\n  Training samples   : {len(layered.entry_training_trades)} entry | "
+          f"{len(layered.weekly_training_trades)} weekly")
+    if layered.stage_stats:
+        last = layered.stage_stats[-1]
+        print(f"  Final stage AUC   : {last.entry_cv_auc:.3f}")
+
+    # Quick live signal from freshly-retrained model
+    latest = data.iloc[-1]
+    pred = entry_model.predict(latest)
+    print(f"\n  LIVE SIGNAL (retrained model):")
+    print(f"    Signal   : {pred['signal']}")
+    print(f"    Quality  : {pred.get('quality_score', pred.get('probability_profitable', 0)):.1%}")
+    print(f"    Strategy : {pred.get('recommended_strategy', '??')}")
+    print(f"\n  ✓ Models retrained. Run --mode backtest-combined to validate.\n")
 
 
 def run_signal_combined(config: BacktestConfig) -> None:
