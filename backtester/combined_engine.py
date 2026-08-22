@@ -937,21 +937,43 @@ class CombinedBacktestEngine:
         }
 
     def _monthly_model_threshold(self) -> float | None:
+        """
+        Return the Gate 8 quality threshold from the trained model's OOF sweep.
+
+        The raw recommended_threshold comes from _sweep_thresholds() which optimises
+        on OOF training-era data.  The model's probability scores are calibrated on
+        that same era, so the threshold and score are on the same scale.
+
+        When deployed on the full 2009-2026 backtest the score distribution may
+        shift slightly, but we cap the returned threshold at DEFAULT_QUALITY_THRESHOLD
+        to prevent over-filtering: the OOF sweep can legitimately recommend 0.53 but
+        if that blocks 87% of all days it defeats the purpose of the gate.  Cap at
+        self.entry_threshold (default 0.48) so Gate 8 remains an active filter
+        without becoming a near-total block.
+        """
         stats = getattr(self.entry_model, "training_stats", None)
         if not isinstance(stats, dict):
             return None
+        raw: float | None = None
         if "recommended_threshold" in stats:
             try:
-                return float(stats["recommended_threshold"])
+                raw = float(stats["recommended_threshold"])
             except Exception:
-                return None
-        global_stats = stats.get("global", {})
-        if isinstance(global_stats, dict) and "recommended_threshold" in global_stats:
-            try:
-                return float(global_stats["recommended_threshold"])
-            except Exception:
-                return None
-        return None
+                pass
+        if raw is None:
+            global_stats = stats.get("global", {})
+            if isinstance(global_stats, dict) and "recommended_threshold" in global_stats:
+                try:
+                    raw = float(global_stats["recommended_threshold"])
+                except Exception:
+                    pass
+        if raw is None:
+            return None
+        # Cap at self.entry_threshold so the model's OOF recommendation (e.g. 0.53)
+        # never blocks more than the operator-configured ceiling allows.
+        # With entry_threshold=0.30 and model scores 0.311-0.333, this returns 0.30
+        # → Gate 8 becomes a near-pass-through until real trade history enables tighter filtering.
+        return min(raw, self.entry_threshold)
 
     def _monthly_funnel_report(self, start_date=None, end_date=None) -> str:
         """
@@ -982,7 +1004,7 @@ class CombinedBacktestEngine:
             row("Gate  1  Event calendar block",      "g1_event_calendar",        "Budget/Election ±2d"),
             row("Gates 2–7 Circuit breaker / VIX zone", "g2_7_circuit_or_vix_zone", "crash/stress/correction/VIX accel/crude"),
             row("Gate  7b Strategy should_enter() failed", "g7_should_enter",          "VIX zone passed but no sub-strategy entered"),
-            row("Gate  8  ML quality score < threshold", "g8_ml_quality",            f"threshold ≈ {self.entry_threshold:.2f}"),
+            row("Gate  8  ML quality score < threshold", "g8_ml_quality",            f"threshold ≈ {self._monthly_model_threshold() or self.entry_threshold:.2f}"),
             row("Gate  9  Expiry selector found=False", "g9_expiry_selector",        "EV/risk-reward/DTE/suitability filters"),
             row("Gate 10  Position sizing lots=0",      "g10_position_sizing",       "equity or margin insufficient"),
             row("Gate 11  Hard max loss cap",           "g11_hard_max_loss",         f"trade_loss > equity × {getattr(self.m_config, 'monthly_hard_max_loss_pct', 8.0):.0f}%"),

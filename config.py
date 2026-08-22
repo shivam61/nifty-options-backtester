@@ -98,7 +98,7 @@ class BacktestConfig:
     monthly_max_margin_per_trade_pct: float = 20.0
     monthly_max_risk_per_trade_pct: float = 10.0
     monthly_hard_max_loss_pct: float = 15.0
-    monthly_entry_threshold: float = 0.48
+    monthly_entry_threshold: float = 0.30  # Below 3-class model floor (~0.32); Gate 8 pass-through until real trade history trains the model. Was 0.48.
     monthly_exit_min_hold_days: int = 0
     monthly_exit_profit_target_scale: float = 1.0
     monthly_exit_stop_loss_scale: float = 1.0
