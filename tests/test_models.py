@@ -316,8 +316,14 @@ class TestTradeLearnerNoTrade:
 
         stats = learner.train(trades, market_data.iloc[:8], verbose=False)
         assert learner.is_trained is True
-        assert stats["num_quality_positive"] == 0
-        assert stats["num_quality_negative"] == len(trades)
+        # With percentile-based labels, even all-negative trades get a balanced
+        # 3-class split (top third = class-2, middle = class-1, bottom = class-0).
+        # num_quality_class0 = bottom third (the "poor" trades relative to peers).
+        assert stats["num_quality_class0"] > 0, "At least some trades should be class-0"
+        assert stats["num_quality_class2"] > 0, "Percentile split always produces class-2"
+        # Total must equal number of trades
+        total = stats["num_quality_class0"] + stats["num_quality_class1"] + stats["num_quality_class2"]
+        assert total == len(trades)
 
         pred = learner.predict_strategy(market_data.iloc[0])
         assert pred["strategy"] == "no_trade"

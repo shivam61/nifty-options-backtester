@@ -333,20 +333,39 @@ class TradeLearner:
 
     def _quality_label(self, pnl_pct: float) -> int:
         """
-        3-class trade quality label used for Gate 8 ML training.
+        Absolute 3-class trade quality label (used in tests and as fallback).
 
-          0 = poor   (pnl_pct <   0) — loss; Gate 8 blocks entry
-          1 = ok     (pnl_pct <  30) — marginal win; Gate 8 blocks entry
-          2 = good   (pnl_pct >= 30) — strong win; Gate 8 allows entry
+          0 = poor   (pnl_pct <   0) — loss
+          1 = ok     (0 <= pnl_pct < 30) — marginal win
+          2 = good   (pnl_pct >= 30) — strong win
 
-        The threshold 30% of credit captured is meaningful for options selling:
-        a PCS collecting 50 pts must reach 35 pts retained to be class-2.
-        The old binary threshold (0.5%) was trivially true for any non-zero outcome,
-        making the model untrainable (AUC ≈ 0.50, Gate 8 blocked 0 entries).
+        NOTE: train() uses _quality_label_percentile() instead, which guarantees
+        a balanced 33/33/33 split. This method is kept for unit-test validation
+        of boundary semantics and for any caller that needs absolute labels.
         """
         if pnl_pct < 0:
             return 0
         elif pnl_pct < 30.0:
+            return 1
+        else:
+            return 2
+
+    def _quality_label_percentile(self, pnl_pct: float, p33: float, p67: float) -> int:
+        """
+        Percentile-based 3-class label for Gate 8 training.
+
+          pnl_pct < p33  → class 0 (poor   — bottom third of entries)
+          p33 <= pnl_pct < p67 → class 1 (ok — middle third)
+          pnl_pct >= p67 → class 2 (good  — top third; Gate 8 allows entry)
+
+        p33 and p67 are computed from the full training set's pnl_pct distribution,
+        guaranteeing ~33% per class regardless of how sim trades are generated.
+        This avoids the bimodal problem where absolute thresholds (e.g. 30%) produce
+        94:0:6 class imbalance on sim trades, making AUC < 0.50.
+        """
+        if pnl_pct < p33:
+            return 0
+        elif pnl_pct < p67:
             return 1
         else:
             return 2
@@ -421,8 +440,42 @@ class TradeLearner:
         y_return = np.array(risk_adj_returns)
         y_strat = np.array(y_strategy)
 
-        self.label_threshold = self.COST_HURDLE_PCT
-        y_quality = np.array([self._quality_label(p) for p in y_return])
+        # ── Percentile-based 3-class labels (Phase 2 v2) ──────────────────
+        # Absolute thresholds (e.g. 30%) fail with sim-trade data because the
+        # 50%-profit-target exit mechanic produces a bimodal distribution:
+        # ~94% land above 30% (class-2) and ~6% are losses (class-0), leaving
+        # class-1 nearly empty → AUC < 0.50 (model just predicts "good" always).
+        #
+        # Percentile labels guarantee a balanced 33/33/33 split regardless of
+        # the absolute pnl_pct values, forcing the model to learn *relative*
+        # entry quality: "is this entry in the top third of its historical peers?"
+        #
+        # p33 = 33rd percentile of pnl_pct → boundary between poor and ok
+        # p67 = 67th percentile of pnl_pct → boundary between ok and good
+        self.label_threshold = self.COST_HURDLE_PCT   # kept for display/compat
+        p33 = float(np.percentile(y_return, 33))
+        p67 = float(np.percentile(y_return, 67))
+        if p33 >= p67:
+            # Degenerate distribution (e.g. 94% of values identical — bimodal sim trades).
+            # Fall back to rank-based tertile splitting via pd.qcut which handles ties.
+            try:
+                rank_labels = pd.qcut(y_return, q=3, labels=[0, 1, 2], duplicates="drop")
+                y_quality = rank_labels.astype(int).values
+                # Recompute p33/p67 from rank boundaries for stats
+                cuts = pd.qcut(y_return, q=3, duplicates="drop", retbins=True)[1]
+                p33 = float(cuts[1]) if len(cuts) > 1 else p33
+                p67 = float(cuts[2]) if len(cuts) > 2 else p67
+            except Exception:
+                # Last resort: sort and split by index
+                order = np.argsort(y_return)
+                y_quality = np.zeros(len(y_return), dtype=int)
+                n = len(y_return)
+                y_quality[order[n//3:2*n//3]] = 1
+                y_quality[order[2*n//3:]] = 2
+        else:
+            y_quality = np.array([self._quality_label_percentile(p, p33, p67) for p in y_return])
+        self._label_p33 = p33   # stored for inspection / tests
+        self._label_p67 = p67
         quality_classes = np.unique(y_quality)
 
         from sklearn.dummy import DummyClassifier
@@ -597,8 +650,15 @@ class TradeLearner:
 
         self.training_stats = {
             "num_trades": len(trades),
-            "num_quality_positive": int(y_quality.sum()),
-            "num_quality_negative": int(len(y_quality) - y_quality.sum()),
+            "num_quality_class2": int((y_quality == 2).sum()),   # class 2 = good
+            "num_quality_class1": int((y_quality == 1).sum()),   # class 1 = ok
+            "num_quality_class0": int((y_quality == 0).sum()),   # class 0 = poor
+            # Legacy aliases (kept for compatibility; num_quality_positive previously
+            # summed label values which was wrong with 3-class labels)
+            "num_quality_positive": int((y_quality == 2).sum()),
+            "num_quality_negative": int((y_quality == 0).sum()),
+            "label_p33": round(getattr(self, "_label_p33", self.label_threshold), 2),
+            "label_p67": round(getattr(self, "_label_p67", self.label_threshold), 2),
             "label_threshold_pct": round(self.label_threshold, 1),
             "cv_auc": float(cv_scores.mean()),
             "cv_std": float(cv_scores.std()),
