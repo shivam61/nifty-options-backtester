@@ -1252,3 +1252,185 @@ class TestDdKillSwitchImprovement:
             f"After {worst_seen:.1%} peak DD and {recovery_dd:.1%} recovery "
             f"(4% improvement), switch must deactivate"
         )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 2: ML Label Redesign — 3-Class Quality Gate
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestMLThreeClassLabels:
+    """
+    Phase 2 regression tests: verify that TradeLearner uses 3-class quality
+    labels (poor=0, ok=1, good=2) based on 30% credit-capture threshold, and
+    that predict() returns P(class==2) as the quality_score for Gate 8.
+    """
+
+    def _learner(self):
+        """Instantiate TradeLearner without calling __init__ fully."""
+        from models.trade_learner import TradeLearner
+        return TradeLearner.__new__(TradeLearner)
+
+    # ── Label boundary tests ──────────────────────────────────────────────
+
+    def test_negative_pnl_is_class_0(self):
+        tl = self._learner()
+        assert tl._quality_label(-0.001) == 0, "pnl just below 0 → class 0 (poor)"
+        assert tl._quality_label(-50.0)  == 0, "large loss → class 0 (poor)"
+
+    def test_marginal_win_is_class_1(self):
+        tl = self._learner()
+        assert tl._quality_label(0.0)  == 1, "break-even → class 1 (ok), not loss"
+        assert tl._quality_label(15.0) == 1, "15% credit → class 1 (ok)"
+        assert tl._quality_label(29.9) == 1, "29.9% credit → class 1 (ok), below threshold"
+
+    def test_strong_win_is_class_2(self):
+        tl = self._learner()
+        assert tl._quality_label(30.0) == 2, "exactly 30% credit → class 2 (good)"
+        assert tl._quality_label(50.0) == 2, "50% credit → class 2 (good)"
+        assert tl._quality_label(80.0) == 2, "80% credit (near expiry) → class 2 (good)"
+
+    def test_boundary_exact_zero_is_class_1(self):
+        """pnl_pct == 0.0 is break-even — not a loss, so class 1 (ok), not class 0."""
+        tl = self._learner()
+        assert tl._quality_label(0.0) == 1
+
+    def test_boundary_exact_30_is_class_2(self):
+        """pnl_pct == 30.0 is exactly at the good threshold — class 2."""
+        tl = self._learner()
+        assert tl._quality_label(30.0) == 2
+
+    # ── Constant guard tests ──────────────────────────────────────────────
+
+    def test_cost_hurdle_raised_to_30(self):
+        from models.trade_learner import TradeLearner
+        assert TradeLearner.COST_HURDLE_PCT == 30.0, (
+            "COST_HURDLE_PCT must be 30.0 — old value 0.5 was trivially low "
+            "and produced AUC≈0.50 (Gate 8 blocked 0 entries across 17 years)"
+        )
+
+    def test_purge_days_raised_to_60(self):
+        from models.trade_learner import TradeLearner
+        assert TradeLearner.PURGE_DAYS == 60, (
+            "PURGE_DAYS must be 60 — options regime clusters span 4-8 weeks; "
+            "old 21-day purge let adjacent CV folds share regime state"
+        )
+
+    def test_min_regime_auc_is_045(self):
+        from models.trade_learner import TradeLearner
+        assert TradeLearner.MIN_REGIME_AUC == 0.45, (
+            "MIN_REGIME_AUC must be 0.45 for 3-class OvR; "
+            "old 0.52 is too tight and forces fallback to DummyClassifier on most folds"
+        )
+
+    # ── predict() returns P(class==2) ─────────────────────────────────────
+
+    def test_quality_score_is_class2_probability(self):
+        """predict() must expose quality_score = P(class==2), not P(class==1)."""
+        import numpy as np
+        import pandas as pd
+        from unittest.mock import MagicMock
+        from models.trade_learner import TradeLearner
+
+        tl = TradeLearner.__new__(TradeLearner)
+        tl.is_trained = True
+        tl.selected_features = ["vix_current"]
+        tl.regime_rerank_enabled = False
+        tl.regime_rerank_strength = 0.0
+        tl.per_strategy_regressors = {}
+        tl.strategy_stats = {}
+        tl.regime_strategy_stats = {}
+        tl.feature_importance = {}  # needed by predict() reasoning block
+        tl.strategy_insights = {}
+        tl.learned_rules = []
+        tl.macro_insights = []
+
+        # Mock quality_classifier: 3-class, P(poor)=0.1, P(ok)=0.3, P(good)=0.6
+        mock_clf = MagicMock()
+        mock_clf.classes_ = [0, 1, 2]
+        mock_clf.predict_proba.return_value = np.array([[0.1, 0.3, 0.6]])
+        tl.quality_classifier = mock_clf
+
+        # Mock return regressor
+        mock_reg = MagicMock()
+        mock_reg.predict.return_value = np.array([0.5])
+        tl.return_regressor = mock_reg
+
+        # Mock feature extractor
+        mock_fe = MagicMock()
+        mock_fe.extract.return_value = {"vix_current": 15.0}
+        tl.feature_extractor = mock_fe
+
+        row = pd.Series({"vix_current": 15.0})
+        result = tl.predict(row)
+
+        assert "quality_score" in result, "predict() must return 'quality_score'"
+        assert abs(result["quality_score"] - 0.6) < 0.01, (
+            f"quality_score must be P(class==2)=0.6, got {result['quality_score']}"
+        )
+
+    def test_quality_score_falls_back_for_binary_model(self):
+        """If a cached binary model is loaded (classes=[0,1]), fall back to P(class==1)."""
+        import numpy as np
+        import pandas as pd
+        from unittest.mock import MagicMock
+        from models.trade_learner import TradeLearner
+
+        tl = TradeLearner.__new__(TradeLearner)
+        tl.is_trained = True
+        tl.selected_features = ["vix_current"]
+        tl.regime_rerank_enabled = False
+        tl.regime_rerank_strength = 0.0
+        tl.per_strategy_regressors = {}
+        tl.strategy_stats = {}
+        tl.regime_strategy_stats = {}
+        tl.feature_importance = {}
+        tl.strategy_insights = {}
+        tl.learned_rules = []
+        tl.macro_insights = []
+
+        # Binary model: classes=[0, 1]
+        mock_clf = MagicMock()
+        mock_clf.classes_ = [0, 1]
+        mock_clf.predict_proba.return_value = np.array([[0.35, 0.65]])
+        tl.quality_classifier = mock_clf
+
+        mock_reg = MagicMock()
+        mock_reg.predict.return_value = np.array([0.5])
+        tl.return_regressor = mock_reg
+
+        mock_fe = MagicMock()
+        mock_fe.extract.return_value = {"vix_current": 14.0}
+        tl.feature_extractor = mock_fe
+
+        row = pd.Series({"vix_current": 14.0})
+        result = tl.predict(row)
+
+        assert abs(result.get("quality_score", 0) - 0.65) < 0.01, (
+            f"Binary fallback: quality_score must be P(class==1)=0.65, got {result.get('quality_score')}"
+        )
+
+    # ── Label distribution sanity test ────────────────────────────────────
+
+    def test_3class_label_distribution_covers_all_classes(self):
+        """
+        A realistic set of trade pnl_pct values must produce all 3 classes.
+        This ensures the model sees a balanced training signal.
+        """
+        from models.trade_learner import TradeLearner
+
+        tl = TradeLearner.__new__(TradeLearner)
+        # Typical options-selling distribution:
+        #   ~30% losses, ~40% marginal wins, ~30% strong wins
+        pnl_pcts = [-40, -15, -5, -1, 0.5, 5, 12, 20, 28, 31, 40, 55, 70, -8, 35]
+        labels = [tl._quality_label(p) for p in pnl_pcts]
+
+        assert 0 in labels, "At least one trade must be class 0 (poor/loss)"
+        assert 1 in labels, "At least one trade must be class 1 (ok/marginal)"
+        assert 2 in labels, "At least one trade must be class 2 (good/strong win)"
+
+        class_0 = labels.count(0)
+        class_1 = labels.count(1)
+        class_2 = labels.count(2)
+        assert class_0 == 5,  f"Expected 5 poor trades, got {class_0}"
+        assert class_1 == 5,  f"Expected 5 ok trades, got {class_1}"
+        assert class_2 == 5,  f"Expected 5 good trades, got {class_2}"

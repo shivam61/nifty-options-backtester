@@ -296,10 +296,10 @@ class TradeLearner:
 
     MAX_FEATURES = 30
     LABEL_PERCENTILE = 45
-    COST_HURDLE_PCT = 0.5
+    COST_HURDLE_PCT = 30.0   # 30% of credit captured = "good" trade (was 0.5 — trivially low)
     PCS_PENALTY = 0.85
     NEGATIVE_PNL_PENALTY = 0.75
-    MIN_REGIME_AUC = 0.52
+    MIN_REGIME_AUC = 0.45   # OvR macro-AUC floor for 3-class (was 0.52)
     REGIME_RERANK_STRENGTH = 0.18
     REGIME_SCORE_CAP = 0.20
 
@@ -311,7 +311,7 @@ class TradeLearner:
         "TRENDING": 0.46,
     }
     N_WALK_FORWARD_FOLDS = 5
-    PURGE_DAYS = 21
+    PURGE_DAYS = 60   # 60 days — covers 4-8 week options regime cycles (was 21)
 
     def __init__(self, model_version: str = "v4"):
         self.model_version = model_version
@@ -330,6 +330,26 @@ class TradeLearner:
         self.learned_rules: list = []
         self.macro_insights: list = []
         self.is_trained = False
+
+    def _quality_label(self, pnl_pct: float) -> int:
+        """
+        3-class trade quality label used for Gate 8 ML training.
+
+          0 = poor   (pnl_pct <   0) — loss; Gate 8 blocks entry
+          1 = ok     (pnl_pct <  30) — marginal win; Gate 8 blocks entry
+          2 = good   (pnl_pct >= 30) — strong win; Gate 8 allows entry
+
+        The threshold 30% of credit captured is meaningful for options selling:
+        a PCS collecting 50 pts must reach 35 pts retained to be class-2.
+        The old binary threshold (0.5%) was trivially true for any non-zero outcome,
+        making the model untrainable (AUC ≈ 0.50, Gate 8 blocked 0 entries).
+        """
+        if pnl_pct < 0:
+            return 0
+        elif pnl_pct < 30.0:
+            return 1
+        else:
+            return 2
 
     def train(
         self,
@@ -402,7 +422,7 @@ class TradeLearner:
         y_strat = np.array(y_strategy)
 
         self.label_threshold = self.COST_HURDLE_PCT
-        y_quality = (y_return > self.label_threshold).astype(int)
+        y_quality = np.array([self._quality_label(p) for p in y_return])
         quality_classes = np.unique(y_quality)
 
         from sklearn.dummy import DummyClassifier
@@ -474,8 +494,18 @@ class TradeLearner:
                 )
                 fold_model.fit(X_tr[fold_top], y_tr)
                 try:
-                    fold_probs = fold_model.predict_proba(X_te[fold_top])[:, 1]
-                    fold_auc = roc_auc_score(y_te, fold_probs)
+                    fold_probs_all = fold_model.predict_proba(X_te[fold_top])  # shape (n, 3)
+                    # For 3-class OvR AUC; falls back to binary if only 2 classes survived
+                    n_classes = fold_probs_all.shape[1] if fold_probs_all.ndim == 2 else 1
+                    if n_classes >= 3:
+                        fold_auc = roc_auc_score(
+                            y_te, fold_probs_all, multi_class='ovr', average='macro'
+                        )
+                        # quality_score = P(class==2 — "good" trade)
+                        fold_probs = fold_probs_all[:, 2]
+                    else:
+                        fold_probs = fold_probs_all[:, -1]
+                        fold_auc = roc_auc_score(y_te, fold_probs)
                     cv_aucs.append(fold_auc)
                     oof_scores.extend(list(fold_probs))
                     oof_returns.extend(list(y_return[test_start:test_end]))
@@ -850,13 +880,19 @@ class TradeLearner:
             columns=self.selected_features, fill_value=0,
         ).fillna(0).replace([float("inf"), float("-inf")], 0)
 
-        # ── Quality score (calibrated probability of being a "good" trade) ──
+        # ── Quality score = P(class==2 — "good" trade, captured >30% of credit) ──
+        # With 3-class labels (poor=0, ok=1, good=2), Gate 8 allows entry only
+        # when the model is confident this is a class-2 outcome.
         try:
             probs = self.quality_classifier.predict_proba(X)[0]
             classes = list(self.quality_classifier.classes_)
             if len(classes) == 1:
-                quality_score = float(classes[0] == 1)
+                quality_score = float(classes[0] == 2)
+            elif 2 in classes:
+                # 3-class model: P(good)
+                quality_score = float(probs[classes.index(2)])
             elif 1 in classes:
+                # Fallback: binary model still in cache — P(win)
                 quality_score = float(probs[classes.index(1)])
             else:
                 quality_score = 0.0
