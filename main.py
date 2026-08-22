@@ -670,16 +670,34 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
     wc = WeeklyBacktestConfig()
+    exit_engine = None
+    entry_model = None
+    weekly_risk_engine = None
     try:
         exit_engine = ExitStrategyEngine.load(data)
+    except FileNotFoundError as e:
+        print(f"  WARNING: exit model cache missing — {e}")
+        print("  Run `python main.py --mode evolve` to rebuild. Running rule-based exits.")
+    except Exception as e:
+        print(f"  WARNING: exit model cache incompatible ({type(e).__name__}: {e})")
+        print("  Running with rule-based exits only.")
+    try:
         entry_model = RegimeAwareLearner.load(data)
+    except FileNotFoundError as e:
+        print(f"  WARNING: entry model cache missing — {e}")
+        print("  Run `python main.py --mode evolve` to rebuild. Running rule-based entries.")
+    except Exception as e:
+        print(f"  WARNING: entry model cache incompatible ({type(e).__name__}: {e})")
+        print("  Running with rule-based entries only.")
+    try:
         weekly_risk_engine = load_risk_engine(data)
     except FileNotFoundError as e:
-        print(f"  ERROR: {e}")
-        print("  Run `python main.py --mode evolve` first to refresh the final caches.")
-        return
+        print(f"  WARNING: weekly risk engine cache missing — {e}")
+    except Exception as e:
+        print(f"  WARNING: weekly risk engine cache incompatible ({type(e).__name__}: {e})")
 
-    print("  Loaded final entry / exit / weekly-risk artifacts from cache.")
+    loaded = [n for n, v in [("exit", exit_engine), ("entry", entry_model), ("weekly-risk", weekly_risk_engine)] if v is not None]
+    print(f"  Artifacts loaded: {', '.join(loaded) if loaded else 'none (rule-based mode)'}")
 
     # ── Run combined backtest ──
     print(f"\n[3/5] Running combined backtest (monthly 70% + weekly 30%)...")
