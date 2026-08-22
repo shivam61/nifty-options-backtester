@@ -238,6 +238,9 @@ class KillSwitchState:
     monthly_force_closes: int = 0
     entries_blocked: int = 0
     just_activated: bool = False
+    # Phase-1 fix: track worst DD seen while blocked so recovery is
+    # improvement-based (3% from peak), not absolute-floor-based.
+    max_dd_while_blocked: float = 0.0
 
 
 class DrawdownKillSwitch:
@@ -247,7 +250,21 @@ class DrawdownKillSwitch:
     When triggered:
       1. Force-close ALL weekly positions immediately (eat the loss at market)
       2. Block ALL new entries (monthly + weekly) for cooldown_days
-      3. Re-enable only when DD recovers below recovery_dd_pct
+      3. Re-enable when DD improves by recovery_improvement_pct from its
+         worst point WHILE blocked — not when it crosses an absolute floor.
+
+    Recovery logic (Phase-1 fix, Aug 2026):
+        Old behaviour: re-enable when dd_pct <= recovery_dd_pct (16%).
+        Problem: in 2020-2022 regimes DD oscillates 17-22% for months,
+        so the switch fires once and never deactivates — 337 blocks in
+        17 years, 0 weekly trades.
+
+        New behaviour: track the *worst* DD seen since activation.
+        Re-enable when both conditions are met:
+          a) dd_pct has improved by recovery_improvement_pct from that worst,
+          b) cooldown_days have elapsed.
+        This allows recovery during sustained elevated-DD regimes without
+        requiring DD to fall all the way back below 16%.
 
     This is your insurance policy. Stop losses fail during gaps.
     This switch doesn't — it acts on portfolio equity, not position P&L.
@@ -255,39 +272,60 @@ class DrawdownKillSwitch:
 
     def __init__(
         self,
-        max_dd_pct: float = 0.10,       # 10% drawdown → kill
-        recovery_dd_pct: float = 0.05,  # recovery below 5% → re-enable
-        cooldown_days: int = 5,         # minimum cooldown even if DD recovers
+        max_dd_pct: float = 0.10,               # 10% drawdown → kill
+        recovery_dd_pct: float = 0.05,          # kept for backward-compat; not used in new logic
+        cooldown_days: int = 5,                 # minimum cooldown even if DD improves
+        recovery_improvement_pct: float = 0.03, # must improve 3% from worst-while-blocked
     ):
         self.max_dd_pct = max_dd_pct
-        self.recovery_dd_pct = recovery_dd_pct
+        self.recovery_dd_pct = recovery_dd_pct   # legacy param (unused in check())
         self.cooldown_days = cooldown_days
+        self.recovery_improvement_pct = recovery_improvement_pct
         self.state = KillSwitchState()
 
     def check(self, current_date: date, dd_pct: float) -> bool:
         """
         Check if the kill switch should be active.
         Returns True if all trading should halt.
+
+        Phase-1 change: uses improvement-based recovery rather than
+        an absolute floor, preventing permanent lock-out in sustained DD.
         """
         if self.state.is_active:
             self.state.just_activated = False
-            if self.state.cooldown_until and current_date < self.state.cooldown_until:
+
+            # Always track the worst DD seen since activation.
+            if dd_pct > self.state.max_dd_while_blocked:
+                self.state.max_dd_while_blocked = dd_pct
+
+            # Condition (a): cooldown must have elapsed.
+            cooldown_elapsed = (
+                self.state.cooldown_until is None
+                or current_date >= self.state.cooldown_until
+            )
+
+            # Condition (b): DD must have improved by recovery_improvement_pct
+            # from the worst point seen while blocked.
+            dd_improved_enough = (
+                dd_pct <= self.state.max_dd_while_blocked - self.recovery_improvement_pct
+            )
+
+            if not (cooldown_elapsed and dd_improved_enough):
                 self.state.entries_blocked += 1
                 return True
 
-            if dd_pct > self.recovery_dd_pct:
-                self.state.entries_blocked += 1
-                return True
-
+            # Both conditions met — deactivate.
             self.state.is_active = False
             self.state.activated_date = None
             self.state.cooldown_until = None
+            self.state.max_dd_while_blocked = 0.0
             return False
 
         if dd_pct >= self.max_dd_pct:
             self.state.is_active = True
             self.state.activated_date = current_date
             self.state.activated_dd_pct = dd_pct
+            self.state.max_dd_while_blocked = dd_pct   # seed with activation DD
             self.state.cooldown_until = current_date + timedelta(days=self.cooldown_days)
             self.state.total_activations += 1
             self.state.just_activated = True

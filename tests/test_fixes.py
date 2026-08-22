@@ -519,27 +519,39 @@ class TestCombinedGateRelaxation:
 # ---------------------------------------------------------------------------
 
 class TestDdRecoveryPct:
+    """
+    Legacy tests updated for Phase-1 improvement-based recovery.
 
-    def test_kill_switch_still_blocked_before_recovery(self):
-        """With dd_recovery_pct=0.16, DD at 17% (above recovery) should keep gate closed."""
+    Old logic: re-enable when dd_pct <= recovery_dd_pct (absolute floor 16%).
+    New logic: re-enable when dd_pct has improved 3% from worst-while-blocked
+               AND cooldown has elapsed (recovery_improvement_pct=0.03 default).
+    """
+
+    def test_kill_switch_still_blocked_before_improvement(self):
+        """DD at 20% fired switch; slight drop to 18.5% is only 2.5% improvement
+        (< 3% threshold) — must stay blocked."""
         from backtester.production_rules import DrawdownKillSwitch
-        ks = DrawdownKillSwitch(max_dd_pct=0.20, recovery_dd_pct=0.16, cooldown_days=0)
+        ks = DrawdownKillSwitch(max_dd_pct=0.20, cooldown_days=0,
+                                recovery_improvement_pct=0.03)
         d = date(2026, 1, 5)
-        ks.check(d, 0.21)  # -21% → fires kill switch
+        ks.check(d, 0.21)  # fire at 21% (worst = 0.21)
         assert ks.state.is_active
 
-        still_blocked = ks.check(d, 0.17)  # -17% — above recovery threshold of 16%
-        assert still_blocked, "Kill switch must stay active at -17% DD (recovery needs ≤16%)"
+        # 2.5% improvement from 21% worst → 18.5%: below 3% threshold → stay blocked
+        still_blocked = ks.check(d, 0.185)
+        assert still_blocked, "Only 2.5% improvement from worst — must stay blocked (need 3%)"
 
-    def test_kill_switch_re_enables_at_recovery(self):
-        """Kill switch must lift once DD recovers below dd_recovery_pct."""
+    def test_kill_switch_re_enables_after_3pct_improvement(self):
+        """DD fires at 21%, improves 3.5% to 17.5% — must re-enable (cooldown=0)."""
         from backtester.production_rules import DrawdownKillSwitch
-        ks = DrawdownKillSwitch(max_dd_pct=0.20, recovery_dd_pct=0.16, cooldown_days=0)
+        ks = DrawdownKillSwitch(max_dd_pct=0.20, cooldown_days=0,
+                                recovery_improvement_pct=0.03)
         d = date(2026, 1, 5)
-        ks.check(d, 0.21)  # fire at -21%
+        ks.check(d, 0.21)  # fire; worst = 0.21
         assert ks.state.is_active
-        still_blocked = ks.check(d, 0.155)  # -15.5% → past recovery threshold of 16%
-        assert not still_blocked, "Kill switch should lift once DD is ≤ 16%"
+        # 3.5% improvement: 21% − 3.5% = 17.5%
+        still_blocked = ks.check(d + timedelta(1), 0.175)
+        assert not still_blocked, "3.5% improvement from worst → should lift"
 
 
 # ---------------------------------------------------------------------------
@@ -1040,3 +1052,203 @@ class TestMonthlySlowGrindStop:
         assert trade.total_pnl > 0, "trade should be profitable"
         # Slow-grind only applies if total_pnl < 0
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Phase 1 Fix: DD Kill Switch — Improvement-Based Recovery (Aug 2026)
+#
+#  Root cause: old logic checked dd_pct <= recovery_dd_pct (absolute floor 16%).
+#  In 2020-2022 regimes DD oscillates 17-22% for months → 337 blocks, 0 weekly
+#  trades across 17 years.
+#
+#  New logic: re-enable when dd_pct has improved recovery_improvement_pct (3%)
+#  from the *worst* DD seen while blocked, AND cooldown has elapsed.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class TestDdKillSwitchImprovement:
+
+    def _ks(self, cooldown_days=0, improvement=0.03):
+        from backtester.production_rules import DrawdownKillSwitch
+        return DrawdownKillSwitch(
+            max_dd_pct=0.20,
+            cooldown_days=cooldown_days,
+            recovery_improvement_pct=improvement,
+        )
+
+    # ── Field existence ──────────────────────────────────────────────────────
+
+    def test_state_has_max_dd_while_blocked_field(self):
+        """KillSwitchState must expose max_dd_while_blocked (new Phase-1 field)."""
+        from backtester.production_rules import KillSwitchState
+        s = KillSwitchState()
+        assert hasattr(s, "max_dd_while_blocked"), (
+            "KillSwitchState must have max_dd_while_blocked field"
+        )
+        assert s.max_dd_while_blocked == 0.0
+
+    def test_kill_switch_has_recovery_improvement_param(self):
+        """DrawdownKillSwitch must accept recovery_improvement_pct kwarg."""
+        from backtester.production_rules import DrawdownKillSwitch
+        ks = DrawdownKillSwitch(max_dd_pct=0.20, recovery_improvement_pct=0.05)
+        assert ks.recovery_improvement_pct == 0.05
+
+    # ── Worst-DD tracking ────────────────────────────────────────────────────
+
+    def test_max_dd_seeded_on_activation(self):
+        """max_dd_while_blocked must be seeded with the activation DD."""
+        ks = self._ks()
+        ks.check(date(2026, 1, 1), 0.22)
+        assert ks.state.max_dd_while_blocked == pytest.approx(0.22)
+
+    def test_max_dd_updated_when_dd_worsens(self):
+        """max_dd_while_blocked must track subsequent deterioration."""
+        ks = self._ks()
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                      # activate; worst=0.21
+        ks.check(d + timedelta(1), 0.23)        # worse
+        ks.check(d + timedelta(2), 0.22)        # partial recovery
+        assert ks.state.max_dd_while_blocked == pytest.approx(0.23)
+
+    def test_max_dd_not_updated_on_improvement(self):
+        """max_dd_while_blocked must not decrease when DD partially improves
+        (but not enough to deactivate)."""
+        ks = self._ks(improvement=0.03)
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)
+        ks.check(d + timedelta(1), 0.25)        # worst = 0.25
+        # Only 1% improvement from 0.25 → 0.24: insufficient → still active
+        ks.check(d + timedelta(2), 0.24)
+        assert ks.state.is_active, "Only 1% improvement — should still be active"
+        assert ks.state.max_dd_while_blocked == pytest.approx(0.25), (
+            "max_dd_while_blocked must not shrink on partial improvement"
+        )
+
+    # ── Blocking logic ───────────────────────────────────────────────────────
+
+    def test_stays_blocked_when_dd_flat(self):
+        """Oscillating DD (no 3% improvement) must stay blocked indefinitely."""
+        ks = self._ks()
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                       # activate; worst=0.21
+        # Subsequent days: DD improves by only 1-2% — insufficient
+        for offset, dd in enumerate([0.21, 0.20, 0.19, 0.20, 0.21], start=1):
+            blocked = ks.check(d + timedelta(offset), dd)
+            assert blocked, (
+                f"Day {offset}: DD={dd:.0%} — only {(0.21-dd)*100:.1f}% improvement "
+                f"from worst 21% — should stay blocked"
+            )
+
+    def test_stays_blocked_when_improvement_just_under_threshold(self):
+        """2.9% improvement (just below 3% threshold) must keep gate closed."""
+        ks = self._ks(improvement=0.03)
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                        # worst=0.21
+        # 2.9% improvement → 18.1%
+        blocked = ks.check(d + timedelta(1), 0.181)
+        assert blocked, "2.9% improvement < 3% threshold — must stay blocked"
+
+    def test_recovers_at_exactly_threshold(self):
+        """Exactly 3% improvement from worst → deactivate (cooldown=0)."""
+        ks = self._ks(improvement=0.03)
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                        # worst=0.21
+        # exactly 3%: 0.21 - 0.03 = 0.18
+        blocked = ks.check(d + timedelta(1), 0.18)
+        assert not blocked, "Exactly 3% improvement must lift the kill switch"
+        assert not ks.state.is_active
+
+    def test_recovers_after_dd_worsens_then_improves(self):
+        """DD worsens to 25% after activation, then improves 3% to 22% → recovers."""
+        ks = self._ks()
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                        # activate; worst=0.21
+        ks.check(d + timedelta(1), 0.25)          # worsen; worst=0.25
+        ks.check(d + timedelta(2), 0.24)          # still above 0.22
+        blocked = ks.check(d + timedelta(3), 0.22)  # 3% from 0.25 → lift
+        assert not blocked, "3% improvement from worst 25% (→22%) must lift switch"
+
+    # ── Cooldown interaction ─────────────────────────────────────────────────
+
+    def test_cooldown_blocks_even_with_sufficient_improvement(self):
+        """Even a large DD improvement cannot override the cooldown requirement."""
+        ks = self._ks(cooldown_days=5)
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                        # activate; cooldown until d+5
+        # day 2: DD drops 10% — well past improvement threshold, but cooldown active
+        blocked = ks.check(d + timedelta(2), 0.11)
+        assert blocked, "Cooldown not elapsed (day 2 of 5) — must stay blocked"
+
+    def test_recovers_after_cooldown_and_improvement(self):
+        """Both cooldown elapsed AND improvement met → lifts."""
+        ks = self._ks(cooldown_days=3)
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)                        # worst=0.21; cooldown until d+3
+        ks.check(d + timedelta(1), 0.21)
+        ks.check(d + timedelta(2), 0.21)
+        # day 4: cooldown elapsed + 4% improvement (0.21→0.17)
+        blocked = ks.check(d + timedelta(4), 0.17)
+        assert not blocked, "Cooldown elapsed + 4% improvement → must lift"
+
+    # ── State reset on deactivation ──────────────────────────────────────────
+
+    def test_max_dd_resets_on_deactivation(self):
+        """max_dd_while_blocked must be zeroed when switch deactivates."""
+        ks = self._ks()
+        d = date(2026, 1, 1)
+        ks.check(d, 0.21)
+        ks.check(d + timedelta(1), 0.25)         # worst=0.25
+        ks.check(d + timedelta(2), 0.22)         # recover (3% from 0.25)
+        assert ks.state.max_dd_while_blocked == 0.0, (
+            "max_dd_while_blocked must be reset to 0.0 after deactivation"
+        )
+
+    def test_switch_can_refire_after_reset(self):
+        """After deactivation, a new DD breach must reactivate with fresh worst tracking."""
+        ks = self._ks()
+        d = date(2026, 1, 1)
+        # First activation + recovery
+        ks.check(d, 0.21)
+        ks.check(d + timedelta(1), 0.18)         # 3% improvement → deactivate
+        assert not ks.state.is_active
+        # Second activation
+        ks.check(d + timedelta(10), 0.22)
+        assert ks.state.is_active
+        assert ks.state.max_dd_while_blocked == pytest.approx(0.22)
+        assert ks.state.total_activations == 2
+
+    # ── 17-year regime simulation ────────────────────────────────────────────
+
+    def test_sustained_elevated_dd_eventually_recovers(self):
+        """
+        Simulate a 2020-style 6-month regime: DD oscillates 17-22%, then
+        finally improves 4% to ~17% below its peak.
+        Old logic: would block for the entire 6 months (never crosses 16% floor).
+        New logic: must deactivate when 3% improvement from peak is reached.
+        """
+        ks = self._ks(cooldown_days=5)
+        d = date(2020, 3, 1)
+
+        # Activate at 21%
+        ks.check(d, 0.21)
+
+        # Simulate 4 months of oscillating elevated DD (typical 2020 regime)
+        import random
+        random.seed(42)
+        worst_seen = 0.21
+        days_blocked_old_logic = 0
+
+        for i in range(1, 90):
+            # DD oscillates between 17% and 24%
+            dd = 0.17 + random.random() * 0.07
+            worst_seen = max(worst_seen, dd)
+            if ks.state.is_active:
+                days_blocked_old_logic += 1
+            ks.check(d + timedelta(i), dd)
+
+        # Day 91: force a clean 4% recovery from worst
+        recovery_dd = worst_seen - 0.04
+        ks.check(d + timedelta(95), recovery_dd)
+
+        assert not ks.state.is_active, (
+            f"After {worst_seen:.1%} peak DD and {recovery_dd:.1%} recovery "
+            f"(4% improvement), switch must deactivate"
+        )
