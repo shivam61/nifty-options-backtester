@@ -2792,7 +2792,7 @@ def main():
         choices=[
             "backtest", "backtest-combined", "signal", "signal-combined", "evolve", "monitor", "validate",
             "add-trade", "close-trade", "remove-trade", "list-trades",
-            "ablation", "stress",
+            "ablation", "stress", "refresh-data",
         ],
         default="backtest",
         help="Run mode",
@@ -2885,6 +2885,81 @@ def main():
         run_stress_test(config, args)
     elif args.mode == "validate":
         run_validate(config)
+    elif args.mode == "refresh-data":
+        run_data_refresh(config)
+
+
+def _purge_short_parquets(required_start: date) -> int:
+    """
+    Delete per-ticker parquet caches whose earliest data row starts after
+    required_start.  These caches are too short to serve a full-history backtest
+    and will silently truncate data if left in place.
+    """
+    from data.market_data import CACHE_DIR
+    cleared = 0
+    for p in Path(CACHE_DIR).glob("*.parquet"):
+        try:
+            df = pd.read_parquet(p)
+            if df.empty:
+                continue
+            earliest = pd.Timestamp(df.index.min()).date()
+            if earliest > required_start:
+                p.unlink()
+                cleared += 1
+        except Exception:
+            pass
+    return cleared
+
+
+def run_data_refresh(config: BacktestConfig) -> pd.DataFrame:
+    """
+    Rebuild the market data feature store (88 columns, full date range) WITHOUT
+    touching the ML model caches (.pkl files).
+
+    Steps:
+      [1/2] Purge stale per-ticker parquet caches that start after config.start_date
+      [2/2] Re-fetch all tickers from Yahoo Finance and cache fresh parquets
+
+    The backtest can be run immediately after this without --mode evolve
+    (existing .pkl models are still used; run evolve later to retrain on new data).
+    """
+    from data.market_data import MarketDataFetcher
+
+    print(f"\n{'=' * 70}")
+    print(f"  MARKET DATA REFRESH")
+    print(f"  Period : {config.start_date} → {config.end_date}")
+    print(f"{'=' * 70}\n")
+
+    print("[1/2] Clearing parquet caches with incomplete date coverage...")
+    cleared = _purge_short_parquets(config.start_date)
+    print(f"  Cleared {cleared} stale cache file(s) (earliest row > {config.start_date})")
+
+    print("\n[2/2] Fetching full market data from Yahoo Finance...")
+    import warnings
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        fetcher = MarketDataFetcher(config.start_date, config.end_date)
+        data = fetcher.build_combined_dataset()
+
+    actual_start = data.index.min().date() if not data.empty else config.start_date
+    actual_end   = data.index.max().date() if not data.empty else config.end_date
+
+    print(f"\n  ✓ Feature store rebuilt")
+    print(f"    Rows     : {len(data):,}  trading days")
+    print(f"    Columns  : {len(data.columns)}  features")
+    print(f"    Coverage : {actual_start} → {actual_end}")
+
+    if actual_start > config.start_date:
+        gap_days = (actual_start - config.start_date).days
+        print(f"\n  ⚠  WARNING: Data starts {gap_days} days later than requested.")
+        print(f"     Requested : {config.start_date}")
+        print(f"     Got       : {actual_start}")
+        print(f"     Some tickers (BZ=F, CL=F, ^VIX) may not have pre-{actual_start} history")
+        print(f"     available via Yahoo Finance at this time.")
+
+    print(f"\n  ML model caches (.pkl) were NOT modified.")
+    print(f"  Run --mode evolve to retrain models on the refreshed data if needed.\n")
+    return data
 
 
 def run_signal_combined(config: BacktestConfig) -> None:

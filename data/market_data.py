@@ -203,7 +203,12 @@ def _store_cache(path: Path, df: pd.DataFrame) -> None:
 
 
 def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
-    cache_key = hashlib.md5(f"{ticker}_{start}_{end}".encode()).hexdigest()
+    # Avoid daily cache-miss: today's OHLC is incomplete until market close.
+    # Normalise end to yesterday when it equals today so the cache key is
+    # stable across multiple same-day runs.
+    from datetime import date as _date_t
+    effective_end = end if end < _date_t.today() else _date_t.today() - timedelta(days=1)
+    cache_key = hashlib.md5(f"{ticker}_{start}_{effective_end}".encode()).hexdigest()
     path = _cache_path(cache_key)
 
     # Prefer exact or broad local cache before any network access.
@@ -249,14 +254,9 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
         _store_cache(path, merged)
         return merged
 
-    # Final fallback: prefer any local cache over returning empty data.
-    if partial is not None and len(partial) > 0:
-        return partial
-    cached = _load_best_cached_overlap(ticker, start, end)
-    if cached is not None and len(cached) > 0:
-        return cached
-
-    return data
+    # Final fallback: return empty rather than potentially wrong cache
+    # (the caller will fill missing data with sensible defaults like vix=15)
+    return pd.DataFrame()
 
 
 class MarketDataFetcher:
@@ -307,15 +307,28 @@ class MarketDataFetcher:
             combined["nifty_open"] = self.nifty["Open"]
             combined["nifty_volume"] = self.nifty.get("Volume", 0)
 
+        # VIX data: yfinance ^INDIAVIX is unreliable; validate before using
         if len(self.vix) > 0:
-            combined["vix"] = self.vix["Close"]
+            vix_close = self.vix["Close"]
+            # Safety check: VIX should be between 5 and 150, not 10000+
+            if vix_close.max() > 200:
+                # Likely corrupted with index data; use default instead
+                combined["vix"] = 15.0
+            else:
+                combined["vix"] = vix_close
+        else:
+            combined["vix"] = 15.0
 
         if len(self.crude) > 0:
             combined["crude"] = self.crude["Close"]
+        else:
+            combined["crude"] = combined.get("crude", 0).fillna(80.0)
 
         for name in ["usdinr", "gold", "dxy", "us_vix", "us_10y", "sp500", "nifty_bank", "silver", "nifty_it", "em_etf", "hang_seng", "europe"]:
             if name in self._data and len(self._data[name]) > 0:
                 combined[name] = self._data[name]["Close"]
+            elif name not in combined:
+                combined[name] = 0.0
 
         combined = combined.ffill().dropna(subset=["nifty_close"])
 
@@ -527,6 +540,19 @@ class MarketDataFetcher:
             combined["fii_flow_proxy"] = (
                 combined["it_sector_return_5d"] - combined["nifty_return_5d"]
             )
+
+        # Coverage warning: alert if data starts later than requested start date
+        if not combined.empty:
+            actual_start = combined.index.min().date()
+            if actual_start > self.start:
+                gap_days = (actual_start - self.start).days
+                import warnings
+                warnings.warn(
+                    f"MarketDataFetcher: data starts {actual_start} but {self.start} was requested "
+                    f"({gap_days} days of history missing). "
+                    f"Run 'python main.py --mode refresh-data --start {self.start}' to fetch full history.",
+                    stacklevel=2,
+                )
 
         return combined
 
