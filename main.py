@@ -786,6 +786,13 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
             )
 
     print(f"\n  Capital Utilization: {result.capital_utilization_pct:.1f}%")
+
+    # Monthly entry funnel — shows which gate blocked how many days
+    print(engine._monthly_funnel_report(
+        start_date=config.start_date,
+        end_date=config.end_date,
+    ))
+
     print(f"\n  {'=' * 80}\n")
 
     log_backtest_run(result, engine, config, run_label=run_label, is_combined=True)

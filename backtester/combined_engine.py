@@ -8,9 +8,13 @@ Runs both tracks concurrently on shared capital:
 - Single combined equity curve
 """
 
+import logging
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Optional
+
+_log = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
@@ -215,6 +219,11 @@ class CombinedBacktestEngine:
         self._evaluation_start_date = None
         self._active_walk_forward_bundle = None
         self.monthly_diagnostics = MonthlyDiagnosticsCollector()
+
+        # Per-gate counters for the monthly entry funnel report
+        # Keys match the gate names printed by _monthly_funnel_report()
+        self._monthly_gate_counts: dict[str, int] = defaultdict(int)
+        self._monthly_days_evaluated: int = 0
         if getattr(getattr(self, "walk_forward_manager", None), "windows", None):
             self._evaluation_start_date = self.walk_forward_manager.windows[0].test_start.date()
 
@@ -335,7 +344,10 @@ class CombinedBacktestEngine:
             self._fill_pending_monthly_entry(current_date, row)
             self._fill_pending_weekly_entry(current_date, row)
             spot = row.get("nifty_close", 0)
-            vix = row.get("vix", 15)
+            vix = row.get("vix")
+            if vix is None:
+                _log.warning("VIX missing for %s, substituting 15", current_date)
+                vix = 15.0
             if pd.isna(spot) or spot == 0 or pd.isna(vix):
                 continue
 
@@ -364,8 +376,12 @@ class CombinedBacktestEngine:
                     daily_combined_pnl += pnl
                     self.prod_gate.kill_switch.state.weekly_force_closes += 1
 
+                if self.monthly_trade is not None and self.prod_gate.kill_switch.should_force_close_monthly():
+                    pnl = self._close_monthly(current_date, spot, vix, ExitReason.STOP_LOSS)
+                    daily_combined_pnl += pnl
+                    self.prod_gate.kill_switch.state.monthly_force_closes += 1
+
                 # Skip directly to equity calculation — no entries, no normal exits
-                # (monthly stays open — it has its own ML exit engine)
                 m_pnl = self._process_monthly_exit(row, current_date, spot, vix, market_data)
                 daily_combined_pnl += m_pnl
                 w_pnl = self._process_weekly_exit(row, current_date, spot, vix, market_data)
@@ -406,7 +422,10 @@ class CombinedBacktestEngine:
                 monthly_blocked, _ = self.prod_gate.should_block_monthly_entry(
                     current_date, legs=None, spot=spot,
                 )
-                if not monthly_blocked:
+                if monthly_blocked:
+                    self._monthly_gate_counts["g1_event_calendar"] += 1
+                    self._monthly_days_evaluated += 1  # count blocked days too
+                else:
                     self._process_monthly_entry(row, current_date, spot, vix, market_data, equity_mtm, dd_pct)
 
             # ── Weekly track: multi-layer risk gate before entry ──
@@ -500,8 +519,7 @@ class CombinedBacktestEngine:
             return pnl
         else:
             self._m_pnl_history.append(self.monthly_trade.pnl_per_unit)
-            self.monthly_diagnostics.update_open_trade(self.monthly_trade.pnl_per_unit)
-            return self.monthly_trade.total_pnl
+            return 0.0
 
     def _monthly_smart_exit(self, row, spot, vix, dte, entry_vix):
         """VIX-adaptive exits + trailing stops + ML override for monthly."""
@@ -528,13 +546,13 @@ class CombinedBacktestEngine:
         correction_depth = row.get("nifty_drawdown_from_20d_high_pct", 0) if hasattr(row, "get") else 0
 
         if vix < 15:
-            profit_target, stop_loss = 60, 80
+            profit_target, stop_loss = 55, 50
         elif vix < 20:
-            profit_target, stop_loss = 50, 65
+            profit_target, stop_loss = 50, 45
         elif vix < 30:
-            profit_target, stop_loss = 40, 55
+            profit_target, stop_loss = 40, 40
         else:
-            profit_target, stop_loss = 30, 45
+            profit_target, stop_loss = 30, 35
 
         profit_target = int(profit_target * getattr(self.m_config, "monthly_exit_profit_target_scale", 1.0))
         stop_loss = int(stop_loss * getattr(self.m_config, "monthly_exit_stop_loss_scale", 1.0))
@@ -563,27 +581,37 @@ class CombinedBacktestEngine:
                 dist = (sl.strike - spot) / spot * 100
             min_dist = min(min_dist, dist)
 
-        if min_dist < 1.5 and pnl_pct < -5:
+        if min_dist < 1.5 and trade.total_pnl < -0.05 * net_credit * trade.lots * trade.lot_size:
             self.monthly_smart_exits += 1
             return True, ExitReason.STOP_LOSS
 
-        if vix_change > 0.25 and pnl_pct < -10:
+        if vix_change > 0.25 and trade.total_pnl < -0.10 * net_credit * trade.lots * trade.lot_size:
             self.monthly_smart_exits += 1
             return True, ExitReason.STOP_LOSS
 
-        if vix_vs_sma > 1.20 and pnl_pct < -15:
+        if vix_vs_sma > 1.20 and trade.total_pnl < -0.15 * net_credit * trade.lots * trade.lot_size:
             self.monthly_smart_exits += 1
             return True, ExitReason.STOP_LOSS
 
-        if crash_risk_v2 >= 0.80 and pnl_pct < 0:
+        if crash_risk_v2 >= 0.80 and trade.total_pnl < 0:
             self.monthly_smart_exits += 1
             return True, ExitReason.STOP_LOSS
+
+        if days_in_trade >= 10 and trade.total_pnl < 0:
+            pnl_3d_ago_unit = self._m_pnl_history[-3] if len(self._m_pnl_history) >= 3 else 0
+            pnl_3d_ago_rupees = pnl_3d_ago_unit * trade.lots * trade.lot_size
+            worsening_threshold = 0.05 * net_credit * trade.lots * trade.lot_size
+            if (trade.total_pnl < pnl_3d_ago_rupees - worsening_threshold and
+                    trade.total_pnl < -0.20 * net_credit * trade.lots * trade.lot_size):
+                self.monthly_smart_exits += 1
+                return True, ExitReason.STOP_LOSS
 
         if allow_profit_taking and pnl_pct >= profit_target:
             self.monthly_smart_exits += 1
             return True, ExitReason.PROFIT_TARGET
 
-        if pnl_pct < -stop_loss:
+        stop_loss_rupees = (stop_loss / 100.0) * net_credit * trade.lots * trade.lot_size
+        if trade.total_pnl < -stop_loss_rupees:
             self.monthly_smart_exits += 1
             return True, ExitReason.STOP_LOSS
 
@@ -622,7 +650,7 @@ class CombinedBacktestEngine:
                     "vega_exposure": trade.portfolio_vega if hasattr(trade, "portfolio_vega") else 0,
                 }
                 ml_exit_prob = self.exit_engine.predict_exit(market_features, trade_features)
-                if ml_exit_prob >= 0.75 and pnl_pct < -15:
+                if ml_exit_prob >= 0.75 and trade.total_pnl < -0.15 * net_credit * trade.lots * trade.lot_size:
                     self.monthly_smart_exits += 1
                     return True, ExitReason.STOP_LOSS
             except Exception:
@@ -632,7 +660,10 @@ class CombinedBacktestEngine:
 
     def _process_monthly_entry(self, row, current_date, spot, vix, market_data, equity, dd_pct):
         """ML-driven monthly entry with position sizing and risk caps."""
+        self._monthly_days_evaluated += 1
+
         if self._m_last_entry_date and (current_date - self._m_last_entry_date).days < 2:
+            self._monthly_gate_counts["g13_cooldown"] += 1
             return
 
         prediction_payload = {}
@@ -640,6 +671,7 @@ class CombinedBacktestEngine:
         if hasattr(self.monthly_strategy, "get_eligible_strategies"):
             eligible = self.monthly_strategy.get_eligible_strategies(spot, vix, market_data)
             if not eligible:
+                self._monthly_gate_counts["g2_7_circuit_or_vix_zone"] += 1
                 self.monthly_diagnostics.record_candidate_funnel(
                     signal_date=current_date,
                     regime=_regime_from_vix(vix),
@@ -660,6 +692,7 @@ class CombinedBacktestEngine:
                     viable.append(strat_name)
             eligible = viable
             if not eligible:
+                self._monthly_gate_counts["g7_should_enter"] += 1
                 self.monthly_diagnostics.record_candidate_funnel(
                     signal_date=current_date,
                     regime=_regime_from_vix(vix),
@@ -685,6 +718,7 @@ class CombinedBacktestEngine:
 
                 if quality_score < effective_threshold:
                     self.monthly_ml_skips += 1
+                    self._monthly_gate_counts["g8_ml_quality"] += 1
                     features = prediction.get("features", {})
                     self.monthly_diagnostics.record_prediction(
                         signal_date=current_date,
@@ -742,6 +776,7 @@ class CombinedBacktestEngine:
         )
         if not decision.found:
             self.monthly_ml_skips += 1
+            self._monthly_gate_counts["g9_expiry_selector"] += 1
             self.monthly_diagnostics.record_prediction(
                 signal_date=current_date,
                 threshold=self._monthly_model_threshold() or self.entry_threshold,
@@ -786,6 +821,7 @@ class CombinedBacktestEngine:
         )
         if sizing.lots <= 0:
             self.monthly_ml_skips += 1
+            self._monthly_gate_counts["g10_position_sizing"] += 1
             self.monthly_diagnostics.record_candidate_funnel(
                 signal_date=current_date,
                 regime=_regime_from_vix(vix),
@@ -798,12 +834,21 @@ class CombinedBacktestEngine:
             )
             return
 
+        hard_max_loss_pct = getattr(self.m_config, "monthly_hard_max_loss_pct", 8.0)
+        trade_max_loss_rupees = decision.best.max_loss * sizing.lots * self.m_config.lot_size
+        hard_cap_rupees = equity * (hard_max_loss_pct / 100.0)
+        if trade_max_loss_rupees > hard_cap_rupees:
+            self.monthly_ml_skips += 1
+            self._monthly_gate_counts["g11_hard_max_loss"] += 1
+            return
+
         if hasattr(self.monthly_strategy, "set_lots"):
             self.monthly_strategy.set_lots(sizing.lots)
         else:
             self.monthly_strategy.lots = sizing.lots
 
         if not (self.m_config.min_dte_entry <= dte <= self.m_config.max_dte_entry):
+            self._monthly_gate_counts["g12_dte_window"] += 1
             return
 
         features = prediction_payload.get("features", {})
@@ -888,6 +933,49 @@ class CombinedBacktestEngine:
                 return None
         return None
 
+    def _monthly_funnel_report(self, start_date=None, end_date=None) -> str:
+        """
+        Return a formatted per-gate funnel summary for monthly trade entry.
+
+        Prints how many days each gate blocked so the analyst can pinpoint
+        which gate is responsible for low/zero trade counts.
+        """
+        total = self._monthly_days_evaluated
+        signals = self.monthly_ml_entries
+        filled  = len(self.monthly_completed)
+
+        def row(label, key, desc=""):
+            n = self._monthly_gate_counts.get(key, 0)
+            pct = (n / total * 100) if total else 0.0
+            suffix = f"  [{desc}]" if desc else ""
+            return f"  ├─ {label:<40s}: {n:5d} days blocked  ({pct:5.1f}%){suffix}"
+
+        date_hdr = ""
+        if start_date and end_date:
+            date_hdr = f" ({start_date} → {end_date})"
+
+        lines = [
+            "",
+            f"  Monthly Entry Funnel Summary{date_hdr}",
+            "  " + "─" * 70,
+            f"  Total days evaluated (no open trade)  : {total:5d}",
+            row("Gate  1  Event calendar block",      "g1_event_calendar",        "Budget/Election ±2d"),
+            row("Gates 2–7 Circuit breaker / VIX zone", "g2_7_circuit_or_vix_zone", "crash/stress/correction/VIX accel/crude"),
+            row("Gate  7b Strategy should_enter() failed", "g7_should_enter",          "VIX zone passed but no sub-strategy entered"),
+            row("Gate  8  ML quality score < threshold", "g8_ml_quality",            f"threshold ≈ {self.entry_threshold:.2f}"),
+            row("Gate  9  Expiry selector found=False", "g9_expiry_selector",        "EV/risk-reward/DTE/suitability filters"),
+            row("Gate 10  Position sizing lots=0",      "g10_position_sizing",       "equity or margin insufficient"),
+            row("Gate 11  Hard max loss cap",           "g11_hard_max_loss",         f"trade_loss > equity × {getattr(self.m_config, 'monthly_hard_max_loss_pct', 8.0):.0f}%"),
+            row("Gate 12  DTE window",                  "g12_dte_window",            f"DTE not in [{self.m_config.min_dte_entry}, {self.m_config.max_dte_entry}]"),
+            row("Gate 13  Entry cooldown",              "g13_cooldown",              "< 2 days since last entry"),
+            "  " + "─" * 70,
+            f"  Entry signals created               : {signals:5d}",
+            f"  Trades filled (actual)              : {filled:5d}",
+            f"  Skipped at fill                     : {max(0, signals - filled):5d}",
+            "",
+        ]
+        return "\n".join(lines)
+
     def _close_monthly(self, exit_date, spot, vix, reason) -> float:
         trade = self.monthly_trade
         trade.exit_date = exit_date
@@ -948,7 +1036,9 @@ class CombinedBacktestEngine:
         else:
             self._m_consecutive_losses += 1
 
-        self.position_sizer.record_trade_with_equity(net_pnl, self._combined_equity)
+        # Use post-close equity: _monthly_realized already includes net_pnl at this point
+        post_close_equity = self.m_config.initial_capital + self._monthly_realized + self._weekly_realized
+        self.position_sizer.record_trade_with_equity(net_pnl, post_close_equity)
         self.monthly_trade = None
         self._m_peak_pnl_per_unit = 0.0
         self._m_pnl_history = []
@@ -1114,7 +1204,7 @@ class CombinedBacktestEngine:
             if self._w_exit_tracker is None:
                 self._w_exit_tracker = build_tracker(self.weekly_trade)
             update_tracker(self._w_exit_tracker, self.weekly_trade, spot)
-            return self.weekly_trade.total_pnl
+            return 0.0
 
     def _estimate_weekly_delta(self, spot, vix, dte_rem) -> float:
         """Rough net delta estimate for the weekly spread."""
@@ -1302,8 +1392,11 @@ class CombinedBacktestEngine:
         cost = 0.0
         if self.w_config.apply_costs:
             cm = self.w_config.cost_model
+            avg_m = 1.0
+            if trade.legs and trade.entry_spot > 0:
+                avg_m = sum(l.strike / trade.entry_spot for l in trade.legs) / len(trade.legs)
             cost = cm.total_cost_per_trade(
-                trade.net_credit, len(trade.legs), trade.lots, trade.lot_size, trade.entry_vix,
+                trade.net_credit, len(trade.legs), trade.lots, trade.lot_size, trade.entry_vix, avg_m,
             )
         net_pnl = raw_pnl - cost
 
