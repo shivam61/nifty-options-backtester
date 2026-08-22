@@ -166,6 +166,7 @@ class CombinedBacktestEngine:
 
         self._combined_equity = monthly_config.initial_capital
         self._peak_equity = monthly_config.initial_capital
+        self._peak_equity_realized = monthly_config.initial_capital   # Phase-1: realized-only peak
         self._monthly_realized = 0.0
         self._weekly_realized = 0.0
 
@@ -191,6 +192,13 @@ class CombinedBacktestEngine:
         # Stats
         self.cross_track_dd_blocks = 0
         self.weekly_ml_skips = 0
+
+        # Phase-1 fix: improvement-based recovery for cross-track DD gate.
+        # Tracks the worst portfolio DD seen while weekly entries are blocked
+        # so that re-entry requires improvement from the worst point, not just
+        # falling below a static floor.
+        self._cross_dd_worst_while_blocked: float = 0.0
+        self._cross_dd_improvement_pct: float = 0.03   # 3% improvement required
         self.weekly_vix_gate_blocks = 0
         self.weekly_open_cap_blocks = 0
         self.weekly_monthly_loss_blocks = 0
@@ -365,8 +373,20 @@ class CombinedBacktestEngine:
                 equity_mtm += self.weekly_trade.total_pnl
             if equity_mtm > self._peak_equity:
                 self._peak_equity = equity_mtm
+            if equity_realized > self._peak_equity_realized:
+                self._peak_equity_realized = equity_realized
 
             dd_pct = max(0, (self._peak_equity - equity_mtm) / self._peak_equity) if self._peak_equity > 0 else 0
+
+            # Phase-1 fix: realized-only DD for weekly cross-track gate.
+            # equity_mtm includes open-position paper losses, which temporarily
+            # inflate dd_pct even when no trade has actually been closed at a loss.
+            # The cross-track gate should protect against locked-in losses, not
+            # unrealized MTM swings from an open monthly position.
+            dd_pct_realized = (
+                max(0, (self._peak_equity_realized - equity_realized) / self._peak_equity_realized)
+                if self._peak_equity_realized > 0 else 0
+            )
 
             # ── PRODUCTION RULE: DD Kill Switch ──
             # If portfolio DD hits the kill threshold, force-close weekly and halt all entries.
@@ -437,7 +457,7 @@ class CombinedBacktestEngine:
                 if event_blocked:
                     pass  # counted inside prod_gate
                 else:
-                    block_reason = self._weekly_entry_blocked(equity_mtm, dd_pct, vix)
+                    block_reason = self._weekly_entry_blocked(equity_mtm, dd_pct_realized, vix)
                     if block_reason is None:
                         data_idx = self.data.index.get_loc(idx)
                         self._process_weekly_entry(
@@ -1074,13 +1094,32 @@ class CombinedBacktestEngine:
 
         Returns None if entry is allowed, or a string reason if blocked.
         Checks in order of cost (cheapest first):
-          1. Cross-track DD breaker (combined DD > threshold)
+          1. Cross-track DD breaker (combined DD > threshold, improvement-based)
           2. Monthly MTM loss > threshold (don't layer risk on a losing month)
           3. Combined open position loss cap
           4. VIX simultaneous position gate
+
+        Phase-1 fix: Gate 1 now uses improvement-based recovery.
+        Old: blocked whenever dd_pct > cross_track_dd_pct (absolute 20% floor).
+        New: once blocked, re-enable when dd_pct improves 3% from its worst
+             point while blocked. This prevents the 337-day lock-out caused by
+             DD oscillating 17-22% for months without ever crossing 20%.
         """
         if dd_pct > self.cross_track_dd_pct:
+            # Currently in elevated-DD territory. Update worst-DD tracker.
+            if dd_pct > self._cross_dd_worst_while_blocked:
+                self._cross_dd_worst_while_blocked = dd_pct
             return "dd"
+
+        # DD is at or below threshold. Check if we're recovering from a blocked period.
+        if self._cross_dd_worst_while_blocked > 0:
+            # We were previously blocked. Require improvement_pct improvement from worst.
+            required_recovery = self._cross_dd_worst_while_blocked - self._cross_dd_improvement_pct
+            if dd_pct > required_recovery:
+                # Still haven't improved enough from the worst seen — keep blocking.
+                return "dd"
+            # Sufficient improvement — allow entry and reset tracker.
+            self._cross_dd_worst_while_blocked = 0.0
 
         if self.monthly_trade is not None and self.monthly_trade.total_pnl < 0:
             monthly_hold_days = getattr(self.monthly_trade, "holding_days", 0)
