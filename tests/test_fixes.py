@@ -1948,13 +1948,14 @@ class TestDTEBasedExitTargets:
     """Profit targets should scale with remaining DTE, not only VIX."""
 
     def test_dte_long_target_in_config(self):
-        """BacktestConfig has monthly_exit_dte_profit_target_long = 35.0"""
+        """BacktestConfig has monthly_exit_dte_profit_target_long (lowered 35→25, 2026-08-23)."""
         from config import BacktestConfig
         cfg = BacktestConfig()
         assert hasattr(cfg, "monthly_exit_dte_profit_target_long"), (
             "BacktestConfig missing monthly_exit_dte_profit_target_long"
         )
-        assert cfg.monthly_exit_dte_profit_target_long == 35.0
+        # Lowered 35→25 (2026-08-23): 25% target achievable in 5-7 days vs 8-12 days at 35%
+        assert cfg.monthly_exit_dte_profit_target_long == 25.0
 
     def test_dte_mid_target_in_config(self):
         """BacktestConfig has monthly_exit_dte_profit_target_mid = 55.0"""
@@ -1968,12 +1969,13 @@ class TestDTEBasedExitTargets:
         cfg = BacktestConfig()
         assert cfg.monthly_exit_dte_profit_target_short == 75.0
 
-    def test_min_hold_days_default_5(self):
-        """monthly_exit_min_hold_days should default to 5 to capture theta weekends."""
+    def test_min_hold_days_default_3(self):
+        """monthly_exit_min_hold_days should default to 3 (lowered 5→3, 2026-08-23)."""
         from config import BacktestConfig
         cfg = BacktestConfig()
-        assert cfg.monthly_exit_min_hold_days == 5, (
-            f"expected 5 (captures two theta weekends), got {cfg.monthly_exit_min_hold_days}"
+        # Lowered 5→3 (2026-08-23): allows fast profit-taking while still capturing 2 theta weekends
+        assert cfg.monthly_exit_min_hold_days == 3, (
+            f"expected 3 (2026-08-23 reduction from 5), got {cfg.monthly_exit_min_hold_days}"
         )
 
     def test_dte_targets_increase_for_shorter_dte(self):

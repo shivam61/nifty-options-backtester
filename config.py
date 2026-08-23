@@ -98,24 +98,29 @@ class BacktestConfig:
     monthly_max_margin_per_trade_pct: float = 20.0
     monthly_max_risk_per_trade_pct: float = 10.0
     monthly_hard_max_loss_pct: float = 15.0
-    monthly_entry_threshold: float = 0.30  # Cap on Gate 8 quality threshold; model's OOF recommendation takes effect if lower.
+    monthly_entry_threshold: float = 0.50  # Gate 8 quality threshold cap; raised 0.30→0.50 (2026-08-23)
+    # so model's regime-aware thresholds (TRENDING:0.46, LOW_VOL:0.48, HIGH_VOL:0.50, CRASH:0.52)
+    # are no longer suppressed by the artificial 0.30 ceiling. Expect ~150-200 monthly entries
+    # (down from 397) keeping only high-confidence setups. If entries drop below 50, lower to 0.40.
     monthly_gate8_enabled: bool = True
     # Re-enabled 2026-08-23: LightGBM AUC reached 0.696 (>0.55 threshold met).
     # Real-trade condition (≥500) intentionally relaxed — sim trades with 18
     # strategy-structure features now produce genuinely discriminative labels
     # (AUC 0.696 vs 0.55 random). Gate 8 now filters ~76% of bypass-era entries.
-    # If entry count < 50 over 17yr, lower monthly_entry_threshold to 0.25.
 
-    monthly_exit_min_hold_days: int = 5   # Never exit before day 5 (unless stop-loss); captures two theta weekends
+    monthly_exit_min_hold_days: int = 3   # Lowered 5→3 (2026-08-23): allows fast profit-taking on clean
+    # setups after 2 theta weekends; still avoids same-day exit noise. Reduces avg hold from 8d toward 5-6d.
     monthly_exit_profit_target_scale: float = 1.0
-    monthly_exit_stop_loss_scale: float = 1.0
+    monthly_exit_stop_loss_scale: float = 0.70  # Tightened 1.0→0.70 (2026-08-23): brings effective stops
+    # from 40-50% of credit to 28-35% — still gives trades room to breathe but cuts avg losing-trade hold.
     monthly_exit_trailing_arm_pct: float = 25.0
     monthly_exit_trailing_drop_pct: float = 35.0
 
     # DTE-based profit target table — replaces flat VIX-only targets.
     # Longer-DTE trades have lower targets (hold for theta); shorter-DTE trades
     # take more of the available credit since less time remains.
-    monthly_exit_dte_profit_target_long: float = 35.0    # dte >= 20 days remaining
+    monthly_exit_dte_profit_target_long: float = 25.0    # dte >= 20 days remaining — lowered 35→25 (2026-08-23):
+    # 35% target on 30-DTE trade took 8-12 days of pure decay; 25% achievable in 5-7 days
     monthly_exit_dte_profit_target_mid: float = 55.0     # 10 <= dte < 20
     monthly_exit_dte_profit_target_short: float = 75.0   # dte < 10
 
