@@ -1367,12 +1367,17 @@ def run_signal(config: BacktestConfig) -> None:
         from dotenv import load_dotenv as _lde2
         _lde2(override=True)
         
-        # Check if we're in market hours (approximate)
-        _now = _dt2.now()
+        # Check if we're in market hours — always in IST regardless of system TZ
+        try:
+            from zoneinfo import ZoneInfo as _ZI2
+            _now = _dt2.now(_ZI2("Asia/Kolkata"))
+        except Exception:
+            import pytz as _pytz2
+            _now = _dt2.now(_pytz2.timezone("Asia/Kolkata"))
         _market_start = _time(9, 15)
         _market_end = _time(15, 30)
         _is_market_hours = (_market_start <= _now.time() <= _market_end and
-                           _now.weekday() < 5)  # Mon-Fri
+                           _now.weekday() < 5)  # Mon-Fri IST
         
         if _is_market_hours:
             print(f"  Market hours detected — attempting Fyers API...")

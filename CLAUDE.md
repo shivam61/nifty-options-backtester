@@ -39,7 +39,7 @@ A Python backtester + live-signal system for **NSE Nifty 50 index options sellin
 | Circuit breaker — 50d drawdown | -18% | `RegimeAdaptiveStrategy.get_eligible_strategies()` |
 | Circuit breaker — crash score v2 | ≥ 0.80 | same |
 | Circuit breaker — multi-asset stress | ≥ 0.80 | same |
-| Weekly `stop_loss_pct` | 80% | `config.WeeklyBacktestConfig` |
+| Weekly `stop_loss_pct` | 100% | `config.WeeklyBacktestConfig` |
 
 ---
 

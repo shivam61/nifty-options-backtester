@@ -184,7 +184,7 @@ class WeeklyBacktestConfig:
     min_dte_entry: int = 3
     max_dte_entry: int = 8
     profit_target_pct: float = 50.0
-    stop_loss_pct: float = 80.0
+    stop_loss_pct: float = 100.0
     max_vix_entry: float = 25.0
     min_vix_entry: float = 10.0
 

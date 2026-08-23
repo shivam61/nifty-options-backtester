@@ -555,16 +555,19 @@ class TestDdRecoveryPct:
 
 
 # ---------------------------------------------------------------------------
-# CAGR #5 — Weekly stop_loss_pct 100→80
+# CAGR #5 — Weekly stop_loss_pct (was 100→80; reverted to 100 2026-08-23)
+# Rationale: slippage stress test showed 80% triggers kill-switch at moderate
+# friction (S2), collapsing weekly trade count to 0. Widened back to 100%
+# (= full 2× credit = natural max-loss of a short spread) to restore resilience.
 # ---------------------------------------------------------------------------
 
 class TestWeeklyStopLoss:
 
-    def test_weekly_config_stop_loss_is_80(self):
+    def test_weekly_config_stop_loss_is_100(self):
         from config import WeeklyBacktestConfig
         wc = WeeklyBacktestConfig()
-        assert wc.stop_loss_pct == 80.0, (
-            f"WeeklyBacktestConfig.stop_loss_pct should be 80.0, got {wc.stop_loss_pct}"
+        assert wc.stop_loss_pct == 100.0, (
+            f"WeeklyBacktestConfig.stop_loss_pct should be 100.0, got {wc.stop_loss_pct}"
         )
 
 
