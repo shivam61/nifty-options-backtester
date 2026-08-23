@@ -1079,3 +1079,1454 @@
 |-----------|----------|-------------|----:|
 | 2020-03-31 | weekly_pcs | stop_loss | ₹-1,760 |
 
+
+---
+## Run #27
+**Date**: 2026-05-18 06:03  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Total Return | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Avg P&L/Trade | ₹0 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+| Max Consec Wins | 0 |
+| Max Consec Losses | 0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| ML Entries | 0 |
+| ML Skips | 0 |
+| Circuit Breaker Blocks | 243 |
+| Smart Exits | 0 |
+| Rule Exits | 0 |
+| Multi-expiry Selections | 0 |
+
+
+---
+## Run #28 — [COMBINED]
+**Date**: 2026-05-18 06:12  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #29 — [COMBINED]
+**Date**: 2026-05-18 06:18  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #30 — [COMBINED]
+**Date**: 2026-05-18 06:18  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #31 — [COMBINED]
+**Date**: 2026-05-18 06:24  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #32 — [COMBINED]
+**Date**: 2026-05-18 06:26  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #33 — [COMBINED]
+**Date**: 2026-05-18 06:37  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.00% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹0 |
+| Sharpe | 0.00 |
+| Sortino | 0.00 |
+| Calmar | 0.00 |
+| Max Drawdown | 0.0% |
+| Win Rate | 0.0% |
+| Total Trades | 0 |
+| Profit Factor | 0.00 |
+| Best Trade | ₹0 |
+| Worst Trade | ₹0 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 0.0% |
+
+
+---
+## Run #34 — [COMBINED]
+**Date**: 2026-05-18 07:33  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 11.72% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹361,145 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 57.7% |
+| Total P&L | ₹361,145 |
+| Sharpe | 1.42 |
+| Sortino | 1.99 |
+| Calmar | 1.76 |
+| Max Drawdown | 6.6% |
+| Win Rate | 57.7% |
+| Total Trades | 201 |
+| Profit Factor | 2.74 |
+| Best Trade | ₹41,376 |
+| Worst Trade | ₹-10,926 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 201 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 10.5% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 3 | 1.5% | ₹-10,438 |
+| Loss (-10k to 0) | 82 | 40.8% | ₹-2,142 |
+| Small Win (0 to 10k) | 91 | 45.3% | ₹1,250 |
+| Medium Win (10k to 25k) | 18 | 9.0% | ₹12,651 |
+| Large Win (>= 25k) | 7 | 3.5% | ₹32,374 |
+| Median | - | - | ₹210 |
+| P10 / P90 | - | - | ₹-3,241 / ₹11,845 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2024-12-05 | weekly_ic | stop_loss | ₹41,376 |
+| 2024-11-13 | weekly_ic | stop_loss | ₹37,336 |
+| 2024-08-21 | weekly_ic | stop_loss | ₹31,664 |
+| 2024-04-16 | weekly_ic | stop_loss | ₹31,479 |
+| 2024-07-31 | weekly_ic | stop_loss | ₹31,131 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+| 2024-09-12 | weekly_ic | trailing_delta | ₹-8,567 |
+
+
+---
+## Run #35 — [COMBINED]
+**Date**: 2026-05-18 10:55  
+**Git**: `1e25257`  
+**Params**: 2023-01-01 to 2023-06-30 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 8.36% |
+| Monthly P&L | ₹15,862 |
+| Weekly P&L | ₹225,480 |
+| Monthly Win Rate | 60.3% |
+| Weekly Win Rate | 57.2% |
+| Total P&L | ₹241,342 |
+| Sharpe | 1.26 |
+| Sortino | 1.70 |
+| Calmar | 0.78 |
+| Max Drawdown | 10.8% |
+| Win Rate | 58.4% |
+| Total Trades | 327 |
+| Profit Factor | 1.82 |
+| Best Trade | ₹15,885 |
+| Worst Trade | ₹-13,127 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 126 |
+| Weekly Trades | 201 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 70.3% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 3 | 1.5% | ₹-10,438 |
+| Loss (-10k to 0) | 83 | 41.3% | ₹-1,904 |
+| Small Win (0 to 10k) | 90 | 44.8% | ₹974 |
+| Medium Win (10k to 25k) | 25 | 12.4% | ₹13,088 |
+| Large Win (>= 25k) | 0 | 0.0% | ₹0 |
+| Median | - | - | ₹210 |
+| P10 / P90 | - | - | ₹-2,981 / ₹11,845 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2024-06-11 | weekly_ic | stop_loss | ₹15,885 |
+| 2024-08-21 | weekly_ic | stop_loss | ₹15,738 |
+| 2024-10-22 | weekly_ic | stop_loss | ₹15,692 |
+| 2024-04-16 | weekly_ic | stop_loss | ₹15,645 |
+| 2024-07-31 | weekly_ic | stop_loss | ₹15,471 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+| 2020-05-13 | weekly_ic | dte_limit | ₹-7,559 |
+
+
+---
+## Run #36 — [COMBINED]
+**Date**: 2026-05-18 10:56  
+**Git**: `1e25257`  
+**Params**: 2020-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 8.36% |
+| Monthly P&L | ₹15,862 |
+| Weekly P&L | ₹225,480 |
+| Monthly Win Rate | 60.3% |
+| Weekly Win Rate | 57.2% |
+| Total P&L | ₹241,342 |
+| Sharpe | 1.26 |
+| Sortino | 1.70 |
+| Calmar | 0.78 |
+| Max Drawdown | 10.8% |
+| Win Rate | 58.4% |
+| Total Trades | 327 |
+| Profit Factor | 1.82 |
+| Best Trade | ₹15,885 |
+| Worst Trade | ₹-13,127 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 126 |
+| Weekly Trades | 201 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 70.3% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 3 | 1.5% | ₹-10,438 |
+| Loss (-10k to 0) | 83 | 41.3% | ₹-1,904 |
+| Small Win (0 to 10k) | 90 | 44.8% | ₹974 |
+| Medium Win (10k to 25k) | 25 | 12.4% | ₹13,088 |
+| Large Win (>= 25k) | 0 | 0.0% | ₹0 |
+| Median | - | - | ₹210 |
+| P10 / P90 | - | - | ₹-2,981 / ₹11,845 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2024-06-11 | weekly_ic | stop_loss | ₹15,885 |
+| 2024-08-21 | weekly_ic | stop_loss | ₹15,738 |
+| 2024-10-22 | weekly_ic | stop_loss | ₹15,692 |
+| 2024-04-16 | weekly_ic | stop_loss | ₹15,645 |
+| 2024-07-31 | weekly_ic | stop_loss | ₹15,471 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+| 2020-05-13 | weekly_ic | dte_limit | ₹-7,559 |
+
+
+---
+## Run #37 — 10y-performance-check — [COMBINED]
+**Date**: 2026-05-18 10:56  
+**Git**: `1e25257`  
+**Params**: 2015-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 8.36% |
+| Monthly P&L | ₹15,862 |
+| Weekly P&L | ₹225,480 |
+| Monthly Win Rate | 60.3% |
+| Weekly Win Rate | 57.2% |
+| Total P&L | ₹241,342 |
+| Sharpe | 1.26 |
+| Sortino | 1.70 |
+| Calmar | 0.78 |
+| Max Drawdown | 10.8% |
+| Win Rate | 58.4% |
+| Total Trades | 327 |
+| Profit Factor | 1.82 |
+| Best Trade | ₹15,885 |
+| Worst Trade | ₹-13,127 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 126 |
+| Weekly Trades | 201 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 70.3% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 3 | 1.5% | ₹-10,438 |
+| Loss (-10k to 0) | 83 | 41.3% | ₹-1,904 |
+| Small Win (0 to 10k) | 90 | 44.8% | ₹974 |
+| Medium Win (10k to 25k) | 25 | 12.4% | ₹13,088 |
+| Large Win (>= 25k) | 0 | 0.0% | ₹0 |
+| Median | - | - | ₹210 |
+| P10 / P90 | - | - | ₹-2,981 / ₹11,845 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2024-06-11 | weekly_ic | stop_loss | ₹15,885 |
+| 2024-08-21 | weekly_ic | stop_loss | ₹15,738 |
+| 2024-10-22 | weekly_ic | stop_loss | ₹15,692 |
+| 2024-04-16 | weekly_ic | stop_loss | ₹15,645 |
+| 2024-07-31 | weekly_ic | stop_loss | ₹15,471 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+| 2020-05-13 | weekly_ic | dte_limit | ₹-7,559 |
+
+
+---
+## Run #38 — 10y-performance-check-full-data — [COMBINED]
+**Date**: 2026-05-18 10:58  
+**Git**: `2c89ebe`  
+**Params**: 2015-01-01 to 2024-12-31 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 6.59% |
+| Monthly P&L | ₹14,594 |
+| Weekly P&L | ₹417,041 |
+| Monthly Win Rate | 56.0% |
+| Weekly Win Rate | 57.1% |
+| Total P&L | ₹431,635 |
+| Sharpe | 1.30 |
+| Sortino | 1.83 |
+| Calmar | 1.09 |
+| Max Drawdown | 6.0% |
+| Win Rate | 56.6% |
+| Total Trades | 620 |
+| Profit Factor | 1.74 |
+| Best Trade | ₹25,973 |
+| Worst Trade | ₹-12,754 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 266 |
+| Weekly Trades | 354 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 13 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 70.5% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 1 | 0.3% | ₹-10,047 |
+| Loss (-10k to 0) | 151 | 42.7% | ₹-1,569 |
+| Small Win (0 to 10k) | 163 | 46.0% | ₹955 |
+| Medium Win (10k to 25k) | 38 | 10.7% | ₹12,692 |
+| Large Win (>= 25k) | 1 | 0.3% | ₹25,973 |
+| Median | - | - | ₹171 |
+| P10 / P90 | - | - | ₹-2,168 / ₹11,237 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2022-12-21 | weekly_ic | dte_limit | ₹25,973 |
+| 2024-06-11 | weekly_ic | stop_loss | ₹16,527 |
+| 2024-08-21 | weekly_ic | stop_loss | ₹16,112 |
+| 2024-10-22 | weekly_ic | stop_loss | ₹15,359 |
+| 2022-10-06 | weekly_ic | dte_limit | ₹14,295 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-10,047 |
+| 2016-05-25 | weekly_ic | dte_limit | ₹-7,423 |
+| 2015-01-06 | weekly_pcs | stop_loss | ₹-6,933 |
+| 2024-03-13 | weekly_ic | dte_limit | ₹-6,516 |
+| 2015-09-22 | weekly_pcs | stop_loss | ₹-5,585 |
+
+
+---
+## Run #39 — funnel-diagnostic-analysis — [COMBINED]
+**Date**: 2026-08-22 17:01  
+**Git**: `2b49431`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 14.47% |
+| Monthly P&L | ₹56,591 |
+| Weekly P&L | ₹649,262 |
+| Monthly Win Rate | 70.2% |
+| Weekly Win Rate | 74.0% |
+| Total P&L | ₹705,854 |
+| Sharpe | 1.38 |
+| Sortino | 1.80 |
+| Calmar | 2.28 |
+| Max Drawdown | 6.3% |
+| Win Rate | 72.5% |
+| Total Trades | 120 |
+| Profit Factor | 4.24 |
+| Best Trade | ₹106,894 |
+| Worst Trade | ₹-35,316 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 47 |
+| Weekly Trades | 73 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 87.6% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 7 | 9.6% | ₹-16,141 |
+| Loss (-10k to 0) | 12 | 16.4% | ₹-5,827 |
+| Small Win (0 to 10k) | 40 | 54.8% | ₹3,771 |
+| Medium Win (10k to 25k) | 3 | 4.1% | ₹17,045 |
+| Large Win (>= 25k) | 11 | 15.1% | ₹57,290 |
+| Median | - | - | ₹3,503 |
+| P10 / P90 | - | - | ₹-9,358 / ₹44,153 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-06-02 | weekly_ic | stop_loss | ₹106,894 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹87,967 |
+| 2025-11-06 | weekly_ic | trailing_delta | ₹68,219 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹66,042 |
+| 2026-04-21 | weekly_ic | stop_loss | ₹64,697 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-35,316 |
+| 2026-01-20 | weekly_pcs | stop_loss | ₹-16,580 |
+| 2026-02-13 | weekly_pcs | stop_loss | ₹-15,505 |
+| 2026-03-11 | weekly_pcs | stop_loss | ₹-13,084 |
+| 2026-01-08 | weekly_pcs | stop_loss | ₹-12,347 |
+
+
+---
+## Run #40 — post-refresh-full-history — [COMBINED]
+**Date**: 2026-08-22 17:14  
+**Git**: `16d681c`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.31% |
+| Monthly P&L | ₹-101,218 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.2% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-101,218 |
+| Sharpe | -1.13 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.2% |
+| Total Trades | 96 |
+| Profit Factor | 0.23 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 96 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 42.7% |
+
+
+---
+## Run #41 — post-refresh-full-history — [COMBINED]
+**Date**: 2026-08-22 17:15  
+**Git**: `16d681c`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.31% |
+| Monthly P&L | ₹-101,218 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.2% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-101,218 |
+| Sharpe | -1.13 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.2% |
+| Total Trades | 96 |
+| Profit Factor | 0.23 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 96 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 42.7% |
+
+
+---
+## Run #42 — post-retrain-ml-active — [COMBINED]
+**Date**: 2026-08-22 17:40  
+**Git**: `49a0cab`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #43 — v6-phase1-dd — [COMBINED]
+**Date**: 2026-08-22 18:10  
+**Git**: `6e0ae7e`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #44 — v6-phase1-dd-v2 — [COMBINED]
+**Date**: 2026-08-22 18:12  
+**Git**: `6e0ae7e`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #45 — v6-phase1-dd-v3 — [COMBINED]
+**Date**: 2026-08-22 18:14  
+**Git**: `6e0ae7e`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #46 — v6-phase1-dd-v4 — [COMBINED]
+**Date**: 2026-08-22 18:15  
+**Git**: `6e0ae7e`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #47 — v6-phase2-ml — [COMBINED]
+**Date**: 2026-08-22 19:06  
+**Git**: `9971ef1`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | -1.30% |
+| Monthly P&L | ₹-100,848 |
+| Weekly P&L | ₹0 |
+| Monthly Win Rate | 31.7% |
+| Weekly Win Rate | 0.0% |
+| Total P&L | ₹-100,848 |
+| Sharpe | -1.11 |
+| Sortino | -0.43 |
+| Calmar | -0.06 |
+| Max Drawdown | 20.2% |
+| Win Rate | 31.7% |
+| Total Trades | 101 |
+| Profit Factor | 0.25 |
+| Best Trade | ₹2,922 |
+| Worst Trade | ₹-7,806 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 101 |
+| Weekly Trades | 0 |
+| Cross-track DD Blocks | 337 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 44.9% |
+
+
+---
+## Run #48 — v6-phase2-percentile — [COMBINED]
+**Date**: 2026-08-22 19:30  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.65% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹1,932,184 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹1,932,184 |
+| Sharpe | 1.69 |
+| Sortino | 2.99 |
+| Calmar | 2.50 |
+| Max Drawdown | 3.9% |
+| Win Rate | 61.3% |
+| Total Trades | 506 |
+| Profit Factor | 5.05 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 12.2% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 5 | 1.0% | ₹-15,860 |
+| Loss (-10k to 0) | 191 | 37.7% | ₹-2,081 |
+| Small Win (0 to 10k) | 226 | 44.7% | ₹1,424 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹15,551 |
+| Large Win (>= 25k) | 24 | 4.7% | ₹48,091 |
+| Median | - | - | ₹282 |
+| P10 / P90 | - | - | ₹-2,868 / ₹13,159 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2025-08-28 | weekly_ic | stop_loss | ₹63,871 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2020-11-04 | weekly_ic | dte_limit | ₹-10,300 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+
+
+---
+## Run #49 — v6-phase2-threshold-cap — [COMBINED]
+**Date**: 2026-08-22 19:33  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.65% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹1,932,184 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹1,932,184 |
+| Sharpe | 1.69 |
+| Sortino | 2.99 |
+| Calmar | 2.50 |
+| Max Drawdown | 3.9% |
+| Win Rate | 61.3% |
+| Total Trades | 506 |
+| Profit Factor | 5.05 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 12.2% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 5 | 1.0% | ₹-15,860 |
+| Loss (-10k to 0) | 191 | 37.7% | ₹-2,081 |
+| Small Win (0 to 10k) | 226 | 44.7% | ₹1,424 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹15,551 |
+| Large Win (>= 25k) | 24 | 4.7% | ₹48,091 |
+| Median | - | - | ₹282 |
+| P10 / P90 | - | - | ₹-2,868 / ₹13,159 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2025-08-28 | weekly_ic | stop_loss | ₹63,871 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2020-11-04 | weekly_ic | dte_limit | ₹-10,300 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+
+
+---
+## Run #50 — v6-phase2-threshold-0.40 — [COMBINED]
+**Date**: 2026-08-22 19:35  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.65% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹1,932,184 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹1,932,184 |
+| Sharpe | 1.69 |
+| Sortino | 2.99 |
+| Calmar | 2.50 |
+| Max Drawdown | 3.9% |
+| Win Rate | 61.3% |
+| Total Trades | 506 |
+| Profit Factor | 5.05 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 12.2% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 5 | 1.0% | ₹-15,860 |
+| Loss (-10k to 0) | 191 | 37.7% | ₹-2,081 |
+| Small Win (0 to 10k) | 226 | 44.7% | ₹1,424 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹15,551 |
+| Large Win (>= 25k) | 24 | 4.7% | ₹48,091 |
+| Median | - | - | ₹282 |
+| P10 / P90 | - | - | ₹-2,868 / ₹13,159 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2025-08-28 | weekly_ic | stop_loss | ₹63,871 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2020-11-04 | weekly_ic | dte_limit | ₹-10,300 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+
+
+---
+## Run #51 — v6-phase2-gate8-passthrough — [COMBINED]
+**Date**: 2026-08-22 19:38  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.65% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹1,932,184 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹1,932,184 |
+| Sharpe | 1.69 |
+| Sortino | 2.99 |
+| Calmar | 2.50 |
+| Max Drawdown | 3.9% |
+| Win Rate | 61.3% |
+| Total Trades | 506 |
+| Profit Factor | 5.05 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 12.2% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 5 | 1.0% | ₹-15,860 |
+| Loss (-10k to 0) | 191 | 37.7% | ₹-2,081 |
+| Small Win (0 to 10k) | 226 | 44.7% | ₹1,424 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹15,551 |
+| Large Win (>= 25k) | 24 | 4.7% | ₹48,091 |
+| Median | - | - | ₹282 |
+| P10 / P90 | - | - | ₹-2,868 / ₹13,159 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2025-08-28 | weekly_ic | stop_loss | ₹63,871 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2020-11-04 | weekly_ic | dte_limit | ₹-10,300 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+
+
+---
+## Run #52 — v6-phase2-gate8-fix — [COMBINED]
+**Date**: 2026-08-22 19:42  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.85% |
+| Monthly P&L | ₹202,886 |
+| Weekly P&L | ₹1,807,413 |
+| Monthly Win Rate | 59.9% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹2,010,299 |
+| Sharpe | 1.66 |
+| Sortino | 2.71 |
+| Calmar | 0.99 |
+| Max Drawdown | 10.0% |
+| Win Rate | 60.8% |
+| Total Trades | 808 |
+| Profit Factor | 3.16 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 302 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 52.9% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 4 | 0.8% | ₹-17,249 |
+| Loss (-10k to 0) | 192 | 37.9% | ₹-2,067 |
+| Small Win (0 to 10k) | 228 | 45.1% | ₹1,394 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹14,722 |
+| Large Win (>= 25k) | 22 | 4.3% | ₹48,726 |
+| Median | - | - | ₹277 |
+| P10 / P90 | - | - | ₹-2,863 / ₹12,615 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+| 2026-06-02 | weekly_ic | stop_loss | ₹56,540 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+
+
+---
+## Run #53 — v6-phase2-gate8-fix — [COMBINED]
+**Date**: 2026-08-22 19:44  
+**Git**: `460c502`  
+**Params**: 2009-01-01 to 2026-08-22 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 9.85% |
+| Monthly P&L | ₹202,886 |
+| Weekly P&L | ₹1,807,413 |
+| Monthly Win Rate | 59.9% |
+| Weekly Win Rate | 61.3% |
+| Total P&L | ₹2,010,299 |
+| Sharpe | 1.66 |
+| Sortino | 2.71 |
+| Calmar | 0.99 |
+| Max Drawdown | 10.0% |
+| Win Rate | 60.8% |
+| Total Trades | 808 |
+| Profit Factor | 3.16 |
+| Best Trade | ₹123,998 |
+| Worst Trade | ₹-37,685 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 302 |
+| Weekly Trades | 506 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 52.9% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 4 | 0.8% | ₹-17,249 |
+| Loss (-10k to 0) | 192 | 37.9% | ₹-2,067 |
+| Small Win (0 to 10k) | 228 | 45.1% | ₹1,394 |
+| Medium Win (10k to 25k) | 60 | 11.9% | ₹14,722 |
+| Large Win (>= 25k) | 22 | 4.3% | ₹48,726 |
+| Median | - | - | ₹277 |
+| P10 / P90 | - | - | ₹-2,863 / ₹12,615 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-11-06 | weekly_ic | trailing_delta | ₹123,998 |
+| 2026-01-20 | weekly_ic | stop_loss | ₹94,636 |
+| 2025-06-10 | weekly_ic | stop_loss | ₹80,994 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹62,213 |
+| 2026-06-02 | weekly_ic | stop_loss | ₹56,540 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,685 |
+| 2020-04-01 | weekly_pcs | stop_loss | ₹-10,926 |
+| 2020-04-15 | weekly_pcs | dte_limit | ₹-10,366 |
+| 2021-03-03 | weekly_ic | dte_limit | ₹-10,022 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-9,183 |
+
+
+---
+## Run #54 — v6-phase3-dte-exit+gate8bypass+11strat — [COMBINED]
+**Date**: 2026-08-23 08:16  
+**Git**: `148fe4e`  
+**Params**: 2009-01-01 to 2026-08-23 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 6.16% |
+| Monthly P&L | ₹50,516 |
+| Weekly P&L | ₹845,004 |
+| Monthly Win Rate | 55.2% |
+| Weekly Win Rate | 58.9% |
+| Total P&L | ₹895,520 |
+| Sharpe | 1.22 |
+| Sortino | 1.71 |
+| Calmar | 0.87 |
+| Max Drawdown | 7.1% |
+| Win Rate | 57.1% |
+| Total Trades | 879 |
+| Profit Factor | 2.03 |
+| Best Trade | ₹49,485 |
+| Worst Trade | ₹-23,576 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 422 |
+| Weekly Trades | 457 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 47 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 64.9% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 2 | 0.4% | ₹-16,811 |
+| Loss (-10k to 0) | 186 | 40.7% | ₹-1,861 |
+| Small Win (0 to 10k) | 212 | 46.4% | ₹1,119 |
+| Medium Win (10k to 25k) | 47 | 10.3% | ₹13,473 |
+| Large Win (>= 25k) | 10 | 2.2% | ₹35,431 |
+| Median | - | - | ₹193 |
+| P10 / P90 | - | - | ₹-2,409 / ₹12,065 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-06-10 | weekly_ic | stop_loss | ₹49,485 |
+| 2026-05-12 | weekly_ic | stop_loss | ₹43,889 |
+| 2025-02-04 | weekly_ic | stop_loss | ₹42,323 |
+| 2025-01-09 | weekly_ic | trailing_delta | ₹39,703 |
+| 2026-06-02 | weekly_ic | stop_loss | ₹35,505 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-23,576 |
+| 2024-01-17 | weekly_pcs | stop_loss | ₹-10,047 |
+| 2026-01-20 | weekly_pcs | stop_loss | ₹-9,986 |
+| 2024-07-26 | weekly_ic | stop_loss | ₹-7,757 |
+| 2025-07-25 | weekly_pcs | stop_loss | ₹-7,575 |
+
+
+---
+## 2026-08-23 — LightGBM Migration + num_leaves Regularisation
+
+### Commits
+- `1ccf44a` feat(ml): add 18 trade-structure features to break AUC ceiling
+- `35f23aa` perf(ml): migrate all models from sklearn GBM → LightGBM 4.6
+- `3743787` perf(ml): add num_leaves + colsample_bytree regularisation for LightGBM
+
+### AUC Progression
+| Run | Engine | Stage 1 | Stage 2 | Stage 3 | Stage 4 (Final) |
+|-----|--------|---------|---------|---------|-----------------|
+| Before structure features | sklearn GBM | 0.543 | — | — | 0.554 |
+| +18 trade_structure features | sklearn GBM | 0.690 | 0.691 | 0.681 | **0.693** |
+| +LightGBM +num_leaves | LightGBM 4.6 | 0.702 | 0.696 | running… | — |
+
+### Key Decisions
+1. **Trade-structure features (18)**: 11 one-hot strategy flags + 7 continuous metrics
+   added to `FeatureExtractor.extract(trade=trade)`. Root cause of AUC=0.554 was that
+   `(date, iron_butterfly)` and `(date, put_credit_spread)` produced identical feature
+   vectors — GBM had no signal to distinguish strategies.
+
+2. **LightGBM over sklearn GBM**: Migrated all 6 model files (20+ instances).
+   - sklearn GBM: serial, no `n_jobs`, ~35 min retrain
+   - LightGBM: `n_jobs=-1` (4 cores), leaf-wise growth, ~estimated 8-12 min
+   - Param rename: `min_samples_leaf` → `min_child_samples`
+   - Added: `colsample_bytree=0.8` (feature subsampling per tree)
+
+3. **num_leaves regularisation**: LightGBM leaf-wise growth can overfit with only
+   `max_depth` as constraint. Added explicit `num_leaves` per model:
+   - `num_leaves=7`  for depth-3 scouts (< 2^3=8)
+   - `num_leaves=10` for weekly_entry_learner (small dataset ~500-2000 trades)
+   - `num_leaves=15` for depth-4 classifiers (< 2^4=16)
+   - `num_leaves=20` for exit classifier depth-5 (< 2^5=32)
+   - Dynamic for base_gbm_params: `min(15, 2**max_d - 1)`
+
+### sklearn stays for
+`TimeSeriesSplit`, `cross_val_score`, `CalibratedClassifierCV`, `roc_auc_score`,
+`DummyClassifier`, `compute_sample_weight` — no LightGBM equivalent needed.
