@@ -79,7 +79,7 @@ python main.py --start 2019-01-01 --capital 1000000 --lots 25 --run-label "v5 te
 | `RegimeClassifier` | `models/regime_classifier.py` | `data/.cache/entry_model_v4.pkl` | 4-class GBM regime label (used as feature in v4) |
 | `RegimeAwareLearner` | `models/regime_aware_learner.py` | `data/.cache/entry_model_v4.pkl` | Win-prob + strategy selector; single model v4 with regime as feature |
 | `ExitStrategyEngine` | `models/trade_monitor.py` | `data/.cache/exit_model.pkl` | GBM should-exit decision; top features: pnl_pct, credit_captured_pct, pnl_velocity |
-| `WeeklyRiskEngine` | `models/weekly_risk_engine.py` | `data/.cache/weekly_risk_engine.pkl` | Tail-loss risk scorer for weekly entry gates; AUC ~0.62 |
+| `WeeklyRiskEngine` | `models/weekly_risk_engine.py` | `data/.cache/weekly_risk_engine_v2.pkl` | Tail-loss risk scorer for weekly entry gates; AUC ~0.62 |
 
 ---
 
@@ -112,6 +112,38 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
   with `--helpful`, mark stale ones with `--stale`, and run
   `python3 scripts/agent_memory.py decay` to archive low-signal records.
 
+### Git Commit + Push Policy (mandatory)
+
+After **every logical unit of work** (a fix, a feature, a config change, a
+refactor), the agent MUST:
+1. `git add <changed files>`
+2. `git commit -m "..."` with a descriptive conventional-commit message
+3. `git push origin main` — push to remote immediately after committing
+
+Never leave uncommitted edits at the end of a session. Never commit without
+pushing. This protects work against connectivity drops and keeps the remote
+in sync.
+
+### Long-Running Training / Backtest Policy (mandatory)
+
+Any command expected to run longer than ~5 min (e.g., `--mode evolve`,
+`--mode backtest-combined` on 17yr data) MUST be launched with `nohup` so
+that Claude Code session disconnection or terminal closure does not kill it:
+
+```bash
+# Training (evolve):
+nohup python3 main.py --mode evolve > logs/evolve_$(date +%Y%m%d_%H%M).log 2>&1 &
+echo "PID=$!"
+
+# Backtest:
+nohup python3 main.py --mode backtest-combined --run-label "my_run" \
+  > logs/backtest_$(date +%Y%m%d_%H%M).log 2>&1 &
+echo "PID=$!"
+```
+
+Check progress with `tail -f logs/<logfile>`. Kill with `kill <PID>` if needed.
+The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
+
 ---
 
 ## Key Gotchas
@@ -132,4 +164,6 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
 - **Weekly DTE gate is now config-driven** — `_fill_pending_weekly_entry` enforces `WeeklyBacktestConfig.min_dte_entry` (default 3) and `max_dte_entry` (default 8). Signals outside this window are logged as `WARNING: Weekly entry dropped: DTE=N outside [3, 8]` and counted in `weekly_etl_skips`. Previously the guard was hard-coded `DTE < 1` and silent. To widen the acceptance window, set `WeeklyBacktestConfig(min_dte_entry=2)`.
 
-- **`--mode evolve` must run before backtest/signal** — Deleting `data/.cache/*.pkl` requires a full retrain. Evolve takes ~15–20 min on 17yr data. Feature column changes or strategy changes → always retrain.
+- **`--mode evolve` must run before backtest/signal** — Deleting `data/.cache/*.pkl` requires a full retrain. Evolve takes ~15–20 min on 17yr data. Feature column changes or strategy changes → always retrain. Use `nohup` (see Agent Workflow section) — evolve will be killed by session disconnection otherwise.
+
+- **ETL gate is now configurable** — `WeeklyRiskEngine` previously had a hardcoded `etl > entry_credit` (1.0×) skip threshold that blocked ~363/465 weekly entries over 17yr (78% collapse). Now controlled by `WeeklyBacktestConfig.etl_skip_multiplier` (default 1.5). The multiplier is applied at runtime via `CombinedBacktestEngine.__init__` — no retrain needed to change it. After any retrain, check `ETL > credit skips` in backtest output; target < 100 over 17yr.
