@@ -205,6 +205,12 @@ class WeeklyBacktestConfig:
     combined_open_loss_block_min_hold_days: int = 2
     monthly_loss_block_min_hold_days: int = 3
 
+    # ETL gate tuning — controls how strict the expected-tail-loss skip is.
+    # 1.0 = skip if ETL >= credit (zero tolerance; was hardcoded, caused 363 skips in exp1).
+    # 1.5 = allow up to 1.5× ETL/credit; ML tail scorer + regime scale still size down risky trades.
+    # 2.0 = loose; only use if retrained engine still skips >200 trades/17yr window.
+    etl_skip_multiplier: float = 1.5
+
     # Mid-session entry — permanent baseline; weekly fills use nifty_mid_session
     # spot and reduced slippage (same as monthly). See BacktestConfig for detail.
     mid_session_slippage_scale: float = 0.75

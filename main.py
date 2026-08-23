@@ -700,8 +700,8 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"  Artifacts loaded: {', '.join(loaded) if loaded else 'none (rule-based mode)'}")
 
     # ── Run combined backtest ──
-    _monthly_pct = 0.50   # v8 (2026-08-23): shifted from 0.70; weekly generates ~10x P&L per ₹
-    _weekly_pct  = 0.50   # v8 (2026-08-23): shifted from 0.30; doubles weekly earning base
+    _monthly_pct = 0.50   # v8 (2026-08-23): 50/50 baseline; exp1 75/25 showed ETL gate too strict → retrain
+    _weekly_pct  = 0.50   # v8 (2026-08-23): see etl_skip_multiplier in WeeklyBacktestConfig for tuning
     print(f"\n[3/5] Running combined backtest "
           f"(monthly {_monthly_pct*100:.0f}% + weekly {_weekly_pct*100:.0f}%)...")
     strategy = RegimeAdaptiveStrategy(

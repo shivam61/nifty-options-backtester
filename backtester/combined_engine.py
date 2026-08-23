@@ -127,6 +127,12 @@ class CombinedBacktestEngine:
         self.entry_model = entry_model
         self.weekly_entry_model = weekly_entry_model
         self.weekly_risk_engine = weekly_risk_engine
+        # Apply config-driven ETL threshold at runtime (overrides pickled default).
+        # This means etl_skip_multiplier takes effect without a full retrain.
+        if self.weekly_risk_engine is not None:
+            self.weekly_risk_engine.etl_skip_multiplier = getattr(
+                weekly_config, "etl_skip_multiplier", 1.5
+            )
         self.entry_threshold = entry_threshold
         self.weekly_entry_threshold = weekly_entry_threshold
         self.monthly_budget_pct = monthly_budget_pct
@@ -250,6 +256,9 @@ class CombinedBacktestEngine:
             self.weekly_entry_model = bundle.weekly_entry_model
         if bundle.weekly_risk_engine is not None:
             self.weekly_risk_engine = bundle.weekly_risk_engine
+            self.weekly_risk_engine.etl_skip_multiplier = getattr(
+                self.w_config, "etl_skip_multiplier", 1.5
+            )
 
     def _fill_pending_monthly_entry(self, current_date, row) -> None:
         if self._pending_monthly_entry is None or self.monthly_trade is not None:

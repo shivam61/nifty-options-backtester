@@ -515,7 +515,7 @@ class WeeklyRiskEngine:
       - Checks dynamic exits → kills hold-to-expiry
     """
 
-    def __init__(self):
+    def __init__(self, etl_skip_multiplier: float = 1.5):
         self.tail_scorer = TailRiskScorer()
         self.gap_model = ConditionalGapModel()
         self.regime_classifier = WeeklyRegimeClassifier()
@@ -523,6 +523,9 @@ class WeeklyRiskEngine:
         self.is_fitted = False
         self.feature_extractor = None
         self.period_metadata: ModelPeriodMetadata | None = None
+        # ETL gate threshold: skip if etl > entry_credit * multiplier.
+        # 1.0 = original strict gate (hardcoded). 1.5 = recommended production default.
+        self.etl_skip_multiplier: float = etl_skip_multiplier
 
     def fit(self, data: pd.DataFrame, trades, verbose: bool = True) -> dict:
         """
@@ -606,9 +609,11 @@ class WeeklyRiskEngine:
             vix, vix_pctile, weekday,
         )
 
-        if entry_credit > 0 and etl > entry_credit:
+        etl_threshold = entry_credit * self.etl_skip_multiplier
+        if entry_credit > 0 and etl > etl_threshold:
             return WeeklyEntrySizing(
-                skip=True, skip_reason=f"etl:{etl:.1f} > credit:{entry_credit:.1f}",
+                skip=True,
+                skip_reason=f"etl:{etl:.1f} > credit*{self.etl_skip_multiplier}:{etl_threshold:.1f}",
                 regime=regime.name, etl=etl, credit_collected=entry_credit,
             )
 
