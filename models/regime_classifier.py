@@ -191,7 +191,8 @@ class RegimeClassifier:
 
         self.model = LGBMClassifier(
             n_estimators=150, max_depth=4, learning_rate=0.1,
-            subsample=0.8, random_state=42,
+            num_leaves=15,  # < 2^4=16; keeps regime boundaries clean
+            subsample=0.8, colsample_bytree=0.8, random_state=42,
             n_jobs=-1, verbosity=-1,
         )
 

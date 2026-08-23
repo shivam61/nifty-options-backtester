@@ -532,8 +532,9 @@ class ExitStrategyEngine:
 
         self.exit_classifier = LGBMClassifier(
             n_estimators=300, max_depth=5, learning_rate=0.08,
-            subsample=0.8, min_child_samples=8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=20,  # < 2^5=32; prevents leaf-wise overfit on exit snapshots
+            subsample=0.8, colsample_bytree=0.8, min_child_samples=8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
         self.exit_classifier.fit(X, y_exit, sample_weight=sample_weights)
 

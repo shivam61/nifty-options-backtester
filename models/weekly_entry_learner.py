@@ -121,8 +121,9 @@ class WeeklyEntryLearner:
 
         scout = LGBMClassifier(
             n_estimators=n_est, max_depth=3, learning_rate=0.08,
-            min_child_samples=min_leaf, subsample=0.8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=7,  # tight on small weekly datasets (~500-2000 trades)
+            min_child_samples=min_leaf, subsample=0.8, colsample_bytree=0.8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
         if len(set(y_quality)) > 1:
             scout.fit(X_all, y_quality, sample_weight=sample_weights)
@@ -160,7 +161,8 @@ class WeeklyEntryLearner:
 
                 fold_model = LGBMClassifier(
                     n_estimators=n_est, max_depth=max_d, learning_rate=0.05,
-                    min_child_samples=min_leaf, subsample=0.8, random_state=42,
+                    num_leaves=10, min_child_samples=min_leaf,
+                    subsample=0.8, colsample_bytree=0.8, random_state=42,
                     n_jobs=-1, verbosity=-1,
                 )
                 fold_sw = compute_sample_weight("balanced", y_tr)
@@ -177,7 +179,8 @@ class WeeklyEntryLearner:
 
         base_params = dict(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.05,
-            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            num_leaves=10, min_child_samples=min_leaf,
+            subsample=0.8, colsample_bytree=0.8, random_state=42,
             n_jobs=-1, verbosity=-1,
         )
 

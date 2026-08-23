@@ -114,8 +114,9 @@ class TailRiskScorer:
         # Scout pass for feature selection
         scout = LGBMClassifier(
             n_estimators=100, max_depth=3, learning_rate=0.08,
-            min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=7,  # < 2^3=8; tight on small tail-risk datasets
+            min_child_samples=max(5, n_pos // 5), subsample=0.8, colsample_bytree=0.8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
         scout.fit(X, y, sample_weight=sw)
         imp = dict(zip(X.columns, scout.feature_importances_))
@@ -138,7 +139,8 @@ class TailRiskScorer:
             sw_tr = compute_sample_weight("balanced", y_tr)
             m = LGBMClassifier(
                 n_estimators=120, max_depth=4, learning_rate=0.05,
-                min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                num_leaves=15, min_child_samples=max(5, n_pos // 5),
+                subsample=0.8, colsample_bytree=0.8, random_state=42,
                 n_jobs=-1, verbosity=-1,
             )
             m.fit(X_tr, y_tr, sample_weight=sw_tr)
@@ -161,7 +163,8 @@ class TailRiskScorer:
             self.classifier = CalibratedClassifierCV(
                 LGBMClassifier(
                     n_estimators=120, max_depth=4, learning_rate=0.05,
-                    min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                    num_leaves=15, min_child_samples=max(5, n_pos // 5),
+                    subsample=0.8, colsample_bytree=0.8, random_state=42,
                     n_jobs=-1, verbosity=-1,
                 ),
                 method="sigmoid", cv=tscv,
@@ -170,7 +173,8 @@ class TailRiskScorer:
         except Exception:
             gbm = LGBMClassifier(
                 n_estimators=120, max_depth=4, learning_rate=0.05,
-                min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                num_leaves=15, min_child_samples=max(5, n_pos // 5),
+                subsample=0.8, colsample_bytree=0.8, random_state=42,
                 n_jobs=-1, verbosity=-1,
             )
             gbm.fit(X_sel, y, sample_weight=sw_all)

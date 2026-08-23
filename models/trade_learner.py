@@ -610,10 +610,13 @@ class TradeLearner:
         min_leaf = max(2, len(trades) // 10)
 
         # ── Pass 1: scout GBM on ALL features → importance for pruning ──
+        # num_leaves < 2^max_depth prevents LGBM leaf-wise growth from overfitting.
+        # colsample_bytree adds feature-level stochasticity (not in sklearn GBM).
         scout = LGBMClassifier(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_child_samples=min_leaf, subsample=0.8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=min(15, 2 ** max_d - 1),
+            min_child_samples=min_leaf, subsample=0.8, colsample_bytree=0.8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
         if len(quality_classes) > 1:
             scout.fit(X_all, y_quality)
@@ -632,8 +635,9 @@ class TradeLearner:
         tscv = TimeSeriesSplit(n_splits=n_cv)
         base_gbm_params = dict(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_child_samples=min_leaf, subsample=0.8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=min(15, 2 ** max_d - 1),
+            min_child_samples=min_leaf, subsample=0.8, colsample_bytree=0.8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
 
         if len(quality_classes) > 1:
@@ -657,7 +661,8 @@ class TradeLearner:
                     continue
 
                 fold_scout = LGBMClassifier(
-                    n_estimators=100, max_depth=3, learning_rate=0.05, subsample=0.8,
+                    n_estimators=100, max_depth=3, learning_rate=0.05,
+                    num_leaves=7, subsample=0.8, colsample_bytree=0.8,
                     random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 fold_scout.fit(X_tr, y_tr)
@@ -665,7 +670,8 @@ class TradeLearner:
                 fold_top = sorted(fold_imp, key=fold_imp.get, reverse=True)[:self.MAX_FEATURES]
 
                 fold_model = LGBMClassifier(
-                    n_estimators=200, max_depth=4, learning_rate=0.05, subsample=0.8,
+                    n_estimators=200, max_depth=4, learning_rate=0.05,
+                    num_leaves=15, subsample=0.8, colsample_bytree=0.8,
                     min_child_samples=20, random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 fold_model.fit(X_tr[fold_top], y_tr)
@@ -718,8 +724,9 @@ class TradeLearner:
         # ── Expected risk-adjusted return regressor ──
         self.return_regressor = LGBMRegressor(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_child_samples=min_leaf, subsample=0.8, random_state=42,
-            n_jobs=-1, verbosity=-1,
+            num_leaves=min(15, 2 ** max_d - 1),
+            min_child_samples=min_leaf, subsample=0.8, colsample_bytree=0.8,
+            random_state=42, n_jobs=-1, verbosity=-1,
         )
         self.return_regressor.fit(X, y_return)
 
@@ -730,8 +737,9 @@ class TradeLearner:
             if mask.sum() >= 5:
                 model = LGBMRegressor(
                     n_estimators=min(50, max(20, int(mask.sum()) * 2)),
-                    max_depth=3, learning_rate=0.1,
+                    max_depth=3, num_leaves=7, learning_rate=0.1,
                     min_child_samples=max(2, int(mask.sum()) // 5),
+                    subsample=0.8, colsample_bytree=0.8,
                     random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 model.fit(X[mask], y_return[mask])
