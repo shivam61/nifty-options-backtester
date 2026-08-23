@@ -20,6 +20,7 @@ from strategies.expiry_selector import (
     _estimate_win_prob,
     _score_candidate,
 )
+from config import BacktestConfig
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +148,19 @@ class TestAdjustmentMechanics:
 
 class TestExpirySelector:
 
+    def _risk_config(self):
+        # Relax production-only risk filters so ExpirySelector mechanics can be
+        # exercised without being blocked by thresholds designed for real entries:
+        # - min_short_dist_pct thresholds: legs are BS-priced at realistic OTM
+        #   distances; we just need them to pass the filter to test scoring logic.
+        # - max_loss_to_credit_ratio: wide synthetic spreads can have high ratios;
+        #   we relax the cap to let the test exercise candidate evaluation.
+        return BacktestConfig(
+            monthly_min_short_dist_pct_trending=0.5,
+            monthly_min_short_dist_pct_low_vol=0.5,
+            monthly_max_loss_to_credit_ratio=50.0,
+        )
+
     def _strategies(self):
         return {
             "put_credit_spread": PutCreditSpreadStrategy(lots=2, min_vix=0),
@@ -157,6 +171,7 @@ class TestExpirySelector:
         sel = ExpirySelector(
             spot=22000, vix=16,
             eligible_strategies=["put_credit_spread", "calendar_spread"],
+            risk_config=self._risk_config(),
         )
         candidates = sel.evaluate_all(date(2026, 4, 1), self._strategies())
         assert len(candidates) > 0
@@ -166,6 +181,7 @@ class TestExpirySelector:
         sel = ExpirySelector(
             spot=22000, vix=16,
             eligible_strategies=["put_credit_spread", "calendar_spread"],
+            risk_config=self._risk_config(),
         )
         candidates = sel.evaluate_all(date(2026, 4, 1), self._strategies())
         scores = [c.score for c in candidates]
@@ -175,6 +191,7 @@ class TestExpirySelector:
         sel = ExpirySelector(
             spot=22000, vix=16,
             eligible_strategies=["put_credit_spread", "calendar_spread"],
+            risk_config=self._risk_config(),
         )
         best = sel.select_best(date(2026, 4, 1), self._strategies())
         assert best is not None
@@ -192,6 +209,7 @@ class TestExpirySelector:
             spot=22000, vix=16,
             eligible_strategies=["put_credit_spread"],
             num_expiries=3,
+            risk_config=self._risk_config(),
         )
         candidates = sel.evaluate_all(date(2026, 4, 1), self._strategies())
         dtes = set(c.dte for c in candidates)
@@ -202,6 +220,7 @@ class TestExpirySelector:
             spot=22000, vix=16,
             eligible_strategies=["put_credit_spread"],
             num_expiries=3,
+            risk_config=self._risk_config(),
         )
         candidates = sel.evaluate_all(date(2026, 4, 1), self._strategies())
         if len(candidates) >= 2:

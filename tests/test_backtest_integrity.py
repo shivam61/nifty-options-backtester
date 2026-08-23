@@ -30,7 +30,42 @@ def test_period_metadata_rejects_future_reuse():
         md.assert_usable_for(date(2024, 6, 30))
 
 
-def test_walk_forward_bundle_is_strictly_oos(market_data):
+def test_walk_forward_bundle_is_strictly_oos(market_data, monkeypatch):
+    # Mock model loading to avoid stale pickled numpy RNG state (MT19937 bit
+    # generator mismatch across numpy versions) while still testing OOS logic.
+    from models.cache_utils import ModelPeriodMetadata
+    from datetime import date as _date
+
+    class _DummyLearner:
+        def __init__(self, train_end):
+            self.period_metadata = ModelPeriodMetadata.build(
+                model_type="monthly_entry",
+                train_start=_date(2024, 1, 1),
+                train_end=train_end,
+                feature_version="v4",
+                config={"lots": 1},
+            )
+
+    class _DummyExit:
+        def __init__(self, train_end):
+            self.period_metadata = ModelPeriodMetadata.build(
+                model_type="exit",
+                train_start=_date(2024, 1, 1),
+                train_end=train_end,
+                feature_version="v4",
+                config={"lots": 1},
+            )
+
+    def _fake_entry_load(cls, market_data_arg, path=None, **kwargs):
+        # Use a train_end well before any test window starts
+        return _DummyLearner(train_end=_date(2024, 1, 31))
+
+    def _fake_exit_load(cls, market_data_arg, path=None, **kwargs):
+        return _DummyExit(train_end=_date(2024, 1, 31))
+
+    monkeypatch.setattr(RegimeAwareLearner, "load", classmethod(_fake_entry_load))
+    monkeypatch.setattr(ExitStrategyEngine, "load", classmethod(_fake_exit_load))
+
     wf = WalkForwardManager(
         market_data,
         monthly_config=BacktestConfig(max_lots=1, lot_size=65),
@@ -243,6 +278,9 @@ def test_backtest_combined_uses_final_caches_only(short_market_data, monkeypatch
                 all_trades=[],
                 capital_utilization_pct=0.0,
             )
+
+        def _monthly_funnel_report(self, start_date=None, end_date=None) -> str:
+            return ""
 
     def fake_entry_load(cls, market_data, path=None, **kwargs):
         captured["entry_model_market_data"] = market_data
