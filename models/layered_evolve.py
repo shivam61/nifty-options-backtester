@@ -122,12 +122,17 @@ def run_layered_training(
         stage_end = pd.Timestamp(window.test_end)
         stage_data = data.loc[:stage_end].copy()
 
-        stage_evolver = StrategyEvolver(stage_data, lots=config.max_lots, lot_size=config.lot_size)
-        stage_evolver.evolved_strategies = evolved_strategies
-
-        stage_sim_trades = stage_evolver.generate_training_trades(
-            entry_every_n_days=TRAINING_FLOW.layered_entry_every_n_days
-        )
+        # Use RollingWindowSimulator so the full STRATEGY_CONFIGS (10 strategy types,
+        # 26 configs) are used for training data generation — not just evolved
+        # put-credit-spread params.  Both return list[TradeResult]; fully compatible.
+        stage_sim_trades = RollingWindowSimulator(
+            stage_data,
+            config=SimConfig(
+                entry_every_n_days=TRAINING_FLOW.layered_entry_every_n_days,
+                lots=config.max_lots,
+                lot_size=config.lot_size,
+            ),
+        ).simulate_all()
         stage_new_sim = _filter_trades_in_window(stage_sim_trades, prev_end, stage_end)
         stage_new_actual = _filter_trades_in_window(actual_training_trades, prev_end, stage_end)
         cumulative_entry_trades.extend(stage_new_sim)

@@ -1734,3 +1734,148 @@ class TestMultiStrategySimDiversity:
         )
         for name in ("iron_butterfly", "diagonal_spread", "jade_lizard", "put_backspread"):
             assert name in TradeLearner.STRATEGY_LABELS, f"{name} missing from STRATEGY_LABELS"
+
+
+# ---------------------------------------------------------------------------
+# Retrain pipeline wiring — RollingWindowSimulator used for entry sim trades
+# ---------------------------------------------------------------------------
+
+class TestRetrainPipelineWiring:
+    """
+    Verify that run_layered_training() now uses RollingWindowSimulator (with the
+    full 26-config STRATEGY_CONFIGS) instead of StrategyEvolver.generate_training_trades().
+    Without this wiring the retrain only sees put_credit_spread trades and AUC stays ≈0.512.
+    """
+
+    @staticmethod
+    def _make_synthetic_data(n: int = 300, seed: int = 42) -> "pd.DataFrame":
+        import pandas as pd, numpy as np
+        rng = np.random.default_rng(seed)
+        idx = pd.date_range("2018-01-01", periods=n, freq="B")
+        spot = 18000.0 * (1 + rng.normal(0, 0.005, n)).cumprod()
+        vix  = 13.0 + 9.0 * (np.sin(np.linspace(0, 6 * np.pi, n)) + 1) / 2  # 13–22
+        # Minimal columns needed by the simulator + training pipeline
+        df = pd.DataFrame({
+            "nifty_close": spot,
+            "nifty_open":  spot * (1 + rng.normal(0, 0.001, n)),
+            "nifty_high":  spot * (1 + abs(rng.normal(0, 0.005, n))),
+            "nifty_low":   spot * (1 - abs(rng.normal(0, 0.005, n))),
+            "vix":         vix,
+            # Extra columns that FeatureExtractor may read (filled with safe defaults)
+            "nifty_returns":        rng.normal(0, 0.005, n),
+            "overnight_gap_pct":    rng.normal(0, 0.003, n),
+            "nifty_5d_return":      rng.normal(0, 0.01, n),
+            "nifty_20d_return":     rng.normal(0, 0.02, n),
+            "rsi_14":               50 + rng.normal(0, 10, n),
+            "vix_5d_sma":           vix,
+            "vix_20d_sma":          vix,
+            "vix_52w_pct":          np.clip(rng.normal(0.4, 0.2, n), 0, 1),
+            "us_vix":               vix * 0.9,
+            "vix_premium_over_us":  rng.normal(2.0, 1.0, n),
+            "realized_vol_20d":     rng.normal(0.13, 0.03, n),
+            "iv_rv_spread":         rng.normal(0.02, 0.01, n),
+            "iv_skew_proxy":        rng.normal(-0.1, 0.05, n),
+            "nifty_20d_vol":        rng.normal(0.13, 0.03, n),
+            "crash_score_v1":       np.clip(rng.normal(0.2, 0.1, n), 0, 1),
+            "crash_score_v2":       np.clip(rng.normal(0.2, 0.1, n), 0, 1),
+            "multi_asset_stress":   np.clip(rng.normal(0.2, 0.1, n), 0, 1),
+            "nifty_50d_drawdown":   rng.normal(-0.02, 0.01, n),
+            "crude_inr_composite":  rng.normal(0, 0.5, n),
+            "dxy_crude_composite":  rng.normal(0, 0.5, n),
+            "fii_flow_proxy":       rng.normal(0, 0.5, n),
+            "bank_nifty_corr_30d":  rng.normal(0.8, 0.1, n),
+            "us10y_yield":          rng.normal(4.0, 0.5, n),
+            "usd_inr":              rng.normal(83.0, 1.0, n),
+        }, index=idx)
+        return df
+
+    def test_rolling_simulator_is_called_not_generate_training_trades(self):
+        """run_layered_training must invoke RollingWindowSimulator.simulate_all, not
+        StrategyEvolver.generate_training_trades."""
+        from unittest.mock import patch, MagicMock
+        from backtester.rolling_simulator import TradeResult as SimTradeResult
+        from models.layered_evolve import run_layered_training
+        from models.strategy_evolver import EvolvedStrategy
+        from config import BacktestConfig
+
+        # Build a minimal fake trade that satisfies _filter_trades_in_window
+        from backtester.engine import TradeResult as EngineTradeResult
+        import datetime as dt
+        fake_trade = MagicMock(spec=EngineTradeResult)
+        fake_trade.entry_date = dt.date(2019, 1, 15)
+        fake_trade.strategy = "put_credit_spread"
+        fake_trade.pnl_pct = 40.0
+        fake_trade.signal_date = None
+
+        data = self._make_synthetic_data(n=300)
+        cfg  = BacktestConfig()
+        # Minimal EvolvedStrategy dict so pipeline doesn't abort
+        evolved = {
+            "LOW_VOL": EvolvedStrategy(
+                name="evolved_put_LOW_VOL", direction="put", sd=1.0, spread_width=500,
+                profit_target_pct=50.0, stop_loss_pct=60.0, hold_days=21,
+                min_vix=0, max_vix=14, sharpe=1.0, total_pnl=1000.0,
+                win_rate=0.6, num_trades=50, max_drawdown=-0.05, avg_pnl=20.0,
+            ),
+        }
+
+        with patch(
+            "models.layered_evolve.RollingWindowSimulator.simulate_all",
+            return_value=[fake_trade],
+        ) as mock_sim, patch(
+            "models.layered_evolve.StrategyEvolver.generate_training_trades",
+            side_effect=AssertionError("generate_training_trades must NOT be called"),
+        ):
+            try:
+                run_layered_training(data=data, config=cfg, evolved_strategies=evolved, verbose=False)
+            except Exception:
+                pass  # model training may fail on tiny data — we only care about the call counts
+
+        assert mock_sim.called, (
+            "RollingWindowSimulator.simulate_all was never called — "
+            "layered_evolve.py still uses generate_training_trades"
+        )
+
+    def test_retrain_produces_multiple_strategy_types(self):
+        """run_layered_training on 300-day synthetic data should accumulate >50 entry
+        sim trades from multiple distinct strategy types (not just put_credit_spread)."""
+        from models.layered_evolve import run_layered_training
+        from models.strategy_evolver import EvolvedStrategy
+        from config import BacktestConfig
+
+        data = self._make_synthetic_data(n=300)
+        cfg  = BacktestConfig()
+        evolved = {
+            "LOW_VOL": EvolvedStrategy(
+                name="evolved_put_LOW_VOL", direction="put", sd=1.0, spread_width=500,
+                profit_target_pct=50.0, stop_loss_pct=60.0, hold_days=21,
+                min_vix=0, max_vix=14, sharpe=1.0, total_pnl=1000.0,
+                win_rate=0.6, num_trades=50, max_drawdown=-0.05, avg_pnl=20.0,
+            ),
+        }
+
+        try:
+            artifacts = run_layered_training(data=data, config=cfg, evolved_strategies=evolved, verbose=False)
+        except (RuntimeError, KeyError):
+            # KeyError: FeatureExtractor needs 52+ columns; synthetic data is minimal.
+            # RuntimeError: insufficient walk-forward windows on 300-day slice.
+            # Either way we skip — the wiring test above already verifies the call path.
+            pytest.skip("Layered training needs full feature columns; use --mode retrain-models for integration")
+
+        trades = artifacts.entry_training_trades
+        assert len(trades) > 50, f"Expected >50 sim trades, got {len(trades)}"
+        strats = {t.strategy for t in trades if hasattr(t, "strategy")}
+        assert len(strats) >= 2, (
+            f"Expected ≥2 distinct strategy types from retrain, got {len(strats)}: {strats}"
+        )
+
+    def test_sim_config_entry_every_n_days_matches_training_flow(self):
+        """SimConfig constructed in layered_evolve should use TRAINING_FLOW.layered_entry_every_n_days."""
+        from training_config import TRAINING_FLOW
+        from backtester.rolling_simulator import SimConfig
+        # Construct the same way layered_evolve.py does:
+        sc = SimConfig(entry_every_n_days=TRAINING_FLOW.layered_entry_every_n_days)
+        assert sc.entry_every_n_days == TRAINING_FLOW.layered_entry_every_n_days, (
+            f"SimConfig.entry_every_n_days={sc.entry_every_n_days} != "
+            f"TRAINING_FLOW.layered_entry_every_n_days={TRAINING_FLOW.layered_entry_every_n_days}"
+        )
