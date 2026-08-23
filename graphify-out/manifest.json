@@ -1,7 +1,7 @@
 {
   "/home/shivamguptanit/github/nifty-options-backtester/main.py": {
-    "mtime": 1787492317.8401952,
-    "hash": "02f899bfc17251d8f1ca849d7c32abf0"
+    "mtime": 1787493662.6227539,
+    "hash": "e0eb2af5f7a2bb83c67299e75ef18c7d"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/main_weekly.py": {
     "mtime": 1778607221.8160098,
@@ -16,8 +16,8 @@
     "hash": "6e6396346080958e7ea78461114404fc"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/config.py": {
-    "mtime": 1787492279.2435055,
-    "hash": "1bbc0160b6b3eb60ab3d2e30bac7dd30"
+    "mtime": 1787493592.5410542,
+    "hash": "d10b620734678041fac105bff3f7f203"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/examples/fyers_usage_examples.py": {
     "mtime": 1778607221.8160098,
@@ -48,8 +48,8 @@
     "hash": "9d43eb0615106d89a2ee4f74dacf2cc7"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/scripts/slippage_stress_test.py": {
-    "mtime": 1787490878.37858,
-    "hash": "c8ccbf5d3de5788998b7225916949fce"
+    "mtime": 1787493708.993187,
+    "hash": "c4e0a965d840cb728f8fc60d4930d63c"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_token_warning.py": {
     "mtime": 1778607221.8193727,
@@ -300,8 +300,8 @@
     "hash": "f4a09f0e4ef8c7e87fcc39c1f7eb5126"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/combined_engine.py": {
-    "mtime": 1787492266.3872764,
-    "hash": "5a4a612928006b121d4218b9a9ee7bd9"
+    "mtime": 1787493639.0314987,
+    "hash": "e763f6444098c0cd1a83c24f626e827f"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/entry_engine.py": {
     "mtime": 1778607219.0546975,
@@ -552,8 +552,8 @@
     "hash": "d63d7c4659d6acc468de9c0587a04d7d"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/CLAUDE.md": {
-    "mtime": 1778648939.2064655,
-    "hash": "415137afc25ae0964dd72101123e7af2"
+    "mtime": 1787493700.5453792,
+    "hash": "f4b6347dc7708659b7a6a2bfa4478ad2"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/AGENT_HANDOFF.md": {
     "mtime": 1779085893.6608152,

@@ -6,12 +6,12 @@ Runs 4 CostModel scenarios against a single 17yr market-data load, then
 prints a comparison table showing how CAGR, Sharpe, Max DD, and P&L degrade
 as execution friction increases.
 
-Scenarios
+Scenarios (all run with mid-session fill proxy — nifty_mid_session + 0.75× slip scale)
 ---------
-  S0  baseline   base_slip=0.30, vix_scale=0.04  (current production defaults)
-  S1  mild       base_slip=0.50, vix_scale=0.06  (+67% slip; realistic Nifty mid-cap hours)
-  S2  moderate   base_slip=0.75, vix_scale=0.08  (+150% slip; illiquid / expiry day fills)
-  S3  severe     base_slip=1.20, vix_scale=0.12  (+300% slip; crisis / wide-bid-ask blowout)
+  S0  baseline   base_slip=0.30, vix_scale=0.04  (production defaults × 0.75 mid-session)
+  S1  mild       base_slip=0.50, vix_scale=0.06  (+67% base slip vs baseline)
+  S2  moderate   base_slip=0.75, vix_scale=0.08  (+150% base slip; illiquid / expiry day)
+  S3  severe     base_slip=1.20, vix_scale=0.12  (+300% base slip; crisis wide-bid blowout)
 
 Fixed costs (STT, exchange, stamp, SEBI, brokerage, GST) are held constant across
 all scenarios — only the variable bid-ask slippage component changes.

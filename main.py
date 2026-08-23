@@ -647,7 +647,7 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     Pipeline:
       1. Fetch 17yr market data (2009–2026)
       2. Load final evolved entry / exit / weekly-risk caches
-      3. Run CombinedBacktestEngine with 70% monthly / 30% weekly budget split
+      3. Run CombinedBacktestEngine with 50% monthly / 50% weekly budget split
       4. Generate full report with per-track and combined metrics
     """
     from config import WeeklyBacktestConfig
@@ -3079,7 +3079,7 @@ def run_signal_combined(config: BacktestConfig) -> None:
     wc = WeeklyBacktestConfig()
 
     print("\n" + "=" * 75)
-    print("  ML-POWERED COMBINED SIGNAL  (Monthly 70% + Weekly 30%)")
+    print("  ML-POWERED COMBINED SIGNAL  (Monthly 50% + Weekly 50%,  11:00–13:00 IST)")
     print("  Mirrors CombinedBacktestEngine — regime-adaptive + weekly gamma")
     print("=" * 75)
 
@@ -3156,42 +3156,35 @@ def run_signal_combined(config: BacktestConfig) -> None:
     print(f"    Crude: ${latest.get('crude', 0):,.2f} | Gold: ${latest.get('gold', 0):,.2f}")
     print(f"    USD/INR: {latest.get('usdinr', 0):.2f} | Bank Nifty: {latest.get('nifty_bank', 0):,.2f}")
 
-    # ── Entry window gate (11:00–13:00 IST) ─────────────────────────────────
-    # Options selling during mid-session avoids the wide bid-ask spreads at open
-    # and the pre-close gamma squeeze. Gate is skipped if mid_session_entry=False.
-    if getattr(config, "mid_session_entry", True):
-        from datetime import datetime as _dt_gate
+    # ── Entry window gate: 11:00–13:00 IST (permanent baseline) ─────────────
+    # Nifty options spreads are tightest and spot is most stable in mid-session.
+    # Both fill model and backtest use this window. Signal always enforces it.
+    from datetime import datetime as _dt_gate, time as _time_gate
+    try:
+        from zoneinfo import ZoneInfo as _ZI          # Python 3.9+ stdlib
+        _now_gate = _dt_gate.now(_ZI("Asia/Kolkata"))
+    except Exception:
         try:
-            # Python 3.9+ stdlib — no extra deps
-            from zoneinfo import ZoneInfo as _ZI
-            _now_gate = _dt_gate.now(_ZI("Asia/Kolkata"))
+            import pytz as _pytz
+            _now_gate = _dt_gate.now(_pytz.timezone("Asia/Kolkata"))
         except Exception:
-            try:
-                import pytz as _pytz
-                _now_gate = _dt_gate.now(_pytz.timezone("Asia/Kolkata"))
-            except Exception:
-                # Last resort: assume system clock is IST (correct on Indian VPS)
-                _now_gate = _dt_gate.now()
+            _now_gate = _dt_gate.now()                # assumes IST system clock
 
-        _win_start_h = getattr(config, "entry_window_start_hour", 11)
-        _win_start_m = getattr(config, "entry_window_start_minute", 0)
-        _win_end_h   = getattr(config, "entry_window_end_hour", 13)
-        _win_end_m   = getattr(config, "entry_window_end_minute", 0)
-        _t           = _now_gate.time().replace(tzinfo=None)
-        from datetime import time as _time_gate
-        _in_window   = _time_gate(_win_start_h, _win_start_m) <= _t <= _time_gate(_win_end_h, _win_end_m)
-        _is_weekday  = _now_gate.weekday() < 5
-        if not (_in_window and _is_weekday):
-            _window_str = f"{_win_start_h:02d}:{_win_start_m:02d}–{_win_end_h:02d}:{_win_end_m:02d} IST"
-            print(f"\n  ⏰  ENTRY WINDOW GATE: outside {_window_str} "
-                  f"(now {_now_gate.strftime('%H:%M')} IST"
-                  f"{'  [weekend]' if not _is_weekday else ''})")
-            print(f"  No entry signals generated. Re-run between {_window_str} on a weekday.")
-            print(f"  (To disable this gate: set config.mid_session_entry = False)\n")
-            return
-        else:
-            print(f"\n  ✓  Entry window: {_now_gate.strftime('%H:%M')} IST is within "
-                  f"{_win_start_h:02d}:{_win_start_m:02d}–{_win_end_h:02d}:{_win_end_m:02d} — proceeding")
+    _win_start_h = config.entry_window_start_hour
+    _win_start_m = config.entry_window_start_minute
+    _win_end_h   = config.entry_window_end_hour
+    _win_end_m   = config.entry_window_end_minute
+    _t           = _now_gate.time().replace(tzinfo=None)
+    _in_window   = _time_gate(_win_start_h, _win_start_m) <= _t <= _time_gate(_win_end_h, _win_end_m)
+    _is_weekday  = _now_gate.weekday() < 5
+    _window_str  = f"{_win_start_h:02d}:{_win_start_m:02d}–{_win_end_h:02d}:{_win_end_m:02d} IST"
+    if not (_in_window and _is_weekday):
+        print(f"\n  ⏰  ENTRY WINDOW GATE: outside {_window_str} "
+              f"(now {_now_gate.strftime('%H:%M')} IST"
+              f"{'  [weekend]' if not _is_weekday else ''})")
+        print(f"  No entry signals generated. Re-run between {_window_str} on a weekday.\n")
+        return
+    print(f"\n  ✓  Entry window: {_now_gate.strftime('%H:%M')} IST within {_window_str} — proceeding")
 
     # ── 2. ML models (monthly + weekly) ─────────────────────────────────────
     train_cutoff = int(len(data) * 0.6)

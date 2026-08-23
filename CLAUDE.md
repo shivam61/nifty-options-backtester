@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A Python backtester + live-signal system for **NSE Nifty 50 index options selling** (Indian market). Fetches 17 years of data (2009–present) from Yahoo Finance, engineers 100+ features, trains per-regime GBM models to time entries, then runs a combined **monthly (70% capital) + weekly (30% capital)** options backtest. Capital base ₹5L INR, lot size 65. Every run auto-appends to `BACKTEST_CHANGELOG.md` and `backtest_runs.jsonl`.
+A Python backtester + live-signal system for **NSE Nifty 50 index options selling** (Indian market). Fetches 17 years of data (2009–present) from Yahoo Finance, engineers 100+ features, trains per-regime LightGBM models to time entries, then runs a combined **monthly (50% capital) + weekly (50% capital)** options backtest. Entries are timed to the **11:00–13:00 IST mid-session window** (tighter bid-ask, stable spot). Capital base ₹5L INR, lot size 65. Every run auto-appends to `BACKTEST_CHANGELOG.md` and `backtest_runs.jsonl`.
 
 ---
 
@@ -24,10 +24,14 @@ A Python backtester + live-signal system for **NSE Nifty 50 index options sellin
 | `lot_size` | 65 | `config.BacktestConfig` |
 | `initial_capital` | ₹500,000 | `config.BacktestConfig` |
 | `_MONDAY_CUTOVER` | 2024-04-04 | `data/expiry_calendar.py` — NSE switched from Thursday to Monday expiry |
-| `entry_threshold` | 0.48 | `run_backtest_combined()`, `CombinedBacktestEngine` |
+| `entry_threshold` | 0.50 | `config.BacktestConfig.monthly_entry_threshold` → `CombinedBacktestEngine` |
 | `monthly_max_lots_cap` | 30 | `CombinedBacktestEngine.__init__` (`safe_monthly_cap`) |
-| `monthly_budget_pct` | 70% | `run_backtest_combined()` |
-| `weekly_budget_pct` | 30% | `run_backtest_combined()` |
+| `monthly_budget_pct` | 50% | `main.py:_monthly_pct` in `run_backtest_combined()` |
+| `weekly_budget_pct` | 50% | `main.py:_weekly_pct` in `run_backtest_combined()` |
+| `mid_session_intraday_alpha` | 0.40 | `config.BacktestConfig` — fraction of open→close move by 11 AM |
+| `mid_session_slippage_scale` | 0.75 | `config.BacktestConfig` / `WeeklyBacktestConfig` — 25% tighter fills |
+| `entry_window_start_hour` | 11 | `config.BacktestConfig` — signal mode live gate start (IST) |
+| `entry_window_end_hour` | 13 | `config.BacktestConfig` — signal mode live gate end (IST) |
 | `vix_simultaneous_cap` | 25.0 | `run_backtest_combined()` — blocks weekly entries when VIX > 25 and monthly trade is open |
 | `dd_kill_pct` | 0.20 | `ProductionRulesConfig` in `run_backtest_combined()` |
 | `dd_recovery_pct` | 0.16 | same — engine re-enables after kill-switch when DD recovers to this level |
@@ -43,7 +47,7 @@ A Python backtester + live-signal system for **NSE Nifty 50 index options sellin
 
 ```bash
 python main.py --mode evolve              # Grid-search params + train all ML models (run first)
-python main.py --mode backtest-combined   # Monthly 70% + weekly 30% combined backtest
+python main.py --mode backtest-combined   # Monthly 50% + weekly 50% combined backtest (mid-session fills)
 python main.py --mode backtest            # Monthly-only backtest
 python main.py --mode signal-combined     # Live combined signal (Fyers API)
 python main.py --mode signal              # Live monthly signal (Yahoo + NSE chain)
@@ -118,9 +122,11 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
-- **ML entry model AUC ~0.50** — The `RegimeAwareLearner` v4 CV AUC is ~0.50 (effectively random on the held-out folds). The model still improves backtest results through regime-based strategy selection even when win-prob is near-random. Don't mistake low AUC for a broken pipeline — options selling alpha comes from correct regime filtering, not precise probability estimation.
+- **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 (`monthly_entry_threshold=0.50`) is active and blocks ~43% of days. Don't re-enable bypass unless AUC drops below 0.55.
 
-- **Capital utilization ~62%** — At default settings, 38% of capital is idle (VIX gates + no concurrent monthly trades). The main idle-capital levers are: `vix_simultaneous_cap` (currently 25), `safe_monthly_cap` (currently 30), and the `dd_recovery_pct` (currently 0.16).
+- **Capital utilization ~48%** — At default settings with 50/50 split and Gate 8 at 0.50, ~52% of capital days are idle. Main levers: `vix_simultaneous_cap` (25), `monthly_entry_threshold` (0.50), `dd_recovery_pct` (0.16).
+
+- **Mid-session fill is the baseline** — `nifty_mid_session = nifty_open + 0.40*(nifty_close−nifty_open)` is used as fill price for all entries (proxy for ~11 AM spot). Slippage is scaled 0.75× vs open-market baseline. Do NOT switch back to `nifty_open`-only fills — benchmarked +2.47% CAGR, MaxDD 8.9%→4.7%. Old cached parquets without `nifty_mid_session` will fall back to `nifty_open` automatically.
 
 - **Black-Scholes as pricing proxy** — No real NSE option chain history before 2019. Premiums estimated via `price_option()` + `iv_from_vix()` linear skew model. Pre-2019 P&L is directionally indicative only. `iv_from_vix()` returns IV as a **percentage** (e.g., `18.5` = 18.5%); `price_option()` divides by 100 internally — never divide again before calling it.
 
