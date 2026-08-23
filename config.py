@@ -145,6 +145,22 @@ class BacktestConfig:
 
     entry_model_version: str = "v4"
 
+    # ── Mid-session entry window (11:00–13:00 IST) ──────────────────────────
+    # Nifty options markets are most stable and have tightest bid-ask spreads
+    # between 11 AM and 1 PM IST — after the open volatility settles and before
+    # the afternoon drift. Enabling this has two effects:
+    #   Backtest: fill price = nifty_open + 0.4×(nifty_close−nifty_open)
+    #             (proxy for ~11 AM spot; 40% of the open→close intraday move)
+    #             + slippage reduced by mid_session_slippage_scale (0.75×)
+    #   Signal:   hard time-gate — rejects entries outside [entry_window_start, entry_window_end]
+    mid_session_entry: bool = True                 # master switch
+    entry_window_start_hour: int = 11              # IST hour (inclusive)
+    entry_window_start_minute: int = 0
+    entry_window_end_hour: int = 13                # IST hour (inclusive)
+    entry_window_end_minute: int = 0
+    mid_session_intraday_alpha: float = 0.40       # fraction of open→close move completed by ~11 AM
+    mid_session_slippage_scale: float = 0.75       # bid-ask is ~25% tighter in mid-session vs open
+
     cost_model: CostModel = field(default_factory=CostModel)
     apply_costs: bool = True
     max_portfolio_delta: float = 6000.0
@@ -187,6 +203,11 @@ class WeeklyBacktestConfig:
     engine_b_trend_reversal_pct: float = 0.0060
     combined_open_loss_block_min_hold_days: int = 2
     monthly_loss_block_min_hold_days: int = 3
+
+    # Mid-session entry window — mirrors BacktestConfig fields.
+    # Weekly fills also use nifty_mid_session spot and reduced slippage when enabled.
+    mid_session_entry: bool = True
+    mid_session_slippage_scale: float = 0.75
 
     cost_model: CostModel = field(default_factory=lambda: CostModel(
         base_slippage_per_unit=0.45,

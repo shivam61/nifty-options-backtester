@@ -256,7 +256,13 @@ class CombinedBacktestEngine:
         pending = self._pending_monthly_entry
         if current_date <= pending["signal_date"]:
             raise AssertionError("Monthly fill must occur after the close-derived signal.")
-        fill_spot = float(row.get("nifty_open", row.get("nifty_close", pending["signal_spot"])))
+        # Mid-session entry: use ~11 AM proxy spot and tighter slippage scale
+        if getattr(self.m_config, "mid_session_entry", False) and "nifty_mid_session" in row.index:
+            fill_spot = float(row.get("nifty_mid_session", row.get("nifty_open", row.get("nifty_close", pending["signal_spot"]))))
+            slip_scale = float(getattr(self.m_config, "mid_session_slippage_scale", 0.75))
+        else:
+            fill_spot = float(row.get("nifty_open", row.get("nifty_close", pending["signal_spot"])))
+            slip_scale = 1.0
         gap_pct = ((fill_spot / pending["signal_spot"]) - 1.0) * 100 if pending["signal_spot"] > 0 else 0.0
         dte = max((pending["expiry"] - current_date).days, 0)
         if not (self.m_config.min_dte_entry <= dte <= self.m_config.max_dte_entry):
@@ -270,6 +276,16 @@ class CombinedBacktestEngine:
             self.monthly_strategy.force_strategy_selection(pending["strategy_name"])
         trade = self.monthly_strategy.create_trade(current_date, fill_spot, pending["signal_vix"], dte, self.m_config.risk_free_rate)
         trade.signal_date = pending["signal_date"]
+        # Apply scaled slippage: temporarily patch the fill model's cost_model if needed
+        if slip_scale != 1.0:
+            from dataclasses import replace as _dc_replace
+            orig_cm = self.monthly_fill_model.cost_model
+            scaled_cm = _dc_replace(
+                orig_cm,
+                base_slippage_per_unit=orig_cm.base_slippage_per_unit * slip_scale,
+                slippage_vix_scale=orig_cm.slippage_vix_scale * slip_scale,
+            )
+            self.monthly_fill_model.cost_model = scaled_cm
         self.monthly_fill_model.apply_entry_fill(
             trade,
             spot=fill_spot,
@@ -278,6 +294,8 @@ class CombinedBacktestEngine:
             risk_free_rate=self.m_config.risk_free_rate,
             gap_pct=gap_pct,
         )
+        if slip_scale != 1.0:
+            self.monthly_fill_model.cost_model = orig_cm  # restore
         self.monthly_trade = trade
         self._m_expiry = pending["expiry"]
         self._m_entry_vix = pending["signal_vix"]
@@ -296,7 +314,13 @@ class CombinedBacktestEngine:
         pending = self._pending_weekly_entry
         if current_date <= pending["signal_date"]:
             raise AssertionError("Weekly fill must occur after the close-derived signal.")
-        fill_spot = float(row.get("nifty_open", row.get("nifty_close", pending["signal_spot"])))
+        # Mid-session entry: use ~11 AM proxy spot and tighter slippage scale
+        if getattr(self.w_config, "mid_session_entry", False) and "nifty_mid_session" in row.index:
+            fill_spot = float(row.get("nifty_mid_session", row.get("nifty_open", row.get("nifty_close", pending["signal_spot"]))))
+            slip_scale = float(getattr(self.w_config, "mid_session_slippage_scale", 0.75))
+        else:
+            fill_spot = float(row.get("nifty_open", row.get("nifty_close", pending["signal_spot"])))
+            slip_scale = 1.0
         gap_pct = ((fill_spot / pending["signal_spot"]) - 1.0) * 100 if pending["signal_spot"] > 0 else 0.0
         dte = max((pending["expiry"] - current_date).days, 0)
         if dte < 1:
@@ -307,6 +331,16 @@ class CombinedBacktestEngine:
             strategy.lots = pending["lots"]
         trade = strategy.create_trade(current_date, fill_spot, pending["signal_vix"], dte, self.w_config.risk_free_rate)
         trade.signal_date = pending["signal_date"]
+        # Apply scaled slippage for mid-session entry
+        if slip_scale != 1.0:
+            from dataclasses import replace as _dc_replace
+            orig_cm_w = self.weekly_fill_model.cost_model
+            scaled_cm_w = _dc_replace(
+                orig_cm_w,
+                base_slippage_per_unit=orig_cm_w.base_slippage_per_unit * slip_scale,
+                slippage_vix_scale=orig_cm_w.slippage_vix_scale * slip_scale,
+            )
+            self.weekly_fill_model.cost_model = scaled_cm_w
         self.weekly_fill_model.apply_entry_fill(
             trade,
             spot=fill_spot,
@@ -315,6 +349,8 @@ class CombinedBacktestEngine:
             risk_free_rate=self.w_config.risk_free_rate,
             gap_pct=gap_pct,
         )
+        if slip_scale != 1.0:
+            self.weekly_fill_model.cost_model = orig_cm_w  # restore
         self.weekly_trade = trade
         self._w_expiry = pending["expiry"]
         self._w_entry_vix = pending["signal_vix"]
