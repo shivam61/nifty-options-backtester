@@ -47,6 +47,10 @@
     "mtime": 1778607221.8189354,
     "hash": "9d43eb0615106d89a2ee4f74dacf2cc7"
   },
+  "/home/shivamguptanit/github/nifty-options-backtester/scripts/slippage_stress_test.py": {
+    "mtime": 1787490878.37858,
+    "hash": "c8ccbf5d3de5788998b7225916949fce"
+  },
   "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_token_warning.py": {
     "mtime": 1778607221.8193727,
     "hash": "a949e82fa021f1dfb979bd23abf648f7"
