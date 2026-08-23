@@ -107,7 +107,7 @@ class WeeklyEntryLearner:
             n_neg = len(y_quality) - n_pos
             print(f"  [Weekly ML] Training on {len(X_all)} samples ({n_pos} positive, {n_neg} negative)")
 
-        from sklearn.ensemble import GradientBoostingClassifier
+        from lightgbm import LGBMClassifier
         from sklearn.calibration import CalibratedClassifierCV
         from sklearn.metrics import roc_auc_score
         from sklearn.utils.class_weight import compute_sample_weight
@@ -119,9 +119,10 @@ class WeeklyEntryLearner:
         # Use sample weights to correct for class imbalance in the scout pass.
         sample_weights = compute_sample_weight("balanced", y_quality)
 
-        scout = GradientBoostingClassifier(
+        scout = LGBMClassifier(
             n_estimators=n_est, max_depth=3, learning_rate=0.08,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         if len(set(y_quality)) > 1:
             scout.fit(X_all, y_quality, sample_weight=sample_weights)
@@ -157,9 +158,10 @@ class WeeklyEntryLearner:
                 if len(set(y_tr)) < 2 or len(set(y_te)) < 2:
                     continue
 
-                fold_model = GradientBoostingClassifier(
+                fold_model = LGBMClassifier(
                     n_estimators=n_est, max_depth=max_d, learning_rate=0.05,
-                    min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+                    min_child_samples=min_leaf, subsample=0.8, random_state=42,
+                    n_jobs=-1, verbosity=-1,
                 )
                 fold_sw = compute_sample_weight("balanced", y_tr)
                 fold_model.fit(X_tr, y_tr, sample_weight=fold_sw)
@@ -175,7 +177,8 @@ class WeeklyEntryLearner:
 
         base_params = dict(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.05,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
 
         final_sw = compute_sample_weight("balanced", y_quality)
@@ -185,16 +188,16 @@ class WeeklyEntryLearner:
                 from sklearn.model_selection import TimeSeriesSplit
                 tscv = TimeSeriesSplit(n_splits=min(3, max(2, len(X) // 50)))
                 self.quality_classifier = CalibratedClassifierCV(
-                    GradientBoostingClassifier(**base_params),
+                    LGBMClassifier(**base_params),
                     method="sigmoid", cv=tscv,
                 )
                 self.quality_classifier.fit(X, y_quality, sample_weight=final_sw)
             except Exception:
-                gbm = GradientBoostingClassifier(**base_params)
+                gbm = LGBMClassifier(**base_params)
                 gbm.fit(X, y_quality, sample_weight=final_sw)
                 self.quality_classifier = gbm
         else:
-            gbm = GradientBoostingClassifier(**base_params)
+            gbm = LGBMClassifier(**base_params)
             gbm.fit(X, y_quality, sample_weight=final_sw)
             self.quality_classifier = gbm
 

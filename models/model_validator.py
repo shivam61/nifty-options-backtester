@@ -302,7 +302,7 @@ def permutation_test_entry_model(
     the model is learning noise, not signal.
     """
     from models.trade_learner import TradeLearner, FeatureExtractor
-    from sklearn.ensemble import GradientBoostingClassifier
+    from lightgbm import LGBMClassifier
     from sklearn.model_selection import TimeSeriesSplit
 
     sim_cfg = SimConfig(
@@ -346,9 +346,10 @@ def permutation_test_entry_model(
     min_leaf = max(2, len(X_train) // 10)
 
     # Real model
-    real_clf = GradientBoostingClassifier(
+    real_clf = LGBMClassifier(
         n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-        min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+        min_child_samples=min_leaf, subsample=0.8, random_state=42,
+        n_jobs=-1, verbosity=-1,
     )
     real_clf.fit(X_train, y_train)
     real_pred = real_clf.predict(X_test)
@@ -371,9 +372,10 @@ def permutation_test_entry_model(
     for i in range(n_permutations):
         y_shuffled = y_train.copy()
         rng.shuffle(y_shuffled)
-        clf_s = GradientBoostingClassifier(
+        clf_s = LGBMClassifier(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         clf_s.fit(X_train, y_shuffled)
         pred_s = clf_s.predict(X_test)
@@ -458,14 +460,15 @@ def permutation_test_exit_model(
     if verbose:
         print(f"  Permutation test: {len(X_train)} train / {len(X_test)} test snapshots")
 
-    from sklearn.ensemble import GradientBoostingClassifier
+    from lightgbm import LGBMClassifier
     from sklearn.utils.class_weight import compute_sample_weight
 
     # Real model
     sw = compute_sample_weight("balanced", y_train)
-    real_clf = GradientBoostingClassifier(
+    real_clf = LGBMClassifier(
         n_estimators=300, max_depth=5, learning_rate=0.08,
-        subsample=0.8, min_samples_leaf=8, random_state=42,
+        subsample=0.8, min_child_samples=8, random_state=42,
+        n_jobs=-1, verbosity=-1,
     )
     real_clf.fit(X_train, y_train, sample_weight=sw)
     real_pred = real_clf.predict(X_test)
@@ -488,9 +491,10 @@ def permutation_test_exit_model(
         y_shuffled = y_train.copy()
         rng.shuffle(y_shuffled)
         sw_s = compute_sample_weight("balanced", y_shuffled)
-        clf_s = GradientBoostingClassifier(
+        clf_s = LGBMClassifier(
             n_estimators=300, max_depth=5, learning_rate=0.08,
-            subsample=0.8, min_samples_leaf=8, random_state=42,
+            subsample=0.8, min_child_samples=8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         clf_s.fit(X_train, y_shuffled, sample_weight=sw_s)
         pred_s = clf_s.predict(X_test)
@@ -689,7 +693,7 @@ def permutation_test_weekly_entry(
     from backtester.weekly_simulator import WeeklyRollingSimulator, WeeklySimConfig
     from models.weekly_entry_learner import WeeklyEntryLearner
     from models.trade_learner import FeatureExtractor
-    from sklearn.ensemble import GradientBoostingClassifier
+    from lightgbm import LGBMClassifier
     COST_HURDLE_PCT = WeeklyEntryLearner.COST_HURDLE_PCT
 
     sim_cfg = WeeklySimConfig(lots=lots, lot_size=lot_size)
@@ -726,9 +730,10 @@ def permutation_test_weekly_entry(
         print(f"  Train positive rate: {y_train.mean():.1%} | Test positive rate: {y_test.mean():.1%}")
 
     n_est = min(150, max(50, len(X_train)))
-    real_clf = GradientBoostingClassifier(
+    real_clf = LGBMClassifier(
         n_estimators=n_est, max_depth=4, learning_rate=0.08,
-        min_samples_leaf=max(2, len(X_train) // 10), subsample=0.8, random_state=42,
+        min_child_samples=max(2, len(X_train) // 10), subsample=0.8, random_state=42,
+        n_jobs=-1, verbosity=-1,
     )
     real_clf.fit(X_train, y_train)
     real_pred = real_clf.predict(X_test)
@@ -748,9 +753,10 @@ def permutation_test_weekly_entry(
     for _ in range(n_permutations):
         y_shuffled = y_train.copy()
         rng.shuffle(y_shuffled)
-        clf_s = GradientBoostingClassifier(
+        clf_s = LGBMClassifier(
             n_estimators=n_est, max_depth=4, learning_rate=0.08,
-            min_samples_leaf=max(2, len(X_train) // 10), subsample=0.8, random_state=42,
+            min_child_samples=max(2, len(X_train) // 10), subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         clf_s.fit(X_train, y_shuffled)
         pred_s = clf_s.predict(X_test)

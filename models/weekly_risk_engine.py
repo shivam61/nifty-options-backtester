@@ -93,7 +93,7 @@ class TailRiskScorer:
         Train on feature matrix X and raw pnl_pct array.
         Target: y = 1 if pnl_pct < TAIL_THRESHOLD_PCT (a disaster).
         """
-        from sklearn.ensemble import GradientBoostingClassifier
+        from lightgbm import LGBMClassifier
         from sklearn.metrics import roc_auc_score
         from sklearn.utils.class_weight import compute_sample_weight
 
@@ -112,9 +112,10 @@ class TailRiskScorer:
         sw = compute_sample_weight("balanced", y)
 
         # Scout pass for feature selection
-        scout = GradientBoostingClassifier(
+        scout = LGBMClassifier(
             n_estimators=100, max_depth=3, learning_rate=0.08,
-            min_samples_leaf=max(5, n_pos // 5), subsample=0.8, random_state=42,
+            min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         scout.fit(X, y, sample_weight=sw)
         imp = dict(zip(X.columns, scout.feature_importances_))
@@ -135,9 +136,10 @@ class TailRiskScorer:
                 continue
             X_tr, X_te = X_sel.iloc[:tr_end], X_sel.iloc[te_start:te_end]
             sw_tr = compute_sample_weight("balanced", y_tr)
-            m = GradientBoostingClassifier(
+            m = LGBMClassifier(
                 n_estimators=120, max_depth=4, learning_rate=0.05,
-                min_samples_leaf=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                n_jobs=-1, verbosity=-1,
             )
             m.fit(X_tr, y_tr, sample_weight=sw_tr)
             try:
@@ -157,17 +159,19 @@ class TailRiskScorer:
         try:
             tscv = TimeSeriesSplit(n_splits=min(3, max(2, len(X_sel) // 50)))
             self.classifier = CalibratedClassifierCV(
-                GradientBoostingClassifier(
+                LGBMClassifier(
                     n_estimators=120, max_depth=4, learning_rate=0.05,
-                    min_samples_leaf=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                    min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                    n_jobs=-1, verbosity=-1,
                 ),
                 method="sigmoid", cv=tscv,
             )
             self.classifier.fit(X_sel, y, sample_weight=sw_all)
         except Exception:
-            gbm = GradientBoostingClassifier(
+            gbm = LGBMClassifier(
                 n_estimators=120, max_depth=4, learning_rate=0.05,
-                min_samples_leaf=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                min_child_samples=max(5, n_pos // 5), subsample=0.8, random_state=42,
+                n_jobs=-1, verbosity=-1,
             )
             gbm.fit(X_sel, y, sample_weight=sw_all)
             self.classifier = gbm

@@ -8,7 +8,7 @@ ML model that learns from multi-strategy backtests to predict:
 Architecture:
 - FeatureExtractor: 22 features (pruned from 39) across volatility, momentum, macro, composite
 - Strategy Classifier: predicts best strategy for current regime
-- Win Probability Model: ensemble of GradientBoosting + RandomForest
+- Win Probability Model: LightGBM classifier + regressor ensemble (migrated from sklearn GBM)
 - P&L Regressor: predicts expected trade P&L
 - Macro Pattern Analyzer: learns which macro conditions drive wins/losses per strategy
 
@@ -600,7 +600,7 @@ class TradeLearner:
         quality_classes = np.unique(y_quality)
 
         from sklearn.dummy import DummyClassifier
-        from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+        from lightgbm import LGBMClassifier, LGBMRegressor
         from sklearn.calibration import CalibratedClassifierCV
         from sklearn.metrics import roc_auc_score
         from sklearn.model_selection import cross_val_score, TimeSeriesSplit
@@ -610,9 +610,10 @@ class TradeLearner:
         min_leaf = max(2, len(trades) // 10)
 
         # ── Pass 1: scout GBM on ALL features → importance for pruning ──
-        scout = GradientBoostingClassifier(
+        scout = LGBMClassifier(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         if len(quality_classes) > 1:
             scout.fit(X_all, y_quality)
@@ -631,7 +632,8 @@ class TradeLearner:
         tscv = TimeSeriesSplit(n_splits=n_cv)
         base_gbm_params = dict(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
 
         if len(quality_classes) > 1:
@@ -654,17 +656,17 @@ class TradeLearner:
                 if len(np.unique(y_te)) < 2:
                     continue
 
-                fold_scout = GradientBoostingClassifier(
+                fold_scout = LGBMClassifier(
                     n_estimators=100, max_depth=3, learning_rate=0.05, subsample=0.8,
-                    random_state=42,
+                    random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 fold_scout.fit(X_tr, y_tr)
                 fold_imp = dict(zip(X_tr.columns, fold_scout.feature_importances_))
                 fold_top = sorted(fold_imp, key=fold_imp.get, reverse=True)[:self.MAX_FEATURES]
 
-                fold_model = GradientBoostingClassifier(
+                fold_model = LGBMClassifier(
                     n_estimators=200, max_depth=4, learning_rate=0.05, subsample=0.8,
-                    min_samples_leaf=20, random_state=42,
+                    min_child_samples=20, random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 fold_model.fit(X_tr[fold_top], y_tr)
                 try:
@@ -698,12 +700,12 @@ class TradeLearner:
             )
             try:
                 self.quality_classifier = CalibratedClassifierCV(
-                    GradientBoostingClassifier(**base_gbm_params),
+                    LGBMClassifier(**base_gbm_params),
                     method="sigmoid", cv=tscv,
                 )
                 self.quality_classifier.fit(X, y_quality)
             except Exception:
-                _gbm = GradientBoostingClassifier(**base_gbm_params)
+                _gbm = LGBMClassifier(**base_gbm_params)
                 _gbm.fit(X, y_quality)
                 self.quality_classifier = _gbm
         else:
@@ -714,9 +716,10 @@ class TradeLearner:
             self.quality_classifier = fallback
 
         # ── Expected risk-adjusted return regressor ──
-        self.return_regressor = GradientBoostingRegressor(
+        self.return_regressor = LGBMRegressor(
             n_estimators=n_est, max_depth=max_d, learning_rate=0.08,
-            min_samples_leaf=min_leaf, subsample=0.8, random_state=42,
+            min_child_samples=min_leaf, subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         self.return_regressor.fit(X, y_return)
 
@@ -725,11 +728,11 @@ class TradeLearner:
         for strat_name, strat_label in self.STRATEGY_LABELS.items():
             mask = y_strat == strat_label
             if mask.sum() >= 5:
-                model = GradientBoostingRegressor(
+                model = LGBMRegressor(
                     n_estimators=min(50, max(20, int(mask.sum()) * 2)),
                     max_depth=3, learning_rate=0.1,
-                    min_samples_leaf=max(2, int(mask.sum()) // 5),
-                    random_state=42,
+                    min_child_samples=max(2, int(mask.sum()) // 5),
+                    random_state=42, n_jobs=-1, verbosity=-1,
                 )
                 model.fit(X[mask], y_return[mask])
                 self.per_strategy_regressors[strat_name] = model

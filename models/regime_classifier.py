@@ -28,7 +28,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from enum import IntEnum
-from sklearn.ensemble import GradientBoostingClassifier
+from lightgbm import LGBMClassifier
 from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 
 
@@ -189,9 +189,10 @@ class RegimeClassifier:
             self.is_trained = False
             return {"status": "rules_only", "n_classes": n_classes}
 
-        self.model = GradientBoostingClassifier(
+        self.model = LGBMClassifier(
             n_estimators=150, max_depth=4, learning_rate=0.1,
             subsample=0.8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
 
         n_cv = min(5, max(2, len(data) // 200))

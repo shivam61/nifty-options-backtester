@@ -36,7 +36,7 @@ CLOSED_TRADES_FILE = _CACHE_DIR / "closed_trades.json"
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingClassifier
+from lightgbm import LGBMClassifier
 
 from models.cache_utils import ModelPeriodMetadata, metadata_from_state
 from pricing.black_scholes import price_option, iv_from_vix, OptionType
@@ -530,9 +530,10 @@ class ExitStrategyEngine:
         from sklearn.utils.class_weight import compute_sample_weight
         sample_weights = compute_sample_weight("balanced", y_exit)
 
-        self.exit_classifier = GradientBoostingClassifier(
+        self.exit_classifier = LGBMClassifier(
             n_estimators=300, max_depth=5, learning_rate=0.08,
-            subsample=0.8, min_samples_leaf=8, random_state=42,
+            subsample=0.8, min_child_samples=8, random_state=42,
+            n_jobs=-1, verbosity=-1,
         )
         self.exit_classifier.fit(X, y_exit, sample_weight=sample_weights)
 
