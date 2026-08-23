@@ -16,8 +16,8 @@
     "hash": "6e6396346080958e7ea78461114404fc"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/config.py": {
-    "mtime": 1787468897.578328,
-    "hash": "712ec7a7a605bc8e70307af339ee3727"
+    "mtime": 1787488836.7514083,
+    "hash": "ff0576b27d19832b013e69ef2d28f71e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/examples/fyers_usage_examples.py": {
     "mtime": 1778607221.8160098,
@@ -380,8 +380,8 @@
     "hash": "7efa077e2d11e30698962f3d7c35e71e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_fixes.py": {
-    "mtime": 1787483575.8404927,
-    "hash": "519be771d6b7cf84ee5945357d1ba297"
+    "mtime": 1787488902.9577374,
+    "hash": "e386b9a54ccff39589362bb52476d12d"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_multi_expiry.py": {
     "mtime": 1778607221.8229246,

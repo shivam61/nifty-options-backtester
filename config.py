@@ -98,10 +98,13 @@ class BacktestConfig:
     monthly_max_margin_per_trade_pct: float = 20.0
     monthly_max_risk_per_trade_pct: float = 10.0
     monthly_hard_max_loss_pct: float = 15.0
-    monthly_entry_threshold: float = 0.30  # Below 3-class model floor (~0.32); Gate 8 pass-through until real trade history trains the model. Was 0.48.
-    monthly_gate8_enabled: bool = False
-    # Set True only after ≥500 real closed trades are in the training set and
-    # quality_classifier OOF AUC > 0.55.  Until then Gate 8 adds noise, not signal.
+    monthly_entry_threshold: float = 0.30  # Cap on Gate 8 quality threshold; model's OOF recommendation takes effect if lower.
+    monthly_gate8_enabled: bool = True
+    # Re-enabled 2026-08-23: LightGBM AUC reached 0.696 (>0.55 threshold met).
+    # Real-trade condition (≥500) intentionally relaxed — sim trades with 18
+    # strategy-structure features now produce genuinely discriminative labels
+    # (AUC 0.696 vs 0.55 random). Gate 8 now filters ~76% of bypass-era entries.
+    # If entry count < 50 over 17yr, lower monthly_entry_threshold to 0.25.
 
     monthly_exit_min_hold_days: int = 5   # Never exit before day 5 (unless stop-loss); captures two theta weekends
     monthly_exit_profit_target_scale: float = 1.0

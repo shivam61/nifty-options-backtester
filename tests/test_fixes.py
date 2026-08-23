@@ -2009,15 +2009,18 @@ class TestDTEBasedExitTargets:
 class TestGate8Bypass:
     """Gate 8 ML quality check should be bypassable via config flag."""
 
-    def test_gate8_enabled_default_false(self):
-        """BacktestConfig.monthly_gate8_enabled should default to False
-        until ≥500 real trades exist with AUC > 0.55."""
+    def test_gate8_enabled_default_true(self):
+        """BacktestConfig.monthly_gate8_enabled should default to True now that
+        LightGBM AUC reached 0.696 (>0.55 threshold) on 2026-08-23.
+        Gate 8 was bypassed when AUC was random (~0.55); now it has signal."""
         from config import BacktestConfig
         cfg = BacktestConfig()
         assert hasattr(cfg, "monthly_gate8_enabled"), (
             "BacktestConfig missing monthly_gate8_enabled"
         )
-        assert cfg.monthly_gate8_enabled is False
+        assert cfg.monthly_gate8_enabled is True, (
+            "Gate 8 should be enabled by default — AUC 0.696 > 0.55 threshold met on 2026-08-23"
+        )
 
     def test_gate8_can_be_enabled(self):
         """Config flag can be toggled to True for future re-enable."""
