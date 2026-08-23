@@ -2062,3 +2062,242 @@ class TestGate8Bypass:
         assert "BYPASSED" in src, (
             "Funnel report doesn't mention BYPASSED for Gate 8"
         )
+
+
+# ---------------------------------------------------------------------------
+# Dedup simulation — one strategy per entry date (eliminates label contradictions)
+# ---------------------------------------------------------------------------
+
+class TestDedupSimulation:
+    """deduplicate_by_date=True must produce exactly one trade per entry date."""
+
+    @pytest.fixture(scope="class")
+    def synthetic_data(self):
+        import numpy as np
+        import pandas as pd
+        n = 300
+        idx = pd.date_range("2020-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(99)
+        df = pd.DataFrame({
+            "nifty_close": 12000 + rng.normal(0, 200, n).cumsum(),
+            "vix": np.abs(rng.normal(18, 5, n)) + 8,
+        }, index=idx)
+        for col in ["nifty_open", "nifty_high", "nifty_low"]:
+            df[col] = df["nifty_close"]
+        df["overnight_gap_pct"] = rng.normal(0, 0.5, n)
+        return df
+
+    def test_dedup_gives_one_trade_per_date(self, synthetic_data):
+        """With deduplicate_by_date=True, no two trades should share an entry_date."""
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        from collections import Counter
+        sim = RollingWindowSimulator(
+            synthetic_data,
+            config=SimConfig(entry_every_n_days=3, hold_days=10, lots=1, lot_size=65,
+                             deduplicate_by_date=True)
+        )
+        trades = sim.simulate_all()
+        assert len(trades) > 0, "dedup simulation produced no trades"
+        date_counts = Counter(t.entry_date for t in trades)
+        max_per_date = max(date_counts.values())
+        assert max_per_date == 1, (
+            f"deduplicate_by_date=True still has {max_per_date} trades on one date"
+        )
+
+    def test_allconfigs_has_multiple_trades_per_date(self, synthetic_data):
+        """Without dedup, the same date gets multiple strategy entries (baseline check)."""
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        from collections import Counter
+        sim = RollingWindowSimulator(
+            synthetic_data,
+            config=SimConfig(entry_every_n_days=3, hold_days=10, lots=1, lot_size=65,
+                             deduplicate_by_date=False)
+        )
+        trades = sim.simulate_all()
+        date_counts = Counter(t.entry_date for t in trades)
+        max_per_date = max(date_counts.values()) if date_counts else 0
+        assert max_per_date > 1, (
+            "Expected multiple trades per date in all-configs mode for contradiction test"
+        )
+
+    def test_dedup_uses_vix_routing(self, synthetic_data):
+        """Dedup mode should route low-VIX dates to calm strategies and high-VIX to defensive."""
+        import numpy as np, pandas as pd
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        n = 200
+        idx = pd.date_range("2021-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(7)
+        # Force low VIX (< 13) so iron_butterfly should be selected
+        df_low = pd.DataFrame({
+            "nifty_close": 15000 + rng.normal(0, 50, n).cumsum(),
+            "vix": np.full(n, 11.0),
+        }, index=idx)
+        for col in ["nifty_open", "nifty_high", "nifty_low"]:
+            df_low[col] = df_low["nifty_close"]
+        df_low["overnight_gap_pct"] = 0.0
+
+        sim = RollingWindowSimulator(
+            df_low,
+            config=SimConfig(entry_every_n_days=5, hold_days=10, lots=1, lot_size=65,
+                             deduplicate_by_date=True)
+        )
+        trades = sim.simulate_all()
+        strategies = {t.strategy for t in trades}
+        assert "iron_butterfly" in strategies, (
+            f"Low VIX (11) should route to iron_butterfly but got: {strategies}"
+        )
+
+    def test_dedup_mode_in_config(self):
+        """SimConfig.deduplicate_by_date defaults to False (backward compatible)."""
+        from backtester.rolling_simulator import SimConfig
+        cfg = SimConfig()
+        assert cfg.deduplicate_by_date is False
+
+    def test_dedup_mode_is_diagnostic_not_training_default(self):
+        """deduplicate_by_date defaults False — the all-configs mode is correct for training
+        because (features, strategy_A) != (features, strategy_B) when structure metadata
+        is in the feature vector.  Dedup mode exists for coverage diagnostics only."""
+        from backtester.rolling_simulator import SimConfig
+        cfg = SimConfig()
+        assert cfg.deduplicate_by_date is False, (
+            "deduplicate_by_date should default False — the all-configs path gives more "
+            "training data and correct counterfactual coverage once strategy_label is a feature"
+        )
+
+
+# ---------------------------------------------------------------------------
+# TestTradeStructureFeatures
+# ---------------------------------------------------------------------------
+
+class TestTradeStructureFeatures:
+    """
+    Verify that the 18 trade-structure features are correctly added to the
+    FeatureExtractor and populated during training (trade=trade path).
+    """
+
+    @pytest.fixture
+    def market_row(self, market_data):
+        """Return a single row that passes critical-field checks."""
+        return market_data.iloc[50]
+
+    @pytest.fixture
+    def extractor(self, market_data):
+        from models.trade_learner import FeatureExtractor
+        return FeatureExtractor(market_data)
+
+    def _mock_trade(self, strategy="put_credit_spread", nc=50.0, spot=20000.0,
+                    entry_vix=14.0, legs_detail="", max_loss=0.0):
+        """Build a minimal mock trade object."""
+        class _T:
+            pass
+        t = _T()
+        t.strategy = strategy
+        t.net_credit = nc
+        t.entry_spot = spot
+        t.entry_vix = entry_vix
+        t.legs_detail = legs_detail
+        t.max_loss = max_loss
+        t.pnl_pct = 10.0
+        t.total_pnl = 1000.0
+        t.entry_date = "2021-01-05"
+        t.exit_date = "2021-01-25"
+        return t
+
+    def test_trade_structure_group_in_feature_groups(self):
+        """trade_structure group must exist in FEATURE_GROUPS with 18 features."""
+        from models.trade_learner import FeatureExtractor
+        assert "trade_structure" in FeatureExtractor.FEATURE_GROUPS
+        ts = FeatureExtractor.FEATURE_GROUPS["trade_structure"]
+        assert len(ts) == 18, f"Expected 18 trade_structure features, got {len(ts)}"
+
+    def test_feature_names_includes_all_structure_features(self):
+        """All 18 trade_structure features must be in FEATURE_NAMES."""
+        from models.trade_learner import FeatureExtractor
+        for feat in FeatureExtractor.FEATURE_GROUPS["trade_structure"]:
+            assert feat in FeatureExtractor.FEATURE_NAMES, f"{feat} missing from FEATURE_NAMES"
+
+    def test_extract_without_trade_gives_zeros(self, extractor, market_row):
+        """At inference time (no trade), all trade_structure features must be 0.0."""
+        from models.trade_learner import FeatureExtractor
+        feats = extractor.extract(market_row, trade=None)
+        assert feats is not None
+        for feat in FeatureExtractor.FEATURE_GROUPS["trade_structure"]:
+            assert feats[feat] == 0.0, f"{feat} should be 0.0 at inference, got {feats[feat]}"
+
+    def test_extract_with_trade_sets_strategy_one_hot(self, extractor, market_row):
+        """put_credit_spread trade → strat_put_credit_spread=1, all others 0."""
+        trade = self._mock_trade(strategy="put_credit_spread")
+        feats = extractor.extract(market_row, trade=trade)
+        assert feats is not None
+        assert feats["strat_put_credit_spread"] == 1.0
+        # All other one-hot flags must be 0
+        for s in ["strat_iron_condor", "strat_iron_butterfly", "strat_broken_wing_butterfly",
+                  "strat_weekly_calendar", "strat_jade_lizard"]:
+            assert feats[s] == 0.0, f"{s} should be 0.0 for put_credit_spread trade"
+
+    def test_strategy_label_distinguishes_strategies(self, extractor, market_row):
+        """Two different strategies on the same date produce different feature vectors."""
+        trade_pcs = self._mock_trade(strategy="put_credit_spread")
+        trade_ic  = self._mock_trade(strategy="iron_condor")
+        feats_pcs = extractor.extract(market_row, trade=trade_pcs)
+        feats_ic  = extractor.extract(market_row, trade=trade_ic)
+        assert feats_pcs is not None and feats_ic is not None
+        assert feats_pcs["strat_put_credit_spread"] == 1.0
+        assert feats_ic["strat_iron_condor"] == 1.0
+        assert feats_pcs["strat_iron_condor"] == 0.0
+        assert feats_ic["strat_put_credit_spread"] == 0.0
+
+    def test_net_credit_ratio_bounded(self, extractor, market_row):
+        """net_credit=50, spot=20000 → ratio=50/20000*100=0.25% (small but non-zero)."""
+        trade = self._mock_trade(nc=50.0, spot=20000.0)
+        feats = extractor.extract(market_row, trade=trade)
+        assert feats is not None
+        ratio = feats["struct_net_credit_ratio"]
+        assert 0 < ratio < 5.0, f"net_credit_ratio={ratio} out of expected range"
+
+    def test_is_calendar_flag(self, extractor, market_row):
+        """weekly_calendar → is_calendar=1.0; put_credit_spread → is_calendar=0.0."""
+        trade_cal = self._mock_trade(strategy="weekly_calendar")
+        trade_pcs = self._mock_trade(strategy="put_credit_spread")
+        feats_cal = extractor.extract(market_row, trade=trade_cal)
+        feats_pcs = extractor.extract(market_row, trade=trade_pcs)
+        assert feats_cal is not None and feats_pcs is not None
+        assert feats_cal["struct_is_calendar"] == 1.0
+        assert feats_pcs["struct_is_calendar"] == 0.0
+
+    def test_is_symmetric_flag(self, extractor, market_row):
+        """iron_condor → is_symmetric=1.0; broken_wing_butterfly → is_symmetric=0.0."""
+        trade_ic  = self._mock_trade(strategy="iron_condor")
+        trade_bwb = self._mock_trade(strategy="broken_wing_butterfly")
+        feats_ic  = extractor.extract(market_row, trade=trade_ic)
+        feats_bwb = extractor.extract(market_row, trade=trade_bwb)
+        assert feats_ic is not None and feats_bwb is not None
+        assert feats_ic["struct_is_symmetric"] == 1.0
+        assert feats_bwb["struct_is_symmetric"] == 0.0
+
+    def test_max_loss_to_credit_zero_division_guard(self, extractor, market_row):
+        """nc=0 (debit/backspread) must not divide by zero; guard uses max(nc, 1e-4)."""
+        trade = self._mock_trade(nc=0.0, max_loss=500.0)
+        feats = extractor.extract(market_row, trade=trade)
+        assert feats is not None
+        mlc = feats["struct_max_loss_to_credit"]
+        # 500 / 1e-4 = 5,000,000 — very large but finite
+        assert mlc == 500.0 / 1e-4
+        assert not (mlc != mlc)  # not NaN
+        assert mlc > 0
+
+    def test_adaptive_prefix_stripped(self, extractor, market_row):
+        """strategy='adaptive:iron_butterfly' should set strat_iron_butterfly=1.0."""
+        trade = self._mock_trade(strategy="adaptive:iron_butterfly")
+        feats = extractor.extract(market_row, trade=trade)
+        assert feats is not None
+        assert feats["strat_iron_butterfly"] == 1.0
+
+    def test_train_call_passes_trade_to_extract(self):
+        """Source inspection: train() must call extract(..., trade=trade)."""
+        import inspect
+        from models.trade_learner import TradeLearner
+        src = inspect.getsource(TradeLearner.train)
+        assert "trade=trade" in src, (
+            "TradeLearner.train() must pass trade=trade to feature_extractor.extract()"
+        )

@@ -118,6 +118,36 @@ class FeatureExtractor:
             "vix_volatility_10d",
             "regime_stability_10d",
         ],
+        # Trade structure (18): one-hot strategy identity + structure metrics.
+        # These features are populated at TRAINING time (when a TradeResult is available)
+        # by passing trade= to extract().  At INFERENCE time (live signal, no trade yet)
+        # they default to 0.0 — the model learns that 0-vector = "unknown strategy"
+        # and falls back on macro features, which is correct pre-entry behaviour.
+        #
+        # One-hot over raw integer label because GBM would otherwise learn spurious
+        # ordinal relationships (iron_butterfly=6 > put_credit_spread=0 is meaningless).
+        "trade_structure": [
+            # 11 one-hot strategy identity flags
+            "strat_put_credit_spread",
+            "strat_broken_wing_butterfly",
+            "strat_put_credit_wide",
+            "strat_calendar_spread",
+            "strat_ratio_put_spread",
+            "strat_iron_condor",
+            "strat_iron_butterfly",
+            "strat_diagonal_spread",
+            "strat_jade_lizard",
+            "strat_put_backspread",
+            "strat_weekly_calendar",
+            # 7 continuous structure metrics
+            "struct_net_credit_ratio",     # net_credit / entry_spot * 100 (premium richness %)
+            "struct_spread_width_pct",     # spread_width / entry_spot * 100 (risk width %)
+            "struct_max_loss_to_credit",   # max_loss / net_credit (structure risk/reward)
+            "struct_num_legs",             # 2=vertical/calendar, 3=BWB/JL, 4=IC/IB
+            "struct_is_calendar",          # 1 if calendar/diagonal/weekly_calendar
+            "struct_is_symmetric",         # 1 if iron_condor/iron_butterfly
+            "struct_entry_vix",            # explicit per-trade VIX at entry
+        ],
     }
 
     FEATURE_NAMES = []
@@ -148,9 +178,24 @@ class FeatureExtractor:
         self.data["sentiment_proxy"] = compute_price_action_sentiment(self.data)
         self.data["geopolitical_risk"] = compute_geopolitical_risk_index(self.data)
 
-    def extract(self, row: pd.Series) -> dict | None:
+    @staticmethod
+    def _parse_spread_width(legs_detail: str) -> float:
+        """Parse spread_width from a legs_detail string like '... w=500 ...'."""
+        import re
+        m = re.search(r"\bw=(\d+(?:\.\d+)?)", legs_detail or "")
+        return float(m.group(1)) if m else 0.0
+
+    def extract(self, row: pd.Series, trade=None) -> dict | None:
         """
         Extract features from a market data row.
+
+        Args:
+            row:   A single row from the market data DataFrame.
+            trade: Optional TradeResult.  When provided, adds 18 trade-structure
+                   features (11 one-hot strategy flags + 7 continuous metrics).
+                   At inference time (live signal, no trade yet) pass None; the
+                   trade_structure features default to 0.0 so the model falls
+                   back on macro features, which is correct pre-entry behaviour.
 
         Returns None if critical fields (vix, nifty_close) are missing or NaN,
         so callers can skip that row cleanly.
@@ -174,7 +219,7 @@ class FeatureExtractor:
             """Get field value; returns NaN if missing so .fillna(0) handles it downstream."""
             return _safe_float(row.get(field), default=float("nan"))
 
-        return {
+        feats = {
             # Volatility (7): current fear level + trend direction
             "vix_current": vix,
             "vix_10d_avg": _safe_float(row.get("vix_sma_10"), default=vix),
@@ -256,7 +301,76 @@ class FeatureExtractor:
             "nifty_dist_from_sma20_pct": _get("nifty_distance_from_sma20_pct"),
             "vix_volatility_10d": _get("vix_volatility_10d"),
             "regime_stability_10d": _get("regime_stability_10d"),
+
+            # Trade structure (18): populated at training time when trade= is provided.
+            # Default 0.0 at inference time (pre-entry, no trade object yet).
+            # One-hot strategy identity: GBM must not see raw int labels (ordinal).
+            "strat_put_credit_spread":    0.0,
+            "strat_broken_wing_butterfly": 0.0,
+            "strat_put_credit_wide":      0.0,
+            "strat_calendar_spread":      0.0,
+            "strat_ratio_put_spread":     0.0,
+            "strat_iron_condor":          0.0,
+            "strat_iron_butterfly":       0.0,
+            "strat_diagonal_spread":      0.0,
+            "strat_jade_lizard":          0.0,
+            "strat_put_backspread":       0.0,
+            "strat_weekly_calendar":      0.0,
+            # Continuous structure metrics
+            "struct_net_credit_ratio":    0.0,
+            "struct_spread_width_pct":    0.0,
+            "struct_max_loss_to_credit":  0.0,
+            "struct_num_legs":            0.0,
+            "struct_is_calendar":         0.0,
+            "struct_is_symmetric":        0.0,
+            "struct_entry_vix":           0.0,
         }
+
+        # --- Trade-structure override (training time only) ---
+        # When a concrete trade is provided, replace the 0.0 defaults with real
+        # per-trade values so GBM can distinguish (date, strategy_A) from
+        # (date, strategy_B) that share the same macro feature row.
+        if trade is not None:
+            strat_raw = getattr(trade, "strategy", "") or ""
+            strat_name = strat_raw.replace("adaptive:", "").strip()
+            nc = float(getattr(trade, "net_credit", 0) or 0)
+            entry_spot = float(getattr(trade, "entry_spot", 0) or 0)
+            entry_vix_t = float(getattr(trade, "entry_vix", 0) or 0)
+            # Use market row spot as fallback when trade.entry_spot is 0
+            ts = entry_spot if entry_spot > 0 else spot
+            legs_str = str(getattr(trade, "legs_detail", "") or "")
+            spread_w = FeatureExtractor._parse_spread_width(legs_str)
+            max_loss_t = float(getattr(trade, "max_loss", 0) or 0)
+            if max_loss_t == 0 and spread_w > 0:
+                max_loss_t = max(0.0, spread_w - nc)
+            # Leg count: count '|' separators in legs_detail (each leg adds one)
+            num_legs = legs_str.count("|") + 1 if legs_str else 2
+
+            # One-hot strategy identity (exactly one flag = 1.0 per training row)
+            _ONE_HOT_STRATS = (
+                "put_credit_spread", "broken_wing_butterfly", "put_credit_wide",
+                "calendar_spread", "ratio_put_spread", "iron_condor",
+                "iron_butterfly", "diagonal_spread", "jade_lizard",
+                "put_backspread", "weekly_calendar",
+            )
+            for _s in _ONE_HOT_STRATS:
+                feats[f"strat_{_s}"] = 1.0 if strat_name == _s else 0.0
+
+            # Continuous structure metrics
+            feats["struct_net_credit_ratio"]   = (nc / ts * 100) if ts > 0 else 0.0
+            feats["struct_spread_width_pct"]   = (spread_w / ts * 100) if ts > 0 else 0.0
+            # Zero-division guard: nc may be 0 for debits/backspreads
+            feats["struct_max_loss_to_credit"] = max_loss_t / max(nc, 1e-4)
+            feats["struct_num_legs"]           = float(num_legs)
+            feats["struct_is_calendar"]        = 1.0 if any(
+                k in strat_name for k in ("calendar", "diagonal")
+            ) else 0.0
+            feats["struct_is_symmetric"]       = 1.0 if strat_name in (
+                "iron_condor", "iron_butterfly"
+            ) else 0.0
+            feats["struct_entry_vix"]          = entry_vix_t if entry_vix_t > 0 else vix
+
+        return feats
 
     def extract_batch(self, dates: list) -> pd.DataFrame:
         rows = []
@@ -301,7 +415,7 @@ class TradeLearner:
     }
     STRATEGY_NAMES = {v: k for k, v in STRATEGY_LABELS.items()}
 
-    MAX_FEATURES = 30
+    MAX_FEATURES = 48   # was 30; +18 for trade_structure group (11 one-hot + 7 continuous)
     LABEL_PERCENTILE = 45
     COST_HURDLE_PCT = 30.0   # 30% of credit captured = "good" trade (was 0.5 — trivially low)
     PCS_PENALTY = 0.85
@@ -416,7 +530,7 @@ class TradeLearner:
         for trade in trades:
             entry_date = pd.Timestamp(trade.entry_date)
             idx = market_data.index.get_indexer([entry_date], method="nearest")[0]
-            features = self.feature_extractor.extract(market_data.iloc[idx])
+            features = self.feature_extractor.extract(market_data.iloc[idx], trade=trade)
             if features is None:
                 continue
             X_rows.append(features)
