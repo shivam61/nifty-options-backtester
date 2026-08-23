@@ -296,6 +296,8 @@ class TradeLearner:
         "diagonal_spread":       7,
         "jade_lizard":           8,
         "put_backspread":        9,
+        # Weekly calendar — sell 1-week put, buy 2-week put (NSE weekly expiries)
+        "weekly_calendar":       10,
     }
     STRATEGY_NAMES = {v: k for k, v in STRATEGY_LABELS.items()}
 

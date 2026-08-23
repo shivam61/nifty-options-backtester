@@ -1725,15 +1725,74 @@ class TestMultiStrategySimDiversity:
         for t in trades:
             assert -500 <= t.pnl_pct <= 150, f"pnl_pct={t.pnl_pct:.1f} out of bounds for iron_condor"
 
-    def test_strategy_labels_has_10_strategies(self):
-        """STRATEGY_LABELS must now contain all 10 strategy types."""
+    def test_strategy_labels_has_11_strategies(self):
+        """STRATEGY_LABELS must contain all 11 strategy types including weekly_calendar."""
         from models.trade_learner import TradeLearner
-        assert len(TradeLearner.STRATEGY_LABELS) == 10, (
-            f"Expected 10 strategy labels, got {len(TradeLearner.STRATEGY_LABELS)}: "
+        assert len(TradeLearner.STRATEGY_LABELS) == 11, (
+            f"Expected 11 strategy labels, got {len(TradeLearner.STRATEGY_LABELS)}: "
             f"{list(TradeLearner.STRATEGY_LABELS.keys())}"
         )
-        for name in ("iron_butterfly", "diagonal_spread", "jade_lizard", "put_backspread"):
+        for name in ("iron_butterfly", "diagonal_spread", "jade_lizard",
+                     "put_backspread", "weekly_calendar"):
             assert name in TradeLearner.STRATEGY_LABELS, f"{name} missing from STRATEGY_LABELS"
+
+    def test_weekly_calendar_generates_trades(self):
+        """weekly_calendar (sell 1-week put, buy 2-week put) must produce trades at VIX 15.
+        Uses hold_days=7 so the outer remaining_days guard matches the 7-day near-DTE."""
+        import pandas as pd, numpy as np
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        import backtester.rolling_simulator as rs_mod
+
+        n, spot = 120, 22000.0
+        idx = pd.date_range("2022-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(42)
+        prices = spot * (1 + rng.normal(0, 0.005, n)).cumprod()
+        df = pd.DataFrame({"nifty_close": prices, "nifty_open": prices, "vix": 15.0}, index=idx)
+
+        cfg = [{"name": "weekly_calendar", "type": "calendar",
+                "near_dte": 7, "far_dte": 14, "min_vix": 10, "max_vix": 25}]
+        orig = rs_mod.STRATEGY_CONFIGS
+        rs_mod.STRATEGY_CONFIGS = cfg
+        try:
+            # hold_days=7 matches near_dte so remaining_days guard doesn't block entries
+            trades = RollingWindowSimulator(df, SimConfig(entry_every_n_days=3, hold_days=7)).simulate_all()
+        finally:
+            rs_mod.STRATEGY_CONFIGS = orig
+
+        assert any(t.strategy == "weekly_calendar" for t in trades), (
+            "weekly_calendar should produce at least one trade at VIX 15 with hold_days=7"
+        )
+
+    def test_weekly_calendar_near_dte_7_far_dte_14(self):
+        """weekly_calendar legs_detail must show near_dte=7 far_dte=14."""
+        import pandas as pd, numpy as np
+        from backtester.rolling_simulator import RollingWindowSimulator, SimConfig
+        import backtester.rolling_simulator as rs_mod
+
+        n, spot = 120, 22000.0
+        idx = pd.date_range("2022-01-01", periods=n, freq="B")
+        rng = np.random.default_rng(42)
+        prices = spot * (1 + rng.normal(0, 0.005, n)).cumprod()
+        df = pd.DataFrame({"nifty_close": prices, "nifty_open": prices, "vix": 15.0}, index=idx)
+
+        cfg = [{"name": "weekly_calendar", "type": "calendar",
+                "near_dte": 7, "far_dte": 14, "min_vix": 10, "max_vix": 25}]
+        orig = rs_mod.STRATEGY_CONFIGS
+        rs_mod.STRATEGY_CONFIGS = cfg
+        try:
+            trades = RollingWindowSimulator(df, SimConfig(entry_every_n_days=3, hold_days=7)).simulate_all()
+        finally:
+            rs_mod.STRATEGY_CONFIGS = orig
+
+        wc = [t for t in trades if t.strategy == "weekly_calendar"]
+        if not wc:
+            pytest.skip("No weekly_calendar trades generated")
+        assert "near_dte=7" in wc[0].legs_detail, (
+            f"Expected near_dte=7 in legs_detail, got: {wc[0].legs_detail}"
+        )
+        assert "far_dte=14" in wc[0].legs_detail, (
+            f"Expected far_dte=14 in legs_detail, got: {wc[0].legs_detail}"
+        )
 
 
 # ---------------------------------------------------------------------------

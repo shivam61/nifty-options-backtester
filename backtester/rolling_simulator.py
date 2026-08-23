@@ -80,12 +80,20 @@ STRATEGY_CONFIGS = [
 
     # ── Calendar Spread — near-term short + far-term long ATM ────────────
     # Teaches: IV term structure (iv_rv_term_spread), vega-theta tradeoff
+    # Monthly calendars (21/42, 14/35, 21/49 DTE)
     {"name": "calendar_spread", "type": "calendar",
      "near_dte": 21, "far_dte": 42, "min_vix": 10, "max_vix": 18},
     {"name": "calendar_spread", "type": "calendar",
      "near_dte": 14, "far_dte": 35, "min_vix": 10, "max_vix": 16},
     {"name": "calendar_spread", "type": "calendar",
      "near_dte": 21, "far_dte": 49, "min_vix": 12, "max_vix": 20},
+    # Weekly calendars — sell 1-week put, buy 2-week put (same ATM strike)
+    # NSE has weekly expiries; this captures fast near-term theta decay.
+    # Wider VIX range: weekly premium is thicker at higher VIX so still profitable.
+    {"name": "weekly_calendar", "type": "calendar",
+     "near_dte": 7, "far_dte": 14, "min_vix": 10, "max_vix": 25},
+    {"name": "weekly_calendar", "type": "calendar",
+     "near_dte": 7, "far_dte": 21, "min_vix": 12, "max_vix": 22},
 
     # ── Diagonal Spread — near OTM short + far deeper long ───────────────
     # Teaches: term structure + directional skew combined (iv_skew_proxy)
@@ -662,8 +670,9 @@ class RollingWindowSimulator:
 
         # For ML training, store net_credit as -net_debit (negative = paid premium)
         # but pnl_pct is referenced against net_debit so positive pnl = profit
+        strat_name = strat_cfg.get("name", "calendar_spread")
         return self._make_result(
-            signal_date, entry_date, fill_idx, "calendar_spread", spot, vix,
+            signal_date, entry_date, fill_idx, strat_name, spot, vix,
             net_credit=-net_debit,   # negative signals net debit structure
             pnl_per_unit=pnl_per_unit,
             exit_idx=exit_idx,
