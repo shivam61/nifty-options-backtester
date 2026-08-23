@@ -565,14 +565,28 @@ class CombinedBacktestEngine:
         crash_risk_v2 = row.get("crash_risk_score_v2", 0) if hasattr(row, "get") else 0
         correction_depth = row.get("nifty_drawdown_from_20d_high_pct", 0) if hasattr(row, "get") else 0
 
-        if vix < 15:
-            profit_target, stop_loss = 55, 50
-        elif vix < 20:
-            profit_target, stop_loss = 50, 45
-        elif vix < 30:
-            profit_target, stop_loss = 40, 40
+        # DTE-based profit targets: longer-DTE trades hold for theta; shorter-DTE
+        # trades take most of the remaining credit.  VIX adjustments still apply on top.
+        dte_long_tgt  = getattr(self.m_config, "monthly_exit_dte_profit_target_long",  35.0)
+        dte_mid_tgt   = getattr(self.m_config, "monthly_exit_dte_profit_target_mid",   55.0)
+        dte_short_tgt = getattr(self.m_config, "monthly_exit_dte_profit_target_short", 75.0)
+
+        if dte >= 20:
+            profit_target = dte_long_tgt
+        elif dte >= 10:
+            profit_target = dte_mid_tgt
         else:
-            profit_target, stop_loss = 30, 35
+            profit_target = dte_short_tgt
+
+        # VIX overlay: tighten stop-loss in elevated/crash VIX; base stop-loss by VIX zone
+        if vix < 15:
+            stop_loss = 50
+        elif vix < 20:
+            stop_loss = 45
+        elif vix < 30:
+            stop_loss = 40
+        else:
+            stop_loss = 35
 
         profit_target = int(profit_target * getattr(self.m_config, "monthly_exit_profit_target_scale", 1.0))
         stop_loss = int(stop_loss * getattr(self.m_config, "monthly_exit_stop_loss_scale", 1.0))
@@ -725,7 +739,10 @@ class CombinedBacktestEngine:
                 )
                 return
 
-        if self.entry_model and self.entry_model.is_trained:
+        gate8_enabled = getattr(self.m_config, "monthly_gate8_enabled", False)
+        if gate8_enabled and self.entry_model and self.entry_model.is_trained:
+            # Gate 8: ML quality score filter — only active when gate is explicitly enabled
+            # and a trained model is present.  quality_score = P(class==2, strong win).
             try:
                 prediction = self.entry_model.predict(row, eligible_strategies=eligible or None)
                 quality_score = prediction.get("quality_score", 0)
@@ -773,7 +790,16 @@ class CombinedBacktestEngine:
                 action = self.monthly_strategy.should_enter(spot, vix, market_data)
                 if action != TradeAction.ENTER:
                     return
+        elif not gate8_enabled:
+            # Gate 8 BYPASSED — model AUC < 0.55 or no real-trade history yet.
+            # Gates 1–7b already filtered; proceed directly to expiry selection.
+            # Re-enable via BacktestConfig.monthly_gate8_enabled=True once:
+            #   1) ≥500 real closed trades in training set, 2) AUC > 0.55
+            self._monthly_gate_counts["g8_ml_quality_bypassed"] = (
+                self._monthly_gate_counts.get("g8_ml_quality_bypassed", 0) + 1
+            )
         else:
+            # gate8_enabled=True but no trained model — fall back to rule-based check
             action = self.monthly_strategy.should_enter(spot, vix, market_data)
             if action != TradeAction.ENTER:
                 return
@@ -1004,7 +1030,11 @@ class CombinedBacktestEngine:
             row("Gate  1  Event calendar block",      "g1_event_calendar",        "Budget/Election ±2d"),
             row("Gates 2–7 Circuit breaker / VIX zone", "g2_7_circuit_or_vix_zone", "crash/stress/correction/VIX accel/crude"),
             row("Gate  7b Strategy should_enter() failed", "g7_should_enter",          "VIX zone passed but no sub-strategy entered"),
-            row("Gate  8  ML quality score < threshold", "g8_ml_quality",            f"threshold ≈ {self._monthly_model_threshold() or self.entry_threshold:.2f}"),
+            (row("Gate  8  ML quality score < threshold", "g8_ml_quality",
+                 f"threshold ≈ {self._monthly_model_threshold() or self.entry_threshold:.2f}")
+             if getattr(self.m_config, "monthly_gate8_enabled", False)
+             else row("Gate  8  ML quality (BYPASSED — AUC<0.55)", "g8_ml_quality_bypassed",
+                      "Re-enable after ≥500 real trades & AUC>0.55")),
             row("Gate  9  Expiry selector found=False", "g9_expiry_selector",        "EV/risk-reward/DTE/suitability filters"),
             row("Gate 10  Position sizing lots=0",      "g10_position_sizing",       "equity or margin insufficient"),
             row("Gate 11  Hard max loss cap",           "g11_hard_max_loss",         f"trade_loss > equity × {getattr(self.m_config, 'monthly_hard_max_loss_pct', 8.0):.0f}%"),

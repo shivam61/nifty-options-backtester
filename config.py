@@ -99,11 +99,22 @@ class BacktestConfig:
     monthly_max_risk_per_trade_pct: float = 10.0
     monthly_hard_max_loss_pct: float = 15.0
     monthly_entry_threshold: float = 0.30  # Below 3-class model floor (~0.32); Gate 8 pass-through until real trade history trains the model. Was 0.48.
-    monthly_exit_min_hold_days: int = 0
+    monthly_gate8_enabled: bool = False
+    # Set True only after ≥500 real closed trades are in the training set and
+    # quality_classifier OOF AUC > 0.55.  Until then Gate 8 adds noise, not signal.
+
+    monthly_exit_min_hold_days: int = 5   # Never exit before day 5 (unless stop-loss); captures two theta weekends
     monthly_exit_profit_target_scale: float = 1.0
     monthly_exit_stop_loss_scale: float = 1.0
     monthly_exit_trailing_arm_pct: float = 25.0
     monthly_exit_trailing_drop_pct: float = 35.0
+
+    # DTE-based profit target table — replaces flat VIX-only targets.
+    # Longer-DTE trades have lower targets (hold for theta); shorter-DTE trades
+    # take more of the available credit since less time remains.
+    monthly_exit_dte_profit_target_long: float = 35.0    # dte >= 20 days remaining
+    monthly_exit_dte_profit_target_mid: float = 55.0     # 10 <= dte < 20
+    monthly_exit_dte_profit_target_short: float = 75.0   # dte < 10
 
     # Monthly selection / sizing controls
     monthly_enable_regime_rerank: bool = True

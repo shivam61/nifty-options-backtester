@@ -1938,3 +1938,127 @@ class TestRetrainPipelineWiring:
             f"SimConfig.entry_every_n_days={sc.entry_every_n_days} != "
             f"TRAINING_FLOW.layered_entry_every_n_days={TRAINING_FLOW.layered_entry_every_n_days}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: DTE-based profit targets + min hold days
+# ---------------------------------------------------------------------------
+
+class TestDTEBasedExitTargets:
+    """Profit targets should scale with remaining DTE, not only VIX."""
+
+    def test_dte_long_target_in_config(self):
+        """BacktestConfig has monthly_exit_dte_profit_target_long = 35.0"""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert hasattr(cfg, "monthly_exit_dte_profit_target_long"), (
+            "BacktestConfig missing monthly_exit_dte_profit_target_long"
+        )
+        assert cfg.monthly_exit_dte_profit_target_long == 35.0
+
+    def test_dte_mid_target_in_config(self):
+        """BacktestConfig has monthly_exit_dte_profit_target_mid = 55.0"""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert cfg.monthly_exit_dte_profit_target_mid == 55.0
+
+    def test_dte_short_target_in_config(self):
+        """BacktestConfig has monthly_exit_dte_profit_target_short = 75.0"""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert cfg.monthly_exit_dte_profit_target_short == 75.0
+
+    def test_min_hold_days_default_5(self):
+        """monthly_exit_min_hold_days should default to 5 to capture theta weekends."""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert cfg.monthly_exit_min_hold_days == 5, (
+            f"expected 5 (captures two theta weekends), got {cfg.monthly_exit_min_hold_days}"
+        )
+
+    def test_dte_targets_increase_for_shorter_dte(self):
+        """Shorter remaining DTE → higher profit target (take more of the remaining credit)."""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert cfg.monthly_exit_dte_profit_target_short > cfg.monthly_exit_dte_profit_target_mid, (
+            "short-DTE target must be > mid-DTE target"
+        )
+        assert cfg.monthly_exit_dte_profit_target_mid > cfg.monthly_exit_dte_profit_target_long, (
+            "mid-DTE target must be > long-DTE target"
+        )
+
+    def test_exit_logic_uses_dte_for_profit_target(self):
+        """_monthly_smart_exit must reference 'dte' when computing profit_target,
+        not VIX alone.  Inspect source to confirm DTE-branching is present."""
+        import inspect
+        from backtester.combined_engine import CombinedBacktestEngine
+        src = inspect.getsource(CombinedBacktestEngine._monthly_smart_exit)
+        # Should contain DTE threshold checks
+        assert "dte >= 20" in src or "dte_long_tgt" in src, (
+            "_monthly_smart_exit does not contain DTE-based profit target logic"
+        )
+        assert "dte_short_tgt" in src or "dte < 10" in src, (
+            "_monthly_smart_exit does not contain short-DTE target branch"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: Gate 8 bypass — explicit flag in config
+# ---------------------------------------------------------------------------
+
+class TestGate8Bypass:
+    """Gate 8 ML quality check should be bypassable via config flag."""
+
+    def test_gate8_enabled_default_false(self):
+        """BacktestConfig.monthly_gate8_enabled should default to False
+        until ≥500 real trades exist with AUC > 0.55."""
+        from config import BacktestConfig
+        cfg = BacktestConfig()
+        assert hasattr(cfg, "monthly_gate8_enabled"), (
+            "BacktestConfig missing monthly_gate8_enabled"
+        )
+        assert cfg.monthly_gate8_enabled is False
+
+    def test_gate8_can_be_enabled(self):
+        """Config flag can be toggled to True for future re-enable."""
+        from config import BacktestConfig
+        cfg = BacktestConfig(monthly_gate8_enabled=True)
+        assert cfg.monthly_gate8_enabled is True
+
+    def test_gate8_bypass_increments_counter(self):
+        """When gate8_enabled=False, g8_ml_quality_bypassed counter increments
+        (not g8_ml_quality which is the blocking counter)."""
+        from backtester.combined_engine import CombinedBacktestEngine
+        import inspect
+        src = inspect.getsource(CombinedBacktestEngine._process_monthly_entry)
+        assert "g8_ml_quality_bypassed" in src, (
+            "CombinedBacktestEngine._process_monthly_entry doesn't track g8_ml_quality_bypassed"
+        )
+
+    def test_gate8_enabled_path_uses_quality_score(self):
+        """When gate8_enabled=True the code must check quality_score against threshold."""
+        from backtester.combined_engine import CombinedBacktestEngine
+        import inspect
+        src = inspect.getsource(CombinedBacktestEngine._process_monthly_entry)
+        assert "quality_score < effective_threshold" in src, (
+            "Quality-score check missing from Gate 8 enabled path"
+        )
+
+    def test_gate8_bypass_branch_skips_quality_score_check(self):
+        """The bypass branch must not apply quality_score filter."""
+        from backtester.combined_engine import CombinedBacktestEngine
+        import inspect
+        src = inspect.getsource(CombinedBacktestEngine._process_monthly_entry)
+        # Bypass comment must be present
+        assert "BYPASSED" in src, (
+            "Gate 8 bypass branch not found in _process_monthly_entry source"
+        )
+
+    def test_funnel_report_shows_bypassed_label(self):
+        """Funnel report string should show BYPASSED when gate8_enabled=False."""
+        from backtester.combined_engine import CombinedBacktestEngine
+        import inspect
+        src = inspect.getsource(CombinedBacktestEngine._monthly_funnel_report)
+        assert "BYPASSED" in src, (
+            "Funnel report doesn't mention BYPASSED for Gate 8"
+        )
