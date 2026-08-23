@@ -2662,3 +2662,69 @@
 | 2022-08-30 | weekly_ic | stop_loss | ₹-25,364 |
 | 2023-01-25 | weekly_ic | dte_limit | ₹-24,226 |
 
+
+---
+## Run #57 — exp1_75w_25m — [COMBINED]
+**Date**: 2026-08-23 17:14  
+**Git**: `ff96b3e`  
+**Params**: 2009-01-01 to 2026-08-23 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 7.95% |
+| Monthly P&L | ₹-31,275 |
+| Weekly P&L | ₹1,392,204 |
+| Monthly Win Rate | 43.0% |
+| Weekly Win Rate | 77.5% |
+| Total P&L | ₹1,360,929 |
+| Sharpe | 0.90 |
+| Sortino | 1.81 |
+| Calmar | 1.14 |
+| Max Drawdown | 6.9% |
+| Win Rate | 54.9% |
+| Total Trades | 295 |
+| Profit Factor | 5.34 |
+| Best Trade | ₹131,981 |
+| Worst Trade | ₹-37,307 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 193 |
+| Weekly Trades | 102 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 7 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 27.7% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 10 | 9.8% | ₹-16,621 |
+| Loss (-10k to 0) | 13 | 12.7% | ₹-4,623 |
+| Small Win (0 to 10k) | 56 | 54.9% | ₹3,844 |
+| Medium Win (10k to 25k) | 8 | 7.8% | ₹15,917 |
+| Large Win (>= 25k) | 15 | 14.7% | ₹85,059 |
+| Median | - | - | ₹3,299 |
+| P10 / P90 | - | - | ₹-9,706 / ₹57,687 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-06-10 | weekly_ic | stop_loss | ₹131,981 |
+| 2025-02-11 | weekly_ic | stop_loss | ₹128,047 |
+| 2025-11-06 | weekly_ic | trailing_delta | ₹122,206 |
+| 2025-02-04 | weekly_ic | stop_loss | ₹120,703 |
+| 2025-01-09 | weekly_ic | trailing_delta | ₹107,336 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-37,307 |
+| 2026-04-24 | weekly_pcs | stop_loss | ₹-22,721 |
+| 2024-07-26 | weekly_ic | stop_loss | ₹-19,188 |
+| 2024-09-12 | weekly_ic | trailing_delta | ₹-15,822 |
+| 2025-04-04 | weekly_pcs | stop_loss | ₹-15,183 |
+
