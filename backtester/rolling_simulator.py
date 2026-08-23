@@ -27,6 +27,20 @@ class SimConfig:
     lot_size: int = 75
     profit_target_pct: float = 50.0
     stop_loss_pct: float = 60.0
+    deduplicate_by_date: bool = False
+    # When True, simulate_all() picks ONE best-fit strategy per entry date
+    # based on VIX regime instead of running all 26 configs.  This eliminates
+    # the label-contradiction problem where the same entry-day features produce
+    # class-0 (iron_butterfly loss) AND class-2 (PCS profit) simultaneously,
+    # giving the GBM contradictory supervision.  Use for ML training only;
+    # leave False for strategy-coverage diagnostics.
+    #
+    # VIX routing (mirrors the live RegimeAdaptiveStrategy routing):
+    #  vix < 13  → iron_butterfly       (ultra-low VIX, pinning regime)
+    #  13–18     → put_credit_spread    (calm, sell puts)
+    #  18–25     → iron_condor          (moderate VIX, range-bound)
+    #  25–35     → broken_wing_butterfly (elevated VIX, asymmetric)
+    #  > 35      → ratio_put_spread     (tail hedge)
 
 
 STRATEGY_CONFIGS = [
@@ -130,10 +144,58 @@ class RollingWindowSimulator:
         self.data = data
         self.config = config
 
+    # VIX→strategy routing for deduplicated training mode.
+    # Mirrors the live RegimeAdaptiveStrategy VIX zone → strategy assignment.
+    _DEDUP_ROUTING = [
+        # (max_vix, preferred_name)  — checked in order, first match wins
+        (13.0,  "iron_butterfly"),
+        (18.0,  "put_credit_spread"),
+        (25.0,  "iron_condor"),
+        (35.0,  "broken_wing_butterfly"),
+        (999.0, "ratio_put_spread"),
+    ]
+
+    def _pick_dedup_config(self, vix: float) -> Optional[dict]:
+        """Return the single STRATEGY_CONFIGS entry that best fits the current VIX."""
+        preferred = None
+        for max_vix, name in self._DEDUP_ROUTING:
+            if vix <= max_vix:
+                preferred = name
+                break
+        if preferred is None:
+            return None
+        # Pick the first config with that name whose VIX gate passes
+        for cfg in STRATEGY_CONFIGS:
+            if cfg.get("name") == preferred and cfg["min_vix"] <= vix <= cfg["max_vix"]:
+                return cfg
+        # Fallback: any VIX-passing config (preferred not available at this VIX)
+        for cfg in STRATEGY_CONFIGS:
+            if cfg["min_vix"] <= vix <= cfg["max_vix"]:
+                return cfg
+        return None
+
     def simulate_all(self) -> list[TradeResult]:
-        """Run rolling simulations for all strategies and parameter variations."""
+        """Run rolling simulations for all strategies and parameter variations.
+
+        When config.deduplicate_by_date=True, picks ONE strategy per entry date
+        based on VIX regime (mirrors live routing).  This prevents the label-
+        contradiction problem that suppresses AUC: multiple strategies entering
+        on the same date produce contradictory class labels from identical features.
+        """
         all_trades = []
         n_rows = len(self.data)
+
+        dispatch = {
+            "vertical":       self._simulate_trade,
+            "iron_condor":    self._simulate_iron_condor,
+            "iron_butterfly": self._simulate_iron_butterfly,
+            "bwb":            self._simulate_bwb,
+            "ratio_put":      self._simulate_ratio_put,
+            "calendar":       self._simulate_calendar,
+            "diagonal":       self._simulate_diagonal,
+            "jade_lizard":    self._simulate_jade_lizard,
+            "put_backspread": self._simulate_put_backspread,
+        }
 
         for entry_idx in range(50, n_rows):
             if (entry_idx - 50) % self.config.entry_every_n_days != 0:
@@ -150,28 +212,29 @@ class RollingWindowSimulator:
             if pd.isna(spot) or spot == 0 or pd.isna(vix):
                 continue
 
-            for strat_cfg in STRATEGY_CONFIGS:
-                if vix < strat_cfg["min_vix"] or vix > strat_cfg["max_vix"]:
+            if self.config.deduplicate_by_date:
+                # One strategy per date — eliminates same-features contradictory labels
+                cfg = self._pick_dedup_config(vix)
+                if cfg is None:
                     continue
-
-                type_ = strat_cfg.get("type", "vertical")
-                dispatch = {
-                    "vertical":       self._simulate_trade,
-                    "iron_condor":    self._simulate_iron_condor,
-                    "iron_butterfly": self._simulate_iron_butterfly,
-                    "bwb":            self._simulate_bwb,
-                    "ratio_put":      self._simulate_ratio_put,
-                    "calendar":       self._simulate_calendar,
-                    "diagonal":       self._simulate_diagonal,
-                    "jade_lizard":    self._simulate_jade_lizard,
-                    "put_backspread": self._simulate_put_backspread,
-                }
-                sim_fn = dispatch.get(type_)
+                sim_fn = dispatch.get(cfg.get("type", "vertical"))
                 if sim_fn is None:
                     continue
-                trade = sim_fn(entry_idx, strat_cfg)
+                trade = sim_fn(entry_idx, cfg)
                 if trade:
                     all_trades.append(trade)
+            else:
+                # All-configs mode: useful for coverage diagnostics but produces
+                # label contradictions that cap AUC at ~0.55
+                for strat_cfg in STRATEGY_CONFIGS:
+                    if vix < strat_cfg["min_vix"] or vix > strat_cfg["max_vix"]:
+                        continue
+                    sim_fn = dispatch.get(strat_cfg.get("type", "vertical"))
+                    if sim_fn is None:
+                        continue
+                    trade = sim_fn(entry_idx, strat_cfg)
+                    if trade:
+                        all_trades.append(trade)
 
         return all_trades
 

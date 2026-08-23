@@ -109,8 +109,14 @@ class Trade:
         )
 
     @property
-    def pnl_per_unit(self) -> float:
+    def pnl_per_contract(self) -> float:
+        """PnL per single contract (unscaled by lots/lot_size). Use for % comparisons against net_credit."""
         return self.net_credit - self.current_debit
+
+    @property
+    def pnl_per_unit(self) -> float:
+        """Alias for pnl_per_contract — kept for backward compatibility."""
+        return self.pnl_per_contract
 
     @property
     def total_pnl(self) -> float:
@@ -177,25 +183,53 @@ class Trade:
 
     @property
     def max_loss(self) -> float:
-        """Approximate max loss for any spread-based strategy."""
+        """Approximate max loss for any spread-based strategy.
+
+        For spreads/Iron Condors: computes per-side max loss independently so that
+        net_credit is not double-subtracted across both wings. For naked positions
+        (no long hedge) uses credit * 5 as a conservative proxy.
+        """
         short_legs = [l for l in self.legs if l.is_short]
         long_legs = [l for l in self.legs if not l.is_short]
 
         if not short_legs or not long_legs:
             return abs(self.net_credit) * self.lots * self.lot_size * 5
 
-        # Calculate widest spread width from short to long strikes
-        max_width = 0
-        for sl in short_legs:
-            for ll in long_legs:
-                if sl.option_type == ll.option_type:
-                    w = abs(sl.strike - ll.strike)
-                    max_width = max(max_width, w)
+        # Group legs by option type (CE/CALL vs PE/PUT) and compute per-side max loss
+        def _normalise(ot: str) -> str:
+            return "CE" if ot.upper() in ("CE", "CALL") else "PE"
 
-        if max_width == 0:
-            max_width = 1000
+        sides: dict[str, dict] = {}
+        for leg in self.legs:
+            side = _normalise(leg.option_type)
+            sides.setdefault(side, {"shorts": [], "longs": []})
+            if leg.is_short:
+                sides[side]["shorts"].append(leg)
+            else:
+                sides[side]["longs"].append(leg)
 
-        return max(0, (max_width - self.net_credit) * self.lots * self.lot_size)
+        worst = 0.0
+        for side_data in sides.values():
+            s_legs = side_data["shorts"]
+            l_legs = side_data["longs"]
+            if not s_legs or not l_legs:
+                continue
+            # Credit collected on this side only
+            side_credit = sum(l.entry_premium for l in s_legs) - sum(l.entry_premium for l in l_legs)
+            # Widest spread width on this side
+            side_width = max(
+                abs(sl.strike - ll.strike)
+                for sl in s_legs
+                for ll in l_legs
+            )
+            side_loss = max(0.0, (side_width - side_credit) * self.lots * self.lot_size)
+            worst = max(worst, side_loss)
+
+        # Fall back to 1000-point width if no matched same-side pairs found
+        if worst == 0.0:
+            worst = max(0, (1000 - self.net_credit) * self.lots * self.lot_size)
+
+        return worst
 
     def apply_adjustment(self, adj: 'AdjustmentAction'):
         """

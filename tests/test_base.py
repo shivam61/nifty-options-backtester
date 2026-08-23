@@ -95,10 +95,14 @@ class TestTrade:
 
     def test_max_loss_bounded_by_spread_width(self):
         trade = self._make_iron_condor()
-        credit = trade.net_credit
         spread_width = 1000  # 23000-24000 or 21000-20000
-        expected_max_loss = (spread_width - credit) * 2 * 65
-        assert trade.max_loss == pytest.approx(expected_max_loss, rel=0.05)
+        # max_loss is the worst single side (CE or PE), computed independently:
+        # CE side credit = 120-30=90, loss = (1000-90)*2*65 = 118300
+        # PE side credit = 100-25=75, loss = (1000-75)*2*65 = 120250  <- worst
+        ce_loss = (spread_width - (120.0 - 30.0)) * 2 * 65
+        pe_loss = (spread_width - (100.0 - 25.0)) * 2 * 65
+        expected_max_loss = max(ce_loss, pe_loss)
+        assert trade.max_loss == pytest.approx(expected_max_loss, rel=0.01)
 
     def test_is_open_before_exit(self):
         trade = self._make_iron_condor()

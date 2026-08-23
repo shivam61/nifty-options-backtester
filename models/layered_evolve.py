@@ -122,9 +122,11 @@ def run_layered_training(
         stage_end = pd.Timestamp(window.test_end)
         stage_data = data.loc[:stage_end].copy()
 
-        # Use RollingWindowSimulator so the full STRATEGY_CONFIGS (10 strategy types,
-        # 26 configs) are used for training data generation — not just evolved
+        # Use RollingWindowSimulator so the full STRATEGY_CONFIGS (11 strategy types,
+        # 26+ configs) are used for training data generation — not just evolved
         # put-credit-spread params.  Both return list[TradeResult]; fully compatible.
+        # Run every eligible day (entry_every_n_days from TRAINING_FLOW) so the model
+        # sees all strategy × market-condition combinations as feature rows.
         stage_sim_trades = RollingWindowSimulator(
             stage_data,
             config=SimConfig(
