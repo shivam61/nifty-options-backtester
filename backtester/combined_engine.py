@@ -314,7 +314,16 @@ class CombinedBacktestEngine:
         slip_scale = float(getattr(self.w_config, "mid_session_slippage_scale", 0.75))
         gap_pct = ((fill_spot / pending["signal_spot"]) - 1.0) * 100 if pending["signal_spot"] > 0 else 0.0
         dte = max((pending["expiry"] - current_date).days, 0)
-        if dte < 1:
+        min_dte = getattr(self.w_config, "min_dte_entry", 3)
+        max_dte = getattr(self.w_config, "max_dte_entry", 8)
+        if not (min_dte <= dte <= max_dte):
+            _log.warning(
+                "Weekly entry dropped: DTE=%d outside [%d, %d] on fill date %s "
+                "(signal_date=%s, expiry=%s)",
+                dte, min_dte, max_dte,
+                current_date, pending["signal_date"], pending["expiry"],
+            )
+            self.weekly_etl_skips += 1
             self._pending_weekly_entry = None
             return
         strategy = pending["strategy"]

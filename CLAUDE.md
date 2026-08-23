@@ -130,4 +130,6 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
 - **Black-Scholes as pricing proxy** — No real NSE option chain history before 2019. Premiums estimated via `price_option()` + `iv_from_vix()` linear skew model. Pre-2019 P&L is directionally indicative only. `iv_from_vix()` returns IV as a **percentage** (e.g., `18.5` = 18.5%); `price_option()` divides by 100 internally — never divide again before calling it.
 
+- **Weekly DTE gate is now config-driven** — `_fill_pending_weekly_entry` enforces `WeeklyBacktestConfig.min_dte_entry` (default 3) and `max_dte_entry` (default 8). Signals outside this window are logged as `WARNING: Weekly entry dropped: DTE=N outside [3, 8]` and counted in `weekly_etl_skips`. Previously the guard was hard-coded `DTE < 1` and silent. To widen the acceptance window, set `WeeklyBacktestConfig(min_dte_entry=2)`.
+
 - **`--mode evolve` must run before backtest/signal** — Deleting `data/.cache/*.pkl` requires a full retrain. Evolve takes ~15–20 min on 17yr data. Feature column changes or strategy changes → always retrain.
