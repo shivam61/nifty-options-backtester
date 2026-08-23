@@ -660,7 +660,7 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print("\n" + "=" * 80)
     print("  COMBINED MONTHLY + WEEKLY BACKTEST — ML PIPELINE")
     print(f"  Period: {config.start_date} to {config.end_date}")
-    print(f"  Budget: Monthly 70% (₹{config.initial_capital * 0.70:,.0f}) + Weekly 30% (₹{config.initial_capital * 0.30:,.0f})")
+    print(f"  Budget: Monthly 50% (₹{config.initial_capital * 0.50:,.0f}) + Weekly 50% (₹{config.initial_capital * 0.50:,.0f})")
     print("=" * 80)
 
     print("\n[1/5] Fetching market data...")
@@ -700,13 +700,16 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"  Artifacts loaded: {', '.join(loaded) if loaded else 'none (rule-based mode)'}")
 
     # ── Run combined backtest ──
-    print(f"\n[3/5] Running combined backtest (monthly 70% + weekly 30%)...")
+    _monthly_pct = 0.50   # v8 (2026-08-23): shifted from 0.70; weekly generates ~10x P&L per ₹
+    _weekly_pct  = 0.50   # v8 (2026-08-23): shifted from 0.30; doubles weekly earning base
+    print(f"\n[3/5] Running combined backtest "
+          f"(monthly {_monthly_pct*100:.0f}% + weekly {_weekly_pct*100:.0f}%)...")
     strategy = RegimeAdaptiveStrategy(
         lots=config.max_lots,
         lot_size=config.lot_size,
         allow_bwb=not config.monthly_disable_bwb,
     )
-    
+
     from backtester.production_rules import ProductionRulesConfig
 
     engine = CombinedBacktestEngine(
@@ -718,8 +721,8 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
         entry_model=entry_model,
         weekly_risk_engine=weekly_risk_engine,
         entry_threshold=config.monthly_entry_threshold,
-        monthly_budget_pct=0.50,  # shifted 70→50 (2026-08-23): weekly generates ~10x P&L per ₹
-        weekly_budget_pct=0.50,   # shifted 30→50 (2026-08-23): double weekly's earning base
+        monthly_budget_pct=_monthly_pct,
+        weekly_budget_pct=_weekly_pct,
         cross_track_dd_pct=0.15,
         vix_simultaneous_cap=25.0,
         production_rules=ProductionRulesConfig(
@@ -741,11 +744,11 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"\n  {'=' * 80}")
     print(f"  COMBINED BACKTEST RESULTS")
     print(f"  {'=' * 80}")
-    print(f"\n  Monthly Track (70% budget):")
+    print(f"\n  Monthly Track ({_monthly_pct*100:.0f}% budget):")
     print(f"    Trades: {result.monthly_trades} | Win Rate: {result.monthly_win_rate:.0f}% | "
           f"P&L: ₹{result.monthly_pnl:,.0f} | Avg Hold: {result.avg_holding_days_monthly:.0f}d")
-    
-    print(f"\n  Weekly Track (30% budget):")
+
+    print(f"\n  Weekly Track ({_weekly_pct*100:.0f}% budget):")
     print(f"    Trades: {result.weekly_trades} | Win Rate: {result.weekly_win_rate:.0f}% | "
           f"P&L: ₹{result.weekly_pnl:,.0f} | Avg Hold: {result.avg_holding_days_weekly:.0f}d")
     
@@ -3058,10 +3061,13 @@ def run_signal_combined(config: BacktestConfig) -> None:
     Combined monthly + weekly trade signal — mirrors CombinedBacktestEngine.
 
     Architecture (identical to the backtester):
-      Monthly track (70% budget): regime-aware ML, 15-60 DTE, monthly expiries
-      Weekly track  (30% budget): rule-based VIX-gated, 3-8 DTE, weekly expiry
+      Monthly track (50% budget): regime-aware ML, 15-60 DTE, monthly expiries
+      Weekly track  (50% budget): rule-based VIX-gated, 3-8 DTE, weekly expiry
       Cross-track risk: DD circuit breaker, simultaneous VIX cap at 22
     """
+    # Capital split — must match CombinedBacktestEngine constructor in run_backtest_combined()
+    _monthly_pct = 0.50   # v8 (2026-08-23): shifted from 0.70
+    _weekly_pct  = 0.50   # v8 (2026-08-23): shifted from 0.30
     from config import WeeklyBacktestConfig
     from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
     from data.expiry_calendar import get_weekly_expiry_in_range, get_all_expiries
@@ -3272,7 +3278,7 @@ def run_signal_combined(config: BacktestConfig) -> None:
 
     # ── 4. Monthly track — expiry selection (all expiries, not monthly-only) ─
     print(f"\n  {'='*75}")
-    print(f"  ── TRACK 1 · MONTHLY (70% budget = ₹{config.initial_capital * 0.70:,.0f}) ──")
+    print(f"  ── TRACK 1 · MONTHLY ({_monthly_pct*100:.0f}% budget = ₹{config.initial_capital * _monthly_pct:,.0f}) ──")
     print(f"  {'='*75}")
 
     if monthly_signal in ("BLOCKED", "AVOID", "CAUTION_ENTRY") or not rec_strat:
@@ -3322,11 +3328,11 @@ def run_signal_combined(config: BacktestConfig) -> None:
         sizer = PositionSizer(config, max_lots_cap=config.max_lots * 2)
         _sig_regime = detected_regime if learner.is_trained else _vix_regime(vix)
         sizing = sizer.compute_lots(
-            equity=config.initial_capital * 0.70,
+            equity=config.initial_capital * _monthly_pct,
             vix=vix, regime=_sig_regime, win_prob=win_prob, drawdown_pct=0.0,
         )
         monthly_lots = sizing.lots
-        print(f"  Position sizing (70% budget): {monthly_lots} lots  "
+        print(f"  Position sizing ({_monthly_pct*100:.0f}% budget): {monthly_lots} lots  "
               f"(base {sizing.base_lots:.1f} × conf {sizing.confidence_scale:.1f}x "
               f"× regime {sizing.regime_scale}x)")
 
@@ -3422,11 +3428,11 @@ def run_signal_combined(config: BacktestConfig) -> None:
 
     # ── 5. Weekly track ─────────────────────────────────────────────────────
     print(f"\n  {'='*75}")
-    print(f"  ── TRACK 2 · WEEKLY  (30% budget = ₹{config.initial_capital * 0.30:,.0f}) ──")
+    print(f"  ── TRACK 2 · WEEKLY  ({_weekly_pct*100:.0f}% budget = ₹{config.initial_capital * _weekly_pct:,.0f}) ──")
     print(f"  {'='*75}")
 
     weekday_name = today.strftime("%A")
-    weekly_lots = max(1, int(config.max_lots * 0.30))
+    weekly_lots = max(1, int(config.max_lots * _weekly_pct))
 
     # Replicate CombinedBacktestEngine._weekly_entry_blocked() rules
     weekly_eligible = True
@@ -3557,8 +3563,8 @@ def run_signal_combined(config: BacktestConfig) -> None:
     print(f"\n  {'='*75}")
     print(f"  COMBINED RISK DASHBOARD  (mirrors CombinedBacktestEngine gates)")
     print(f"  {'='*75}")
-    print(f"  Budget split:        Monthly 70% = ₹{config.initial_capital * 0.70:,.0f}  |  "
-          f"Weekly 30% = ₹{config.initial_capital * 0.30:,.0f}")
+    print(f"  Budget split:        Monthly {_monthly_pct*100:.0f}% = ₹{config.initial_capital * _monthly_pct:,.0f}  |  "
+          f"Weekly {_weekly_pct*100:.0f}% = ₹{config.initial_capital * _weekly_pct:,.0f}")
     print(f"  Simultaneous VIX cap: 22.0  (current {vix:.1f} → "
           f"{'BOTH tracks allowed' if vix <= 22 else 'weekly blocked'})")
     print(f"  Cross-track DD limit: 15% of capital = ₹{config.initial_capital * 0.15:,.0f}")

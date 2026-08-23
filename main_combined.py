@@ -3,8 +3,8 @@
 Combined Monthly + Weekly Options Backtester
 
 Runs both tracks concurrently on shared capital pool:
-- Monthly: ML entry/exit, regime-adaptive (70% budget)
-- Weekly: rule-based PCS/IC, 3-7 DTE (30% budget)
+- Monthly: ML entry/exit, regime-adaptive (50% budget, v8 2026-08-23)
+- Weekly: rule-based PCS/IC, 3-7 DTE (50% budget, v8 2026-08-23)
 
 Usage:
     python main_combined.py                          # Full combined backtest

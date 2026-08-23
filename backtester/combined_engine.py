@@ -2,8 +2,8 @@
 Combined monthly + weekly options backtesting engine.
 
 Runs both tracks concurrently on shared capital:
-- Monthly: ML entry/exit, regime-adaptive strategy (70% budget)
-- Weekly: ML quality-gated PCS/IC, 3-8 DTE (30% budget)
+- Monthly: ML entry/exit, regime-adaptive strategy (50% budget, v8 2026-08-23)
+- Weekly: ML quality-gated PCS/IC, 3-8 DTE (50% budget, v8 2026-08-23)
 - Cross-track DD circuit breaker + combined open-position risk cap
 - Single combined equity curve
 """
