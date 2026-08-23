@@ -347,11 +347,11 @@ class MarketDataFetcher:
         combined["gap_3d_max_abs"] = combined["overnight_gap_abs"].rolling(3).max()
         combined["gap_5d_max_abs"] = combined["overnight_gap_abs"].rolling(5).max()
 
-        # Mid-session spot proxy (≈11 AM IST fill for mid_session_entry mode).
+        # Mid-session spot proxy — permanent baseline (≈11 AM IST fill).
         # Alpha=0.40 ≈ 40% of the open→close intraday move is typically completed
         # by 11 AM on NSE (based on typical intraday pattern of Nifty).
-        # Backtest fill: if mid_session_entry is enabled, combined_engine uses this
-        # instead of nifty_open.  Signal mode uses a live Fyers quote instead.
+        # Backtest fill: combined_engine uses this unconditionally for all entries.
+        # Signal mode uses a live Fyers quote instead.
         _alpha = 0.40
         combined["nifty_mid_session"] = (
             combined["nifty_open"]

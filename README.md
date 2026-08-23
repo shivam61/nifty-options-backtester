@@ -2,6 +2,15 @@
 
 A Python framework for backtesting and live trading Nifty 50 index options selling strategies with ML-powered regime adaptation, crash detection, and real-time market data integration.
 
+## Recent Changes
+
+- **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
+- **2026-08-23** — Mid-session 11 AM IST entry window made permanent baseline (+2.47% CAGR, MaxDD 8.9%→4.7%)
+- **2026-08-23** — Capital split changed from 70/30 to **50/50** monthly/weekly
+- **2026-08-23** — Weekly DTE gate enforced from config: `[min_dte_entry, max_dte_entry]` = [3, 8]; logged as WARNING
+- **2026-08-23** — Weekly stop-loss widened 80%→**100%** (prevents kill-switch trigger under moderate slippage)
+- **2026-08-23** — IST timezone fix for live market hours gate (uses `zoneinfo.ZoneInfo` on cloud/UTC hosts)
+
 **Target Market:** Indian derivatives (NSE)  
 **Capital:** ₹5L INR  
 **Lot Size:** 65  
@@ -19,7 +28,7 @@ A Python framework for backtesting and live trading Nifty 50 index options selli
 - **Real-Time Data:** Fyers API v3 integration for live spot, VIX, and option chain
 - **Trade Monitoring:** ML-driven exit recommendations with live P&L tracking
 - **Market Hours Detection:** Automatic fallback to historical data outside market hours
-- **Combined Strategy:** Monthly (70%) + Weekly (30%) budget allocation with risk gates
+- **Combined Strategy:** Monthly (50%) + Weekly (50%) budget allocation with risk gates
 
 ### Risk Management
 - **Circuit Breakers:** Blocks trading during extreme market conditions
@@ -77,7 +86,7 @@ python main.py --mode optimize
 - **[Fyers Integration](docs/fyers/INTEGRATION.md)** - API setup and usage
 - **[AI Codebase Guide](docs/architecture/AGENTS.md)** - For AI agents working on this codebase
 - **[Agent Memory](docs/AGENT_MEMORY.md)** - Decaying record of repo-specific pitfalls for Claude/Codex sessions
-- **[Backtest Changelog](docs/analysis/BACKTEST_CHANGELOG.md)** - Optimization history
+- **[Backtest Changelog](BACKTEST_CHANGELOG.md)** - Optimization history (auto-appended after every run)
 
 ## Agent Automation
 
@@ -174,7 +183,7 @@ use `python3 scripts/agent_memory.py`.
 
 ## Strategy Overview
 
-### Monthly Strategies (70% Budget)
+### Monthly Strategies (50% Budget)
 
 | Strategy | VIX Range | Direction | Holding Period |
 |----------|-----------|-----------|----------------|
@@ -183,12 +192,13 @@ use `python3 scripts/agent_memory.py`.
 | BrokenWingButterfly | 22-30 | Neutral | 14-21d |
 | RatioPutSpread | 22+ | Crash hedge | 14-21d |
 
-### Weekly Strategies (30% Budget)
+### Weekly Strategies (50% Budget)
 
-- Short DTE (4-11 days)
+- Short DTE (3-8 days) — minimum DTE enforced at fill, config-driven
 - Entry window: Monday/Tuesday only
 - Gamma scalping focus
 - Emergency exit if combined loss > 3%
+- Stop-loss: 100% of credit received (natural max-loss of short spread)
 
 ## Machine Learning Models
 

@@ -22,17 +22,23 @@
 
 ## Analysis & Results
 
-- **[Backtest Changelog](analysis/BACKTEST_CHANGELOG.md)** - Optimization history and performance improvements
+- **[Backtest Changelog](../BACKTEST_CHANGELOG.md)** - Optimization history and performance improvements (auto-appended after every run)
 - **[Weekly Exit Redesign Log](analysis/WEEKLY_EXIT_REDESIGN_LOG.md)** - Decision record for the weekly exit overhaul and rejected paths
-- **[Exit Strategy Analysis](analysis/EXIT_STRATEGY_ANALYSIS.md)** - Analysis of exit strategy performance
-- **[Exit Priority Comparison](analysis/EXIT_PRIORITY_COMPARISON_FINDINGS.md)** - Comparison of different exit priorities
-- **[Hybrid Backtest Results](analysis/HYBRID_BACKTEST_RESULTS.md)** - Results from hybrid strategy backtests
-- **[Monthly Exit Strategy Analysis](analysis/MONTHLY_EXIT_STRATEGY_ANALYSIS.md)** - Monthly exit strategy comparisons
-- **[Optimal Thresholds Analysis](analysis/OPTIMAL_THRESHOLDS_ANALYSIS.md)** - Analysis of optimal profit/stop thresholds
 - **[Optimization Log](analysis/OPTIMIZATION_LOG.md)** - Detailed optimization log
 - **[Position Sizing Decisions](analysis/POSITION_SIZING_DECISIONS.md)** - Position sizing methodology
 - **[OI Volume Display](analysis/OI_VOLUME_DISPLAY.md)** - Open interest and volume analysis
-- **[Backtest Comparison with 85% Rule](analysis/BACKTEST_COMPARISON_WITH_85_RULE.md)** - Comparison with 85% profit target rule
+
+### Historical Decision Records (Archive)
+
+Closed experiments and "why we didn't do X" reasoning — not current reference material:
+
+- **[Archive Index](archive/README.md)** - Index of all archived documents
+- `archive/EXIT_STRATEGY_ANALYSIS.md` — Rejected flat 80% profit-lock exit rule
+- `archive/HYBRID_BACKTEST_RESULTS.md` — Fixed 85% target vs hybrid approach
+- `archive/EXIT_PRIORITY_COMPARISON_FINDINGS.md` — Exit ordering comparison (identical outcome)
+- `archive/OPTIMAL_THRESHOLDS_ANALYSIS.md` — 85% profit target selection
+- `archive/BACKTEST_COMPARISON_WITH_85_RULE.md` — 85% rule decision record
+- `archive/MONTHLY_EXIT_STRATEGY_ANALYSIS.md` — Monthly exit strategy comparison
 
 ## Quick Links by Use Case
 
@@ -53,8 +59,8 @@
 2. Review [AI Codebase Guide](architecture/AGENTS.md) for detailed component info
 
 **Analyze backtest results:**
-1. Start with [Backtest Changelog](analysis/BACKTEST_CHANGELOG.md)
-2. Review specific analyses in [analysis/](analysis/) folder
+1. Start with [Backtest Changelog](../BACKTEST_CHANGELOG.md) (root, auto-appended)
+2. Review active analyses in [analysis/](analysis/) folder
 3. Run your own: `python main.py --mode backtest`
 
 **Use Fyers API:**
@@ -73,6 +79,7 @@
 docs/
 ├── QUICKSTART.md                    # Getting started guide
 ├── INDEX.md                         # This file
+├── BACKTEST_COMBINED_MODE.md        # Combined monthly+weekly backtest reference
 ├── architecture/
 │   ├── ARCHITECTURE.md              # System architecture
 │   └── AGENTS.md                    # AI codebase guide
@@ -82,18 +89,19 @@ docs/
 │   ├── INTEGRATION.md               # Fyers API integration
 │   ├── INTEGRATION_SUMMARY.md       # Fyers summary
 │   └── QUICK_REFERENCE.md           # Fyers code examples
-└── analysis/
-    ├── BACKTEST_CHANGELOG.md        # Optimization history
-    ├── WEEKLY_EXIT_REDESIGN_LOG.md  # Weekly redesign decision record
-    ├── EXIT_STRATEGY_ANALYSIS.md    # Exit strategy analysis
-    ├── HYBRID_BACKTEST_RESULTS.md   # Hybrid strategy results
-    ├── MONTHLY_EXIT_STRATEGY_ANALYSIS.md
-    ├── OPTIMAL_THRESHOLDS_ANALYSIS.md
-    ├── OPTIMIZATION_LOG.md
-    ├── POSITION_SIZING_DECISIONS.md
-    ├── OI_VOLUME_DISPLAY.md
+├── analysis/
+│   ├── WEEKLY_EXIT_REDESIGN_LOG.md  # Weekly redesign decision record (active)
+│   ├── OPTIMIZATION_LOG.md
+│   ├── POSITION_SIZING_DECISIONS.md
+│   └── OI_VOLUME_DISPLAY.md
+└── archive/
+    ├── README.md                    # Index — historical decision records
+    ├── EXIT_STRATEGY_ANALYSIS.md
+    ├── HYBRID_BACKTEST_RESULTS.md
     ├── EXIT_PRIORITY_COMPARISON_FINDINGS.md
-    └── BACKTEST_COMPARISON_WITH_85_RULE.md
+    ├── OPTIMAL_THRESHOLDS_ANALYSIS.md
+    ├── BACKTEST_COMPARISON_WITH_85_RULE.md
+    └── MONTHLY_EXIT_STRATEGY_ANALYSIS.md
 ```
 
 ## External Resources

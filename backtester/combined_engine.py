@@ -93,7 +93,7 @@ class CombinedBacktestEngine:
     - Monthly track: ML entry (RegimeAwareLearner), smart exits (VIX-adaptive + trailing + ML)
     - Weekly track: rule-based entry that targets the first weekly expiry inside
       the configured DTE window, with tighter exits
-    - Shared equity pool with separate risk budgets (default 70/30)
+    - Shared equity pool with separate risk budgets (default 50/50)
     - Cross-track DD breaker: if combined DD > threshold, block new entries
     """
 

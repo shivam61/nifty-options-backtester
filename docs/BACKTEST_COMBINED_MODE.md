@@ -26,22 +26,22 @@ The `backtest-combined` mode is now available in the CLI alongside the existing 
 
 The combined backtest pipeline follows the same flow as `signal-combined`:
 
-### 1. **Capital Allocation (70/30 split)**
+### 1. **Capital Allocation (50/50 split)**
 
 ```
 Initial Capital: ₹500,000
-├─ Monthly Track:    70% (₹350,000)
-└─ Weekly Track:     30% (₹150,000)
+├─ Monthly Track:    50% (₹250,000)
+└─ Weekly Track:     50% (₹250,000)
 ```
 
-### 2. **Monthly Track (70% Budget)**
+### 2. **Monthly Track (50% Budget)**
 
 - **Entry**: ML-powered via `RegimeAwareLearner` (v4 model)
 - **Exit Strategy**: VIX-adaptive stops, trailing stops, ML-based exits
 - **Strategies**: Multi-strategy selection (IronCondor, PutCreditSpread, CalendarSpread, BrokenWingButterfly)
 - **Position Sizing**: 3-layer adaptive sizing (margin-based, volatility targeting, ML confidence scaling)
 
-### 3. **Weekly Track (30% Budget)**
+### 3. **Weekly Track (50% Budget)**
 
 - **Entry**: Rule-based (Mon/Tue entries, 3-7 DTE) with VIX gating
 - **Exit Strategy**: Tighter, faster exits (typically 1-2 DTE)
@@ -61,7 +61,7 @@ Initial Capital: ₹500,000
 ================================================================================
   COMBINED MONTHLY + WEEKLY BACKTEST — ML PIPELINE
   Period: 2009-01-01 to 2026-04-17
-  Budget: Monthly 70% (₹350,000) + Weekly 30% (₹150,000)
+  Budget: Monthly 50% (₹250,000) + Weekly 50% (₹250,000)
 ================================================================================
 
 [1/5] Fetching market data...
@@ -76,16 +76,16 @@ Initial Capital: ₹500,000
 [4/5] Loading weekly entry model...
   Weekly entry model not available — using rule-based entry
 
-[5/5] Running combined backtest (monthly 70% + weekly 30%)...
+[5/5] Running combined backtest (monthly 50% + weekly 50%)...
 
   ================================================================================
   COMBINED BACKTEST RESULTS
   ================================================================================
 
-  Monthly Track (70% budget):
+  Monthly Track (50% budget):
     Trades: 337 | Win Rate: 70% | P&L: ₹1,174,144 | Avg Hold: 8d
 
-  Weekly Track (30% budget):
+  Weekly Track (50% budget):
     Trades: 651 | Win Rate: 82% | P&L: ₹12,532,853 | Avg Hold: 2d
 
   Combined Results:
@@ -143,7 +143,7 @@ Results are automatically logged to:
 |--------|----------|-------------------|-----------------|
 | Monthly track | ✓ | ✓ | ✓ |
 | Weekly track | ✗ | ✓ | ✓ |
-| Capital split | N/A | 70/30 | 70/30 |
+| Capital split | N/A | 50/50 | 50/50 |
 | Historical test | ✓ | ✓ | N/A (Live) |
 | Data requirements | Market data | Market data | Live prices |
 | Logging | Yes | Yes | No |
@@ -161,11 +161,11 @@ Results are automatically logged to:
    python main.py --mode backtest --run-label "monthly-only"
    
    # Combined monthly + weekly
-   python main.py --mode backtest-combined --run-label "combined-70-30"
+   python main.py --mode backtest-combined --run-label "combined-50-50"
    ```
 
 3. **Tuning Capital Allocation**
-   - Run backtest-combined with current 70/30 split
+   - Run backtest-combined with current 50/50 split
    - Analyze monthly_pnl vs weekly_pnl in logs
    - Adjust split if one track significantly outperforms
 
@@ -222,6 +222,6 @@ Indicates aggressive sizing or strong market conditions. Consider:
 ## Next Steps
 
 - **Compare Results**: Run both `--mode backtest` and `--mode backtest-combined` with same parameters to isolate weekly track contribution
-- **Tune 70/30 Split**: Try different capital allocations by modifying `monthly_budget_pct` parameter in `run_backtest_combined()`
+- **Tune 50/50 Split**: Try different capital allocations by modifying `monthly_budget_pct` / `weekly_budget_pct` parameters in `run_backtest_combined()`
 - **Deploy to Live**: Once validated, the `signal-combined` mode is ready for live execution
 
