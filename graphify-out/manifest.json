@@ -139,6 +139,10 @@
     "mtime": 1778607221.8193727,
     "hash": "0923c3f745b777d5d07ea66b6b904494"
   },
+  "/home/shivamguptanit/github/nifty-options-backtester/scripts/get_fyers_oauth_token.py": {
+    "mtime": 1788021431.7094643,
+    "hash": "af633e408770b1c7254eccda05e62af4"
+  },
   "/home/shivamguptanit/github/nifty-options-backtester/scripts/build_sector_proxy.py": {
     "mtime": 1778607221.8189354,
     "hash": "3ac04fd650bc3cfaca2916080570b3d3"
@@ -666,6 +670,10 @@
   "/home/shivamguptanit/github/nifty-options-backtester/docs/CREDENTIAL_REFRESH_GUIDE.md": {
     "mtime": 1788016521.6824145,
     "hash": "63e33b2635fb2bee5d3edae567fe0ff1"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_OAUTH_TOKEN_SETUP.md": {
+    "mtime": 1788021412.128521,
+    "hash": "1bbb1d4e320c881c858541369de53ba3"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/TESTING_AND_DEPLOYMENT_GUIDE.md": {
     "mtime": 1788015645.9685078,
