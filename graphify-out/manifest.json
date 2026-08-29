@@ -524,8 +524,8 @@
     "hash": "3be22db255a6811e847beb569791d2ff"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/BACKTEST_CHANGELOG.md": {
-    "mtime": 1787542652.965914,
-    "hash": "cd013946b1d5d44b47b132544cc441ca"
+    "mtime": 1787982770.6328893,
+    "hash": "9160b44619d1e1bf4d43cd4d9f3f170d"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/README.md": {
     "mtime": 1787504128.9712365,
@@ -560,8 +560,8 @@
     "hash": "7de4045b8e947a4e025abbe77c2462c6"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/INDEX.md": {
-    "mtime": 1787504161.977307,
-    "hash": "a6aa7575506f240cd72b2b3b1e7c0156"
+    "mtime": 1787982863.0492313,
+    "hash": "da11059f334ac36f2b3aa3e014e86e2e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/BACKTEST_COMBINED_MODE.md": {
     "mtime": 1787504094.6160405,
@@ -570,6 +570,14 @@
   "/home/shivamguptanit/github/nifty-options-backtester/docs/QUICKSTART.md": {
     "mtime": 1778607221.8147144,
     "hash": "eccccc762d99d103089d280f68f4b8b3"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/EXPERIMENT_INDEX.md": {
+    "mtime": 1787982846.5053105,
+    "hash": "676e021d9a860a684be9ae07c5b0946e"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/BASELINE_LEARNINGS.md": {
+    "mtime": 1787982815.2423394,
+    "hash": "270c71ad9ae8d0a9654842e3a2488d89"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/fyers/INTEGRATION_SUMMARY.md": {
     "mtime": 1778607221.8160098,
@@ -602,6 +610,10 @@
   "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/README.md": {
     "mtime": 1787504060.685884,
     "hash": "17dfbeb830c5f5be6611666faa5d7d56"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/ARCHIVED_RUNS.md": {
+    "mtime": 1787982770.6327004,
+    "hash": "6b4624b5d2743e2d15997501c0b0ef02"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/EXIT_PRIORITY_COMPARISON_FINDINGS.md": {
     "mtime": 1778607221.8150582,

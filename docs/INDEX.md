@@ -20,9 +20,15 @@
 - **[Integration Summary](fyers/INTEGRATION_SUMMARY.md)** - Quick reference for Fyers integration
 - **[Quick Reference](fyers/QUICK_REFERENCE.md)** - Code examples and common patterns
 
+## Baseline & Experiments
+
+- **[Backtest Changelog](../BACKTEST_CHANGELOG.md)** - Current baseline runs #56-#59 (auto-appended after every run)
+- **[Baseline Learnings](BASELINE_LEARNINGS.md)** - Phase transitions, key findings, and standards (start here)
+- **[Experiment Index](EXPERIMENT_INDEX.md)** - Quick reference for all runs, experiments, and decision framework
+- **[Combined Backtest Mode](BACKTEST_COMBINED_MODE.md)** - Technical reference for combined monthly+weekly backtester
+
 ## Analysis & Results
 
-- **[Backtest Changelog](../BACKTEST_CHANGELOG.md)** - Optimization history and performance improvements (auto-appended after every run)
 - **[Weekly Exit Redesign Log](analysis/WEEKLY_EXIT_REDESIGN_LOG.md)** - Decision record for the weekly exit overhaul and rejected paths
 - **[Optimization Log](analysis/OPTIMIZATION_LOG.md)** - Detailed optimization log
 - **[Position Sizing Decisions](analysis/POSITION_SIZING_DECISIONS.md)** - Position sizing methodology
@@ -79,7 +85,9 @@ Closed experiments and "why we didn't do X" reasoning — not current reference 
 docs/
 ├── QUICKSTART.md                    # Getting started guide
 ├── INDEX.md                         # This file
-├── BACKTEST_COMBINED_MODE.md        # Combined monthly+weekly backtest reference
+├── BASELINE_LEARNINGS.md            # Phase transitions, findings, and standards (READ FIRST)
+├── EXPERIMENT_INDEX.md              # Experiment dashboard and decision framework
+├── BACKTEST_COMBINED_MODE.md        # Combined monthly+weekly backtest technical reference
 ├── architecture/
 │   ├── ARCHITECTURE.md              # System architecture
 │   └── AGENTS.md                    # AI codebase guide
@@ -96,6 +104,7 @@ docs/
 │   └── OI_VOLUME_DISPLAY.md
 └── archive/
     ├── README.md                    # Index — historical decision records
+    ├── ARCHIVED_RUNS.md             # Historical backtest runs #3-#55
     ├── EXIT_STRATEGY_ANALYSIS.md
     ├── HYBRID_BACKTEST_RESULTS.md
     ├── EXIT_PRIORITY_COMPARISON_FINDINGS.md
