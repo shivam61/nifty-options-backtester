@@ -65,25 +65,29 @@ def main():
     # Step 2: Initialize Fyers client
     logger.info("\n2️⃣  Initializing Fyers client...")
     try:
-        from fyers_api import fyersModel
+        from fyers_apiv3 import fyersModel
+        from data.credentials import get_fyers_access_token
 
+        # Try to get stored access token
+        access_token = get_fyers_access_token()
+
+        # Initialize with just client_id and token (if available)
         client = fyersModel.FyersModel(
-            client_id=client_id,
             is_async=False,
-            state="sample_state",
-            scope=["full_access"],
-            redirect_uri="http://localhost:3000",
-            response_type="code",
-            api_server="https://api-t1.fyers.in/api/v3"
+            client_id=client_id,
+            token=access_token or "",
+            log_level="ERROR"
         )
         logger.info("✅ Fyers client initialized")
 
-    except ImportError:
+    except ImportError as e:
         logger.error("❌ fyers-apiv3 not installed")
         logger.error("   Install with: pip install fyers-apiv3")
+        logger.error(f"   Error: {e}")
         return False
     except Exception as e:
         logger.error(f"❌ Failed to initialize client: {e}")
+        logger.error(f"   This might require OAuth token setup")
         return False
 
     # Step 3: Test LiveDataFetcher with Fyers
