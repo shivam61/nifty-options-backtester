@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def main():
-    from fyers_apiv3 import fyersModel
+    from fyers_apiv3.fyersModel import SessionModel, FyersModel
     from data.credentials import load_fyers_credentials, save_fyers_access_token
 
     print("=" * 80)
@@ -33,30 +33,36 @@ def main():
     print("\n1️⃣  Loading Fyers credentials...")
     client_id, api_secret = load_fyers_credentials()
 
-    if not client_id:
+    if not client_id or not api_secret:
         print("❌ No credentials found in .env.local")
         print("   Please set up credentials first (see docs/FYERS_CREDENTIAL_SETUP.md)")
         return False
 
     print(f"✅ Client ID: {client_id}")
+    print(f"✅ API Secret: {api_secret[:10]}...")
 
-    # Step 2: Create client for auth flow
-    print("\n2️⃣  Creating Fyers client for authorization...")
+    # Step 2: Create SessionModel for OAuth flow
+    print("\n2️⃣  Creating Fyers SessionModel for authorization...")
     try:
-        client = fyersModel.FyersModel(
-            is_async=False,
+        session = SessionModel(
             client_id=client_id,
-            log_level="ERROR"
+            redirect_uri="http://localhost:3000",
+            response_type="code",
+            scope="full_access",
+            state="sample_state",
+            nonce="sample_nonce",
+            secret_key=api_secret,
+            grant_type="authorization_code"
         )
-        print("✅ Client ready for OAuth flow")
+        print("✅ SessionModel created")
     except Exception as e:
-        print(f"❌ Failed to create client: {e}")
+        print(f"❌ Failed to create SessionModel: {e}")
         return False
 
     # Step 3: Get authorization URL
     print("\n3️⃣  Generating authorization URL...")
     try:
-        auth_url = client.get_auth_url()
+        auth_url = session.generate_authcode()
         print("✅ Authorization URL generated")
         print("\n" + "=" * 80)
         print("📋 AUTHORIZATION URL (Copy and open in browser):")
@@ -74,17 +80,19 @@ def main():
 
     except Exception as e:
         print(f"❌ Failed to generate auth URL: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
     # Step 4: Get authorization code
     print("\n4️⃣  Waiting for authorization...")
     print("\n📋 Steps:")
-    print("   1. Log in with your Fyers account")
-    print("   2. Click 'Authorize' or 'Allow'")
+    print("   1. Log in with your Fyers account in the browser")
+    print("   2. Click 'Authorize' or 'Allow' to approve access")
     print("   3. You'll be redirected to localhost")
     print("   4. Copy the 'code' value from the URL")
-    print("\n   Example URL: http://localhost:3000?code=ABC123DEF456...")
-    print("   Copy: ABC123DEF456...\n")
+    print("\n   Example URL: http://localhost:3000?code=ABC123DEF456&state=...")
+    print("   Copy value after 'code=': ABC123DEF456\n")
 
     auth_code = input("📋 Paste the authorization code here: ").strip()
 
@@ -94,15 +102,36 @@ def main():
 
     print("\n✅ Auth code received (processing...)")
 
-    # Step 5: Exchange code for token
+    # Step 5: Exchange code for token using SessionModel
     print("\n5️⃣  Exchanging authorization code for access token...")
     try:
-        # Set token with auth code (exchanges it for actual token)
-        client.set_token(auth_code)
-        access_token = client.token
+        # Set the auth code in session
+        session.set_token(auth_code)
+
+        # Generate the token from auth code
+        token_response = session.generate_token()
+
+        print("✅ Token response received!")
+        print(f"   Response: {token_response}")
+
+        # Extract access token from response
+        if isinstance(token_response, dict):
+            access_token = token_response.get('access_token') or token_response.get('data', {}).get('access_token')
+
+            if not access_token:
+                print(f"⚠️  Could not extract token from response: {token_response}")
+                # Try to use raw response as token
+                access_token = str(token_response)
+        else:
+            access_token = str(token_response)
+
+        if not access_token or access_token == 'None':
+            print("❌ Failed to get valid access token")
+            print(f"   Response: {token_response}")
+            return False
 
         print("✅ Access token received!")
-        print(f"   Token: {access_token[:50]}...")
+        print(f"   Token: {str(access_token)[:50]}...")
 
         # Save token
         print("\n6️⃣  Saving token to .env.local...")
@@ -115,18 +144,20 @@ def main():
 
     except Exception as e:
         print(f"❌ Failed to exchange code for token: {e}")
+        import traceback
+        traceback.print_exc()
         print("\n⚠️  Troubleshooting:")
         print("   - Make sure you copied the entire code value")
         print("   - Don't include 'code=' prefix")
         print("   - Try again if more than 10 minutes have passed")
-        print("   - Check Fyers account is active")
+        print("   - Check Fyers account is active and authorized")
         return False
 
     # Step 6: Verify token works
     print("\n7️⃣  Verifying live data access...")
     try:
         # Create new client with token
-        client_with_token = fyersModel.FyersModel(
+        client_with_token = FyersModel(
             is_async=False,
             client_id=client_id,
             token=access_token,
@@ -147,7 +178,7 @@ def main():
             print("   - Market is closed (try during 9:15 AM - 3:30 PM IST)")
             print("   - Fyers account not fully set up")
         else:
-            print(f"⚠️  Unexpected response: {result.get('message', 'Unknown')}")
+            print(f"⚠️  Response: {result.get('message', 'Unknown')}")
 
     except Exception as e:
         print(f"⚠️  Could not verify live data: {e}")
@@ -161,9 +192,10 @@ def main():
 Next Steps:
 
 1. Restart API Server:
+   source .venv/bin/activate
    uvicorn api.server:app --port 8000
 
-2. Test Live Data:
+2. Test Live Data (in another terminal):
    curl http://localhost:8000/signal | jq '.spot, .vix'
 
 3. Start Paper Trading:
