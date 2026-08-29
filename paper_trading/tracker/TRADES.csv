@@ -1,0 +1,1 @@
+Trade_ID,Date_Entry,Entry_Time_IST,Strike_Entry,Bid_Ask_Entry,Entry_Price_Fill,Lots_Size,Capital_Deployed_₹,Strategy,Signal_VIX,Signal_Regime,ML_Score,Expiry_DTE,Date_Exit,Exit_Time_IST,Exit_Price_Fill,Exit_Reason,Days_Held,Gross_P&L_₹,Brokerage_₹,Slippage_vs_Backtest_bp,Net_P&L_₹,Win_Loss,P&L_vs_Max_Profit_%,Notes,Backtest_Expected_P&L_₹,Backtest_Deviation_%
