@@ -243,14 +243,15 @@ class CombinedBacktestEngine:
             self._evaluation_start_date = self.walk_forward_manager.windows[0].test_start.date()
 
     def _effective_allocation(self, vix: float) -> tuple[float, float]:
-        """Return (monthly_pct, weekly_pct) based on 5-band VIX regime.
+        """Return (monthly_pct, weekly_pct) based on VIX regime.
 
-        Finer regime granularity replaces 3-band v1:
-        - Very low (< 14):  85% weekly — calm market, theta decay dominant
-        - Low (14–18):      70% weekly — low vol, weekly still favored
-        - Normal (18–22):   50/50 — balanced baseline
-        - Elevated (22–28): 35% weekly — rotate toward monthly hedge
-        - Crisis (28+):     15% weekly — preserve capital via monthly
+        3-band dynamic allocation (Phase 4 final, Run #60 winner):
+        - Low VIX (< 18):    20% monthly, 80% weekly (trend-follow alpha)
+        - Normal VIX (18–22): 50/50 (balanced baseline)
+        - High VIX (> 22):   70% monthly, 30% weekly (defensive hedge)
+
+        Overrides static self.monthly_budget_pct / self.weekly_budget_pct at
+        runtime; the stored attributes remain as fallback defaults.
 
         Args:
             vix: Current India VIX value.
@@ -258,21 +259,15 @@ class CombinedBacktestEngine:
         Returns:
             Tuple of (monthly_pct, weekly_pct) where both sum to 1.0.
         """
-        if vix < 14.0:
-            # Very low VIX: aggressive weekly dominance
-            return 0.15, 0.85
-        elif vix < 18.0:
-            # Low VIX: weekly tilted but monthly viable
-            return 0.30, 0.70
-        elif vix <= 22.0:
+        if vix < 18.0:
+            # Low volatility: aggressive weekly dominance
+            return 0.20, 0.80
+        elif vix > 22.0:
+            # High volatility: defensive monthly dominance
+            return 0.70, 0.30
+        else:
             # Normal: balanced baseline
             return 0.50, 0.50
-        elif vix < 28.0:
-            # Elevated: rotate toward monthly hedge
-            return 0.65, 0.35
-        else:
-            # Crisis: monthly dominates for capital preservation
-            return 0.85, 0.15
 
     def _sync_walk_forward_models(self, current_date) -> None:
         if self.walk_forward_manager is None:
