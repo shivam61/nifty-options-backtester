@@ -115,6 +115,10 @@
     "mtime": 1778648947.5607107,
     "hash": "c17907220a093ddd55e63f333bb160ec"
   },
+  "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_fyers_live.py": {
+    "mtime": 1788016336.6318572,
+    "hash": "2aa81bf1ec07c0050d80337fe7f9c607"
+  },
   "/home/shivamguptanit/github/nifty-options-backtester/scripts/check_fyers_token.py": {
     "mtime": 1778607221.8189354,
     "hash": "5eaac376c45c0c7db1840f078bc52edc"
@@ -658,6 +662,10 @@
   "/home/shivamguptanit/github/nifty-options-backtester/docs/INDEX.md": {
     "mtime": 1787982863.0492313,
     "hash": "da11059f334ac36f2b3aa3e014e86e2e"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_CREDENTIAL_SETUP.md": {
+    "mtime": 1788016376.5677617,
+    "hash": "cbd235348fef0d1c71d40af516bec838"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/BACKTEST_COMBINED_MODE.md": {
     "mtime": 1787504094.6160405,
