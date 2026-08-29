@@ -242,6 +242,28 @@ class CombinedBacktestEngine:
         if getattr(getattr(self, "walk_forward_manager", None), "windows", None):
             self._evaluation_start_date = self.walk_forward_manager.windows[0].test_start.date()
 
+    def _effective_allocation(self, vix: float) -> tuple[float, float]:
+        """Return (monthly_pct, weekly_pct) based on VIX regime.
+
+        Overrides static self.monthly_budget_pct / self.weekly_budget_pct at
+        runtime; the stored attributes remain as fallback defaults.
+
+        Args:
+            vix: Current India VIX value.
+
+        Returns:
+            Tuple of (monthly_pct, weekly_pct) where both sum to 1.0.
+        """
+        if vix < 18.0:
+            # Low volatility: aggressive weekly dominance
+            return 0.20, 0.80
+        elif vix > 22.0:
+            # High volatility: defensive monthly dominance
+            return 0.70, 0.30
+        else:
+            # Normal: balanced baseline
+            return 0.50, 0.50
+
     def _sync_walk_forward_models(self, current_date) -> None:
         if self.walk_forward_manager is None:
             return
@@ -845,7 +867,8 @@ class CombinedBacktestEngine:
             if action != TradeAction.ENTER:
                 return
 
-        monthly_equity = equity * self.monthly_budget_pct
+        _m_pct, _w_pct = self._effective_allocation(vix)
+        monthly_equity = equity * _m_pct
         prelim_lots = max(1, min(self.m_config.max_lots, int(self.position_sizer._margin_fallback(monthly_equity))))
         selector_diag = {}
         decision = select_optimal_entry(
@@ -1428,7 +1451,8 @@ class CombinedBacktestEngine:
             return
 
         # ── Dynamic lot sizing: equity-proportional * stress scaler ──
-        weekly_budget = equity * self.weekly_budget_pct
+        _m_pct, _w_pct = self._effective_allocation(vix)
+        weekly_budget = equity * _w_pct
         margin_per_lot = 500 * self.w_config.lot_size
         base_lots = max(1, min(self.w_config.max_lots, int(weekly_budget * 0.60 / margin_per_lot)))
 
