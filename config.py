@@ -223,6 +223,45 @@ class WeeklyBacktestConfig:
 
 
 @dataclass
+class FyersAPIConfig:
+    """Fyers API rate limiting configuration."""
+    # Hard limits from Fyers API
+    calls_per_second_limit: int = 10          # Maximum 10 calls per second
+    calls_per_minute_limit: int = 200         # Maximum 200 calls per minute
+    calls_per_day_limit: int = 10_000         # Maximum 10,000 calls per day
+
+    # Adaptive TTL caching — data freshness vs rate limits
+    # Total daily budget: ~6,400 calls = 64% of limit (36% headroom)
+    cache_ttl_spot_price_seconds: int = 30    # Spot price: 30s TTL = ~2,880 calls/day
+    cache_ttl_vix_seconds: int = 60           # VIX level: 60s TTL = ~1,440 calls/day
+    cache_ttl_option_chain_seconds: int = 300  # Option chain: 5min TTL = ~288 calls/day
+    cache_ttl_market_status_seconds: int = 60  # Market status: 60s TTL = ~1,440 calls/day
+    cache_ttl_account_seconds: int = 300      # Account: 5min TTL = ~288 calls/day
+    cache_ttl_holdings_seconds: int = 3600    # Holdings: 1hr TTL = ~24 calls/day
+    cache_ttl_orders_seconds: int = 3600      # Orders: 1hr TTL = ~24 calls/day
+
+    # Backoff strategy for rate limiting
+    retry_max_attempts: int = 3               # Max retry attempts if rate limited
+    retry_backoff_base_seconds: float = 2.0   # Exponential backoff: 2s, 4s, 8s
+
+    # Alert thresholds (for monitoring)
+    daily_usage_alert_pct: float = 80.0       # Alert if using >80% of daily limit
+    minute_usage_alert_pct: float = 90.0      # Alert if using >90% of minute limit
+    second_usage_alert_pct: float = 80.0      # Alert if using >80% of second limit
+
+    # Paper trading specific settings
+    # Single trader uses ~241 calls/day (2.4% of limit)
+    single_trader_estimated_calls_per_day: int = 241
+    max_parallel_traders_recommended: int = 40  # At full capacity, still safe
+
+    # Emergency fallback settings
+    use_mock_on_daily_limit: bool = True      # Switch to mock data if daily limit hit
+    use_cached_on_minute_limit: bool = True   # Use cached data if minute limit hit
+    enable_request_queuing: bool = True       # Queue requests if hitting limits
+    queue_max_size: int = 1000                # Max requests in queue
+
+
+@dataclass
 class MarketRegime:
     """Classifies current market conditions."""
     vix_level: str = "medium"        # low, medium, high, extreme
