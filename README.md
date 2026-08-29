@@ -4,6 +4,8 @@ A Python framework for backtesting and live trading Nifty 50 index options selli
 
 ## Recent Changes
 
+- **2026-08-29** — Documentation cleanup: archived runs #3–#55, streamlined changelog, created baseline learnings & experiment index
+- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 - **2026-08-23** — Mid-session 11 AM IST entry window made permanent baseline (+2.47% CAGR, MaxDD 8.9%→4.7%)
 - **2026-08-23** — Capital split changed from 70/30 to **50/50** monthly/weekly
@@ -80,13 +82,23 @@ python main.py --mode optimize
 
 ## Documentation
 
+### 🎯 Baseline & Experiments (Start Here)
+- **[Baseline Learnings](docs/BASELINE_LEARNINGS.md)** - Phase transitions, key findings, and standards (read for deep understanding)
+- **[Experiment Index](docs/EXPERIMENT_INDEX.md)** - Dashboard, comparison table, and planned experiments (2-min quick ref)
+- **[Backtest Changelog](BACKTEST_CHANGELOG.md)** - Current baseline runs #56–#59 (auto-appended after every run)
+- **[Archived Runs](docs/archive/ARCHIVED_RUNS.md)** - Historical experiments #3–#55 (reference)
+
+### 📚 System Documentation
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Installation and daily workflow
 - **[Architecture Overview](docs/architecture/ARCHITECTURE.md)** - System design and components
+- **[Combined Backtest Mode](docs/BACKTEST_COMBINED_MODE.md)** - Technical reference for monthly+weekly backtester
 - **[Monitor Workflow](docs/guides/MONITOR_WORKFLOW.md)** - Trade monitoring and management
 - **[Fyers Integration](docs/fyers/INTEGRATION.md)** - API setup and usage
 - **[AI Codebase Guide](docs/architecture/AGENTS.md)** - For AI agents working on this codebase
+- **[Documentation Index](docs/INDEX.md)** - Complete navigation map
+
+### 🤖 Agent Tools
 - **[Agent Memory](docs/AGENT_MEMORY.md)** - Decaying record of repo-specific pitfalls for Claude/Codex sessions
-- **[Backtest Changelog](BACKTEST_CHANGELOG.md)** - Optimization history (auto-appended after every run)
 
 ## Agent Automation
 
