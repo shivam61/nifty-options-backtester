@@ -183,6 +183,10 @@
     "mtime": 1778607219.0558276,
     "hash": "b3d39d61a2d3b1e5368bd33718154559"
   },
+  "/home/shivamguptanit/github/nifty-options-backtester/data/rate_limiter.py": {
+    "mtime": 1788022223.330227,
+    "hash": "53fdce56b59389aec5ef36efeeb9f003"
+  },
   "/home/shivamguptanit/github/nifty-options-backtester/data/option_chain.py": {
     "mtime": 1778607219.0558276,
     "hash": "0a2f0632972b7835097f4b21eb21e1fc"
@@ -662,6 +666,10 @@
   "/home/shivamguptanit/github/nifty-options-backtester/docs/PHASE_4_PLAN.md": {
     "mtime": 1787983788.1554434,
     "hash": "7e05bd2f7572dae7cdb1561df9b0b6ec"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/docs/RATE_LIMIT_IMPLEMENTATION.md": {
+    "mtime": 1788022259.7031236,
+    "hash": "b6b0646901e5985e6d146a68f3d88106"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/docs/QUICK_START_FYERS.md": {
     "mtime": 1788016421.0046554,
