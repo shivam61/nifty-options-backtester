@@ -1,0 +1,7 @@
+# API Dependencies
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+
+# Note: Other dependencies (pandas, numpy, scikit-learn, lightgbm) are installed
+# by the main backtester and should already be in the environment.
