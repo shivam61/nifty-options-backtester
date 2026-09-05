@@ -1,0 +1,398 @@
+{
+  "nodes": [
+    {
+      "id": "strategies_max_profit_booking_maxprofitbookingmixin",
+      "label": "MaxProfitBookingMixin",
+      "file_type": "code",
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "class MaxProfitBookingMixin"
+    },
+    {
+      "id": "strategies_max_profit_booking_track_max_profit",
+      "label": "_track_max_profit",
+      "file_type": "code",
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "def _track_max_profit"
+    },
+    {
+      "id": "strategies_max_profit_booking_check_max_profit_booking",
+      "label": "_check_max_profit_booking",
+      "file_type": "code",
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "def _check_max_profit_booking"
+    },
+    {
+      "id": "strategies_max_profit_booking_should_exit_wrapper",
+      "label": "should_exit_with_max_profit_booking",
+      "file_type": "code",
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "def should_exit_with_max_profit_booking"
+    },
+    {
+      "id": "strategies_universe_active_monthly_strategies",
+      "label": "ACTIVE_MONTHLY_STRATEGIES",
+      "file_type": "code",
+      "source_file": "strategies/universe.py",
+      "source_location": "ACTIVE_MONTHLY_STRATEGIES"
+    },
+    {
+      "id": "exits_unified_evaluate_exit",
+      "label": "evaluate_exit",
+      "file_type": "code",
+      "source_file": "exits/__init__.py",
+      "source_location": "def evaluate_exit"
+    },
+    {
+      "id": "exits_unified_tradeadapter",
+      "label": "TradeAdapter",
+      "file_type": "code",
+      "source_file": "exits/__init__.py",
+      "source_location": "class TradeAdapter"
+    },
+    {
+      "id": "exits_unified_exitdecision",
+      "label": "ExitDecision",
+      "file_type": "code",
+      "source_file": "exits/__init__.py",
+      "source_location": "class ExitDecision"
+    },
+    {
+      "id": "exits_unified_legadapter",
+      "label": "_LegAdapter",
+      "file_type": "code",
+      "source_file": "exits/__init__.py",
+      "source_location": "class _LegAdapter"
+    },
+    {
+      "id": "phase4_dynamic_vix_allocation",
+      "label": "Phase 4 Dynamic VIX Allocation",
+      "file_type": "rationale",
+      "source_file": "PHASE_4_IMPLEMENTATION.md",
+      "source_location": "Step 1: Add Dynamic Allocation Function"
+    },
+    {
+      "id": "baseline_v10_rule_based_weekly",
+      "label": "Baseline v10: Rule-Based Weekly Mode",
+      "file_type": "rationale",
+      "source_file": "docs/BASELINE_LEARNINGS.md",
+      "source_location": "Phase 2: ETL Gate Tuning"
+    },
+    {
+      "id": "readme_dual_track_backtester",
+      "label": "Dual-Track Backtester Architecture",
+      "file_type": "rationale",
+      "source_file": "README.md",
+      "source_location": "How We Solve It"
+    },
+    {
+      "id": "readme_ml_entry_classifier",
+      "label": "ML Entry Classifier (AUC 0.696)",
+      "file_type": "rationale",
+      "source_file": "README.md",
+      "source_location": "Regime-Adaptive Entry"
+    },
+    {
+      "id": "readme_exit_model",
+      "label": "ML-Driven Exit Model",
+      "file_type": "rationale",
+      "source_file": "README.md",
+      "source_location": "ML-Driven Exit"
+    },
+    {
+      "id": "fyers_integration_rate_limiting",
+      "label": "Fyers API Rate Limiting",
+      "file_type": "rationale",
+      "source_file": "docs/FYERS_INTEGRATION_COMPLETE.md",
+      "source_location": "Layer 1: Rate Limiting"
+    },
+    {
+      "id": "fyers_integration_data_validation",
+      "label": "Fyers API Data Validation",
+      "file_type": "rationale",
+      "source_file": "docs/FYERS_INTEGRATION_COMPLETE.md",
+      "source_location": "Layer 2: Data Validation"
+    },
+    {
+      "id": "api_guide_paper_trading_rest",
+      "label": "Paper Trading REST API",
+      "file_type": "rationale",
+      "source_file": "API_GUIDE.md",
+      "source_location": "Quick Start"
+    },
+    {
+      "id": "backtest_changelog_run59_baseline",
+      "label": "Run #59: Baseline v10 (11.16% CAGR)",
+      "file_type": "document",
+      "source_file": "BACKTEST_CHANGELOG.md",
+      "source_location": "Run #59"
+    },
+    {
+      "id": "baseline_learnings_phase2_etl_gate",
+      "label": "Phase 2: ETL Gate Tuning (ML Gate Removal)",
+      "file_type": "rationale",
+      "source_file": "docs/BASELINE_LEARNINGS.md",
+      "source_location": "Phase 2: ETL Gate Tuning"
+    },
+    {
+      "id": "phase4_implementation_vix_regimes",
+      "label": "VIX-Regime Capital Allocation (Dynamic)",
+      "file_type": "rationale",
+      "source_file": "PHASE_4_IMPLEMENTATION.md",
+      "source_location": "Step 1"
+    },
+    {
+      "id": "max_profit_booking_empirical_results",
+      "label": "Max Profit Booking Empirical Results",
+      "file_type": "rationale",
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "MaxProfitBookingMixin class docstring"
+    }
+  ],
+  "edges": [
+    {
+      "source": "strategies_max_profit_booking_should_exit_wrapper",
+      "target": "strategies_max_profit_booking_track_max_profit",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "line 95",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_max_profit_booking_should_exit_wrapper",
+      "target": "strategies_max_profit_booking_check_max_profit_booking",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "line 98",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_max_profit_booking_maxprofitbookingmixin",
+      "target": "max_profit_booking_empirical_results",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "class docstring",
+      "weight": 1.0
+    },
+    {
+      "source": "exits_unified_evaluate_exit",
+      "target": "exits_unified_tradeadapter",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "exits/__init__.py",
+      "source_location": "line 166",
+      "weight": 1.0
+    },
+    {
+      "source": "exits_unified_evaluate_exit",
+      "target": "exits_unified_exitdecision",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "exits/__init__.py",
+      "source_location": "multiple return statements",
+      "weight": 1.0
+    },
+    {
+      "source": "exits_unified_tradeadapter",
+      "target": "exits_unified_legadapter",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "exits/__init__.py",
+      "source_location": "line 79",
+      "weight": 1.0
+    },
+    {
+      "source": "phase4_dynamic_vix_allocation",
+      "target": "baseline_v10_rule_based_weekly",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PHASE_4_IMPLEMENTATION.md",
+      "source_location": "Step 2",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_dual_track_backtester",
+      "target": "readme_ml_entry_classifier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "How We Solve It section",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_dual_track_backtester",
+      "target": "readme_exit_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "How We Solve It section",
+      "weight": 1.0
+    },
+    {
+      "source": "fyers_integration_rate_limiting",
+      "target": "fyers_integration_data_validation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/FYERS_INTEGRATION_COMPLETE.md",
+      "source_location": "Architecture Overview",
+      "weight": 1.0
+    },
+    {
+      "source": "api_guide_paper_trading_rest",
+      "target": "fyers_integration_rate_limiting",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "API_GUIDE.md",
+      "source_location": "Quick Start",
+      "weight": 1.0
+    },
+    {
+      "source": "baseline_learnings_phase2_etl_gate",
+      "target": "baseline_v10_rule_based_weekly",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/BASELINE_LEARNINGS.md",
+      "source_location": "Phase 2 section",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_changelog_run59_baseline",
+      "target": "baseline_v10_rule_based_weekly",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "BACKTEST_CHANGELOG.md",
+      "source_location": "Run #59 header",
+      "weight": 1.0
+    },
+    {
+      "source": "phase4_implementation_vix_regimes",
+      "target": "phase4_dynamic_vix_allocation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PHASE_4_IMPLEMENTATION.md",
+      "source_location": "Step 1",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_max_profit_booking_maxprofitbookingmixin",
+      "target": "strategies_max_profit_booking_should_exit_wrapper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "class definition",
+      "weight": 1.0
+    },
+    {
+      "source": "exits_unified_evaluate_exit",
+      "target": "strategies_max_profit_booking_should_exit_wrapper",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "exits/__init__.py",
+      "source_location": "line 414 strategy.should_exit call",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_ml_entry_classifier",
+      "target": "strategies_universe_active_monthly_strategies",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "README.md",
+      "source_location": "Strategy Selection section",
+      "weight": 1.0
+    },
+    {
+      "source": "phase4_dynamic_vix_allocation",
+      "target": "readme_dual_track_backtester",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "PHASE_4_IMPLEMENTATION.md",
+      "source_location": "architecture context",
+      "weight": 1.0
+    },
+    {
+      "source": "exits_unified_evaluate_exit",
+      "target": "readme_exit_model",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "exits/__init__.py",
+      "source_location": "unified exit evaluation implementation",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_max_profit_booking_maxprofitbookingmixin",
+      "target": "exits_unified_evaluate_exit",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.70,
+      "source_file": "strategies/max_profit_booking.py",
+      "source_location": "both implement profit-taking logic",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "exit_strategy_unified_engine",
+      "label": "Unified Exit Strategy Engine",
+      "nodes": [
+        "exits_unified_evaluate_exit",
+        "exits_unified_tradeadapter",
+        "exits_unified_exitdecision",
+        "strategies_max_profit_booking_should_exit_wrapper"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.80,
+      "source_file": "exits/__init__.py"
+    },
+    {
+      "id": "backtester_phases_evolution",
+      "label": "Baseline Evolution: Phase 1 → Phase 2 → Phase 4",
+      "nodes": [
+        "baseline_learnings_phase2_etl_gate",
+        "baseline_v10_rule_based_weekly",
+        "phase4_dynamic_vix_allocation",
+        "backtest_changelog_run59_baseline"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.90,
+      "source_file": "docs/BASELINE_LEARNINGS.md"
+    },
+    {
+      "id": "fyers_api_production_stack",
+      "label": "Fyers API Production Stack",
+      "nodes": [
+        "fyers_integration_rate_limiting",
+        "fyers_integration_data_validation",
+        "api_guide_paper_trading_rest"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.85,
+      "source_file": "docs/FYERS_INTEGRATION_COMPLETE.md"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

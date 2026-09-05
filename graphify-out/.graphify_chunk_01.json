@@ -1,0 +1,628 @@
+{
+  "nodes": [
+    {
+      "id": "backtester_combined_engine_combinedbacktestengine",
+      "label": "CombinedBacktestEngine",
+      "file_type": "code",
+      "source_file": "backtester/combined_engine.py",
+      "source_location": "class CombinedBacktestEngine"
+    },
+    {
+      "id": "backtester_engine_backtestengine",
+      "label": "BacktestEngine",
+      "file_type": "code",
+      "source_file": "backtester/engine.py",
+      "source_location": "class BacktestEngine"
+    },
+    {
+      "id": "backtester_weekly_engine_weeklybacktestengine",
+      "label": "WeeklyBacktestEngine",
+      "file_type": "code",
+      "source_file": "backtester/weekly_engine.py",
+      "source_location": "class WeeklyBacktestEngine"
+    },
+    {
+      "id": "backtester_position_sizer_positionsizer",
+      "label": "PositionSizer",
+      "file_type": "code",
+      "source_file": "backtester/position_sizer.py",
+      "source_location": "class PositionSizer"
+    },
+    {
+      "id": "models_regime_aware_learner_regimeawarelearner",
+      "label": "RegimeAwareLearner",
+      "file_type": "code",
+      "source_file": "models/regime_aware_learner.py",
+      "source_location": "class RegimeAwareLearner"
+    },
+    {
+      "id": "models_trade_learner_tradelearner",
+      "label": "TradeLearner",
+      "file_type": "code",
+      "source_file": "models/trade_learner.py",
+      "source_location": "class TradeLearner"
+    },
+    {
+      "id": "models_trade_learner_featureextractor",
+      "label": "FeatureExtractor",
+      "file_type": "code",
+      "source_file": "models/trade_learner.py",
+      "source_location": "class FeatureExtractor"
+    },
+    {
+      "id": "strategies_multi_strategy_regimeadaptivestrategy",
+      "label": "RegimeAdaptiveStrategy",
+      "file_type": "code",
+      "source_file": "strategies/multi_strategy.py",
+      "source_location": "class RegimeAdaptiveStrategy"
+    },
+    {
+      "id": "strategies_multi_strategy_putcreditspreadstrategy",
+      "label": "PutCreditSpreadStrategy",
+      "file_type": "code",
+      "source_file": "strategies/multi_strategy.py",
+      "source_location": "class PutCreditSpreadStrategy"
+    },
+    {
+      "id": "strategies_multi_strategy_ironcondorstrategy",
+      "label": "IronCondorStrategy",
+      "file_type": "code",
+      "source_file": "strategies/multi_strategy.py",
+      "source_location": "class IronCondorStrategy"
+    },
+    {
+      "id": "models_trade_monitor_tradeexitengine",
+      "label": "TradeExitEngine",
+      "file_type": "code",
+      "source_file": "models/trade_monitor.py",
+      "source_location": "class TradeExitEngine"
+    },
+    {
+      "id": "models_weekly_risk_engine_weeklyriskengine",
+      "label": "WeeklyRiskEngine",
+      "file_type": "code",
+      "source_file": "models/weekly_risk_engine.py",
+      "source_location": "class WeeklyRiskEngine"
+    },
+    {
+      "id": "models_weekly_risk_engine_tailriskscorer",
+      "label": "TailRiskScorer",
+      "file_type": "code",
+      "source_file": "models/weekly_risk_engine.py",
+      "source_location": "class TailRiskScorer"
+    },
+    {
+      "id": "backtester_production_rules_productionrule",
+      "label": "ProductionRulesConfig",
+      "file_type": "code",
+      "source_file": "backtester/production_rules.py",
+      "source_location": "dataclass ProductionRulesConfig"
+    },
+    {
+      "id": "backtester_production_rules_drawdownkillswitch",
+      "label": "DrawdownKillSwitch",
+      "file_type": "code",
+      "source_file": "backtester/production_rules.py",
+      "source_location": "class DrawdownKillSwitch"
+    },
+    {
+      "id": "backtester_fills_conservativefillmodel",
+      "label": "ConservativeFillModel",
+      "file_type": "code",
+      "source_file": "backtester/fills.py",
+      "source_location": "class ConservativeFillModel"
+    },
+    {
+      "id": "backtester_weekly_exit_policy_weeklyexittracker",
+      "label": "WeeklyExitTracker",
+      "file_type": "code",
+      "source_file": "backtester/weekly_exit_policy.py",
+      "source_location": "class WeeklyExitTracker"
+    },
+    {
+      "id": "strategies_base_basestrategy",
+      "label": "BaseStrategy",
+      "file_type": "code",
+      "source_file": "strategies/base.py",
+      "source_location": "class BaseStrategy"
+    },
+    {
+      "id": "strategies_base_trade",
+      "label": "Trade",
+      "file_type": "code",
+      "source_file": "strategies/base.py",
+      "source_location": "class Trade"
+    },
+    {
+      "id": "strategies_base_leg",
+      "label": "Leg",
+      "file_type": "code",
+      "source_file": "strategies/base.py",
+      "source_location": "class Leg"
+    },
+    {
+      "id": "backtester_position_sizer_regimescaling",
+      "label": "Regime Scaling System",
+      "file_type": "rationale",
+      "source_file": "backtester/position_sizer.py",
+      "source_location": "REGIME_SCALE dictionary"
+    },
+    {
+      "id": "backtester_entry_engine_entrydecisionengine",
+      "label": "EntryDecisionEngine",
+      "file_type": "code",
+      "source_file": "backtester/entry_engine.py",
+      "source_location": "class EntryDecisionEngine"
+    },
+    {
+      "id": "strategies_expiry_selector_selectoptimalentry",
+      "label": "select_optimal_entry",
+      "file_type": "code",
+      "source_file": "strategies/expiry_selector.py",
+      "source_location": "function select_optimal_entry"
+    },
+    {
+      "id": "pricing_black_scholes_price_option",
+      "label": "price_option",
+      "file_type": "code",
+      "source_file": "pricing/black_scholes.py",
+      "source_location": "function price_option"
+    },
+    {
+      "id": "pricing_black_scholes_iv_from_vix",
+      "label": "iv_from_vix",
+      "file_type": "code",
+      "source_file": "pricing/black_scholes.py",
+      "source_location": "function iv_from_vix"
+    },
+    {
+      "id": "config_backtestconfig",
+      "label": "BacktestConfig",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "dataclass BacktestConfig"
+    },
+    {
+      "id": "config_weeklybacktestconfig",
+      "label": "WeeklyBacktestConfig",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "dataclass WeeklyBacktestConfig"
+    },
+    {
+      "id": "data_market_data_fetcher",
+      "label": "MarketDataFetcher",
+      "file_type": "code",
+      "source_file": "data/market_data.py",
+      "source_location": "class MarketDataFetcher"
+    },
+    {
+      "id": "models_regime_classifier_regimeclassifier",
+      "label": "RegimeClassifier",
+      "file_type": "code",
+      "source_file": "models/regime_classifier.py",
+      "source_location": "class RegimeClassifier"
+    },
+    {
+      "id": "strategies_weekly_strategies_weeklyputcreditspread",
+      "label": "WeeklyPutCreditSpread",
+      "file_type": "code",
+      "source_file": "strategies/weekly_strategies.py",
+      "source_location": "class WeeklyPutCreditSpread"
+    },
+    {
+      "id": "architecture_monthly_weekly_dual_track",
+      "label": "Monthly+Weekly Dual-Track Architecture",
+      "file_type": "rationale",
+      "source_file": "backtester/combined_engine.py",
+      "source_location": "class CombinedBacktestEngine docstring"
+    },
+    {
+      "id": "architecture_mid_session_fills",
+      "label": "Mid-Session Fill Model (11 AM IST Proxy)",
+      "file_type": "rationale",
+      "source_file": "backtester/combined_engine.py",
+      "source_location": "docstring"
+    },
+    {
+      "id": "ml_entry_gating_pattern",
+      "label": "ML Entry Gating Pattern",
+      "file_type": "rationale",
+      "source_file": "models/regime_aware_learner.py",
+      "source_location": "class RegimeAwareLearner"
+    },
+    {
+      "id": "risk_management_dd_killswitch",
+      "label": "Drawdown Kill Switch (Circuit Breaker)",
+      "file_type": "rationale",
+      "source_file": "backtester/production_rules.py",
+      "source_location": "class DrawdownKillSwitch"
+    },
+    {
+      "id": "vix_adaptive_strategy_selection",
+      "label": "VIX-Adaptive Strategy Selection",
+      "file_type": "rationale",
+      "source_file": "strategies/multi_strategy.py",
+      "source_location": "STRATEGY_DISPLAY docstring"
+    },
+    {
+      "id": "weekly_etl_gating",
+      "label": "Expected Tail Loss Gating",
+      "file_type": "rationale",
+      "source_file": "models/weekly_risk_engine.py",
+      "source_location": "docstring"
+    }
+  ],
+  "edges": [
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "backtester_engine_backtestengine",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "backtester_weekly_engine_weeklybacktestengine",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "backtester_position_sizer_positionsizer",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "models_regime_aware_learner_regimeawarelearner",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "strategies_multi_strategy_regimeadaptivestrategy",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "backtester_fills_conservativefillmodel",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "backtester_production_rules_drawdownkillswitch",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "models_weekly_risk_engine_weeklyriskengine",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_engine_backtestengine",
+      "target": "strategies_base_basestrategy",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_engine_backtestengine",
+      "target": "backtester_position_sizer_positionsizer",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_engine_backtestengine",
+      "target": "backtester_entry_engine_entrydecisionengine",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_weekly_engine_weeklybacktestengine",
+      "target": "strategies_weekly_strategies_weeklyputcreditspread",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/weekly_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_weekly_engine_weeklybacktestengine",
+      "target": "backtester_weekly_exit_policy_weeklyexittracker",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/weekly_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_regime_aware_learner_regimeawarelearner",
+      "target": "models_trade_learner_tradelearner",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "models/regime_aware_learner.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_regime_aware_learner_regimeawarelearner",
+      "target": "models_regime_classifier_regimeclassifier",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "models/regime_aware_learner.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_trade_learner_tradelearner",
+      "target": "models_trade_learner_featureextractor",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "models/trade_learner.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_trade_learner_featureextractor",
+      "target": "data_market_data_fetcher",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "models/trade_learner.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_multi_strategy_regimeadaptivestrategy",
+      "target": "strategies_multi_strategy_putcreditspreadstrategy",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "strategies/multi_strategy.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_multi_strategy_regimeadaptivestrategy",
+      "target": "strategies_multi_strategy_ironcondorstrategy",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "strategies/multi_strategy.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_base_basestrategy",
+      "target": "strategies_base_trade",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "strategies/base.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_base_trade",
+      "target": "strategies_base_leg",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "strategies/base.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_trade_monitor_tradeexitengine",
+      "target": "models_trade_learner_featureextractor",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "models/trade_monitor.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_weekly_risk_engine_weeklyriskengine",
+      "target": "models_weekly_risk_engine_tailriskscorer",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "models/weekly_risk_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_position_sizer_positionsizer",
+      "target": "backtester_position_sizer_regimescaling",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtester/position_sizer.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "architecture_monthly_weekly_dual_track",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_engine_backtestengine",
+      "target": "backtester_fills_conservativefillmodel",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_multi_strategy_regimeadaptivestrategy",
+      "target": "vix_adaptive_strategy_selection",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "strategies/multi_strategy.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_production_rules_drawdownkillswitch",
+      "target": "risk_management_dd_killswitch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtester/production_rules.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_weekly_risk_engine_weeklyriskengine",
+      "target": "weekly_etl_gating",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "models/weekly_risk_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "pricing_black_scholes_iv_from_vix",
+      "target": "pricing_black_scholes_price_option",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "pricing/black_scholes.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "architecture_mid_session_fills",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "models_regime_aware_learner_regimeawarelearner",
+      "target": "ml_entry_gating_pattern",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "models/regime_aware_learner.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "config_backtestconfig",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "config_weeklybacktestconfig",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "backtester_combined_engine_combinedbacktestengine",
+      "target": "strategies_expiry_selector_selectoptimalentry",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py",
+      "weight": 1.0
+    },
+    {
+      "source": "strategies_expiry_selector_selectoptimalentry",
+      "target": "pricing_black_scholes_price_option",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "strategies/expiry_selector.py",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "entry_decision_subsystem",
+      "label": "Entry Decision Subsystem",
+      "nodes": [
+        "models_regime_aware_learner_regimeawarelearner",
+        "backtester_position_sizer_positionsizer",
+        "models_weekly_risk_engine_weeklyriskengine",
+        "strategies_expiry_selector_selectoptimalentry"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py"
+    },
+    {
+      "id": "risk_management_subsystem",
+      "label": "Risk Management Subsystem",
+      "nodes": [
+        "backtester_production_rules_drawdownkillswitch",
+        "models_weekly_risk_engine_tailriskscorer",
+        "backtester_weekly_exit_policy_weeklyexittracker",
+        "models_trade_monitor_tradeexitengine"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "backtester/combined_engine.py"
+    },
+    {
+      "id": "strategy_routing_subsystem",
+      "label": "Strategy Routing Subsystem",
+      "nodes": [
+        "strategies_multi_strategy_regimeadaptivestrategy",
+        "models_regime_classifier_regimeclassifier",
+        "backtester_position_sizer_positionsizer",
+        "vix_adaptive_strategy_selection"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "strategies/multi_strategy.py"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

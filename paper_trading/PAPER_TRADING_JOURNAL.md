@@ -1,10 +1,10 @@
-# Paper Trading Journal — Phase 4 Baseline (Run #60)
+# Paper Trading Journal — Phase 1 Validation (Run #62)
 
-**Account Setup Date**: [To be filled]  
-**Initial Capital**: ₹15,00,000  
-**Strategy**: Weekly PCS/IC (3-day holds) + Monthly (paused)  
-**Baseline Model**: Run #60 (12.07% CAGR on 17-year backtest)  
-**Target**: Validate 78% weekly win rate, capture ₹30–50k profit over 6 months
+**Account Setup Date**: 2026-08-29 (14:26 UTC / 19:56 IST)  
+**Initial Capital**: ₹25,00,000  
+**Strategy**: Weekly IC/PCS (3-day holds) + Monthly (paused)  
+**Baseline Model**: Run #62 (11.98% CAGR on 17-year backtest)  
+**Target**: Validate ≥75% weekly win rate, capture ₹25k+ avg profit, 15% max DD over 6 months
 
 ---
 
@@ -12,14 +12,14 @@
 
 | Parameter | Value |
 |-----------|-------|
-| **Initial Capital** | ₹15,00,000 |
-| **Allocation: Weekly** | ₹12,00,000 (80%) |
-| **Allocation: Monthly** | ₹0 (paused, 0%) |
-| **Reserve/Cushion** | ₹3,00,000 (20%) |
-| **Margin per 65-lot trade** | ~₹5,00,000 (approx) |
-| **Max concurrent trades** | 2–3 positions |
+| **Initial Capital** | ₹25,00,000 |
+| **Allocation: Weekly** | ₹12,50,000 (50%) |
+| **Allocation: Monthly** | ₹12,50,000 (50% reserved, paused) |
+| **Reserve/Cushion** | ₹0 (100% deployed across both) |
+| **Margin per 65-lot trade** | ~₹4–5,00,000 (approx) |
+| **Max concurrent trades** | 1–2 positions |
 | **Max single trade loss** | ₹50,000 (cap) |
-| **Account DD stop-loss** | 15% (₹2,25,000) |
+| **Account DD stop-loss** | 15% (₹3,75,000) |
 
 ---
 
@@ -55,7 +55,7 @@
 
 ## Monthly Checkpoint (Review Every 30 Days)
 
-### Checkpoint 1: [Date TBD]
+### Checkpoint 1: 2026-09-29 (30 days from Aug 29)
 - Trades taken: [ ]
 - Win rate: [ ]%
 - Total P&L: ₹[ ]
@@ -63,12 +63,13 @@
 - Largest loss: ₹[ ]
 - Avg hold days: [ ]
 - Status: [ ] On track [ ] Needs review [ ] Pause
+- Expected: 1–2 trades (low frequency in Sep, holiday season)
 
-**Notes**: 
+**Notes**: First signal expected Mon Sep 8, 11-13 IST (IC setup ~23500/24300, expiry Sep 11)
 
 ---
 
-### Checkpoint 2: [Date TBD]
+### Checkpoint 2: 2026-10-29 (60 days, final go/no-go)
 - Trades taken: [ ]
 - Win rate: [ ]%
 - Total P&L: ₹[ ]
@@ -76,8 +77,9 @@
 - Largest loss: ₹[ ]
 - Avg hold days: [ ]
 - Status: [ ] On track [ ] Needs review [ ] Pause
+- Target: ≥2–3 trades, ≥75% win rate, max DD <15%
 
-**Notes**: 
+**Notes**: Go/no-go decision to Phase 2 (add monthly track) or extend validation 
 
 ---
 
