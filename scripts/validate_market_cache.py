@@ -336,7 +336,6 @@ def build_dataset_frame(cache_dir: Path, start: date, end: date) -> pd.DataFrame
 
     # Read from the requested cache dir. Cache-only mode never writes.
     md.CACHE_DIR = Path(cache_dir)
-    md._cached_parquet_paths.cache_clear()
     return md.MarketDataFetcher(start, end).build_combined_dataset()
 
 

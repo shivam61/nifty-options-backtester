@@ -615,7 +615,7 @@ def _selftest() -> int:
 
 def run_live(args: argparse.Namespace) -> int:
     try:
-        frame, raw = build_yahoo_dataset(date(2000, 1, 1), date.today())
+        frame, raw = build_yahoo_dataset(date(2009, 1, 1), date.today())
     except McpError as exc:
         print(f"ERROR (cache): {exc}", file=sys.stderr)
         return 2

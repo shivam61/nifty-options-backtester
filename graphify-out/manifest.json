@@ -76,8 +76,8 @@
     "hash": "a949e82fa021f1dfb979bd23abf648f7"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/validate_market_cache.py": {
-    "mtime": 1791914470.5216725,
-    "hash": "6f15ce5c73f1bd8b04c452648a9b8d7f"
+    "mtime": 1791915140.0668166,
+    "hash": "8625e0955c9483e772482609016df9ef"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/monthly_diagnostic_audit.py": {
     "mtime": 1791913815.8716686,
@@ -96,8 +96,8 @@
     "hash": "7153f3a81052773cea2eca24fd48ab83"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/check_nse_mcp.py": {
-    "mtime": 1791913815.8686683,
-    "hash": "e37d80442f2f859201afb438a30b7d3e"
+    "mtime": 1791915173.9938624,
+    "hash": "817d0c2d780eb5f18eda5055339e054d"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/reconstruct_fpi_from_tradewise_zips.py": {
     "mtime": 1791913815.8726685,
