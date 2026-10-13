@@ -1,850 +1,854 @@
 {
-  "/home/shivamguptanit/github/nifty-options-backtester/main.py": {
-    "mtime": 1787505909.6930814,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/main.py": {
+    "mtime": 1791913815.8246648,
     "hash": "11e2e231fb06728278ce84dfd4e14b24"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/main_weekly.py": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/main_weekly.py": {
+    "mtime": 1791913815.827665,
     "hash": "37d9a1e75b51f0439acdde81828f21b8"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/main_combined.py": {
-    "mtime": 1787490639.9417858,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/main_combined.py": {
+    "mtime": 1791913815.827665,
     "hash": "b54ccea1758f9984e26c06987fecfac4"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/training_config.py": {
-    "mtime": 1778607221.824322,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/training_config.py": {
+    "mtime": 1791913815.929673,
     "hash": "6e6396346080958e7ea78461114404fc"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/config.py": {
-    "mtime": 1788022108.1675537,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/config.py": {
+    "mtime": 1791913814.383555,
     "hash": "cf61df6d6df42eac5225ce1ed30a1209"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/signal_validator.py": {
-    "mtime": 1788022454.2195756,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/signal_validator.py": {
+    "mtime": 1791913814.3755543,
     "hash": "ebc530d1af473ee7ffc5f3d4197083c1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/server.py": {
-    "mtime": 1788014655.7308724,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/server.py": {
+    "mtime": 1791913814.373554,
     "hash": "7415b8b3b2355267adb2cc9e4ba6406f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/journal.py": {
-    "mtime": 1788014564.7730896,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/journal.py": {
+    "mtime": 1791913814.373554,
     "hash": "1a89772a4e8b058b753632dacf45dd2d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/signal_wrapper.py": {
-    "mtime": 1788014593.9840198,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/signal_wrapper.py": {
+    "mtime": 1791913814.3755543,
     "hash": "93cdb15d44c91f092dcc3e401b409114"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/__init__.py": {
-    "mtime": 1788014657.7848675,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/__init__.py": {
+    "mtime": 1791913814.373554,
     "hash": "b9f56058c979bf2410cadd136bac70f1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/examples/fyers_usage_examples.py": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/examples/fyers_usage_examples.py": {
+    "mtime": 1791913814.8465903,
     "hash": "2c4f7983c2e91c148056cba427bbe616"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/utils/__init__.py": {
-    "mtime": 1778607221.824322,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/utils/__init__.py": {
+    "mtime": 1791913815.929673,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/pricing/gap_risk.py": {
-    "mtime": 1778607221.818501,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/pricing/gap_risk.py": {
+    "mtime": 1791913815.8626678,
     "hash": "b62bb06f7e266899816c9424289cf100"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/pricing/black_scholes.py": {
-    "mtime": 1778607221.818501,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/pricing/black_scholes.py": {
+    "mtime": 1791913815.8626678,
     "hash": "73f5c64ecc2d5aff267a3451a315adc7"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/pricing/__init__.py": {
-    "mtime": 1778607221.8173726,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/pricing/__init__.py": {
+    "mtime": 1791913815.8626678,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/monthly_engine_experiments.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/monthly_engine_experiments.py": {
+    "mtime": 1791913815.8716686,
     "hash": "425639208c9be0ab8bdac4beeeed2ecc"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/backfill_institutional_flows.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/backfill_institutional_flows.py": {
+    "mtime": 1791913815.8666682,
     "hash": "9d43eb0615106d89a2ee4f74dacf2cc7"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/slippage_stress_test.py": {
-    "mtime": 1787493708.993187,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/slippage_stress_test.py": {
+    "mtime": 1791913815.8756688,
     "hash": "c4e0a965d840cb728f8fc60d4930d63c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_token_warning.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/test_token_warning.py": {
+    "mtime": 1791913815.8796692,
     "hash": "a949e82fa021f1dfb979bd23abf648f7"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/monthly_diagnostic_audit.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/validate_market_cache.py": {
+    "mtime": 1791914470.5216725,
+    "hash": "6f15ce5c73f1bd8b04c452648a9b8d7f"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/monthly_diagnostic_audit.py": {
+    "mtime": 1791913815.8716686,
     "hash": "50f0bc3ff2fc0d84c313088a776b8c98"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/reconstruct_tradewise_month.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/reconstruct_tradewise_month.py": {
+    "mtime": 1791913815.8726685,
     "hash": "aaab36e07bfaf002eb247df53d29a44b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/refresh_fyers_token.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/refresh_fyers_token.py": {
+    "mtime": 1791913815.8736687,
     "hash": "0a6a6dc0870099db34cc8e67700ae5e4"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/update_daily_institutional_flows.py": {
-    "mtime": 1778607221.8203728,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/update_daily_institutional_flows.py": {
+    "mtime": 1791913815.8796692,
     "hash": "7153f3a81052773cea2eca24fd48ab83"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/check_nse_mcp.py": {
-    "mtime": 1791912091.536949,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/check_nse_mcp.py": {
+    "mtime": 1791913815.8686683,
     "hash": "e37d80442f2f859201afb438a30b7d3e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/reconstruct_fpi_from_tradewise_zips.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/reconstruct_fpi_from_tradewise_zips.py": {
+    "mtime": 1791913815.8726685,
     "hash": "1e248c42fdca5f166a138e0ef8c0824f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/analyze_cdsl_zip_reconstruction.py": {
-    "mtime": 1778607221.8186805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/analyze_cdsl_zip_reconstruction.py": {
+    "mtime": 1791913815.8666682,
     "hash": "4ad7a6a80a3cab164af82b4f89b5abe6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/diagnose_live_prices.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/diagnose_live_prices.py": {
+    "mtime": 1791913815.8686683,
     "hash": "d03f89b69abc644b22a24512cd162ef9"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/generate_fyers_token.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/generate_fyers_token.py": {
+    "mtime": 1791913815.8696682,
     "hash": "2a84f75f28f555c3f3743b36e88f5ef1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/strategy_ablation.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/strategy_ablation.py": {
+    "mtime": 1791913815.876669,
     "hash": "6e7dc4da743fd87ba05fd1984cb67a66"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/run_data_quality_checks.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/run_data_quality_checks.py": {
+    "mtime": 1791913815.8736687,
     "hash": "6987ce638f7aa912cebc3e5238eb2b20"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/agent_memory.py": {
-    "mtime": 1778648947.5607107,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/agent_memory.py": {
+    "mtime": 1791913815.8666682,
     "hash": "c17907220a093ddd55e63f333bb160ec"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_fyers_live.py": {
-    "mtime": 1788021104.4163895,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/test_fyers_live.py": {
+    "mtime": 1791913815.8796692,
     "hash": "0ab2f0559a60805b9af700c56f1efb35"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/check_fyers_token.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/check_fyers_token.py": {
+    "mtime": 1791913815.8676682,
     "hash": "5eaac376c45c0c7db1840f078bc52edc"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/complete_token_generation.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/complete_token_generation.py": {
+    "mtime": 1791913815.8686683,
     "hash": "dc5a453f01a49754c26636ee4ecd241f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_fyers_credentials.py": {
-    "mtime": 1788021159.606228,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/test_fyers_credentials.py": {
+    "mtime": 1791913815.8776689,
     "hash": "bde58ad15eb46fef9acded7609480f72"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/discover_sources.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/discover_sources.py": {
+    "mtime": 1791913815.8696682,
     "hash": "673f16cebd4b13bdd225e3c18c920974"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/test_fyers_data.py": {
-    "mtime": 1778607221.8193727,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/test_fyers_data.py": {
+    "mtime": 1791913815.878669,
     "hash": "0923c3f745b777d5d07ea66b6b904494"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/get_fyers_oauth_token.py": {
-    "mtime": 1788021719.758645,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/get_fyers_oauth_token.py": {
+    "mtime": 1791913815.8706684,
     "hash": "dfd3f9825a7d02b6127dcbc346576f1f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/build_sector_proxy.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/build_sector_proxy.py": {
+    "mtime": 1791913815.8676682,
     "hash": "3ac04fd650bc3cfaca2916080570b3d3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/scripts/generate_token_from_code.py": {
-    "mtime": 1778607221.8189354,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/generate_token_from_code.py": {
+    "mtime": 1791913815.8696682,
     "hash": "e2f72a7a0bc82764da5380112288d60d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/analysis/monthly_diagnostics.py": {
-    "mtime": 1778607219.0544748,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/analysis/monthly_diagnostics.py": {
+    "mtime": 1791913814.3645535,
     "hash": "f2df38561ea91131ea5cb7bee3c41b70"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/analysis/reporter.py": {
-    "mtime": 1778607219.0544748,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/analysis/reporter.py": {
+    "mtime": 1791913814.3645535,
     "hash": "7193b4140632cb6a48983c516c17a477"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/analysis/__init__.py": {
-    "mtime": 1778607219.0533018,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/analysis/__init__.py": {
+    "mtime": 1791913814.3645535,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/live_data_fetcher.py": {
-    "mtime": 1788015507.702838,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/live_data_fetcher.py": {
+    "mtime": 1791913814.3945556,
     "hash": "fe1695f5dbf10c49e0eeedaab5c46780"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/market_data.py": {
-    "mtime": 1787504104.863994,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/market_data.py": {
+    "mtime": 1791913814.3945556,
     "hash": "0373ae02bc306a3a505ca970e9d50fac"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/news_sentiment.py": {
-    "mtime": 1778607219.0558276,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/news_sentiment.py": {
+    "mtime": 1791913814.3945556,
     "hash": "9b174b5ed3e8b9cc9bf78cfe190ec5ca"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/expiry_calendar.py": {
-    "mtime": 1778607219.0558276,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/expiry_calendar.py": {
+    "mtime": 1791913814.3885553,
     "hash": "8875a25b8f47284737073cf5838004a1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/fyers_live_data.py": {
-    "mtime": 1778607219.0558276,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/fyers_live_data.py": {
+    "mtime": 1791913814.3885553,
     "hash": "b3d39d61a2d3b1e5368bd33718154559"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/rate_limiter.py": {
-    "mtime": 1788022223.330227,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/rate_limiter.py": {
+    "mtime": 1791913814.8255887,
     "hash": "53fdce56b59389aec5ef36efeeb9f003"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/data_validator.py": {
-    "mtime": 1788022433.9916327,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/data_validator.py": {
+    "mtime": 1791913814.386555,
     "hash": "556af391976ff58a7c5fd5d8e54d0d01"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/option_chain.py": {
-    "mtime": 1778607219.0558276,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/option_chain.py": {
+    "mtime": 1791913814.3955557,
     "hash": "0a2f0632972b7835097f4b21eb21e1fc"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/data/__init__.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/__init__.py": {
+    "mtime": 1791913814.383555,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/signals/__init__.py": {
-    "mtime": 1778607221.8203728,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/signals/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/signals/generator.py": {
-    "mtime": 1778607221.8212934,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/signals/generator.py": {
+    "mtime": 1791913815.8826694,
     "hash": "75d25c8759753743a7a7061fd11594bd"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/__init__.py": {
-    "mtime": 1778607221.8212934,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "7cde304558bbc472a626d79fda2e19db"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/extract/adapters.py": {
-    "mtime": 1778607221.8216057,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/extract/adapters.py": {
+    "mtime": 1791913815.8826694,
     "hash": "44018815620820a75d2f5248638fb62a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/extract/__init__.py": {
-    "mtime": 1778607221.8215451,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/extract/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "dc4651d0c074f4efe620a91a6cbeee7d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/normalize/tradewise_reconstruction.py": {
-    "mtime": 1778607221.821753,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/normalize/tradewise_reconstruction.py": {
+    "mtime": 1791913815.8836694,
     "hash": "c8ac2748fbbfd47d71a804a3379121e9"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/normalize/__init__.py": {
-    "mtime": 1778607221.8216057,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/normalize/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "d095654fd321d981425632504b2a244c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/normalize/schema.py": {
-    "mtime": 1778607221.821753,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/normalize/schema.py": {
+    "mtime": 1791913815.8836694,
     "hash": "3618a041992c57a0f5d05b9a302f04a3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/io_utils.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/io_utils.py": {
+    "mtime": 1791913815.8866696,
     "hash": "f3dd1707c303ff4a73559d8ae4c2d393"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/config.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/config.py": {
+    "mtime": 1791913815.8856695,
     "hash": "6e1d6d3091db2007e60ec837bebc6c5c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/http.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/http.py": {
+    "mtime": 1791913815.8866696,
     "hash": "3c2b75bc98b8ff3303c13f38c357e81e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/checkpoints.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/checkpoints.py": {
+    "mtime": 1791913815.8856695,
     "hash": "28f5ba2872388a27ed919f14a231e07f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/logging_utils.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/logging_utils.py": {
+    "mtime": 1791913815.8866696,
     "hash": "34cd0bf40412a94f2459bc05bce3f3cd"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/dates.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/dates.py": {
+    "mtime": 1791913815.8856695,
     "hash": "a5555b44075e07a83d6794b2c70cc92c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/xlsx_stream.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/xlsx_stream.py": {
+    "mtime": 1791913815.8866696,
     "hash": "4623448283efa50360363307174f1b34"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/utils/__init__.py": {
-    "mtime": 1778607221.8219051,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/utils/__init__.py": {
+    "mtime": 1791913815.8856695,
     "hash": "1dedeab52130d9e1ee6cbe9a2267d788"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/discover/base.py": {
-    "mtime": 1778607221.8214648,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/discover/base.py": {
+    "mtime": 1791913815.8826694,
     "hash": "894dd1fffe43d89e2230ec8a9e96e84d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/discover/inventory.py": {
-    "mtime": 1778607221.8214648,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/discover/inventory.py": {
+    "mtime": 1791913815.8826694,
     "hash": "cd7c57567ec168116cd404d8f4edfc0b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/discover/__init__.py": {
-    "mtime": 1778607221.8214283,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/discover/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "434176cd3197812fefd4be27592a9390"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/validate/__init__.py": {
-    "mtime": 1778607221.8220127,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/validate/__init__.py": {
+    "mtime": 1791913815.8876698,
     "hash": "8453011754431e36dc3e9b89f098b436"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/validate/qa.py": {
-    "mtime": 1778607221.8222647,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/validate/qa.py": {
+    "mtime": 1791913815.8876698,
     "hash": "28a6c2ced60503ae54844f6120a9413c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/tests/test_tradewise_reconstruction.py": {
-    "mtime": 1778607221.8219051,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/tests/test_tradewise_reconstruction.py": {
+    "mtime": 1791913815.8856695,
     "hash": "b8682cac512594e554c9a6edc1c240c4"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/tests/test_schema_and_quality.py": {
-    "mtime": 1778607221.8219051,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/tests/test_schema_and_quality.py": {
+    "mtime": 1791913815.8856695,
     "hash": "68b84e6b909f168990f77c65b38b7697"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/tests/__init__.py": {
-    "mtime": 1778607221.821753,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/tests/__init__.py": {
+    "mtime": 1791913815.8836694,
     "hash": "4783400e924f03b8f7ec0d2dae9d6dbf"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/enrich/sector_proxy.py": {
-    "mtime": 1778607221.8215451,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/enrich/sector_proxy.py": {
+    "mtime": 1791913815.8826694,
     "hash": "4d69e332cb0564330075350076a2e6b8"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/src/enrich/__init__.py": {
-    "mtime": 1778607221.8214648,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/src/enrich/__init__.py": {
+    "mtime": 1791913815.8826694,
     "hash": "676db75ee06f7164ec5de2fce4e050bb"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/rolling_simulator.py": {
-    "mtime": 1787474740.4098675,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/rolling_simulator.py": {
+    "mtime": 1791913814.3825548,
     "hash": "d4f3f02e3bee1eec4444d2354157ce3f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/position_sizer.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/position_sizer.py": {
+    "mtime": 1791913814.3795545,
     "hash": "b4a4132c2a47a747a75ce676cca1e27d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/weekly_exit_policy.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/weekly_exit_policy.py": {
+    "mtime": 1791913814.383555,
     "hash": "4c83032bfea52bdde818e35ebab129f6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/fills.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/fills.py": {
+    "mtime": 1791913814.3785543,
     "hash": "6f5c2f54da7cd55a0461cecd2ecce241"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/production_rules.py": {
-    "mtime": 1787421607.6302233,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/production_rules.py": {
+    "mtime": 1791913814.3805547,
     "hash": "aa2d192650225b0fc697e6c0424d8075"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/engine.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/engine.py": {
+    "mtime": 1791913814.3785543,
     "hash": "a97f68c2f0ade17b10307948ba720893"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/weekly_engine.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/weekly_engine.py": {
+    "mtime": 1791913814.383555,
     "hash": "1ef0f513735def93b5ef73fe01645bf9"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/weekly_simulator.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/weekly_simulator.py": {
+    "mtime": 1791913814.383555,
     "hash": "1af69603ed8ef9eea75dbf076fb0269b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/walk_forward.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/walk_forward.py": {
+    "mtime": 1791913814.3825548,
     "hash": "f4a09f0e4ef8c7e87fcc39c1f7eb5126"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/combined_engine.py": {
-    "mtime": 1788012654.798636,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/combined_engine.py": {
+    "mtime": 1791913814.3765543,
     "hash": "a4757f9074e76773a4f2952895f256ae"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/entry_engine.py": {
-    "mtime": 1778607219.0546975,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/entry_engine.py": {
+    "mtime": 1791913814.3785543,
     "hash": "4b2966606d066f7db3325077e2253d17"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtester/__init__.py": {
-    "mtime": 1778607219.0544748,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/backtester/__init__.py": {
+    "mtime": 1791913814.3755543,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/__init__.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/__init__.py": {
+    "mtime": 1791913815.9276729,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/comparison/compare_exit_strategies.py": {
-    "mtime": 1778607221.8237996,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/comparison/compare_exit_strategies.py": {
+    "mtime": 1791913815.9286728,
     "hash": "e9f8856d2553d7cba8b1dfbf76ff8c83"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/comparison/compare_monthly_exit_strategies.py": {
-    "mtime": 1778607221.8237996,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/comparison/compare_monthly_exit_strategies.py": {
+    "mtime": 1791913815.9286728,
     "hash": "2c1239cd3449aaa08a6040d76c43c138"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/comparison/compare_exit_priority.py": {
-    "mtime": 1778607221.8237996,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/comparison/compare_exit_priority.py": {
+    "mtime": 1791913815.9286728,
     "hash": "c63f64e29c47c04a9375771100a38599"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/comparison/backtest_hybrid_exit.py": {
-    "mtime": 1778607221.8237996,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/comparison/backtest_hybrid_exit.py": {
+    "mtime": 1791913815.9276729,
     "hash": "b05a10e81186f48b7e69752a69613172"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/comparison/__init__.py": {
-    "mtime": 1778607221.8237588,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/comparison/__init__.py": {
+    "mtime": 1791913815.9276729,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/debug/test_circuit_breaker_detailed.py": {
-    "mtime": 1778607221.824135,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/debug/test_circuit_breaker_detailed.py": {
+    "mtime": 1791913815.929673,
     "hash": "d0dd953c2d5affb13a5d54d901d36b21"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/debug/debug_exit_logic.py": {
-    "mtime": 1778607221.824135,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/debug/debug_exit_logic.py": {
+    "mtime": 1791913815.9286728,
     "hash": "54c039e34373ae48e56db2b33a5abf9d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/debug/test_circuit_breaker_scenarios.py": {
-    "mtime": 1778607221.824135,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/debug/test_circuit_breaker_scenarios.py": {
+    "mtime": 1791913815.929673,
     "hash": "346640b199eff16a1e2a3db953106f32"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/debug/__init__.py": {
-    "mtime": 1778607221.8237996,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/debug/__init__.py": {
+    "mtime": 1791913815.9286728,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/validation/verify_max_profit_implementation.py": {
-    "mtime": 1778607221.824322,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/validation/verify_max_profit_implementation.py": {
+    "mtime": 1791913815.929673,
     "hash": "aba59e45e1db7b73b0b1feaecd1c9bd8"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/validation/main_validate.py": {
-    "mtime": 1778607221.824322,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/validation/main_validate.py": {
+    "mtime": 1791913815.929673,
     "hash": "5086722d4ab79c3b6243716351f30b3f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/validation/__init__.py": {
-    "mtime": 1778607221.824135,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/validation/__init__.py": {
+    "mtime": 1791913815.929673,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/conftest.py": {
-    "mtime": 1787502493.325081,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/conftest.py": {
+    "mtime": 1791913815.9026709,
     "hash": "9480e9f228d0a1541326525ce2ec8bfc"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_monthly_engine_improvements.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_monthly_engine_improvements.py": {
+    "mtime": 1791913815.9216723,
     "hash": "a861e5dfaa4da79e0d08bfa53881886a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_api_endpoints.py": {
-    "mtime": 1788015462.9549448,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_validate_market_cache.py": {
+    "mtime": 1791914485.2587981,
+    "hash": "010e6318deb86b58fea06a3ec59a3015"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_api_endpoints.py": {
+    "mtime": 1791913815.9066713,
     "hash": "75aa645af8cbce76c5d9da3c0243f0b7"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_feature_store.py": {
-    "mtime": 1787466160.6766887,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_feature_store.py": {
+    "mtime": 1791913815.9156718,
     "hash": "e866038b4f4f242ba0bfbffb8582e713"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_base.py": {
-    "mtime": 1787463413.3511593,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_base.py": {
+    "mtime": 1791913815.9086714,
     "hash": "1629422b49fd2aee41c94ea12a5b9a2f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_models.py": {
-    "mtime": 1787426145.2776346,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_models.py": {
+    "mtime": 1791913815.9206722,
     "hash": "7efa077e2d11e30698962f3d7c35e71e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_fixes.py": {
-    "mtime": 1787503429.4931724,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_fixes.py": {
+    "mtime": 1791913815.917672,
     "hash": "65551ec9b41b4bc2de1e8dde3804a20c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_multi_expiry.py": {
-    "mtime": 1787502150.4621847,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_multi_expiry.py": {
+    "mtime": 1791913815.9256725,
     "hash": "2022280ba888dac8f172e3150da0bd2c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_check_nse_mcp.py": {
-    "mtime": 1791912091.5378492,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_check_nse_mcp.py": {
+    "mtime": 1791913815.9096713,
     "hash": "d15a71326c3060419de299ce20dcbe29"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_strategies.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_strategies.py": {
+    "mtime": 1791913815.9266727,
     "hash": "be1a3443d05bb1454154da04bbd90159"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_black_scholes.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_black_scholes.py": {
+    "mtime": 1791913815.9096713,
     "hash": "b6b776c58cb79870d119edf67225ab1f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_data.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_data.py": {
+    "mtime": 1791913815.9106715,
     "hash": "a359f54512b923ab0b138de87301a5d2"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_position_sizer.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_position_sizer.py": {
+    "mtime": 1791913815.9266727,
     "hash": "d6e4156a8c239fa2d57cf0285ce2f4a2"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_weekly_stop_loss_realism.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_weekly_stop_loss_realism.py": {
+    "mtime": 1791913815.9276729,
     "hash": "4564291f3d2003b77f1a3a849a979719"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/__init__.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/__init__.py": {
+    "mtime": 1791913815.8966703,
     "hash": "68b329da9893e34099c7d8ad5cb9c940"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_weekly_exit_policy.py": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_weekly_exit_policy.py": {
+    "mtime": 1791913815.9276729,
     "hash": "998893bd7222073f7585862db80d68f8"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_expiry_selector_filters.py": {
-    "mtime": 1787502022.4012706,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_expiry_selector_filters.py": {
+    "mtime": 1791913815.9116716,
     "hash": "4952882b030682eb00b290fb2019f090"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_backtest_integrity.py": {
-    "mtime": 1787502048.3846886,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_backtest_integrity.py": {
+    "mtime": 1791913815.9076712,
     "hash": "37ec7355b438da36f063205e0ae551c5"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/layered_evolve.py": {
-    "mtime": 1787475651.0889242,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/layered_evolve.py": {
+    "mtime": 1791913815.8286653,
     "hash": "3c400585af22ee69fda3f4fc78f7829f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/trade_learner.py": {
-    "mtime": 1787487046.0442257,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/trade_learner.py": {
+    "mtime": 1791913815.838666,
     "hash": "c3911efc0afeb7b107b08b42e8393761"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/model_validator.py": {
-    "mtime": 1787486704.5965853,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/model_validator.py": {
+    "mtime": 1791913815.8306653,
     "hash": "448a3646516caf7074d4303d380d4a22"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/cache_utils.py": {
-    "mtime": 1778607221.817188,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/cache_utils.py": {
+    "mtime": 1791913815.827665,
     "hash": "b683abade1ed8da13c68291e79c84d08"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/weekly_entry_learner.py": {
-    "mtime": 1787487083.057764,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/weekly_entry_learner.py": {
+    "mtime": 1791913815.8456664,
     "hash": "22449392099ba2c681e492c96dfbab67"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/trade_monitor.py": {
-    "mtime": 1787487051.2707255,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/trade_monitor.py": {
+    "mtime": 1791913815.8426664,
     "hash": "ce68ca79740d45350ff97d7ece461ac1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/regime_classifier.py": {
-    "mtime": 1787487054.8340662,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/regime_classifier.py": {
+    "mtime": 1791913815.8336656,
     "hash": "66a2f432e80e2fffa798f52604fc137b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/regime_aware_learner.py": {
-    "mtime": 1778607221.817188,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/regime_aware_learner.py": {
+    "mtime": 1791913815.8316655,
     "hash": "73399a1fbda9edaefad1ef8444eca4b3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/trade_learner_v1.py": {
-    "mtime": 1778607221.817188,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/trade_learner_v1.py": {
+    "mtime": 1791913815.840666,
     "hash": "7234e0df5418f89169353e8286c2ca46"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/weekly_risk_engine.py": {
-    "mtime": 1787505933.1670418,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/weekly_risk_engine.py": {
+    "mtime": 1791913815.8466666,
     "hash": "4ddcfb6d7e3ec6861f3898e6842558d7"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/__init__.py": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/__init__.py": {
+    "mtime": 1791913815.827665,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/models/strategy_evolver.py": {
-    "mtime": 1778607221.817188,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/models/strategy_evolver.py": {
+    "mtime": 1791913815.8346658,
     "hash": "5446b96f0898aa6da66f3e1f6c0956ec"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/iron_condor_v2.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/iron_condor_v2.py": {
+    "mtime": 1791913815.88967,
     "hash": "5754addaa346aeaeff43d7038fc27f8d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/weekly_strategies.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/weekly_strategies.py": {
+    "mtime": 1791913815.8966703,
     "hash": "810178e6a0783cdd1bbed26f54fc8210"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/iron_condor.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/iron_condor.py": {
+    "mtime": 1791913815.88967,
     "hash": "ea7989f9f3d5d52104c207c9f831206b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/base.py": {
-    "mtime": 1787463413.3511593,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/base.py": {
+    "mtime": 1791913815.88967,
     "hash": "dbca68fcb916499acdd5ab83c374181c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/multi_strategy.py": {
-    "mtime": 1779101632.501961,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/multi_strategy.py": {
+    "mtime": 1791913815.8966703,
     "hash": "8734e60e45394d6895494181d0ec0f5e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/expiry_selector.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/expiry_selector.py": {
+    "mtime": 1791913815.88967,
     "hash": "15fcd117ab99e29d18d0f1b3f4d92b4f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/universe.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/universe.py": {
+    "mtime": 1791913815.8966703,
     "hash": "b1026159620aea7fad15a90f56ff1658"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/__init__.py": {
-    "mtime": 1778607221.8222647,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/__init__.py": {
+    "mtime": 1791913815.8876698,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/strategies/max_profit_booking.py": {
-    "mtime": 1778607221.8223314,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/strategies/max_profit_booking.py": {
+    "mtime": 1791913815.89067,
     "hash": "7e7d85f5f3a23b59049164bc47da5e6a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/exits/__init__.py": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/exits/__init__.py": {
+    "mtime": 1791913814.8475902,
     "hash": "1c88c2bbd1a92511af13fb4bfcb1794d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/AGENTS.md": {
-    "mtime": 1787463413.3511593,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/AGENTS.md": {
+    "mtime": 1791913814.3525524,
     "hash": "df1c27eccb5a170be80598aca376abad"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/PHASE_4_IMPLEMENTATION.md": {
-    "mtime": 1787983866.2822933,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/PHASE_4_IMPLEMENTATION.md": {
+    "mtime": 1791913814.360553,
     "hash": "5c4cbb20c648e4a1a39c6ae35f29cf0f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/API_GUIDE.md": {
-    "mtime": 1788014742.3886652,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/API_GUIDE.md": {
+    "mtime": 1791913814.3535526,
     "hash": "fc82e9d3c82039aeb244614e35cd3226"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/backtest_report.html": {
-    "mtime": 1779084239.6600108,
-    "hash": "3be22db255a6811e847beb569791d2ff"
-  },
-  "/home/shivamguptanit/github/nifty-options-backtester/BACKTEST_CHANGELOG.md": {
-    "mtime": 1788622458.7142658,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/BACKTEST_CHANGELOG.md": {
+    "mtime": 1791913814.3535526,
     "hash": "47484d44c08f12d8e372019c7522b80a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/README.md": {
-    "mtime": 1787983434.4161186,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/README.md": {
+    "mtime": 1791913814.3645535,
     "hash": "502c668470f8d73459f78c2dd20570d5"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/CLAUDE.md": {
-    "mtime": 1787506697.8627803,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/CLAUDE.md": {
+    "mtime": 1791913814.3545525,
     "hash": "0862f20f3681e22844f8776dd3ab5286"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/requirements.txt": {
-    "mtime": 1778607221.8186805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/requirements.txt": {
+    "mtime": 1791913815.864668,
     "hash": "53aa22f72cb6521e7720364f32abb924"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/README.md": {
-    "mtime": 1788014800.4635265,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/README.md": {
+    "mtime": 1791913814.373554,
     "hash": "e70f81a6e5c3c0f240e1dce4560a0c82"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/api/requirements.txt": {
-    "mtime": 1788014802.8375208,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/api/requirements.txt": {
+    "mtime": 1791913814.373554,
     "hash": "b519c0d46551092edcea5a3316019642"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/reports/sector_proxy_build_report.md": {
-    "mtime": 1778607221.8186805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/reports/sector_proxy_build_report.md": {
+    "mtime": 1791913815.864668,
     "hash": "5375c09b5e097f00c733257f910437fa"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/reports/cdsl_zip_reconstruction_report.md": {
-    "mtime": 1778607221.818501,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/reports/cdsl_zip_reconstruction_report.md": {
+    "mtime": 1791913815.8626678,
     "hash": "2020b0a182598e2731563e1133e9ee67"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/reports/source_inventory.md": {
-    "mtime": 1778607221.8186805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/reports/source_inventory.md": {
+    "mtime": 1791913815.864668,
     "hash": "e5261e953d638f63b3e770a0360d4873"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/reports/data_quality_report.md": {
-    "mtime": 1778607221.8186805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/reports/data_quality_report.md": {
+    "mtime": 1791913815.863668,
     "hash": "a2dbc28ac38bcbfd4bd80c58da55cad3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/DAILY_WORKFLOW_SUMMARY.md": {
-    "mtime": 1788015273.900396,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/DAILY_WORKFLOW_SUMMARY.md": {
+    "mtime": 1791913815.8556674,
     "hash": "ddf2272f02690e59dc530b69b9da0381"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/DAILY_OPERATIONS_GUIDE.md": {
-    "mtime": 1788015113.3867793,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/DAILY_OPERATIONS_GUIDE.md": {
+    "mtime": 1791913815.850667,
     "hash": "338a97ae5df5925dcb90986156910841"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/SETUP_CHECKLIST.md": {
-    "mtime": 1788013786.2899435,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/SETUP_CHECKLIST.md": {
+    "mtime": 1791913815.8596675,
     "hash": "1f48f313b02b6b8b34a09e481acf33e6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/DAILY_CHECKLIST.md": {
-    "mtime": 1788015166.9296515,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/DAILY_CHECKLIST.md": {
+    "mtime": 1791913815.8496668,
     "hash": "6586182fcd30f31e75809b0fd50ab5e1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/QUICK_REFERENCE.md": {
-    "mtime": 1788013661.2272415,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/QUICK_REFERENCE.md": {
+    "mtime": 1791913815.8586676,
     "hash": "c0a048b1bd8915a848e4e06fe9e5765a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/README.md": {
-    "mtime": 1788013707.3551316,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/README.md": {
+    "mtime": 1791913815.8596675,
     "hash": "dd3413d8b111f5822d00dbdfdcde216f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/INDEX.md": {
-    "mtime": 1788015313.9143007,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/INDEX.md": {
+    "mtime": 1791913815.8566673,
     "hash": "6a73630e0d1e5bd85e1913cf2d564039"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/PAPER_TRADING_JOURNAL.md": {
-    "mtime": 1791912124.739486,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/PAPER_TRADING_JOURNAL.md": {
+    "mtime": 1791913815.8586676,
     "hash": "64f83dfd270d2767b3f652e806b61bf4"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/FIRST_TRADE_TEMPLATE.md": {
-    "mtime": 1791912127.5987046,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/tracker/FIRST_TRADE_TEMPLATE.md": {
+    "mtime": 1791913815.8606677,
     "hash": "6b0576d5b73f252aaa5ac34b4a6cd1f6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/TRADE_001_RECAP.md": {
-    "mtime": 1791912124.4074607,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/tracker/TRADE_001_RECAP.md": {
+    "mtime": 1791913815.8626678,
     "hash": "39019033e224d4d1bfbb9a10b5736458"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/RISK_DASHBOARD.md": {
-    "mtime": 1788013629.8933158,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/tracker/RISK_DASHBOARD.md": {
+    "mtime": 1791913815.8626678,
     "hash": "ec6d9cd20e58ceb0a11dfa0c4b6fc367"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/analysis/ASOF_2026-09-08_DECISION.md": {
-    "mtime": 1791912144.1039653,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/analysis/ASOF_2026-09-08_DECISION.md": {
+    "mtime": 1791913815.8596675,
     "hash": "d0e80364ac763251b90f68516025075f"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/analysis/MONTHLY_ANALYSIS.md": {
-    "mtime": 1788013608.334367,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/paper_trading/analysis/MONTHLY_ANALYSIS.md": {
+    "mtime": 1791913815.8596675,
     "hash": "f38feb4d8f9d1856804ce486d146491d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/AGENT_MEMORY.md": {
-    "mtime": 1791912170.1837277,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/AGENT_MEMORY.md": {
+    "mtime": 1791913814.7555833,
     "hash": "ed41136c5eadb7ded8d069bf14fea87b"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/API_TESTING_GUIDE.md": {
-    "mtime": 1788015551.5557332,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/API_TESTING_GUIDE.md": {
+    "mtime": 1791913814.7575834,
     "hash": "477d64cb5d06fb34cb3a10654d0d677d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/TEST_RESULTS.md": {
-    "mtime": 1788015889.1939268,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/TEST_RESULTS.md": {
+    "mtime": 1791913814.8275888,
     "hash": "58751923e2f7f28d8898734f3b318f5d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/PHASE_4_PLAN.md": {
-    "mtime": 1787983788.1554434,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/PHASE_4_PLAN.md": {
+    "mtime": 1791913814.8141305,
     "hash": "7e05bd2f7572dae7cdb1561df9b0b6ec"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/RATE_LIMIT_IMPLEMENTATION.md": {
-    "mtime": 1788022259.7031236,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/RATE_LIMIT_IMPLEMENTATION.md": {
+    "mtime": 1791913814.8255887,
     "hash": "b6b0646901e5985e6d146a68f3d88106"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_INTEGRATION_COMPLETE.md": {
-    "mtime": 1788022596.6761746,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_INTEGRATION_COMPLETE.md": {
+    "mtime": 1791913814.790586,
     "hash": "b4516bf7b23d575568ca59e8de39d963"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/QUICK_START_FYERS.md": {
-    "mtime": 1788016421.0046554,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/QUICK_START_FYERS.md": {
+    "mtime": 1791913814.818588,
     "hash": "ee5bd2d39ce2a62149589ce741a13b3e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_CREDENTIAL_REFRESH_GUIDE.md": {
-    "mtime": 1788023201.618468,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_CREDENTIAL_REFRESH_GUIDE.md": {
+    "mtime": 1791913814.7815852,
     "hash": "16ecbdef47a7bde87788bc8911f0e8d0"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/GET_LIVE_DATA_NOW.md": {
-    "mtime": 1788021767.6585107,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/GET_LIVE_DATA_NOW.md": {
+    "mtime": 1791913814.8065872,
     "hash": "40629e144bed786b4f6289f7fc5ecf1c"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/CREDENTIAL_REFRESH_GUIDE.md": {
-    "mtime": 1788016521.6824145,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/CREDENTIAL_REFRESH_GUIDE.md": {
+    "mtime": 1791913814.7645838,
     "hash": "63e33b2635fb2bee5d3edae567fe0ff1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_OAUTH_TOKEN_SETUP.md": {
-    "mtime": 1788021412.128521,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_OAUTH_TOKEN_SETUP.md": {
+    "mtime": 1791913814.7985866,
     "hash": "1bbb1d4e320c881c858541369de53ba3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/TESTING_AND_DEPLOYMENT_GUIDE.md": {
-    "mtime": 1788015645.9685078,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/TESTING_AND_DEPLOYMENT_GUIDE.md": {
+    "mtime": 1791913814.8265886,
     "hash": "31d8f688d81971c2b6f28eb0d80524dd"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/INDEX.md": {
-    "mtime": 1787982863.0492313,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/INDEX.md": {
+    "mtime": 1791913814.8085873,
     "hash": "da11059f334ac36f2b3aa3e014e86e2e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_CREDENTIAL_SETUP.md": {
-    "mtime": 1788016376.5677617,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_CREDENTIAL_SETUP.md": {
+    "mtime": 1791913814.7835853,
     "hash": "cbd235348fef0d1c71d40af516bec838"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_RATE_LIMIT_STRATEGY.md": {
-    "mtime": 1788022093.501595,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_RATE_LIMIT_STRATEGY.md": {
+    "mtime": 1791913814.8005867,
     "hash": "bfab071465b28a7620a2bab9e268aa21"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/BACKTEST_COMBINED_MODE.md": {
-    "mtime": 1787504094.6160405,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/BACKTEST_COMBINED_MODE.md": {
+    "mtime": 1791913814.7595835,
     "hash": "c649c81b31c7928588b3cfe18914277a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_API_STATUS.md": {
-    "mtime": 1788015999.4646633,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_API_STATUS.md": {
+    "mtime": 1791913814.778585,
     "hash": "d3eb2c8ad5e89c2f3208d9e690bd46d1"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/DATA_VALIDATION_GUIDE.md": {
-    "mtime": 1788022487.9624805,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/DATA_VALIDATION_GUIDE.md": {
+    "mtime": 1791913814.767584,
     "hash": "df12bae984097f1c3bbb898640b3986a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/FYERS_GUIDE_INDEX.md": {
-    "mtime": 1788023254.016319,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/FYERS_GUIDE_INDEX.md": {
+    "mtime": 1791913814.7845855,
     "hash": "6e656602932395efddd8e631706285cf"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/QUICKSTART.md": {
-    "mtime": 1778607221.8147144,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/QUICKSTART.md": {
+    "mtime": 1791913814.8173096,
     "hash": "eccccc762d99d103089d280f68f4b8b3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/EXPERIMENT_INDEX.md": {
-    "mtime": 1787982846.5053105,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/EXPERIMENT_INDEX.md": {
+    "mtime": 1791913814.7695844,
     "hash": "676e021d9a860a684be9ae07c5b0946e"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/BASELINE_LEARNINGS.md": {
-    "mtime": 1787982815.2423394,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/BASELINE_LEARNINGS.md": {
+    "mtime": 1791913814.763584,
     "hash": "270c71ad9ae8d0a9654842e3a2488d89"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/fyers/INTEGRATION_SUMMARY.md": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/fyers/INTEGRATION_SUMMARY.md": {
+    "mtime": 1791913814.84559,
     "hash": "636285ab6c59fef6417a7188a7fec2b5"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/fyers/QUICK_REFERENCE.md": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/fyers/QUICK_REFERENCE.md": {
+    "mtime": 1791913814.8465903,
     "hash": "9f67445eeb3eddbe82918377aa09ae06"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/fyers/INTEGRATION.md": {
-    "mtime": 1778607221.8158615,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/fyers/INTEGRATION.md": {
+    "mtime": 1791913814.84559,
     "hash": "e860419061ae85bbde19feff90f5e467"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/BACKTEST_COMPARISON_WITH_85_RULE.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/BACKTEST_COMPARISON_WITH_85_RULE.md": {
+    "mtime": 1791913814.8395896,
     "hash": "10b27a7cd49155d4c4448cc059cf08f0"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/OPTIMAL_THRESHOLDS_ANALYSIS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/OPTIMAL_THRESHOLDS_ANALYSIS.md": {
+    "mtime": 1791913814.84359,
     "hash": "0939801a25d86066c9c1ff0ce6789d7d"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/MONTHLY_EXIT_STRATEGY_ANALYSIS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/MONTHLY_EXIT_STRATEGY_ANALYSIS.md": {
+    "mtime": 1791913814.8425899,
     "hash": "76b0f8a0a56a8a611be219bce50f089a"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/HYBRID_BACKTEST_RESULTS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/HYBRID_BACKTEST_RESULTS.md": {
+    "mtime": 1791913814.8425899,
     "hash": "597972fe721b364fd3642a1e7b1a78f4"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/README.md": {
-    "mtime": 1787504060.685884,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/README.md": {
+    "mtime": 1791913814.84459,
     "hash": "17dfbeb830c5f5be6611666faa5d7d56"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/ARCHIVED_RUNS.md": {
-    "mtime": 1787982770.6327004,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/ARCHIVED_RUNS.md": {
+    "mtime": 1791913814.8395896,
     "hash": "6b4624b5d2743e2d15997501c0b0ef02"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/EXIT_PRIORITY_COMPARISON_FINDINGS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/EXIT_PRIORITY_COMPARISON_FINDINGS.md": {
+    "mtime": 1791913814.8405898,
     "hash": "0fd205257fac72baca399a97792cd1ad"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/archive/EXIT_STRATEGY_ANALYSIS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/archive/EXIT_STRATEGY_ANALYSIS.md": {
+    "mtime": 1791913814.8405898,
     "hash": "057f3211be5400630af54a9fdb979b83"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/analysis/WEEKLY_EXIT_REDESIGN_LOG.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/analysis/WEEKLY_EXIT_REDESIGN_LOG.md": {
+    "mtime": 1791913814.8345892,
     "hash": "2ed23175d0f77ba27d8d2954ceb70c60"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/analysis/POSITION_SIZING_DECISIONS.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/analysis/POSITION_SIZING_DECISIONS.md": {
+    "mtime": 1791913814.8335893,
     "hash": "cc6f471d29a4057609a24a1106de1c77"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/analysis/BACKTEST_INTEGRITY_REMEDIATION.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/analysis/BACKTEST_INTEGRITY_REMEDIATION.md": {
+    "mtime": 1791913814.8335893,
     "hash": "f88e0990a2c6f33ced4f41b8d222c4d6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/analysis/OPTIMIZATION_LOG.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/analysis/OPTIMIZATION_LOG.md": {
+    "mtime": 1791913814.8335893,
     "hash": "3e1a4b1cee635dc8cc576f48bf911859"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/analysis/OI_VOLUME_DISPLAY.md": {
-    "mtime": 1778607221.8150582,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/analysis/OI_VOLUME_DISPLAY.md": {
+    "mtime": 1791913814.8335893,
     "hash": "9cd9cdb0cd93f8a1d3e1f89a15895453"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/guides/MONITOR_WORKFLOW.md": {
-    "mtime": 1778607221.8160098,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/guides/MONITOR_WORKFLOW.md": {
+    "mtime": 1791913814.8465903,
     "hash": "17ce17c837001e36181e875e58d364cb"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/architecture/AGENTS.md": {
-    "mtime": 1778648939.2067492,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/architecture/AGENTS.md": {
+    "mtime": 1791913814.8355894,
     "hash": "659d691bd7db0a417ff7ea2683c9fba3"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/docs/architecture/ARCHITECTURE.md": {
-    "mtime": 1778607221.8158615,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/docs/architecture/ARCHITECTURE.md": {
+    "mtime": 1791913814.8375895,
     "hash": "23feaf1ba57520ccf0631b5a40a68cc6"
   },
-  "/home/shivamguptanit/github/nifty-options-backtester/tools/README.md": {
-    "mtime": 1778607221.8229246,
+  "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tools/README.md": {
+    "mtime": 1791913815.9276729,
     "hash": "5055fb1acac96aecff1879fa93ef9dd9"
   }
 }
