@@ -6,6 +6,8 @@
 **Baseline Model**: Run #62 (11.98% CAGR on 17-year backtest)  
 **Target**: Validate ≥75% weekly win rate, capture ₹25k+ avg profit, 15% max DD over 6 months
 
+**Note**: Trade #1 (Aug 29 IC) is a SIMULATED back-fill, not a live paper trade, and is excluded from Phase 1 counts. Zero real trades have been taken as of this file. See `analysis/ASOF_2026-09-08_DECISION.md`.
+
 ---
 
 ## Account Overview
@@ -65,7 +67,7 @@
 - Status: [ ] On track [ ] Needs review [ ] Pause
 - Expected: 1–2 trades (low frequency in Sep, holiday season)
 
-**Notes**: First signal expected Mon Sep 8, 11-13 IST (IC setup ~23500/24300, expiry Sep 11)
+**Notes**: First signal expected Tue Sep 8, 11-13 IST (expiry Sep 15, Tuesday weekly). Retrospective as-of run for Sep 8 returned weekly SKIP (PCS declined at VIX 10.7); monthly INDETERMINATE due to a macro data-cache defect. See `analysis/ASOF_2026-09-08_DECISION.md`.
 
 ---
 

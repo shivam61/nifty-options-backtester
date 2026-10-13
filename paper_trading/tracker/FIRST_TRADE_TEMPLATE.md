@@ -1,6 +1,6 @@
-# First Trade — Mon Sep 8, 2026 (Ready to fill in)
+# First Trade — Tue Sep 8, 2026 (Ready to fill in)
 
-**Trade #1 — Iron Condor**
+**Trade #1 — Iron Condor** (note: Trade #1 of the Aug 29 back-fill is simulated and excluded from Phase 1 counts; this template is for the first real trade)
 
 ## Pre-Signal Checklist (Before 11:00 AM IST)
 - [ ] VIX data fetched — confirm < 18 for IC entry
@@ -14,7 +14,7 @@
 ```
 Command: python main.py --mode signal-combined
 Time to run: Anytime 11:00–13:00 IST
-Expected output: IC signal with Put/Call strikes, DTE=3
+Expected output: weekly signal with strikes and DTE in the 3–8 window (Sep 8 -> Sep 15 expiry = DTE 7). At VIX ~10.7 the code selects Put Credit Spread, not IC.
 ```
 
 ## At Entry (fill these in when signal comes)
@@ -32,22 +32,22 @@ Expected output: IC signal with Put/Call strikes, DTE=3
 | **Bid-Ask Spread** | __/__ (actual observed) |
 | **Lots Executed** | 65 |
 | **Capital Deployed** | ₹12,50,000 |
-| **Expiry Date** | Sep 8 / Sep 11 (TBD by system) |
+| **Expiry Date** | Sep 15 (Tuesday weekly; TBD by system) |
 | **DTE** | _ days |
 
-## Monitoring (Sep 9–10, daily)
+## Monitoring (Sep 9–15, daily)
 
 | Day | Nifty | Put Distance | Call Distance | Status | Notes |
 |-----|-------|--------------|---------------|--------|-------|
 | Sep 9 | ___,___ | +___ | +___ | [ ] In range / [ ] Near / [ ] Breach | |
-| Sep 10 | ___,___ | +___ | +___ | [ ] In range / [ ] Near / [ ] Breach | |
-| Sep 11 | ___,___ | +___ | +___ | [ ] EXPIRED ✓ / [ ] Breach | |
+| Sep 14 | ___,___ | +___ | +___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Sep 15 | ___,___ | +___ | +___ | [ ] EXPIRED ✓ / [ ] Breach | |
 
 ## Exit (At expiry or earlier)
 
 | Field | Value |
 |-------|-------|
-| **Exit Date** | Sep 10 or Sep 11 (depends on target hit) |
+| **Exit Date** | Sep 14 or Sep 15 (depends on target hit) |
 | **Exit Time** | _:__ AM/PM |
 | **Exit Reason** | [ ] Expired worthless [ ] 50% profit target [ ] Breach / Stop-loss |
 | **Nifty at exit** | ___,___ |
@@ -59,18 +59,18 @@ Expected output: IC signal with Put/Call strikes, DTE=3
 
 After exit, update:
 1. `TRADES.csv` — add entry row
-2. `DAILY_LOG.csv` — add Sep 11 exit row
+2. `DAILY_LOG.csv` — add Sep 15 exit row (or the actual exit date)
 3. `PAPER_TRADING_JOURNAL.md` — note outcome under Checkpoint 1
 
 ## Sample Entry Row (for copy-paste into TRADES.csv)
 
 ```
-1,2026-09-08,11:15,23500,27.5/28.5,27.9,65,1250000,iron_condor,10.68,LOW_VOL,0.68,3,2026-09-11,14:30,29.5,expired,3,___,₹125,0,₹___,WIN/LOSS,___,First IC trade - Sep 8 signal,29528,___
+1,2026-09-08,11:15,23500,27.5/28.5,27.9,65,1250000,iron_condor,10.68,LOW_VOL,0.68,7,2026-09-15,14:30,29.5,expired,___,___,₹125,0,₹___,WIN/LOSS,___,First IC trade - Sep 8 signal,29528,___
 ```
 
 ---
 
 **Key Metrics to Watch:**
 - Entry fill within ±0.5 pts of expected (slippage < 20 bp)
-- Position stays in range for full 3 days (theta capture ~100%)
+- Position stays in range for the full hold to expiry (Sep 15; theta capture ~100%)
 - Daily monitoring noon + 3 PM IST (check buffer to strikes)

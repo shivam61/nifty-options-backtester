@@ -1,2 +1,8 @@
 Date,Day_of_Week,Account_Equity_₹,Cumulative_P&L_₹,Open_Trades_Count,VIX_Close,Market_Regime,Weekly_Opportunities_Eligible,Weekly_Trades_Executed,Monthly_Eligible_Signals,Monthly_Trades_Paused_Count,Account_DD_%,Win_Rate_%_YTD,Avg_Trade_P&L_₹_YTD,Notes
-2026-08-29,Friday,2500000,0,0,10.68,LOW_VOL,0,0,0,0,0,—,—,JOURNAL INITIALIZED | Capital ₹25L | Weekly 50% paused until Sep 8 signal window
+2026-08-29,Saturday,2500000,0,1,10.68,LOW_VOL,1,1,0,0,0,100,1328,TRADE 1 ENTERED: IC Put 23700 / Call 24550 | 65 lots | ₹1.25L deployed [SIMULATED back-fill; not live]
+2026-08-30,Sunday,2500000,0,1,—,—,0,0,0,0,0,100,1328,Market closed [SIMULATED back-fill; not live]
+2026-08-31,Monday,2500000,0,1,11.19,LOW_VOL,0,0,0,0,0,100,1328,HELD: Nifty 24080 | Put buffer +380 | Call buffer +470 | 67% theta captured [SIMULATED back-fill; not live]
+2026-09-01,Tuesday,2501328,1328,0,11.49,LOW_VOL,0,0,0,0,0.05,100,1328,"TRADE 1 EXITED: Expired worthless | Both legs safe | ₹1,328 net profit [SIMULATED back-fill; not live]"
+2026-09-02,Wednesday,2501328,1328,0,11.59,MODERATE_VOL,0,0,0,0,0.05,100,1328,Post-expiry: Nifty drifted to 23914 | VIX spike +91bp [SIMULATED back-fill; not live]
+2026-09-03,Thursday,2501328,1328,0,11.34,LOW_VOL,0,0,0,0,0.05,100,1328,Consolidation: Nifty 23873 | VIX calming [SIMULATED back-fill; not live]
+2026-09-04,Friday,2501328,1328,0,10.68,LOW_VOL,0,0,0,0,0.05,100,1328,Week close: Nifty 23898 | VIX back to 10.68 (very low) [SIMULATED back-fill; not live]
