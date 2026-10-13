@@ -57,10 +57,9 @@ warnings.filterwarnings("ignore")
 @pytest.fixture(scope="session")
 def dataset() -> pd.DataFrame:
     """Load the full combined dataset from parquet cache (no network)."""
-    from data.market_data import MarketDataFetcher, _cached_parquet_paths
+    from data.market_data import MarketDataFetcher
     from config import BacktestConfig
 
-    _cached_parquet_paths.cache_clear()
     cfg = BacktestConfig()
     fetcher = MarketDataFetcher(cfg.start_date, cfg.end_date)
     data = fetcher.build_combined_dataset()
@@ -576,9 +575,9 @@ class TestCacheIntegrity:
 
     def _load_cache(self, ticker: str, start="2009-01-01") -> pd.DataFrame | None:
         from datetime import date, timedelta
+        from data.market_data import cache_filename
         eff_end = date.today() - timedelta(days=1)
-        key = hashlib.md5(f"{ticker}_{start}_{eff_end}".encode()).hexdigest()
-        path = self.CACHE_DIR / f"{key}.parquet"
+        path = self.CACHE_DIR / cache_filename(ticker, start, eff_end)
         if not path.exists():
             return None
         df = pd.read_parquet(path)

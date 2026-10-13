@@ -24,12 +24,9 @@ from strategies.base import Leg, Trade
 @pytest.fixture(autouse=True)
 def _clear_market_data_lru_cache():
     import os
-    from data import market_data as _md
-    _md._cached_parquet_paths.cache_clear()
     # Remove cache-only guard so tests that expect downloads can proceed
     _prev_cache_only = os.environ.pop("MARKET_DATA_CACHE_ONLY", None)
     yield
-    _md._cached_parquet_paths.cache_clear()
     # Restore env var if it was set before this test
     if _prev_cache_only is not None:
         os.environ["MARKET_DATA_CACHE_ONLY"] = _prev_cache_only

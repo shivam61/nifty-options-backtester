@@ -1,11 +1,23 @@
 """
 Fetches and caches historical market data for backtesting.
 Sources: Yahoo Finance for Nifty 50, India VIX, Crude Oil, USD/INR.
+
+Cache identity is ticker-safe:
+  * Files are named ``{ticker_slug}_{start}_{end}.parquet`` (see ``cache_filename``).
+  * ``manifest.json`` in CACHE_DIR records, for every file this module wrote,
+    its ticker, start, end and last_date. Reads only consider manifest entries
+    for the requested ticker; a file that is not in the manifest is not trusted.
+  * Legacy md5-named files (``md5(f"{ticker}_{start}_{end}")``) are used only as
+    an exact key hit for the requested ticker/start/end.
+  * Every series is checked against ``RANGES`` on load and before store.
 """
 
+import json
+import logging
 import os
+import re
 import hashlib
-from functools import lru_cache
+import warnings
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
@@ -14,8 +26,18 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+logger = logging.getLogger(__name__)
+
 CACHE_DIR = Path(__file__).parent / ".cache"
 CACHE_DIR.mkdir(exist_ok=True)
+
+MANIFEST_NAME = "manifest.json"
+# A partial file may start up to this many calendar days after the requested start.
+PARTIAL_START_TOLERANCE_DAYS = 7
+# A Close jump larger than this at the splice between cached and fresh rows is treated as corruption.
+SEAM_MAX_JUMP = 0.40
+# Share of rows allowed outside a ticker's RANGES envelope (tolerates isolated spikes).
+OUTSIDE_RANGE_MAX_FRACTION = 0.05
 
 TICKERS = {
     "nifty": "^NSEI",
@@ -38,9 +60,74 @@ TICKERS = {
     "europe": "^STOXX50E",      # Euro Stoxx 50 — European equity sentiment
 }
 
+# Per-ticker plausible Close range (lo, hi). A series whose median falls outside
+# [lo, hi], or with more than OUTSIDE_RANGE_MAX_FRACTION of rows outside it, is
+# refused on load and on store. Bounds are the union of the ranges used in
+# tests/test_feature_store.py, widened so that short early-history windows
+# (e.g. 2009) are not rejected.
+RANGES: dict[str, tuple[float, float]] = {
+    "^NSEI": (2_000, 30_000),
+    "^INDIAVIX": (5, 100),
+    "BZ=F": (-50, 200),
+    "CL=F": (-50, 200),
+    "INR=X": (40, 100),
+    "GC=F": (500, 6_000),
+    "DX-Y.NYB": (60, 120),
+    "^VIX": (8, 90),
+    "^TNX": (0, 6),
+    "^GSPC": (600, 9_000),
+    "^NSEBANK": (3_000, 65_000),
+    "^CNXIT": (2_000, 50_000),
+    "EEM": (10, 80),
+    "^HSI": (8_000, 35_000),
+    "^STOXX50E": (1_700, 6_700),
+    "SI=F": (5, 120),
+}
 
-def _cache_path(key: str) -> Path:
-    return CACHE_DIR / f"{key}.parquet"
+# Raw macro columns checked for identical or constant series in build_combined_dataset.
+MACRO_GUARD_COLUMNS = (
+    "crude", "usdinr", "gold", "dxy", "us_vix", "us_10y", "sp500", "nifty_bank",
+    "silver", "nifty_it", "em_etf", "hang_seng", "europe", "vix", "nifty_close",
+)
+
+
+def ticker_slug(ticker: str) -> str:
+    """Filesystem-safe, human-readable ticker: ^NSEI->NSEI, BZ=F->BZ_F, DX-Y.NYB->DX_Y_NYB."""
+    return re.sub(r"[^A-Za-z0-9]+", "_", ticker.strip().lstrip("^")).strip("_")
+
+
+def _iso(d) -> str:
+    return pd.Timestamp(d).date().isoformat()
+
+
+def cache_filename(ticker: str, start, end) -> str:
+    return f"{ticker_slug(ticker)}_{_iso(start)}_{_iso(end)}.parquet"
+
+
+def _legacy_cache_path(ticker: str, start, end) -> Path:
+    """Pre-manifest md5 key. Only ever consulted as an exact hit for this ticker/start/end."""
+    return CACHE_DIR / f"{hashlib.md5(f'{ticker}_{start}_{end}'.encode()).hexdigest()}.parquet"
+
+
+def _manifest_path() -> Path:
+    return CACHE_DIR / MANIFEST_NAME
+
+
+def load_manifest() -> dict[str, dict]:
+    """Return {filename: {ticker, start, end, last_date}}. Empty if missing or unreadable."""
+    try:
+        raw = json.loads(_manifest_path().read_text())
+    except (OSError, ValueError):
+        return {}
+    files = raw.get("files", {}) if isinstance(raw, dict) else {}
+    return {k: v for k, v in files.items() if isinstance(v, dict)}
+
+
+def save_manifest(files: dict[str, dict]) -> None:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = _manifest_path().with_name(MANIFEST_NAME + ".tmp")
+    tmp.write_text(json.dumps({"version": 1, "files": files}, indent=2, sort_keys=True))
+    os.replace(tmp, _manifest_path())
 
 
 def _normalize_index(df: pd.DataFrame) -> pd.DataFrame:
@@ -55,135 +142,112 @@ def _normalize_index(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@lru_cache(maxsize=1)
-def _cached_parquet_paths() -> tuple[str, ...]:
-    return tuple(str(p) for p in CACHE_DIR.glob("*.parquet"))
-
-
-def _ticker_hint_score(ticker: str, df: pd.DataFrame) -> float:
-    """Heuristic score to pick the best local cache for a requested ticker."""
-    if df.empty or "Close" not in df.columns:
-        return float("-inf")
-
+def _range_problem(ticker: str, df: Optional[pd.DataFrame]) -> Optional[str]:
+    """Return why ``df`` is not a plausible series for ``ticker``, or None if it is."""
+    if ticker not in RANGES:
+        return None
+    if df is None or df.empty:
+        return "empty"
+    if "Close" not in df.columns:
+        return "no Close column"
     close = pd.to_numeric(df["Close"], errors="coerce").dropna()
     if close.empty:
-        return float("-inf")
-
-    median = float(close.median())
-    last = float(close.iloc[-1])
-    rows = len(close)
-    score = 0.0
-
-    if rows >= 250:
-        score += 1.0
-    if rows >= 1000:
-        score += 2.0
-    if {"Open", "High", "Low"}.issubset(df.columns):
-        score += 0.5
-
-    if ticker == "^NSEI":
-        if 2000 <= median <= 100000:
-            score += 4.0
-        if 2000 <= last <= 100000:
-            score += 2.0
-    elif ticker == "^INDIAVIX":
-        if 2 <= median <= 120:
-            score += 4.0
-        if 2 <= last <= 120:
-            score += 2.0
-    elif ticker in {"BZ=F", "CL=F"}:
-        if 10 <= median <= 250:
-            score += 4.0
-        if 10 <= last <= 250:
-            score += 2.0
-    elif ticker == "INR=X":
-        if 40 <= median <= 120:
-            score += 4.0
-        if 40 <= last <= 120:
-            score += 2.0
-    elif ticker == "GC=F":
-        if 1000 <= median <= 100000:
-            score += 4.0
-        if 1000 <= last <= 100000:
-            score += 2.0
-    elif ticker == "DX-Y.NYB":
-        if 50 <= median <= 150:
-            score += 4.0
-        if 50 <= last <= 150:
-            score += 2.0
-    elif ticker == "^VIX":
-        if 2 <= median <= 100:
-            score += 4.0
-    elif ticker == "^TNX":
-        if 0 <= median <= 20:
-            score += 4.0
-    elif ticker in {"^GSPC", "^NSEBANK", "^HSI", "^STOXX50E", "EEM"}:
-        if median > 100:
-            score += 4.0
-
-    return score
+        return "no numeric Close values"
+    lo, hi = RANGES[ticker]
+    med = float(close.median())
+    if not (lo <= med <= hi):
+        return f"median Close {med:.2f} outside [{lo}, {hi}]"
+    outside = float(((close < lo) | (close > hi)).mean())
+    if outside > OUTSIDE_RANGE_MAX_FRACTION:
+        return f"{outside:.1%} of rows outside [{lo}, {hi}]"
+    return None
 
 
-def _load_best_cached_series(ticker: str, start: date, end: date) -> pd.DataFrame | None:
-    """Find the best local parquet cache covering the requested date range."""
-    best_score = float("-inf")
-    best_df: pd.DataFrame | None = None
-    start_ts = pd.Timestamp(start)
-    end_ts = pd.Timestamp(end)
-
-    for path_str in _cached_parquet_paths():
-        path = Path(path_str)
-        try:
-            df = _normalize_index(pd.read_parquet(path))
-        except Exception:
-            continue
-        if df.empty or "Close" not in df.columns:
-            continue
-        if not isinstance(df.index, pd.DatetimeIndex):
-            continue
-        if df.index.min() > start_ts or df.index.max() < end_ts:
-            continue
-
-        score = _ticker_hint_score(ticker, df)
-        if score > best_score:
-            best_score = score
-            best_df = df
-
-    return best_df
-
-
-def _load_best_cached_overlap(ticker: str, start: date, end: date) -> pd.DataFrame | None:
-    """
-    Find the best local parquet cache that overlaps the requested date range.
-
-    This is used as a fallback when no cache fully covers the requested window.
-    """
-    best_score = float("-inf")
-    best_df: pd.DataFrame | None = None
-    start_ts = pd.Timestamp(start)
-    end_ts = pd.Timestamp(end)
-
-    for path_str in _cached_parquet_paths():
-        path = Path(path_str)
-        try:
-            df = _normalize_index(pd.read_parquet(path))
-        except Exception:
-            continue
-        if df.empty or "Close" not in df.columns:
-            continue
-        if not isinstance(df.index, pd.DatetimeIndex):
-            continue
-        if df.index.max() < start_ts or df.index.min() > end_ts:
-            continue
-
-        score = _ticker_hint_score(ticker, df)
-        if score > best_score:
-            best_score = score
-            best_df = df
-
-    if best_df is None:
+def _read_checked(ticker: str, path: Path) -> Optional[pd.DataFrame]:
+    """Load a cache file; return it only if non-empty, datetime-indexed and in range."""
+    try:
+        df = _normalize_index(pd.read_parquet(path))
+    except Exception as exc:
+        logger.warning("market cache %s unreadable: %s", path.name, exc)
         return None
-    return best_df.sort_index()
+    if not isinstance(df.index, pd.DatetimeIndex):
+        return None
+    problem = _range_problem(ticker, df)
+    if problem:
+        logger.error("market cache %s rejected for %s: %s", path.name, ticker, problem)
+        return None
+    return df.sort_index()
+
+
+def _store_cache(ticker: str, start, end, df: pd.DataFrame) -> Optional[Path]:
+    """Write ``df`` as the cache for (ticker, start, end) and register it in the manifest.
+
+    Refuses (returns None, writes nothing) when df is empty or out of range.
+    """
+    if df is None or df.empty:
+        return None
+    problem = _range_problem(ticker, df)
+    if problem:
+        logger.error("refusing to cache %s %s..%s: %s", ticker, start, end, problem)
+        return None
+    df = _normalize_index(df).sort_index()
+    filename = cache_filename(ticker, start, end)
+    path = CACHE_DIR / filename
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path)
+    files = load_manifest()
+    files[filename] = {
+        "ticker": ticker,
+        "start": _iso(start),
+        "end": _iso(end),
+        "last_date": _iso(df.index.max()),
+    }
+    save_manifest(files)
+    return path
+
+
+def _exact_cache_hit(ticker: str, start, end) -> Optional[pd.DataFrame]:
+    """Exact (ticker, start, end) hit: manifest-listed ticker-named file, else a legacy md5 exact-key file."""
+    name = cache_filename(ticker, start, end)
+    meta = load_manifest().get(name)
+    if meta is not None and meta.get("ticker") == ticker:
+        df = _read_checked(ticker, CACHE_DIR / name)
+        if df is not None and len(df) > 0:
+            return df
+    legacy = _legacy_cache_path(ticker, start, end)
+    if legacy.exists():
+        df = _read_checked(ticker, legacy)
+        if df is not None and len(df) > 0:
+            _store_cache(ticker, start, end, df)  # migrate to the ticker-named file
+            return df
+    return None
+
+
+def _find_partial(ticker: str, start) -> Optional[pd.DataFrame]:
+    """Newest same-ticker cached file (by manifest last_date) that covers ``start``.
+
+    Never considers files of other tickers, and never files that are not listed in the manifest.
+    """
+    start_ts = pd.Timestamp(start)
+    candidates = []
+    for name, meta in load_manifest().items():
+        if meta.get("ticker") != ticker:
+            continue
+        try:
+            last = pd.Timestamp(meta["last_date"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if last < start_ts:
+            continue
+        candidates.append((last, name))
+    for _, name in sorted(candidates, reverse=True):
+        df = _read_checked(ticker, CACHE_DIR / name)
+        if df is None:
+            continue
+        if df.index.min() > start_ts + pd.Timedelta(days=PARTIAL_START_TOLERANCE_DAYS):
+            continue
+        return df
+    return None
 
 
 def _slice_cached_range(df: pd.DataFrame, start: date, end: date) -> pd.DataFrame:
@@ -194,12 +258,25 @@ def _slice_cached_range(df: pd.DataFrame, start: date, end: date) -> pd.DataFram
     return df.loc[(df.index >= start_ts) & (df.index <= end_ts)].copy()
 
 
-def _store_cache(path: Path, df: pd.DataFrame) -> None:
-    if df.empty:
-        return
-    df = _normalize_index(df).sort_index()
-    df.to_parquet(path)
-    _cached_parquet_paths.cache_clear()
+def _seam_jump(old: pd.DataFrame, new: pd.DataFrame) -> Optional[float]:
+    """Relative Close change between the last cached row and the first fresh row."""
+    prev = pd.to_numeric(old["Close"], errors="coerce").dropna()
+    nxt = pd.to_numeric(new["Close"], errors="coerce").dropna()
+    if prev.empty or nxt.empty or float(prev.iloc[-1]) == 0:
+        return None
+    return abs(float(nxt.iloc[0]) / float(prev.iloc[-1]) - 1.0)
+
+
+def _download(ticker: str, start, end) -> pd.DataFrame:
+    try:
+        data = yf.download(ticker, start=str(start), end=str(end), progress=False)
+    except Exception:
+        return pd.DataFrame()
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.droplevel(1)
+    if len(data) == 0:
+        return pd.DataFrame()
+    return _normalize_index(data).sort_index()
 
 
 def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
@@ -208,55 +285,52 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
     # stable across multiple same-day runs.
     from datetime import date as _date_t
     effective_end = end if end < _date_t.today() else _date_t.today() - timedelta(days=1)
-    cache_key = hashlib.md5(f"{ticker}_{start}_{effective_end}".encode()).hexdigest()
-    path = _cache_path(cache_key)
 
-    # Prefer exact or broad local cache before any network access.
-    if path.exists():
-        df = _normalize_index(pd.read_parquet(path))
-        if len(df) > 0:
-            return df
+    # Exact local hit (ticker-named manifest file or legacy exact key) before any network access.
+    exact = _exact_cache_hit(ticker, start, effective_end)
+    if exact is not None:
+        return exact
 
-    cached = _load_best_cached_series(ticker, start, end)
-    if cached is not None and len(cached) > 0:
-        return cached
-
-    partial = _load_best_cached_overlap(ticker, start, end)
-    if partial is not None and len(partial) > 0:
-        if partial.index.max().date() >= end:
-            return partial
+    partial = _find_partial(ticker, start)
+    if partial is not None and partial.index.max().date() >= end:
+        return partial
 
     if os.environ.get("MARKET_DATA_CACHE_ONLY", "").strip().lower() in {"1", "true", "yes"}:
         return partial if partial is not None else pd.DataFrame()
 
-    # Cache miss or expired — fetch from Yahoo
-    fetch_start = start
-    if partial is not None and len(partial) > 0:
+    if partial is not None:
         last_cached = partial.index.max().date()
-        if last_cached < end:
-            fetch_start = (pd.Timestamp(last_cached) + pd.offsets.BDay(1)).date()
+        fetch_start = (pd.Timestamp(last_cached) + pd.offsets.BDay(1)).date()
+        tail = _download(ticker, fetch_start, end)
+        if tail.empty:
+            # Download failed or nothing new: serve the own-ticker partial; do not store it under the exact key.
+            return partial
+        jump = _seam_jump(partial, tail)
+        if jump is not None and jump > SEAM_MAX_JUMP:
+            logger.warning(
+                "%s: %.0f%% Close jump at the cache seam (after %s); discarding partial and refetching %s..%s",
+                ticker, jump * 100, last_cached, start, end,
+            )
+        else:
+            merged = pd.concat([partial, tail], axis=0)
+            merged = merged[~merged.index.duplicated(keep="last")].sort_index()
+            if _range_problem(ticker, merged) is None:
+                _store_cache(ticker, start, effective_end, merged)
+                return merged
+            logger.error("%s: merged partial+tail out of range; refetching %s..%s", ticker, start, end)
 
-    try:
-        data = yf.download(ticker, start=str(fetch_start), end=str(end), progress=False)
-    except Exception:
-        data = pd.DataFrame()
-    if isinstance(data.columns, pd.MultiIndex):
-        data.columns = data.columns.droplevel(1)
-
-    merged = data
-    if partial is not None and len(partial) > 0:
-        merged = pd.concat([partial, data], axis=0)
-        merged = merged[~merged.index.duplicated(keep="last")]
-        merged = merged.sort_index()
-
-    if len(merged) > 0:
-        merged = _normalize_index(merged)
-        _store_cache(path, merged)
-        return merged
-
-    # Final fallback: return empty rather than potentially wrong cache
-    # (the caller will fill missing data with sensible defaults like vix=15)
-    return pd.DataFrame()
+    # Cache miss, or partial discarded: full fetch of the requested range.
+    full = _download(ticker, start, end)
+    if full.empty:
+        # Final fallback: return empty rather than a wrong series
+        # (the caller fills missing data with defaults; build_combined_dataset rejects dead columns).
+        return pd.DataFrame()
+    problem = _range_problem(ticker, full)
+    if problem:
+        logger.error("%s: fetched series rejected (%s); not stored", ticker, problem)
+        return pd.DataFrame()
+    _store_cache(ticker, start, effective_end, full)
+    return full
 
 
 class MarketDataFetcher:
@@ -294,11 +368,51 @@ class MarketDataFetcher:
             self._data["crude_brent"] = _fetch_yfinance(TICKERS["crude_brent"], self.start, self.end)
         return self._data["crude_brent"]
 
+    @staticmethod
+    def _check_macro_columns(combined: pd.DataFrame, defaulted: set[str]) -> None:
+        """Refuse datasets where macro columns are dead defaults or duplicates of each other.
+
+        Raises ValueError when a column filled entirely by a default constant is still constant,
+        or when two raw macro columns are identical on more than half of the rows.
+        Warns when a non-default macro column is constant.
+        """
+        if combined.empty:
+            return
+        cols = [c for c in MACRO_GUARD_COLUMNS if c in combined.columns]
+
+        dead = [c for c in cols if c in defaulted and combined[c].nunique(dropna=True) <= 1]
+        if dead:
+            raise ValueError(
+                "Macro column(s) filled entirely by default constants: "
+                + ", ".join(f"{c}={combined[c].iloc[0]}" for c in dead)
+                + ". Their tickers returned no usable data (see fetch/cache errors above); "
+                "refusing to build a dataset with dead features. Run --mode refresh-data."
+            )
+
+        for c in cols:
+            if c not in defaulted and combined[c].nunique(dropna=True) <= 1:
+                warnings.warn(f"MarketDataFetcher: macro column {c!r} is constant", stacklevel=3)
+
+        dupes = []
+        values = {c: combined[c].to_numpy(dtype=float) for c in cols}
+        for i, a in enumerate(cols):
+            for b in cols[i + 1:]:
+                share = float(np.mean(np.isclose(values[a], values[b])))
+                if share > 0.5:
+                    dupes.append(f"{a}=={b} on {share:.0%} of rows")
+        if dupes:
+            raise ValueError(
+                "Identical macro series detected (wrong-ticker data in the cache?): "
+                + "; ".join(dupes)
+                + ". Refusing to build the dataset. Run --mode refresh-data after fixing the cache."
+            )
+
     def build_combined_dataset(self) -> pd.DataFrame:
         """Merges all data sources into a single DataFrame for analysis."""
         self.fetch_all()
 
         combined = pd.DataFrame()
+        defaulted: set[str] = set()
 
         if len(self.nifty) > 0:
             combined["nifty_close"] = self.nifty["Close"]
@@ -314,23 +428,28 @@ class MarketDataFetcher:
             if vix_close.max() > 200:
                 # Likely corrupted with index data; use default instead
                 combined["vix"] = 15.0
+                defaulted.add("vix")
             else:
                 combined["vix"] = vix_close
         else:
             combined["vix"] = 15.0
+            defaulted.add("vix")
 
         if len(self.crude) > 0:
             combined["crude"] = self.crude["Close"]
         else:
-            combined["crude"] = combined.get("crude", 0).fillna(80.0)
+            combined["crude"] = 80.0
+            defaulted.add("crude")
 
         for name in ["usdinr", "gold", "dxy", "us_vix", "us_10y", "sp500", "nifty_bank", "silver", "nifty_it", "em_etf", "hang_seng", "europe"]:
             if name in self._data and len(self._data[name]) > 0:
                 combined[name] = self._data[name]["Close"]
             elif name not in combined:
                 combined[name] = 0.0
+                defaulted.add(name)
 
         combined = combined.ffill().dropna(subset=["nifty_close"])
+        self._check_macro_columns(combined, defaulted)
 
         combined["nifty_return"] = combined["nifty_close"].pct_change()
         combined["nifty_return_5d"] = combined["nifty_close"].pct_change(5)
@@ -481,8 +600,8 @@ class MarketDataFetcher:
             dd_factor = combined.get("nifty_drawdown_from_20d_high_pct", 0) / -10.0
             vol_factor = (combined["nifty_realized_vol_20d"] - 15) / 15.0
             combined["crash_risk_score"] = (
-                0.4 * vix_shock.fillna(0) + 
-                0.4 * dd_factor.fillna(0) + 
+                0.4 * vix_shock.fillna(0) +
+                0.4 * dd_factor.fillna(0) +
                 0.2 * vol_factor.fillna(0)
             ).clip(lower=0, upper=1)
 
@@ -500,7 +619,7 @@ class MarketDataFetcher:
             inr_stress = (combined["usdinr"] - combined["usdinr"].rolling(50).mean()) / combined["usdinr"].rolling(50).std()
             vix_stress = (combined["vix"] - combined["vix"].rolling(50).mean()) / combined["vix"].rolling(50).std()
             combined["multi_asset_stress"] = (crude_stress + inr_stress + vix_stress) / 3
-        
+
         # Store 50-day moving averages and std devs for all assets (for Z-score calculation)
         for asset in ["crude", "usdinr", "vix", "gold", "dxy", "us_vix", "sp500", "nifty_bank"]:
             if asset in combined.columns:
@@ -557,7 +676,6 @@ class MarketDataFetcher:
             actual_start = combined.index.min().date()
             if actual_start > self.start:
                 gap_days = (actual_start - self.start).days
-                import warnings
                 warnings.warn(
                     f"MarketDataFetcher: data starts {actual_start} but {self.start} was requested "
                     f"({gap_days} days of history missing). "
@@ -570,3 +688,4 @@ class MarketDataFetcher:
     def clear_cache(self):
         for f in CACHE_DIR.glob("*.parquet"):
             f.unlink()
+        save_manifest({})

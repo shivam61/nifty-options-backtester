@@ -1,7 +1,7 @@
 {
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/main.py": {
-    "mtime": 1791913815.8246648,
-    "hash": "11e2e231fb06728278ce84dfd4e14b24"
+    "mtime": 1791914952.7294219,
+    "hash": "dc40c5207a42e0b54efcd3b1df551783"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/main_weekly.py": {
     "mtime": 1791913815.827665,
@@ -180,8 +180,8 @@
     "hash": "fe1695f5dbf10c49e0eeedaab5c46780"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/market_data.py": {
-    "mtime": 1791913814.3945556,
-    "hash": "0373ae02bc306a3a505ca970e9d50fac"
+    "mtime": 1791914952.7265997,
+    "hash": "540c54f4439117611706e8150fd52e0a"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/news_sentiment.py": {
     "mtime": 1791913814.3945556,
@@ -416,8 +416,8 @@
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/conftest.py": {
-    "mtime": 1791913815.9026709,
-    "hash": "9480e9f228d0a1541326525ce2ec8bfc"
+    "mtime": 1791914952.732129,
+    "hash": "6b3a21ee1eb5269427b23a840eb99587"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_monthly_engine_improvements.py": {
     "mtime": 1791913815.9216723,
@@ -432,8 +432,8 @@
     "hash": "75aa645af8cbce76c5d9da3c0243f0b7"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_feature_store.py": {
-    "mtime": 1791913815.9156718,
-    "hash": "e866038b4f4f242ba0bfbffb8582e713"
+    "mtime": 1791914952.7345948,
+    "hash": "e4483c652a212c9e1fe08d98b57b0f49"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_base.py": {
     "mtime": 1791913815.9086714,
@@ -464,8 +464,8 @@
     "hash": "b6b776c58cb79870d119edf67225ab1f"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_data.py": {
-    "mtime": 1791913815.9106715,
-    "hash": "a359f54512b923ab0b138de87301a5d2"
+    "mtime": 1791914952.7372913,
+    "hash": "f14ebabded2724b749e1fd09c15123d3"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_position_sizer.py": {
     "mtime": 1791913815.9266727,

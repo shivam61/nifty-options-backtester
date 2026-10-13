@@ -2901,23 +2901,35 @@ def main():
 
 def _purge_short_parquets(required_start: date) -> int:
     """
-    Delete per-ticker parquet caches whose earliest data row starts after
-    required_start.  These caches are too short to serve a full-history backtest
-    and will silently truncate data if left in place.
+    Delete per-ticker parquet caches whose earliest data row starts more than
+    7 calendar days after required_start (the first trading day may legitimately
+    fall a few days later, e.g. a weekend start).  These caches are too short to
+    serve a full-history backtest and would silently truncate data if left in place.
+
+    Only files listed in the cache manifest are considered; each removed file's
+    manifest entry is dropped too.  Unlisted files are never touched.
     """
-    from data.market_data import CACHE_DIR
+    from datetime import timedelta
+    from data import market_data as md
+    manifest = md.load_manifest()
     cleared = 0
-    for p in Path(CACHE_DIR).glob("*.parquet"):
+    for name in list(manifest):
+        p = md.CACHE_DIR / name
+        if not p.exists():
+            manifest.pop(name, None)
+            continue
         try:
             df = pd.read_parquet(p)
             if df.empty:
                 continue
             earliest = pd.Timestamp(df.index.min()).date()
-            if earliest > required_start:
+            if earliest > required_start + timedelta(days=7):
                 p.unlink()
+                manifest.pop(name, None)
                 cleared += 1
         except Exception:
             pass
+    md.save_manifest(manifest)
     return cleared
 
 

@@ -8,6 +8,7 @@ Covers:
 """
 
 import pytest
+import json
 import numpy as np
 import pandas as pd
 import hashlib
@@ -126,23 +127,35 @@ class TestExpiryCalendar:
 # Market data cache preference
 # ---------------------------------------------------------------------------
 
+def _ohlc(index, close):
+    close = np.asarray(close, dtype=float)
+    return pd.DataFrame({
+        "Open": close - 10.0,
+        "High": close + 20.0,
+        "Low": close - 20.0,
+        "Close": close,
+        "Volume": np.arange(len(index)) + 1,
+    }, index=index)
+
+
+def _nifty_like(index, base=22050.0, step=5.0):
+    return _ohlc(index, base + np.arange(len(index)) * step)
+
+
+def _vix_like(index, base=14.0):
+    return _ohlc(index, base + np.sin(np.arange(len(index)) / 5.0))
+
+
 class TestMarketDataCachePreference:
 
     def test_prefers_local_parquet_cache_before_network(self, tmp_path, monkeypatch):
         from data import market_data
 
-        market_data._cached_parquet_paths.cache_clear()
         monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
 
         idx = pd.date_range("2024-01-01", periods=60, freq="B")
-        df = pd.DataFrame({
-            "Open": np.linspace(22000, 22400, len(idx)),
-            "High": np.linspace(22100, 22500, len(idx)),
-            "Low": np.linspace(21900, 22300, len(idx)),
-            "Close": np.linspace(22050, 22450, len(idx)),
-            "Volume": np.arange(len(idx)) + 1,
-        }, index=idx)
-        df.to_parquet(tmp_path / "cached_series.parquet")
+        df = _ohlc(idx, np.linspace(22050, 22450, len(idx)))
+        market_data._store_cache("^NSEI", date(2024, 1, 1), date(2024, 2, 15), df)
 
         called = {"download": False}
 
@@ -162,27 +175,14 @@ class TestMarketDataCachePreference:
     def test_extends_partial_cache_and_updates_exact_cache(self, tmp_path, monkeypatch):
         from data import market_data
 
-        market_data._cached_parquet_paths.cache_clear()
         monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
 
         partial_idx = pd.bdate_range("2024-01-01", periods=20)
-        partial = pd.DataFrame({
-            "Open": np.linspace(22000, 22100, len(partial_idx)),
-            "High": np.linspace(22100, 22200, len(partial_idx)),
-            "Low": np.linspace(21900, 22000, len(partial_idx)),
-            "Close": np.linspace(22050, 22150, len(partial_idx)),
-            "Volume": np.arange(len(partial_idx)) + 1,
-        }, index=partial_idx)
-        partial.to_parquet(tmp_path / "partial.parquet")
+        partial = _ohlc(partial_idx, np.linspace(22050, 22150, len(partial_idx)))
+        market_data._store_cache("^NSEI", date(2024, 1, 1), date(2024, 1, 26), partial)
 
         tail_idx = pd.bdate_range("2024-01-29", "2024-02-15")
-        tail = pd.DataFrame({
-            "Open": np.linspace(22110, 22220, len(tail_idx)),
-            "High": np.linspace(22210, 22320, len(tail_idx)),
-            "Low": np.linspace(22010, 22120, len(tail_idx)),
-            "Close": np.linspace(22160, 22270, len(tail_idx)),
-            "Volume": np.arange(len(tail_idx)) + 100,
-        }, index=tail_idx)
+        tail = _ohlc(tail_idx, np.linspace(22160, 22270, len(tail_idx)))
 
         called = {"download": 0}
 
@@ -196,31 +196,23 @@ class TestMarketDataCachePreference:
         monkeypatch.setattr(market_data.yf, "download", _download)
 
         loaded = market_data._fetch_yfinance("^NSEI", date(2024, 1, 1), date(2024, 2, 15))
-        exact_path = market_data._cache_path(
-            hashlib.md5("^NSEI_2024-01-01_2024-02-15".encode()).hexdigest()
-        )
+        exact_path = tmp_path / "NSEI_2024-01-01_2024-02-15.parquet"
 
         assert called["download"] == 1
         assert loaded.index.min() == partial.index.min()
         assert loaded.index.max() == tail.index.max()
         assert len(loaded) == len(pd.concat([partial, tail]).index.unique())
         assert exact_path.exists()
+        assert "NSEI_2024-01-01_2024-02-15.parquet" in market_data.load_manifest()
 
     def test_returns_partial_cache_when_download_fails(self, tmp_path, monkeypatch):
         from data import market_data
 
-        market_data._cached_parquet_paths.cache_clear()
         monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
 
         partial_idx = pd.bdate_range("2024-01-01", periods=20)
-        partial = pd.DataFrame({
-            "Open": np.linspace(22000, 22100, len(partial_idx)),
-            "High": np.linspace(22100, 22200, len(partial_idx)),
-            "Low": np.linspace(21900, 22000, len(partial_idx)),
-            "Close": np.linspace(22050, 22150, len(partial_idx)),
-            "Volume": np.arange(len(partial_idx)) + 1,
-        }, index=partial_idx)
-        partial.to_parquet(tmp_path / "partial.parquet")
+        partial = _ohlc(partial_idx, np.linspace(22050, 22150, len(partial_idx)))
+        market_data._store_cache("^NSEI", date(2024, 1, 1), date(2024, 1, 26), partial)
 
         def _download(*args, **kwargs):
             raise OSError("offline")
@@ -231,6 +223,273 @@ class TestMarketDataCachePreference:
 
         assert len(loaded) == len(partial)
         assert loaded.index.max() == partial.index.max()
+
+
+class TestMarketDataCacheIdentity:
+    """Offline tests for ticker-safe cache identity, range guards, seam check and guard columns."""
+
+    START, END = date(2024, 1, 1), date(2024, 2, 15)
+
+    @pytest.fixture
+    def md(self, tmp_path, monkeypatch):
+        from data import market_data
+        monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
+        return market_data
+
+    def _no_download(self, monkeypatch, md):
+        calls = []
+
+        def _fail(ticker, start, end, progress=False):
+            calls.append((ticker, str(start), str(end)))
+            return pd.DataFrame()
+
+        monkeypatch.setattr(md.yf, "download", _fail)
+        return calls
+
+    # (a) ties between different tickers' files never cross tickers
+    def test_tie_between_two_tickers_never_crosses(self, md, tmp_path, monkeypatch):
+        idx = pd.bdate_range(self.START, self.END)
+        md._store_cache("^GSPC", self.START, self.END, _ohlc(idx, np.linspace(4000, 4300, len(idx))))
+        md._store_cache("^HSI", self.START, self.END, _ohlc(idx, np.linspace(20000, 20300, len(idx))))
+        assert (tmp_path / "GSPC_2024-01-01_2024-02-15.parquet").exists()
+
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        assert md._fetch_yfinance("^NSEI", self.START, self.END).empty
+
+        monkeypatch.delenv("MARKET_DATA_CACHE_ONLY")
+        calls = self._no_download(monkeypatch, md)
+        result = md._fetch_yfinance("^NSEI", self.START, self.END)
+        assert result.empty
+        # Download is attempted for the requested ticker from the requested start: no foreign partial was used.
+        assert calls == [("^NSEI", "2024-01-01", "2024-02-15")]
+
+    # (b) out-of-range series are rejected on load and on store
+    def test_out_of_range_file_rejected_on_load(self, md, tmp_path, monkeypatch):
+        idx = pd.bdate_range(self.START, self.END)
+        bad = _nifty_like(idx)  # Nifty-level prices under the India VIX ticker
+        name = md.cache_filename("^INDIAVIX", self.START, self.END)
+        bad.to_parquet(tmp_path / name)
+        md.save_manifest({name: {"ticker": "^INDIAVIX", "start": "2024-01-01",
+                                 "end": "2024-02-15", "last_date": str(idx[-1].date())}})
+
+        good = _vix_like(idx)
+        calls = []
+
+        def _download(ticker, start, end, progress=False):
+            calls.append(ticker)
+            return good
+
+        monkeypatch.setattr(md.yf, "download", _download)
+        loaded = md._fetch_yfinance("^INDIAVIX", self.START, self.END)
+
+        assert calls == ["^INDIAVIX"]
+        assert loaded["Close"].max() < 100
+        assert loaded["Close"].median() < 100
+
+    def test_out_of_range_download_is_never_stored(self, md, tmp_path, monkeypatch):
+        idx = pd.bdate_range(self.START, self.END)
+        bad = _nifty_like(idx)
+
+        def _download(ticker, start, end, progress=False):
+            return bad
+
+        monkeypatch.setattr(md.yf, "download", _download)
+        result = md._fetch_yfinance("^INDIAVIX", self.START, self.END)
+
+        assert result.empty
+        assert not (tmp_path / md.cache_filename("^INDIAVIX", self.START, self.END)).exists()
+        assert md.load_manifest() == {}
+
+    def test_store_cache_refuses_out_of_range(self, md, tmp_path):
+        idx = pd.bdate_range(self.START, self.END)
+        assert md._store_cache("^VIX", self.START, self.END, _nifty_like(idx)) is None
+        assert list(tmp_path.glob("*.parquet")) == []
+        assert md.load_manifest() == {}
+
+    # (c) identical or dead macro columns are refused by build_combined_dataset
+    @staticmethod
+    def _fake_frames(md, monkeypatch, overrides=None, drop=()):
+        overrides = overrides or {}
+        bases = {
+            "^NSEI": 22000, "^INDIAVIX": 15, "BZ=F": 80, "CL=F": 75, "INR=X": 83, "GC=F": 2000,
+            "DX-Y.NYB": 100, "^VIX": 18, "^TNX": 4, "^GSPC": 4500, "^NSEBANK": 48000,
+            "^CNXIT": 35000, "EEM": 40, "^HSI": 20000, "^STOXX50E": 4000, "SI=F": 25,
+        }
+        idx = pd.bdate_range("2023-01-02", periods=300)
+
+        def _series(ticker):
+            if ticker in overrides:
+                return overrides[ticker](idx)
+            seed = sum(map(ord, ticker))
+            rng = np.random.RandomState(seed)
+            walk = bases[ticker] * np.cumprod(1 + rng.normal(0, 0.005, len(idx)))
+            return _ohlc(idx, walk)
+
+        def _fake_fetch(ticker, start, end):
+            if ticker in drop:
+                return pd.DataFrame()
+            return _series(ticker)
+
+        monkeypatch.setattr(md, "_fetch_yfinance", _fake_fetch)
+
+    def test_identical_macro_columns_raise(self, md, monkeypatch):
+        # ^VIX (us_vix) returns exactly the Brent (BZ=F) series -> two raw macro columns identical
+        brent_walk = lambda idx: _ohlc(
+            idx,
+            80 * np.cumprod(1 + np.random.RandomState(sum(map(ord, "BZ=F"))).normal(0, 0.005, len(idx))),
+        )
+        self._fake_frames(md, monkeypatch, overrides={"^VIX": brent_walk})
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), date(2024, 3, 1))
+        with pytest.raises(ValueError, match="Identical macro series"):
+            fetcher.build_combined_dataset()
+
+    def test_entirely_default_macro_column_raises(self, md, monkeypatch):
+        self._fake_frames(md, monkeypatch, drop={"EEM"})
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), date(2024, 3, 1))
+        with pytest.raises(ValueError, match="default constants.*em_etf"):
+            fetcher.build_combined_dataset()
+
+    def test_distinct_macro_columns_build(self, md, monkeypatch):
+        self._fake_frames(md, monkeypatch)
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), date(2024, 3, 1))
+        data = fetcher.build_combined_dataset()
+        assert {"nifty_close", "vix", "crude", "em_etf", "us_vix"} <= set(data.columns)
+        assert len(data) > 0
+
+    # (d) manifest round trip and naming
+    def test_manifest_round_trip(self, md, tmp_path):
+        idx = pd.bdate_range(self.START, self.END)
+        md._store_cache("^NSEI", self.START, self.END, _nifty_like(idx))
+        md._store_cache("BZ=F", self.START, self.END, _ohlc(idx, np.linspace(70, 90, len(idx))))
+
+        assert (tmp_path / "manifest.json").exists()
+        expected = {
+            "NSEI_2024-01-01_2024-02-15.parquet": {
+                "ticker": "^NSEI", "start": "2024-01-01", "end": "2024-02-15",
+                "last_date": str(idx[-1].date()),
+            },
+            "BZ_F_2024-01-01_2024-02-15.parquet": {
+                "ticker": "BZ=F", "start": "2024-01-01", "end": "2024-02-15",
+                "last_date": str(idx[-1].date()),
+            },
+        }
+        assert md.load_manifest() == expected
+        # A fresh read from disk (no in-process state) gives the same mapping.
+        assert json.loads((tmp_path / "manifest.json").read_text())["files"] == expected
+
+    def test_slugs_are_readable_and_unique(self, md):
+        assert md.cache_filename("^NSEI", self.START, self.END) == "NSEI_2024-01-01_2024-02-15.parquet"
+        assert md.cache_filename("BZ=F", self.START, self.END) == "BZ_F_2024-01-01_2024-02-15.parquet"
+        assert md.cache_filename("DX-Y.NYB", self.START, self.END) == "DX_Y_NYB_2024-01-01_2024-02-15.parquet"
+        slugs = {md.ticker_slug(t) for t in md.TICKERS.values()}
+        assert len(slugs) == len(md.TICKERS)
+        assert set(md.RANGES) == set(md.TICKERS.values())
+
+    # (e) a seam jump discards the partial and refetches the whole range
+    def test_seam_jump_discards_partial(self, md, tmp_path, monkeypatch):
+        partial_idx = pd.bdate_range("2024-01-01", "2024-01-26")
+        md._store_cache("^NSEI", self.START, date(2024, 1, 26),
+                        _nifty_like(partial_idx, base=22050, step=5))
+
+        full_idx = pd.bdate_range(self.START, self.END)
+        good_full = _nifty_like(full_idx, base=22050, step=5)
+        calls = []
+
+        def _download(ticker, start, end, progress=False):
+            calls.append(str(start))
+            if str(start) == "2024-01-29":
+                # Bad tail: +58% at the seam (inside the Nifty range, so only the seam check can catch it)
+                return _ohlc(pd.bdate_range("2024-01-29", "2024-02-15"), np.full(14, 35000.0))
+            return good_full
+
+        monkeypatch.setattr(md.yf, "download", _download)
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert calls == ["2024-01-29", "2024-01-01"]
+        assert len(loaded) == len(good_full)
+        assert loaded["Close"].max() < 30000
+        stored = pd.read_parquet(tmp_path / "NSEI_2024-01-01_2024-02-15.parquet")
+        assert stored["Close"].max() < 30000
+
+    # (f) legacy md5 key: exact hit only, and only for the ticker that produced the key
+    def test_legacy_md5_exact_hit_accepted_only_for_own_ticker(self, md, tmp_path, monkeypatch):
+        import hashlib
+        idx = pd.bdate_range(self.START, self.END)
+        legacy_nifty = tmp_path / (hashlib.md5("^NSEI_2024-01-01_2024-02-15".encode()).hexdigest() + ".parquet")
+        _nifty_like(idx).to_parquet(legacy_nifty)
+
+        calls = self._no_download(monkeypatch, md)
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+        assert calls == []
+        assert len(loaded) == len(idx)
+        # The hit is migrated to the ticker-named file and registered in the manifest.
+        assert md.load_manifest()["NSEI_2024-01-01_2024-02-15.parquet"]["ticker"] == "^NSEI"
+
+        # The same legacy file is not used for another ticker with the same dates.
+        calls = self._no_download(monkeypatch, md)
+        other = md._fetch_yfinance("^INDIAVIX", self.START, self.END)
+        assert calls == [("^INDIAVIX", "2024-01-01", "2024-02-15")]
+        assert other.empty
+
+    def test_legacy_md5_file_with_bad_range_is_refused(self, md, tmp_path, monkeypatch):
+        import hashlib
+        idx = pd.bdate_range(self.START, self.END)
+        legacy = tmp_path / (hashlib.md5("^INDIAVIX_2024-01-01_2024-02-15".encode()).hexdigest() + ".parquet")
+        _nifty_like(idx).to_parquet(legacy)
+        calls = self._no_download(monkeypatch, md)
+        assert md._fetch_yfinance("^INDIAVIX", self.START, self.END).empty
+        assert calls == [("^INDIAVIX", "2024-01-01", "2024-02-15")]
+
+    # (g) cache-only mode returns own-ticker partial and never another ticker's
+    def test_cache_only_returns_own_ticker_partial_only(self, md, tmp_path, monkeypatch):
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        full_idx = pd.bdate_range(self.START, self.END)
+        md._store_cache("^GSPC", self.START, self.END, _ohlc(full_idx, np.linspace(4000, 4300, len(full_idx))))
+        own_idx = pd.bdate_range(self.START, "2024-01-26")
+        md._store_cache("^NSEI", self.START, date(2024, 1, 26), _nifty_like(own_idx))
+        calls = self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+        assert calls == []
+        assert loaded.index.max() == own_idx[-1]
+        assert loaded["Close"].min() > 2000  # Nifty prices, not the S&P file
+
+        assert md._fetch_yfinance("^INDIAVIX", self.START, self.END).empty
+        assert calls == []
+
+
+class TestPurgeShortParquets:
+
+    def test_purges_only_listed_late_starting_files(self, tmp_path, monkeypatch):
+        import main as main_module
+        from data import market_data
+        monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
+
+        late_idx = pd.bdate_range("2024-02-01", "2024-02-15")
+        ok_idx = pd.bdate_range("2024-01-02", "2024-02-15")
+        market_data._store_cache("^NSEI", date(2024, 1, 1), date(2024, 2, 15), _nifty_like(late_idx))
+        market_data._store_cache("^VIX", date(2024, 1, 1), date(2024, 2, 15),
+                                 _ohlc(ok_idx, np.linspace(15, 16, len(ok_idx))))
+        unlisted = tmp_path / "unlisted.parquet"
+        _nifty_like(late_idx).to_parquet(unlisted)
+
+        cleared = main_module._purge_short_parquets(date(2024, 1, 1))
+
+        assert cleared == 1
+        assert not (tmp_path / "NSEI_2024-01-01_2024-02-15.parquet").exists()
+        assert (tmp_path / "VIX_2024-01-01_2024-02-15.parquet").exists()
+        assert unlisted.exists()
+        assert list(market_data.load_manifest()) == ["VIX_2024-01-01_2024-02-15.parquet"]
+
+    def test_tolerates_first_trading_day_a_few_days_late(self, tmp_path, monkeypatch):
+        import main as main_module
+        from data import market_data
+        monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
+        idx = pd.bdate_range("2024-01-03", "2024-02-15")  # 2 days after a Monday 2024-01-01 request
+        market_data._store_cache("^GSPC", date(2024, 1, 1), date(2024, 2, 15),
+                                 _ohlc(idx, np.linspace(4000, 4300, len(idx))))
+        assert main_module._purge_short_parquets(date(2024, 1, 1)) == 0
+        assert (tmp_path / "GSPC_2024-01-01_2024-02-15.parquet").exists()
 
 
 # ---------------------------------------------------------------------------
