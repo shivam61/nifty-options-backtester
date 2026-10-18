@@ -168,9 +168,12 @@ class TestMarketDataCachePreference:
         loaded = market_data._fetch_yfinance("^NSEI", date(2024, 1, 1), date(2024, 2, 15))
 
         assert not called["download"]
-        assert len(loaded) == len(df)
+        # the file holds rows past the requested end; only the window [start, end] is returned
+        expected = df.loc[:"2024-02-15"]
+        assert len(loaded) == len(expected)
         assert loaded.index.min() == df.index.min()
-        assert loaded.index.max() == df.index.max()
+        assert loaded.index.max() == pd.Timestamp("2024-02-15")
+        assert len(pd.read_parquet(tmp_path / "NSEI_2024-01-01_2024-02-15.parquet")) == len(df)
 
     def test_extends_partial_cache_and_updates_exact_cache(self, tmp_path, monkeypatch):
         from data import market_data
@@ -617,3 +620,170 @@ class TestMarketRegime:
         assert r.trend == "neutral"
         score = r.risk_score
         assert 0.1 < score < 0.5
+
+
+# ---------------------------------------------------------------------------
+# _fetch_yfinance returns only the requested [start, end] window
+# ---------------------------------------------------------------------------
+
+class TestFetchReturnsRequestedWindow:
+    START, END = date(2024, 1, 1), date(2024, 2, 15)
+    LONG_END = date(2024, 3, 29)
+
+    @pytest.fixture
+    def md(self, tmp_path, monkeypatch):
+        from data import market_data
+        monkeypatch.setattr(market_data, "CACHE_DIR", tmp_path)
+        monkeypatch.delenv("MARKET_DATA_CACHE_ONLY", raising=False)
+        return market_data
+
+    @staticmethod
+    def _no_download(monkeypatch, md):
+        calls = []
+
+        def _fail(ticker, start, end, progress=False):
+            calls.append((ticker, str(start), str(end)))
+            return pd.DataFrame()
+
+        monkeypatch.setattr(md.yf, "download", _fail)
+        return calls
+
+    def _store_long(self, md, start=None, end=None):
+        start = start or self.START
+        end = end or self.LONG_END
+        idx = pd.bdate_range(start, end)
+        df = _nifty_like(idx)
+        md._store_cache("^NSEI", start, end, df)
+        return df
+
+    # (1) requested end earlier than cached last date
+    def test_end_earlier_than_cached_last_date_is_clipped(self, md, tmp_path, monkeypatch):
+        stored = self._store_long(md)
+        calls = self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert calls == []
+        assert not loaded.empty
+        assert loaded.index.max() <= pd.Timestamp(self.END)
+        assert loaded.index.max() == pd.Timestamp(self.END)
+        # the cache file still holds the full history
+        on_disk = pd.read_parquet(tmp_path / "NSEI_2024-01-01_2024-03-29.parquet")
+        assert on_disk.index.max() == stored.index.max()
+        assert len(on_disk) == len(stored)
+
+    def test_fresh_download_is_clipped_but_stored_in_full(self, md, tmp_path, monkeypatch):
+        idx = pd.bdate_range(self.START, self.LONG_END)
+        full = _nifty_like(idx)
+        monkeypatch.setattr(md.yf, "download", lambda *a, **k: full)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert loaded.index.max() == pd.Timestamp(self.END)
+        stored = pd.read_parquet(tmp_path / "NSEI_2024-01-01_2024-02-15.parquet")
+        assert stored.index.max() == pd.Timestamp(self.LONG_END)
+
+    # (2) start trimming
+    def test_rows_before_requested_start_are_dropped(self, md, monkeypatch):
+        early = date(2023, 12, 20)
+        self._store_long(md, start=early, end=self.LONG_END)
+        self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert loaded.index.min() >= pd.Timestamp(self.START)
+        assert loaded.index.min() == pd.bdate_range(self.START, self.END)[0]
+
+    def test_file_starting_within_tolerance_after_start_is_kept(self, md, monkeypatch):
+        late = self.START + timedelta(days=3)
+        self._store_long(md, start=late, end=self.LONG_END)
+        self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert not loaded.empty
+        assert loaded.index.min() == pd.Timestamp(late)
+        assert loaded.index.max() == pd.Timestamp(self.END)
+
+    # (3) cache-only mode with an older end
+    def test_cache_only_mode_clips_to_older_end(self, md, tmp_path, monkeypatch):
+        self._store_long(md)
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        calls = self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert calls == []
+        assert loaded.index.max() == pd.Timestamp(self.END)
+        assert pd.read_parquet(tmp_path / "NSEI_2024-01-01_2024-03-29.parquet").index.max() == pd.Timestamp(self.LONG_END)
+
+    def test_cache_only_partial_shorter_than_end_is_clipped_not_extended(self, md, monkeypatch):
+        self._store_long(md, end=date(2024, 2, 1))
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert loaded.index.max() == pd.Timestamp(date(2024, 2, 1))
+
+    def test_cache_only_miss_returns_empty(self, md, monkeypatch):
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        self._no_download(monkeypatch, md)
+
+        assert md._fetch_yfinance("^NSEI", self.START, self.END).empty
+
+    # (4) exact hit with a newer same-ticker partial also available
+    def test_exact_hit_wins_over_newer_partial_and_is_clipped(self, md, tmp_path, monkeypatch):
+        exact_df = self._store_long(md, end=self.END)
+        self._store_long(md, end=self.LONG_END)
+        calls = self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert calls == []
+        assert loaded.index.max() == pd.Timestamp(self.END)
+        assert len(loaded) == len(exact_df)
+        assert loaded.index.equals(exact_df.index)
+
+    # (5) output unchanged when end >= last cached date
+    def test_output_unchanged_when_end_covers_cache(self, md, monkeypatch):
+        stored = self._store_long(md, end=self.END)
+        self._no_download(monkeypatch, md)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        pd.testing.assert_frame_equal(loaded, stored, check_freq=False)
+
+    def test_partial_extension_still_merges_and_clips(self, md, tmp_path, monkeypatch):
+        partial_idx = pd.bdate_range(self.START, "2024-01-26")
+        partial = _nifty_like(partial_idx)
+        md._store_cache("^NSEI", self.START, date(2024, 1, 26), partial)
+        tail_idx = pd.bdate_range("2024-01-29", self.LONG_END)
+        tail = _nifty_like(tail_idx, base=22200.0)
+        monkeypatch.setattr(md.yf, "download", lambda *a, **k: tail)
+
+        loaded = md._fetch_yfinance("^NSEI", self.START, self.END)
+
+        assert loaded.index.max() == pd.Timestamp(self.END)
+        assert loaded.index.min() == partial.index.min()
+        assert len(loaded) == len(pd.bdate_range(self.START, self.END))
+
+    # (6) build_combined_dataset never exposes rows past the requested end
+    def test_build_combined_dataset_respects_requested_end(self, md, monkeypatch):
+        idx = pd.bdate_range("2023-01-02", "2024-04-30")
+        for ticker in md.TICKERS.values():
+            seed = sum(map(ord, ticker))
+            rng = np.random.RandomState(seed)
+            base = {"^NSEI": 22000, "^INDIAVIX": 15, "BZ=F": 80, "CL=F": 75, "INR=X": 83, "GC=F": 2000,
+                    "DX-Y.NYB": 100, "^VIX": 18, "^TNX": 4, "^GSPC": 4500, "^NSEBANK": 48000,
+                    "^CNXIT": 35000, "EEM": 40, "^HSI": 20000, "^STOXX50E": 4000, "SI=F": 25}[ticker]
+            walk = base * np.cumprod(1 + rng.normal(0, 0.005, len(idx)))
+            md._store_cache(ticker, idx[0].date(), idx[-1].date(), _ohlc(idx, walk))
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        requested_end = date(2024, 3, 1)
+
+        dataset = md.MarketDataFetcher(date(2023, 1, 2), requested_end).build_combined_dataset()
+
+        assert not dataset.empty
+        assert dataset.index.max() <= pd.Timestamp(requested_end)
+        assert dataset.index.max() == pd.Timestamp(requested_end)

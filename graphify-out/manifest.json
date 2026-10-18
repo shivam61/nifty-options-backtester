@@ -76,8 +76,8 @@
     "hash": "a949e82fa021f1dfb979bd23abf648f7"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/validate_market_cache.py": {
-    "mtime": 1791915140.0668166,
-    "hash": "8625e0955c9483e772482609016df9ef"
+    "mtime": 1792300268.6920342,
+    "hash": "835efc93dfc16e48b6f19cb8b2215450"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/scripts/monthly_diagnostic_audit.py": {
     "mtime": 1791913815.8716686,
@@ -180,8 +180,8 @@
     "hash": "fe1695f5dbf10c49e0eeedaab5c46780"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/market_data.py": {
-    "mtime": 1791914952.7265997,
-    "hash": "540c54f4439117611706e8150fd52e0a"
+    "mtime": 1792300268.687098,
+    "hash": "e7440c59c8ff119ad99ed3c7010bbc46"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/data/news_sentiment.py": {
     "mtime": 1791913814.3945556,
@@ -424,8 +424,8 @@
     "hash": "a861e5dfaa4da79e0d08bfa53881886a"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_validate_market_cache.py": {
-    "mtime": 1791914485.2587981,
-    "hash": "010e6318deb86b58fea06a3ec59a3015"
+    "mtime": 1792300264.8999908,
+    "hash": "02c936cc3d9665519f72f33fda003022"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_api_endpoints.py": {
     "mtime": 1791913815.9066713,
@@ -464,8 +464,8 @@
     "hash": "b6b776c58cb79870d119edf67225ab1f"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_data.py": {
-    "mtime": 1791914952.7372913,
-    "hash": "f14ebabded2724b749e1fd09c15123d3"
+    "mtime": 1792300264.8961477,
+    "hash": "249a513623fe6d8c4f82730238552f2b"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/.claude/worktrees/agent-a5137b267ac5a56fc/tests/test_position_sizer.py": {
     "mtime": 1791913815.9266727,

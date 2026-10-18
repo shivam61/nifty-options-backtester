@@ -281,7 +281,8 @@ def dataset_column_stats(df: pd.DataFrame) -> list[dict]:
 
 
 def evaluate_dataset(df: pd.DataFrame, asof: date,
-                     max_stale_days: int = DATASET_FRESHNESS_DAYS) -> list[tuple[str, bool, str]]:
+                     max_stale_days: int = DATASET_FRESHNESS_DAYS,
+                     requested_end: date | None = None) -> list[tuple[str, bool, str]]:
     checks: list[tuple[str, bool, str]] = []
 
     pairs = identity_pairs(df, list(DATASET_RANGES))
@@ -325,6 +326,9 @@ def evaluate_dataset(df: pd.DataFrame, asof: date,
         stale = int(np.busday_count(last, asof))
         checks.append(("last date fresh", stale <= max_stale_days,
                        f"last={last} asof={asof} business_days_stale={stale} (max {max_stale_days})"))
+        if requested_end is not None:
+            checks.append(("dataset last date <= --end", last <= requested_end,
+                           f"last={last} end={requested_end}"))
     return checks
 
 
@@ -429,9 +433,10 @@ def run_validation(args) -> tuple[str, list[tuple[str, bool, str]]]:
     checks = file_checks(records, identical)
 
     if args.dataset:
-        df = build_dataset_frame(args.cache_dir, args.start, args.end)
+        end = args.end or args.asof
+        df = build_dataset_frame(args.cache_dir, args.start, end)
         parts.append(format_dataset_report(df, args.asof))
-        checks += evaluate_dataset(df, args.asof, args.max_stale_days)
+        checks += evaluate_dataset(df, args.asof, args.max_stale_days, requested_end=args.end)
 
     parts.append("== CHECKS ==")
     parts.append(format_checks(checks))
@@ -525,7 +530,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--dataset", action="store_true",
                    help="also build the combined dataset (MARKET_DATA_CACHE_ONLY=1) and check it")
     p.add_argument("--start", type=_parse_date, default=date(2009, 1, 1), help="dataset start (YYYY-MM-DD)")
-    p.add_argument("--end", type=_parse_date, default=None, help="dataset end (default: --asof)")
+    p.add_argument("--end", type=_parse_date, default=None,
+                   help="dataset end (default: --asof); with --dataset also checks last date <= --end")
     p.add_argument("--asof", type=_parse_date, default=None, help="reference date (default: today)")
     p.add_argument("--max-stale-days", type=int, default=DATASET_FRESHNESS_DAYS,
                    help="max business days between last dataset date and --asof")
@@ -537,7 +543,6 @@ def main(argv: list[str] | None = None) -> int:
         return selftest()
 
     args.asof = args.asof or date.today()
-    args.end = args.end or args.asof
     try:
         text, checks = run_validation(args)
     except Exception as exc:

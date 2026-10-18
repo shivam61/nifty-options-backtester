@@ -258,6 +258,15 @@ def _slice_cached_range(df: pd.DataFrame, start: date, end: date) -> pd.DataFram
     return df.loc[(df.index >= start_ts) & (df.index <= end_ts)].copy()
 
 
+def _clip_to_request(df: pd.DataFrame, start: date, end: date) -> pd.DataFrame:
+    """Rows of a cache frame inside the caller's [start, end]; an empty result is returned as an empty DataFrame.
+
+    Only the returned frame is cut: cache files keep their full history.
+    """
+    clipped = _slice_cached_range(df, start, end)
+    return clipped if not clipped.empty else pd.DataFrame()
+
+
 def _seam_jump(old: pd.DataFrame, new: pd.DataFrame) -> Optional[float]:
     """Relative Close change between the last cached row and the first fresh row."""
     prev = pd.to_numeric(old["Close"], errors="coerce").dropna()
@@ -287,16 +296,17 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
     effective_end = end if end < _date_t.today() else _date_t.today() - timedelta(days=1)
 
     # Exact local hit (ticker-named manifest file or legacy exact key) before any network access.
+    # Every return below is cut to the caller's [start, end]; cache files keep their full history.
     exact = _exact_cache_hit(ticker, start, effective_end)
     if exact is not None:
-        return exact
+        return _clip_to_request(exact, start, end)
 
     partial = _find_partial(ticker, start)
     if partial is not None and partial.index.max().date() >= end:
-        return partial
+        return _clip_to_request(partial, start, end)
 
     if os.environ.get("MARKET_DATA_CACHE_ONLY", "").strip().lower() in {"1", "true", "yes"}:
-        return partial if partial is not None else pd.DataFrame()
+        return _clip_to_request(partial, start, end) if partial is not None else pd.DataFrame()
 
     if partial is not None:
         last_cached = partial.index.max().date()
@@ -304,7 +314,7 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
         tail = _download(ticker, fetch_start, end)
         if tail.empty:
             # Download failed or nothing new: serve the own-ticker partial; do not store it under the exact key.
-            return partial
+            return _clip_to_request(partial, start, end)
         jump = _seam_jump(partial, tail)
         if jump is not None and jump > SEAM_MAX_JUMP:
             logger.warning(
@@ -316,7 +326,7 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
             merged = merged[~merged.index.duplicated(keep="last")].sort_index()
             if _range_problem(ticker, merged) is None:
                 _store_cache(ticker, start, effective_end, merged)
-                return merged
+                return _clip_to_request(merged, start, end)
             logger.error("%s: merged partial+tail out of range; refetching %s..%s", ticker, start, end)
 
     # Cache miss, or partial discarded: full fetch of the requested range.
@@ -330,7 +340,7 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
         logger.error("%s: fetched series rejected (%s); not stored", ticker, problem)
         return pd.DataFrame()
     _store_cache(ticker, start, effective_end, full)
-    return full
+    return _clip_to_request(full, start, end)
 
 
 class MarketDataFetcher:

@@ -173,6 +173,28 @@ def test_stale_dataset_fails_freshness():
     assert fresh == [False]
 
 
+def test_dataset_end_check_only_when_requested_end_given():
+    df = pd.DataFrame(_clean_raw())
+    assert not any(name == "dataset last date <= --end" for name, _, _ in v.evaluate_dataset(df, ASOF))
+
+
+def test_dataset_last_date_past_requested_end_fails():
+    df = pd.DataFrame(_clean_raw())
+    last = df.index.max().date()
+    checks = v.evaluate_dataset(df, ASOF, requested_end=date.fromordinal(last.toordinal() - 1))
+    end_rows = [ok for name, ok, _ in checks if name == "dataset last date <= --end"]
+    assert end_rows == [False]
+    assert v.exit_code(checks) == 1
+
+
+def test_dataset_last_date_within_requested_end_passes():
+    df = pd.DataFrame(_clean_raw())
+    last = df.index.max().date()
+    checks = v.evaluate_dataset(df, ASOF, requested_end=last)
+    end_rows = [ok for name, ok, _ in checks if name == "dataset last date <= --end"]
+    assert end_rows == [True]
+
+
 def test_missing_column_fails_median_check():
     raw = _clean_raw()
     del raw["europe"]
