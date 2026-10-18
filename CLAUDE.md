@@ -183,3 +183,5 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
 - **`--mode evolve` must run before backtest/signal** — Deleting `data/.cache/*.pkl` requires a full retrain. Evolve takes ~15–20 min on 17yr data. Feature column changes or strategy changes → always retrain. Use `nohup` (see Agent Workflow section) — evolve will be killed by session disconnection otherwise.
 
 - **ETL gate is now configurable** — `WeeklyRiskEngine` previously had a hardcoded `etl > entry_credit` (1.0×) skip threshold that blocked ~363/465 weekly entries over 17yr (78% collapse). Now controlled by `WeeklyBacktestConfig.etl_skip_multiplier` (default 1.5). The multiplier is applied at runtime via `CombinedBacktestEngine.__init__` — no retrain needed to change it. After any retrain, check `ETL > credit skips` in backtest output; target < 100 over 17yr.
+
+- **NSE holidays** — an expiry on a segment-closed holiday moves to the previous trading day. Holidays live in `data/nse_holidays.json` (forward-looking only, so historical backtests are unchanged). Add each new exchange holiday list there every year and re-verify against the NSE circular.

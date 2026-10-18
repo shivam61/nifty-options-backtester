@@ -4,14 +4,16 @@ Quickly check if your Fyers access token is valid and working.
 """
 
 import os
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
 from fyers_apiv3 import fyersModel
 from datetime import datetime
 
-# Load environment variables
-env_path = Path(__file__).parent.parent / ".env"
-load_dotenv(env_path)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from utils.env_loader import load_env  # noqa: E402
+
+# Load .env then .env.local (credentials live in .env.local)
+load_env()
 
 
 def check_token_status():
@@ -26,11 +28,11 @@ def check_token_status():
     access_token = os.getenv('FYERS_ACCESS_TOKEN')
     
     if not client_id:
-        print("\n❌ FYERS_CLIENT_ID not found in .env file")
+        print("\n❌ FYERS_CLIENT_ID not found in .env or .env.local")
         return False
     
     if not access_token:
-        print("\n❌ FYERS_ACCESS_TOKEN not found in .env file")
+        print("\n❌ FYERS_ACCESS_TOKEN not found in .env or .env.local")
         print("\n💡 Run: python scripts/generate_fyers_token.py")
         return False
     

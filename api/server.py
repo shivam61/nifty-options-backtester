@@ -327,7 +327,8 @@ async def get_entry_signal() -> Dict[str, Any]:
         regime = _infer_regime(vix)
 
         # Check entry window (11:00–13:00 IST)
-        now_ist = datetime.utcnow().replace(tzinfo=None)  # Approximate
+        from zoneinfo import ZoneInfo
+        now_ist = datetime.now(ZoneInfo("Asia/Kolkata")).replace(tzinfo=None)
         within_window = 11 <= now_ist.hour < 13
 
         # Get eligibile strategies

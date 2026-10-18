@@ -50,6 +50,8 @@ from data.market_data import MarketDataFetcher
 from data.expiry_calendar import (
     get_best_expiry_for_dte, get_upcoming_expiries, format_expiry_label,
 )
+from utils.env_loader import load_env
+from utils.market_clock import now_ist, is_market_hours, market_day_gate
 from data.news_sentiment import (
     score_headlines, compute_price_action_sentiment,
     compute_geopolitical_risk_index,
@@ -87,15 +89,12 @@ def _check_fyers_token_and_warn() -> tuple[bool, bool]:
     Returns:
         (is_market_hours, token_valid) tuple
     """
-    from datetime import datetime as _dt, time as _time
     import os as _os
-    from dotenv import load_dotenv as _lde
-    
-    _lde(override=True)
-    
-    _now = _dt.now()
-    _market_hours = (_time(9, 15) <= _now.time() <= _time(15, 30) and _now.weekday() < 5)
-    
+
+    load_env()
+
+    _market_hours = is_market_hours(now_ist())
+
     if not _market_hours:
         return False, True
     
@@ -666,8 +665,8 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print("\n[1/5] Fetching market data...")
     fetcher = MarketDataFetcher(config.start_date, config.end_date)
     data = fetcher.build_combined_dataset()
-    if fetcher.integrity_summary:  # set by build only after its macro check passed
-        print(f"  Cache integrity OK: {fetcher.integrity_summary}")
+    if getattr(fetcher, 'integrity_summary', ''):  # set by build only after its macro check passed
+        print(f"  Cache integrity OK: {getattr(fetcher, 'integrity_summary', '')}")
     print(f"  Loaded {len(data)} trading days")
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
@@ -1066,7 +1065,7 @@ def run_signal(config: BacktestConfig) -> None:
     latest = data.iloc[-1]
     data_date = data.index[-1]
     data_date_str = data_date.date() if hasattr(data_date, "date") else data_date
-    today = date.today()
+    today = now_ist().date()  # IST calendar date, not host (UTC) date
     spot = latest.get("nifty_close", 0)
     vix = latest.get("vix", 0)
 
@@ -1087,15 +1086,11 @@ def run_signal(config: BacktestConfig) -> None:
     if data_date_str < today:
         try:
             from fyers_apiv3 import fyersModel as _fyersModel
-            from datetime import datetime as _dt_live, time as _time_live
             import os as _os_live
-            from dotenv import load_dotenv as _lde_live
-            _lde_live(override=True)
-            
-            _now_live = _dt_live.now()
-            _market_hours = (_time_live(9, 15) <= _now_live.time() <= _time_live(15, 30) and
-                            _now_live.weekday() < 5)
-            
+            load_env()
+
+            _market_hours = is_market_hours(now_ist())
+
             if _market_hours:
                 _fyers_live = _fyersModel.FyersModel(
                     client_id=_os_live.getenv("FYERS_CLIENT_ID"),
@@ -1364,23 +1359,13 @@ def run_signal(config: BacktestConfig) -> None:
     try:
         from fyers_apiv3 import fyersModel as _fyersModel
         from data.option_chain import OptionChainSnapshot, StrikeData
-        from datetime import datetime as _dt2, time as _time
+        from datetime import datetime as _dt2
         import os as _os2
-        from dotenv import load_dotenv as _lde2
-        _lde2(override=True)
-        
-        # Check if we're in market hours — always in IST regardless of system TZ
-        try:
-            from zoneinfo import ZoneInfo as _ZI2
-            _now = _dt2.now(_ZI2("Asia/Kolkata"))
-        except Exception:
-            import pytz as _pytz2
-            _now = _dt2.now(_pytz2.timezone("Asia/Kolkata"))
-        _market_start = _time(9, 15)
-        _market_end = _time(15, 30)
-        _is_market_hours = (_market_start <= _now.time() <= _market_end and
-                           _now.weekday() < 5)  # Mon-Fri IST
-        
+        load_env()
+
+        # Market hours in IST regardless of system TZ (holiday-aware)
+        _is_market_hours = is_market_hours(now_ist())
+
         if _is_market_hours:
             print(f"  Market hours detected — attempting Fyers API...")
             
@@ -1446,7 +1431,7 @@ def run_signal(config: BacktestConfig) -> None:
                     
                     if _calls2 or _puts2:
                         snapshot = OptionChainSnapshot(
-                            timestamp=f"Fyers LIVE ({_dt2.now().strftime('%H:%M:%S')})",
+                            timestamp=f"Fyers LIVE ({now_ist().strftime('%H:%M:%S')})",
                             spot_price=live_spot,
                             expiry_dates=[str(_closest_exp)],
                             selected_expiry=_closest_exp.strftime("%d-%b-%Y"),
@@ -2038,8 +2023,8 @@ def run_evolve(config: BacktestConfig):
 
     fetcher = MarketDataFetcher(config.start_date, config.end_date)
     data = fetcher.build_combined_dataset()
-    if fetcher.integrity_summary:  # set by build only after its macro check passed
-        print(f"  Cache integrity OK: {fetcher.integrity_summary}")
+    if getattr(fetcher, 'integrity_summary', ''):  # set by build only after its macro check passed
+        print(f"  Cache integrity OK: {getattr(fetcher, 'integrity_summary', '')}")
     print(f"\n[1/5] Data: {len(data)} days, {len(data.columns)} columns")
 
     print(f"\n[2/5] Evolving strategies (parameter grid search)...")
@@ -2240,8 +2225,7 @@ def run_monitor(config: BacktestConfig) -> None:
         from data.option_chain import OptionChainSnapshot, StrikeData
         from datetime import datetime as _dt
         import os as _os
-        from dotenv import load_dotenv as _lde
-        _lde(override=True)  # always re-read .env so fresh token is picked up
+        load_env()  # always re-read .env / .env.local so fresh token is picked up
 
         _fyers = _fyersModel.FyersModel(
             client_id=_os.getenv("FYERS_CLIENT_ID"),
@@ -3104,6 +3088,14 @@ def run_signal_combined(config: BacktestConfig) -> None:
     print("  Mirrors CombinedBacktestEngine — regime-adaptive + weekly gamma")
     print("=" * 75)
 
+    # ── 0. Trading-day gate (IST date; weekends and NSE holidays) ───────────
+    _gate_day = now_ist().date()
+    _closed_reason = market_day_gate(_gate_day)
+    if _closed_reason:
+        print(f"\n  {_closed_reason} — {_gate_day.strftime('%a %d %b %Y')}.")
+        print("  No signal generated. Next run on the next trading day.\n")
+        return
+
     # ── 1. Market data ──────────────────────────────────────────────────────
     lookback_start = config.start_date
     fetcher = MarketDataFetcher(lookback_start, config.end_date)
@@ -3116,7 +3108,7 @@ def run_signal_combined(config: BacktestConfig) -> None:
           f"{len(data)} trading days")
 
     latest = data.iloc[-1]
-    today = date.today()
+    today = now_ist().date()  # IST calendar date, not host (UTC) date
     spot = latest.get("nifty_close", 0)
     vix  = latest.get("vix", 0)
     data_date_str = data.index[-1].date() if hasattr(data.index[-1], "date") else data.index[-1]
@@ -3135,15 +3127,11 @@ def run_signal_combined(config: BacktestConfig) -> None:
     if stale_days > 0:
         try:
             from fyers_apiv3 import fyersModel as _fyersModel
-            from datetime import datetime as _dt_live, time as _time_live
             import os as _os_live
-            from dotenv import load_dotenv as _lde_live
-            _lde_live(override=True)
-            
-            _now_live = _dt_live.now()
-            _market_hours = (_time_live(9, 15) <= _now_live.time() <= _time_live(15, 30) and
-                            _now_live.weekday() < 5)
-            
+            load_env()
+
+            _market_hours = is_market_hours(now_ist())
+
             if _market_hours:
                 _fyers_live = _fyersModel.FyersModel(
                     client_id=_os_live.getenv("FYERS_CLIENT_ID"),
@@ -3180,16 +3168,8 @@ def run_signal_combined(config: BacktestConfig) -> None:
     # ── Entry window gate: 11:00–13:00 IST (permanent baseline) ─────────────
     # Nifty options spreads are tightest and spot is most stable in mid-session.
     # Both fill model and backtest use this window. Signal always enforces it.
-    from datetime import datetime as _dt_gate, time as _time_gate
-    try:
-        from zoneinfo import ZoneInfo as _ZI          # Python 3.9+ stdlib
-        _now_gate = _dt_gate.now(_ZI("Asia/Kolkata"))
-    except Exception:
-        try:
-            import pytz as _pytz
-            _now_gate = _dt_gate.now(_pytz.timezone("Asia/Kolkata"))
-        except Exception:
-            _now_gate = _dt_gate.now()                # assumes IST system clock
+    from datetime import time as _time_gate
+    _now_gate = now_ist()
 
     _win_start_h = config.entry_window_start_hour
     _win_start_m = config.entry_window_start_minute
@@ -3393,12 +3373,11 @@ def run_signal_combined(config: BacktestConfig) -> None:
         try:
             from fyers_apiv3 import fyersModel as _fm
             from data.option_chain import OptionChainSnapshot, StrikeData
-            from datetime import datetime as _dt3, time as _time3
+            from datetime import datetime as _dt3
             import os as _os3
-            from dotenv import load_dotenv as _lde3
-            _lde3(override=True)
-            _now3 = _dt3.now()
-            if _time3(9, 15) <= _now3.time() <= _time3(15, 30) and _now3.weekday() < 5:
+            load_env()
+            _now3 = now_ist()
+            if is_market_hours(_now3):
                 _fy3 = _fm.FyersModel(
                     client_id=_os3.getenv("FYERS_CLIENT_ID"),
                     token=_os3.getenv("FYERS_ACCESS_TOKEN"), log_path=""
@@ -3441,7 +3420,7 @@ def run_signal_combined(config: BacktestConfig) -> None:
 
                     if _calls3 or _puts3:
                         _m_snapshot = OptionChainSnapshot(
-                            timestamp=f"Fyers LIVE ({_dt3.now().strftime('%H:%M:%S')})",
+                            timestamp=f"Fyers LIVE ({_now3.strftime('%H:%M:%S')})",
                             spot_price=_m_live_spot,
                             expiry_dates=[str(monthly_expiry)],
                             selected_expiry=monthly_expiry.strftime("%d-%b-%Y"),

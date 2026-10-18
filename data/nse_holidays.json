@@ -1,0 +1,47 @@
+{
+  "_notes": [
+    "NSE trading holidays used by data/expiry_calendar.py. An expiry that falls on a segment_closed holiday moves to the previous trading day.",
+    "Forward-looking only (on/after 2026-10-19). Historical expiries (and therefore every backtest ending 2026-08-29) are deliberately unaffected.",
+    "Add each new exchange holiday list here every year and re-verify against the NSE holiday circular/API.",
+    "verified=true means confirmed against the official NSE holiday master (source field). verified=false means not confirmed; the entry is still applied.",
+    "Muhurat sessions are informational only (muhurat_session=true, segment_closed=false) and do not shift expiries."
+  ],
+  "holidays": [
+    {
+      "date": "2026-10-20",
+      "name": "Dussehra",
+      "segment_closed": true,
+      "muhurat_session": false,
+      "verified": true,
+      "source": "https://www.nseindia.com/api/holiday-master?type=trading (CM and FO segments); https://www.nseindia.com/resources/exchange-communication-holidays",
+      "notes": "Tuesday. Weekly/monthly Tuesday expiry moves to Monday 2026-10-19."
+    },
+    {
+      "date": "2026-11-08",
+      "name": "Diwali Laxmi Pujan (Muhurat trading)",
+      "segment_closed": false,
+      "muhurat_session": true,
+      "verified": true,
+      "source": "https://www.nseindia.com/resources/exchange-communication-holidays (note: Muhurat Trading on Sunday, November 08, 2026)",
+      "notes": "Sunday. Muhurat session only, timings not yet notified by NSE. Informational; no expiry shift."
+    },
+    {
+      "date": "2026-11-10",
+      "name": "Diwali-Balipratipada",
+      "segment_closed": true,
+      "muhurat_session": false,
+      "verified": true,
+      "source": "https://www.nseindia.com/api/holiday-master?type=trading (CM and FO segments); https://www.nseindia.com/resources/exchange-communication-holidays",
+      "notes": "Tuesday. Official NSE list says Tue 2026-11-10. Some third-party sources said Mon 2026-11-09; the official NSE list was followed. Weekly expiry moves to Monday 2026-11-09."
+    },
+    {
+      "date": "2026-11-24",
+      "name": "Prakash Gurpurb Sri Guru Nanak Dev",
+      "segment_closed": true,
+      "muhurat_session": false,
+      "verified": true,
+      "source": "https://www.nseindia.com/api/holiday-master?type=trading (CM and FO segments); https://www.nseindia.com/resources/exchange-communication-holidays",
+      "notes": "Tuesday. Monthly expiry (last Tuesday of Nov 2026) moves to Monday 2026-11-23."
+    }
+  ]
+}
