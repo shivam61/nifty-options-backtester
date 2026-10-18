@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Read-only validator for the market-data parquet cache and the built dataset.
+"""Validator for the market-data parquet cache and the built dataset.
 
-Never writes into any cache directory. The report goes to --out (default stdout).
+The default file scan only reads. --dataset runs a cache-only build, which can MIGRATE
+legacy md5-named cache files into ticker-named files (and rewrite manifest.json) inside
+--cache-dir; it never fetches from the network. The report goes to --out (default stdout).
 
 Modes
   default      scan *.parquet files in --cache-dir: per-file stats, price-range
@@ -338,7 +340,8 @@ def build_dataset_frame(cache_dir: Path, start: date, end: date) -> pd.DataFrame
         sys.path.insert(0, str(REPO_ROOT))
     from data import market_data as md  # noqa: E402  (import after env var on purpose)
 
-    # Read from the requested cache dir. Cache-only mode never writes.
+    # Read from the requested cache dir. Cache-only mode makes no network calls, but it can still
+    # migrate legacy md5 cache files into ticker-named files inside this directory.
     md.CACHE_DIR = Path(cache_dir)
     return md.MarketDataFetcher(start, end).build_combined_dataset()
 
@@ -524,7 +527,7 @@ def selftest() -> int:
 # ---------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Read-only validator for the market-data cache and dataset.")
+    p = argparse.ArgumentParser(description="Validator for the market-data cache and dataset (default scan is read-only; --dataset may migrate legacy md5 cache files).")
     p.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIR,
                    help="directory of *.parquet cache files (default: <repo>/data/.cache)")
     p.add_argument("--dataset", action="store_true",

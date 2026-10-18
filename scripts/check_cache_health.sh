@@ -7,6 +7,9 @@
 #                   Close series) PLUS a cache-only build of the combined dataset through
 #                   MarketDataFetcher. The build raises on identical or default-filled macro
 #                   columns; the validator then runs identity, range and freshness checks.
+#                   Not read-only: the cache-only build can migrate legacy md5-named cache
+#                   files into ticker-named files and rewrite manifest.json in CACHE_DIR.
+#                   It makes no network calls.
 #
 # Usage:  scripts/check_cache_health.sh
 # Env:    CACHE_DIR       default <repo>/data/.cache

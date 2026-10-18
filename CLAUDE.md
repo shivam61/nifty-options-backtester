@@ -156,6 +156,7 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
   - Ticker-safe identity: files are `{slug}_{start}_{end}.parquet`; reads consider only `manifest.json` entries owned by the requested ticker. Unlisted files are untrusted.
   - `RANGES` per ticker checked on load and on store; `SEAM_MAX_JUMP` (40%) discards a cache+fresh splice that jumps.
   - `_check_macro_columns` raises on default-filled macro columns or two macro columns identical on >50% of rows. It runs before the single `return` in `build_combined_dataset()`.
+  - The integrity line is emitted by `build_combined_dataset()` for every caller: `logger.info` plus `fetcher.integrity_summary` (empty until the check passes; reset each build). Stdout echo is opt-in via `MarketDataFetcher.echo_integrity_to_stdout`. Legacy md5 exact-key files are still read (range-checked, not ownership-checked) and migrated on read: a known residual gap, no such files exist in the seed.
   - Cache files keep full history; every return is clipped to the requested `[start, end]` (pinned end).
   - No env var or parameter disables these; `MARKET_DATA_CACHE_ONLY` only blocks network. Pinned by `tests/test_cache_corruption_regression.py`.
   - `scripts/check_cache_health.sh`: run after `--mode refresh-data`, before `--mode evolve`, and in CI on any change to `data/market_data.py`. Exit 0 = PASS; last line is a one-line CI summary.

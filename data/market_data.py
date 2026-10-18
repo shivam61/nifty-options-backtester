@@ -354,10 +354,16 @@ def _fetch_yfinance(ticker: str, start: date, end: date) -> pd.DataFrame:
 class MarketDataFetcher:
     """Fetches and preprocesses all market data needed for backtesting."""
 
+    # Off by default: build_combined_dataset always logs the integrity line via logger.info.
+    # Set True only in an interactive entry point that wants the line on stdout as well.
+    echo_integrity_to_stdout: bool = False
+
     def __init__(self, start_date: date, end_date: date):
         self.start = start_date
         self.end = end_date
         self._data: dict[str, pd.DataFrame] = {}
+        # Set at the end of build_combined_dataset, only after _check_macro_columns passed.
+        self.integrity_summary: str = ""
 
     def fetch_all(self) -> dict[str, pd.DataFrame]:
         for name, ticker in TICKERS.items():
@@ -427,6 +433,7 @@ class MarketDataFetcher:
 
     def build_combined_dataset(self) -> pd.DataFrame:
         """Merges all data sources into a single DataFrame for analysis."""
+        self.integrity_summary = ""  # reset: a failed build must not leave a previous summary behind
         self.fetch_all()
 
         combined = pd.DataFrame()
@@ -737,6 +744,17 @@ class MarketDataFetcher:
                     f"Run 'python main.py --mode refresh-data --start {self.start}' to fetch full history.",
                     stacklevel=2,
                 )
+
+        if not combined.empty:  # reached only if _check_macro_columns passed (it raises otherwise)
+            guarded = sum(c in combined.columns for c in MACRO_GUARD_COLUMNS)
+            self.integrity_summary = (
+                f"{guarded}/{len(MACRO_GUARD_COLUMNS)} guarded columns, no identical or default-filled series "
+                f"({len(defaulted)} default-filled), {len(combined)} rows "
+                f"{combined.index.min().date()}..{combined.index.max().date()}"
+            )
+            logger.info("Cache integrity OK: %s", self.integrity_summary)
+            if self.echo_integrity_to_stdout:
+                print(f"  Cache integrity OK: {self.integrity_summary}")
 
         # Invariant (pinned by test_every_return_in_build_follows_macro_check): the only return
         # is reached after _check_macro_columns. Do not add an earlier return.

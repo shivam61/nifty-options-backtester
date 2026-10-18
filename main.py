@@ -46,7 +46,7 @@ np.random.seed(42)
 
 from config import BacktestConfig
 from training_config import TRAINING_FLOW
-from data.market_data import MarketDataFetcher, MACRO_GUARD_COLUMNS
+from data.market_data import MarketDataFetcher
 from data.expiry_calendar import (
     get_best_expiry_for_dte, get_upcoming_expiries, format_expiry_label,
 )
@@ -666,8 +666,8 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print("\n[1/5] Fetching market data...")
     fetcher = MarketDataFetcher(config.start_date, config.end_date)
     data = fetcher.build_combined_dataset()
-    if len(data):  # build raises on identical/default-filled macro columns; reaching here means they passed
-        print(f"  Cache integrity OK: {sum(c in data.columns for c in MACRO_GUARD_COLUMNS)}/{len(MACRO_GUARD_COLUMNS)} guarded columns, no identical or default-filled series")
+    if fetcher.integrity_summary:  # set by build only after its macro check passed
+        print(f"  Cache integrity OK: {fetcher.integrity_summary}")
     print(f"  Loaded {len(data)} trading days")
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
@@ -2038,8 +2038,8 @@ def run_evolve(config: BacktestConfig):
 
     fetcher = MarketDataFetcher(config.start_date, config.end_date)
     data = fetcher.build_combined_dataset()
-    if len(data):  # build raises on identical/default-filled macro columns; reaching here means they passed
-        print(f"  Cache integrity OK: {sum(c in data.columns for c in MACRO_GUARD_COLUMNS)}/{len(MACRO_GUARD_COLUMNS)} guarded columns, no identical or default-filled series")
+    if fetcher.integrity_summary:  # set by build only after its macro check passed
+        print(f"  Cache integrity OK: {fetcher.integrity_summary}")
     print(f"\n[1/5] Data: {len(data)} days, {len(data.columns)} columns")
 
     print(f"\n[2/5] Evolving strategies (parameter grid search)...")

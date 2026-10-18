@@ -16,6 +16,7 @@ Offline only: yf.download is stubbed, and CACHE_DIR is redirected to tmp_path.
 
 import ast
 import inspect
+import logging
 import os
 import re
 import subprocess
@@ -256,3 +257,57 @@ class TestCheckCacheHealthScript:
         r = self._run(tmp_path, asof="2024-06-01")
         assert r.returncode == 1, r.stdout + r.stderr
         assert "cache-health: FAIL rc=1" in r.stdout
+
+
+# ---------------------------------------------------------------------------
+# 5. Integrity confirmation lives in build_combined_dataset (every caller gets it)
+# ---------------------------------------------------------------------------
+
+class TestIntegrityConfirmation:
+
+    def test_clean_build_logs_line_and_sets_summary(self, md, monkeypatch, caplog):
+        _populate(md, overrides={"^VIX": _vix_like()})
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        caplog.set_level(logging.INFO, logger="data.market_data")
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), END)
+        data = fetcher.build_combined_dataset()
+        assert "Cache integrity OK" in caplog.text
+        assert fetcher.integrity_summary.startswith(f"{len(md.MACRO_GUARD_COLUMNS)}/{len(md.MACRO_GUARD_COLUMNS)} guarded columns")
+        assert "(0 default-filled)" in fetcher.integrity_summary
+        assert f"{len(data)} rows {data.index.min().date()}..{data.index.max().date()}" in fetcher.integrity_summary
+
+    def test_summary_empty_when_check_refuses(self, md, monkeypatch):
+        _populate(md, overrides={"^VIX": _vix_like(), "BZ=F": _vix_like()})
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), END)
+        assert fetcher.integrity_summary == ""
+        with pytest.raises(ValueError, match="Identical macro series"):
+            fetcher.build_combined_dataset()
+        assert fetcher.integrity_summary == ""
+
+    def test_summary_reset_when_later_build_refused(self, md, monkeypatch):
+        _populate(md, overrides={"^VIX": _vix_like()})
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), END)
+        fetcher.build_combined_dataset()
+        assert fetcher.integrity_summary
+
+        def _refuse(combined, defaulted):
+            raise ValueError("refused for test")
+
+        monkeypatch.setattr(md.MarketDataFetcher, "_check_macro_columns", staticmethod(_refuse))
+        with pytest.raises(ValueError, match="refused for test"):
+            fetcher.build_combined_dataset()
+        assert fetcher.integrity_summary == ""
+
+    def test_stdout_echo_is_opt_in(self, md, monkeypatch, capsys):
+        _populate(md, overrides={"^VIX": _vix_like()})
+        monkeypatch.setenv("MARKET_DATA_CACHE_ONLY", "1")
+        assert md.MarketDataFetcher.echo_integrity_to_stdout is False
+        md.MarketDataFetcher(date(2023, 1, 2), END).build_combined_dataset()
+        assert "Cache integrity OK" not in capsys.readouterr().out
+
+        fetcher = md.MarketDataFetcher(date(2023, 1, 2), END)
+        fetcher.echo_integrity_to_stdout = True
+        fetcher.build_combined_dataset()
+        assert capsys.readouterr().out.count("Cache integrity OK") == 1
