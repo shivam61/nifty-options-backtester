@@ -47,10 +47,15 @@ fyersApi.log
 fyersRequests.log
 
 # Data Cache
+# A minimal seed cache (16 tickers' newest parquet + the 3 model artifacts + manifest.json)
+# is committed under data/.cache_seed/ so a fresh clone can bootstrap without a 17yr
+# network refresh or a full evolve retrain. See CLAUDE.md "Bootstrapping a new session".
 data/.cache/
 *.parquet
 *.pkl
 *.pickle
+!data/.cache_seed/
+!data/.cache_seed/**
 
 # Models
 models/.trained/

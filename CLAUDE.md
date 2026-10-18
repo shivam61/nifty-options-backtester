@@ -161,6 +161,12 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
   - `scripts/check_cache_health.sh`: run after `--mode refresh-data`, before `--mode evolve`, and in CI on any change to `data/market_data.py`. Exit 0 = PASS; last line is a one-line CI summary.
   - Freshness is wall-clock: a cache more than 5 business days behind today fails the check even when the data is correct. Refresh first, or pass `ASOF=YYYY-MM-DD`.
 
+- **Bootstrapping a new session/clone** — `data/.cache/` is gitignored, so a fresh clone has no cache.
+  - Run `scripts/bootstrap_cache.sh` once after cloning. It copies the committed seed `data/.cache_seed/` (~5MB: 16 ticker parquets, `manifest.json`, `entry_model_v4.pkl`, `exit_model.pkl`, `evolved_strategies.json`; dated through 2026-10-12) into `data/.cache/`, never overwriting existing files.
+  - Then run `scripts/check_cache_health.sh` (expect PASS). The seed passes the freshness check only until ~5 business days after 2026-10-12 (about 2026-10-19); after that, extend with `python main.py --mode refresh-data` (needs network) or check the seed as of its own date with `ASOF=2026-10-12`.
+  - The seed models are enough for `backtest-combined` / `signal-combined` immediately. There is no `weekly_risk_engine_v2.pkl` in the seed, so the weekly track runs rule-based; this is the documented default, not a defect.
+  - Never seed from an unvalidated cache: a regenerated `data/.cache_seed/` must pass `check_cache_health.sh` before it is committed.
+
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
 - **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 (`monthly_entry_threshold=0.50`) is active and blocks ~43% of days. Don't re-enable bypass unless AUC drops below 0.55.
