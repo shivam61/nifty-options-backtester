@@ -738,6 +738,8 @@ class MarketDataFetcher:
                     stacklevel=2,
                 )
 
+        # Invariant (pinned by test_every_return_in_build_follows_macro_check): the only return
+        # is reached after _check_macro_columns. Do not add an earlier return.
         return combined
 
     def clear_cache(self):

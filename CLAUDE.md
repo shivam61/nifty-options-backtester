@@ -152,6 +152,15 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
 
 - **`overnight_gap_pct` column name** — `market_data.py` produces this column (renamed from an older `nifty_gap_pct`). `FeatureExtractor` reads `overnight_gap_pct`. Any cached parquet written before the rename will produce NaN for this feature — delete cache and regenerate.
 
+- **Cache Integrity Guardrails** — Incident: on an exact-key cache miss the loader picked ANY cached parquet whose price range fitted, so crude silently became US VIX data (and usdinr became Brent) for ~17 years. Now:
+  - Ticker-safe identity: files are `{slug}_{start}_{end}.parquet`; reads consider only `manifest.json` entries owned by the requested ticker. Unlisted files are untrusted.
+  - `RANGES` per ticker checked on load and on store; `SEAM_MAX_JUMP` (40%) discards a cache+fresh splice that jumps.
+  - `_check_macro_columns` raises on default-filled macro columns or two macro columns identical on >50% of rows. It runs before the single `return` in `build_combined_dataset()`.
+  - Cache files keep full history; every return is clipped to the requested `[start, end]` (pinned end).
+  - No env var or parameter disables these; `MARKET_DATA_CACHE_ONLY` only blocks network. Pinned by `tests/test_cache_corruption_regression.py`.
+  - `scripts/check_cache_health.sh`: run after `--mode refresh-data`, before `--mode evolve`, and in CI on any change to `data/market_data.py`. Exit 0 = PASS; last line is a one-line CI summary.
+  - Freshness is wall-clock: a cache more than 5 business days behind today fails the check even when the data is correct. Refresh first, or pass `ASOF=YYYY-MM-DD`.
+
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
 - **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 (`monthly_entry_threshold=0.50`) is active and blocks ~43% of days. Don't re-enable bypass unless AUC drops below 0.55.
