@@ -90,6 +90,14 @@ MACRO_GUARD_COLUMNS = (
     "silver", "nifty_it", "em_etf", "hang_seng", "europe", "vix", "nifty_close",
 )
 
+# Derived columns added in Phase 2b (all backward-looking). Inf from zero denominators is mapped to NaN.
+P3_DERIVED_COLUMNS = (
+    "dxy_change_5d", "dxy_change_20d", "gold_change_20d", "crude_spike_10d_pct",
+    "vrp_change_5d", "vrp_negative", "rvol_10d_z", "range_expansion_ratio",
+    "bn_ratio_change_5d", "correlation_spike_5d", "gap_magnitude_avg_5d",
+    "intraday_dd_expanding_3d", "nifty_distance_from_sma20_pct", "nifty_distance_from_sma50_pct",
+)
+
 
 def ticker_slug(ticker: str) -> str:
     """Filesystem-safe, human-readable ticker: ^NSEI->NSEI, BZ=F->BZ_F, DX-Y.NYB->DX_Y_NYB."""
@@ -475,6 +483,10 @@ class MarketDataFetcher:
         combined["overnight_gap_abs"] = combined["overnight_gap_pct"].abs()
         combined["gap_3d_max_abs"] = combined["overnight_gap_abs"].rolling(3).max()
         combined["gap_5d_max_abs"] = combined["overnight_gap_abs"].rolling(5).max()
+        combined["gap_magnitude_avg_5d"] = combined["overnight_gap_pct"].abs().rolling(5).mean()
+        combined["intraday_dd_expanding_3d"] = (
+            (combined["nifty_low"] - combined["nifty_open"]) / combined["nifty_open"] * 100
+        ).rolling(3).min()
 
         # Mid-session spot proxy — permanent baseline (≈11 AM IST fill).
         # Alpha=0.40 ≈ 40% of the open→close intraday move is typically completed
@@ -489,6 +501,12 @@ class MarketDataFetcher:
 
         combined["nifty_sma_20"] = combined["nifty_close"].rolling(20).mean()
         combined["nifty_sma_50"] = combined["nifty_close"].rolling(50).mean()
+        combined["nifty_distance_from_sma20_pct"] = (
+            (combined["nifty_close"] - combined["nifty_sma_20"]) / combined["nifty_sma_20"] * 100
+        )
+        combined["nifty_distance_from_sma50_pct"] = (
+            (combined["nifty_close"] - combined["nifty_sma_50"]) / combined["nifty_sma_50"] * 100
+        )
 
         combined["nifty_realized_vol_10d"] = (
             combined["nifty_return"].rolling(10).std() * np.sqrt(252) * 100
@@ -504,14 +522,30 @@ class MarketDataFetcher:
             combined["vol_risk_premium"] = combined["vix"] - combined.get(
                 "nifty_realized_vol_20d", 0
             )
+            combined["vrp_change_5d"] = combined["vol_risk_premium"].diff(5)
+            # NaN stays NaN (not 0/False) where the VRP itself is NaN
+            combined["vrp_negative"] = (
+                (combined["vol_risk_premium"] < 0).astype(float).where(combined["vol_risk_premium"].notna())
+            )
 
         combined["nifty_daily_range_pct"] = (
             (combined["nifty_high"] - combined["nifty_low"]) / combined["nifty_close"] * 100
         )
 
+        # Realized-vol z-score (10d vol vs its own 50d history) and range expansion (5d vs 20d mean range)
+        rv10 = combined["nifty_realized_vol_10d"]
+        rv10_std_50 = rv10.rolling(50).std().replace(0, np.nan)
+        combined["rvol_10d_z"] = (rv10 - rv10.rolling(50).mean()) / rv10_std_50
+        combined["range_expansion_ratio"] = (
+            combined["nifty_daily_range_pct"].rolling(5).mean()
+            / combined["nifty_daily_range_pct"].rolling(20).mean().replace(0, np.nan)
+        )
+
         if "crude" in combined.columns:
             combined["crude_change_5d"] = combined["crude"].pct_change(5)
             combined["crude_change_20d"] = combined["crude"].pct_change(20)
+            # Percent move over 10 sessions; the crude_shock breaker compares abs() against 30 (%)
+            combined["crude_spike_10d_pct"] = combined["crude"].pct_change(10) * 100
 
         # Macro indicators — derived features
         if "us_vix" in combined.columns:
@@ -529,6 +563,7 @@ class MarketDataFetcher:
                 combined["india_us_correlation_20d"] = (
                     combined["nifty_return"].rolling(20).corr(combined["sp500"].pct_change())
                 )
+                combined["correlation_spike_5d"] = combined["india_us_correlation_20d"].diff(5)
 
         if "usdinr" in combined.columns:
             combined["usdinr_change_5d"] = combined["usdinr"].pct_change(5)
@@ -536,11 +571,17 @@ class MarketDataFetcher:
 
         if "gold" in combined.columns:
             combined["gold_change_5d"] = combined["gold"].pct_change(5)
+            combined["gold_change_20d"] = combined["gold"].pct_change(20)
+
+        if "dxy" in combined.columns:
+            combined["dxy_change_5d"] = combined["dxy"].pct_change(5)
+            combined["dxy_change_20d"] = combined["dxy"].pct_change(20)
 
         if "nifty_bank" in combined.columns:
             combined["bank_nifty_return_5d"] = combined["nifty_bank"].pct_change(5)
             if "nifty_close" in combined.columns:
                 combined["bank_nifty_ratio"] = combined["nifty_bank"] / combined["nifty_close"]
+                combined["bn_ratio_change_5d"] = combined["bank_nifty_ratio"].pct_change(5) * 100
 
         if "nifty_it" in combined.columns:
             combined["it_sector_return_5d"] = combined["nifty_it"].pct_change(5)
@@ -680,6 +721,10 @@ class MarketDataFetcher:
             combined["fii_flow_proxy"] = (
                 combined["it_sector_return_5d"] - combined["nifty_return_5d"]
             )
+
+        # Division by zero / defaulted-constant series can yield inf; treat as missing
+        _p3_cols = [c for c in P3_DERIVED_COLUMNS if c in combined.columns]
+        combined[_p3_cols] = combined[_p3_cols].replace([np.inf, -np.inf], np.nan)
 
         # Coverage warning: alert if data starts later than requested start date
         if not combined.empty:

@@ -26,7 +26,9 @@ Test groups
   TestDerivedFeatures          — computed columns are well-formed (std>0, range ok)
   TestVIXFeatures              — VIX and all derived VIX series are non-flat
   TestCrossAssetComposites     — composite scores are finite and non-constant
-  TestFeatureExtractorColumns  — FeatureExtractor's 52 required cols all present
+  TestFeatureExtractorColumns  — every column FeatureExtractor.extract() reads is in the dataset
+  TestP3DerivedColumns         — Phase 2b derived columns: present, finite, non-constant
+  TestP3Formulas               — Phase 2b formulas on synthetic frames, zero-variance guards, look-ahead
   TestCacheIntegrity           — parquet cache files contain the right ticker data
   TestRollingWarmupNaN         — rolling-window NaN budget matches window sizes
 """
@@ -46,6 +48,8 @@ from unittest.mock import patch
 
 # Force cache-only mode so tests never hit Yahoo Finance
 os.environ.setdefault("MARKET_DATA_CACHE_ONLY", "1")
+
+from data.market_data import P3_DERIVED_COLUMNS  # noqa: E402
 
 warnings.filterwarnings("ignore")
 
@@ -261,6 +265,21 @@ class TestNaNBudget:
         "crash_risk_score_v2":  0.0,
         "multi_asset_stress":   1.5,   # needs 50d rolling std
         "overnight_gap_pct":    0.1,
+        # Phase 2b derived columns. Budgets = warmup rows / 4361 rows + margin.
+        "dxy_change_5d":                0.2,   # 5-row warmup (0.11%)
+        "dxy_change_20d":               0.6,   # 20 rows (0.46%)
+        "gold_change_20d":              0.6,   # 20 rows
+        "crude_spike_10d_pct":          0.3,   # 10 rows (0.23%)
+        "vrp_change_5d":                0.7,   # 20-row VRP warmup + 5 (0.57%)
+        "vrp_negative":                 0.6,   # 20-row VRP warmup (0.46%)
+        "rvol_10d_z":                   1.5,   # 10 + 50 rows (1.35%)
+        "range_expansion_ratio":        0.5,   # 20-row range warmup (0.44%)
+        "bn_ratio_change_5d":           0.2,   # 5 rows
+        "correlation_spike_5d":         0.7,   # 20 + 5 rows (0.57%)
+        "gap_magnitude_avg_5d":         0.2,   # 5 rows
+        "intraday_dd_expanding_3d":     0.1,   # 3 rows
+        "nifty_distance_from_sma20_pct": 0.5,  # 20 rows (0.44%)
+        "nifty_distance_from_sma50_pct": 1.2,  # 50 rows (1.12%)
     }
 
     @pytest.mark.parametrize("col,max_pct", NAN_BUDGET.items())
@@ -517,27 +536,90 @@ class TestCrossAssetComposites:
 # TestFeatureExtractorColumns
 # ---------------------------------------------------------------------------
 
+# Option-derived columns that FeatureExtractor reads but that cannot be derived from
+# spot/VIX/macro data (no historical NSE option chain). Deliberately NOT in the dataset.
+EXCLUDED_OPTION_COLUMNS = (
+    "iv_rv_term_spread",
+    "iv_rv_term_spread_5d_chg",
+    "iv_rv_term_spread_z",
+    "iv_skew_proxy",
+    "iv_skew_proxy_z",
+    "theta_quality",
+    "vega_regime",
+    "vega_regime_5d_chg",
+    "institutional_hedge_proxy",
+    "global_contagion_score",   # no spec
+    "vix_volatility_10d",       # ambiguous spec
+    "regime_stability_10d",     # ambiguous spec
+)
+
+# Extractor sources allowed to be absent from the dataset (sentiment comes from a
+# separate news/price-action module; geopolitical_risk is not read by extract()).
+EXTRACTOR_SOURCES_NOT_IN_DATASET_OK = {"sentiment_proxy", "geopolitical_risk"}
+
+
+def _extractor_source_columns() -> set[str]:
+    """Column names FeatureExtractor.extract() reads, parsed from its AST.
+
+    Collects the string literal first argument of ``_get("...")`` and ``row.get("...")``.
+    """
+    import ast
+    import inspect
+    import textwrap
+    from models.trade_learner import FeatureExtractor
+
+    tree = ast.parse(textwrap.dedent(inspect.getsource(FeatureExtractor.extract)))
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Call) and node.args
+                and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)):
+            continue
+        f = node.func
+        is_get = isinstance(f, ast.Name) and f.id == "_get"
+        is_row_get = (isinstance(f, ast.Attribute) and f.attr == "get"
+                      and isinstance(f.value, ast.Name) and f.value.id == "row")
+        if is_get or is_row_get:
+            names.add(node.args[0].value)
+    return names
+
+
 class TestFeatureExtractorColumns:
     """
-    FeatureExtractor (models/trade_learner.py) selects 52 features from the
-    combined dataset.  All required source columns must be present and non-flat.
+    FeatureExtractor (models/trade_learner.py) builds 82 features (trade=None)
+    from the combined dataset.  All required source columns must be present.
     """
 
     def test_all_extractor_features_present(self, dataset):
-        """Every column FeatureExtractor reads must exist in the dataset."""
-        try:
-            from models.trade_learner import FeatureExtractor
-            fe = FeatureExtractor()
-            # Build a minimal dummy TradeResult-like dict and call extract on one row
-            row = dataset.iloc[100]
-            _ = fe.extract(row)   # should not raise KeyError
-        except KeyError as e:
-            pytest.fail(
-                f"FeatureExtractor.extract() raised KeyError({e}). "
-                f"Column {e} is missing from the combined dataset."
-            )
-        except Exception:
-            pass  # other errors (e.g. model not trained) are out of scope here
+        """Every source column FeatureExtractor.extract() reads must exist in the dataset.
+
+        The source names are parsed from the extract() AST (``_get("...")`` and
+        ``row.get("...")`` calls), so new features are checked without editing this test.
+        """
+        sources = _extractor_source_columns()
+        assert len(sources) >= 60, (
+            f"AST parse found only {len(sources)} extractor source columns; "
+            "extract() may have been restructured - update _extractor_source_columns()."
+        )
+        allowed_missing = set(EXCLUDED_OPTION_COLUMNS) | EXTRACTOR_SOURCES_NOT_IN_DATASET_OK
+        missing = sources - set(dataset.columns)
+        unexpected = sorted(missing - allowed_missing)
+        assert unexpected == [], (
+            f"FeatureExtractor reads columns absent from the dataset: {unexpected}. "
+            "Add them to build_combined_dataset() (look-ahead-safe) or, if they need option "
+            "data, document them in EXCLUDED_OPTION_COLUMNS."
+        )
+
+    def test_excluded_option_columns_really_excluded(self, dataset):
+        """The documented exclusions must be read by the extractor (so the list is honest)
+        and must stay absent from the dataset (no placeholder columns)."""
+        sources = _extractor_source_columns()
+        not_read = sorted(set(EXCLUDED_OPTION_COLUMNS) - sources)
+        assert not_read == [], f"EXCLUDED_OPTION_COLUMNS not read by extract(): {not_read}"
+        placeholders = [c for c in EXCLUDED_OPTION_COLUMNS if c in dataset.columns]
+        assert placeholders == [], (
+            f"Option-derived columns present in dataset: {placeholders}. "
+            "They cannot be derived from spot/VIX data; remove the placeholders and update the list."
+        )
 
     def test_overnight_gap_pct_col_name(self, dataset):
         """
@@ -708,3 +790,200 @@ class TestRollingWarmupNaN:
             f"crash_risk_score has {nan_count} NaN rows — "
             "it should always be computable from vix and nifty_close alone."
         )
+
+
+# ---------------------------------------------------------------------------
+# TestP3DerivedColumns  (Phase 2b: columns requested by FeatureExtractor)
+# ---------------------------------------------------------------------------
+
+class TestP3DerivedColumns:
+    """Columns added in build_combined_dataset() for Phase 2b, on the real cache."""
+
+    def test_all_p3_columns_present(self, dataset):
+        missing = [c for c in P3_DERIVED_COLUMNS if c not in dataset.columns]
+        assert missing == [], f"Phase 2b columns missing from dataset: {missing}"
+
+    def test_no_inf(self, dataset):
+        cols = [c for c in P3_DERIVED_COLUMNS if c in dataset.columns]
+        vals = dataset[cols].to_numpy(dtype=float)
+        n_inf = int(np.isinf(vals).sum())
+        assert n_inf == 0, f"{n_inf} inf values in Phase 2b columns (should be NaN)"
+
+    def test_not_constant(self, dataset):
+        constant = [c for c in P3_DERIVED_COLUMNS
+                    if c in dataset.columns and dataset[c].nunique(dropna=True) <= 1]
+        assert constant == [], f"Constant Phase 2b columns: {constant}"
+
+    def test_post_warmup_mostly_finite(self, dataset):
+        """After 60 rows of warmup every Phase 2b column must be >= 98% non-NaN."""
+        tail = dataset.iloc[60:]
+        for c in P3_DERIVED_COLUMNS:
+            if c not in dataset.columns:
+                continue
+            nan_pct = tail[c].isnull().mean() * 100
+            assert nan_pct <= 2.0, f"{c}: {nan_pct:.2f}% NaN after 60-row warmup"
+
+
+# ---------------------------------------------------------------------------
+# TestP3Formulas  (synthetic frames: no cache, no network)
+# ---------------------------------------------------------------------------
+
+def _synthetic_frames(n: int = 260, seed: int = 7) -> dict[str, pd.DataFrame]:
+    """Deterministic raw ticker frames shaped like the parquet cache."""
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range("2020-01-01", periods=n)
+
+    def walk(start: float, vol: float) -> np.ndarray:
+        return start * np.exp(np.cumsum(rng.normal(0.0, vol, n)))
+
+    close = walk(20_000.0, 0.01)
+    open_ = close * (1 + rng.normal(0.0, 0.004, n))
+    high = np.maximum(open_, close) * (1 + np.abs(rng.normal(0.0, 0.003, n)))
+    low = np.minimum(open_, close) * (1 - np.abs(rng.normal(0.0, 0.003, n)))
+    frames = {
+        "nifty": pd.DataFrame({"Open": open_, "High": high, "Low": low,
+                               "Close": close, "Volume": 1e6}, index=idx),
+        "vix": pd.DataFrame({"Close": walk(15.0, 0.03)}, index=idx),
+        "crude_brent": pd.DataFrame({"Close": walk(75.0, 0.015)}, index=idx),
+    }
+    for name, start, vol in [
+        ("usdinr", 80.0, 0.003), ("gold", 1800.0, 0.008), ("dxy", 100.0, 0.004),
+        ("us_vix", 16.0, 0.03), ("us_10y", 2.0, 0.01), ("sp500", 4000.0, 0.01),
+        ("nifty_bank", 40_000.0, 0.012), ("silver", 25.0, 0.015),
+        ("nifty_it", 30_000.0, 0.012), ("em_etf", 40.0, 0.008),
+        ("hang_seng", 20_000.0, 0.01), ("europe", 4000.0, 0.01),
+    ]:
+        frames[name] = pd.DataFrame({"Close": walk(start, vol)}, index=idx)
+    return frames
+
+
+def _build_from_frames(frames: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Run the real build_combined_dataset() on in-memory frames (fetch_all stubbed out)."""
+    from datetime import date
+    from data.market_data import MarketDataFetcher
+
+    fetcher = MarketDataFetcher(date(2020, 1, 1), date(2030, 1, 1))
+    fetcher._data = {k: v.copy() for k, v in frames.items()}
+    with patch.object(fetcher, "fetch_all", return_value=fetcher._data):
+        return fetcher.build_combined_dataset()
+
+
+@pytest.fixture(scope="module")
+def synthetic_dataset() -> pd.DataFrame:
+    return _build_from_frames(_synthetic_frames())
+
+
+def _assert_series_matches(actual: pd.Series, expected: pd.Series, name: str) -> None:
+    pd.testing.assert_series_equal(
+        actual.astype(float), expected.astype(float),
+        check_names=False, check_freq=False, rtol=1e-10, atol=1e-12,
+        obj=name,
+    )
+
+
+class TestP3Formulas:
+
+    def test_crude_spike_10d_pct_is_percent(self):
+        """Crude 100 -> 130 step: 10-session change is +30 (percent), not 0.3."""
+        frames = _synthetic_frames()
+        idx = frames["vix"].index
+        crude = np.full(len(idx), 100.0)
+        crude[10:] = 130.0
+        frames["crude_brent"] = pd.DataFrame({"Close": crude}, index=idx)
+        d = _build_from_frames(frames)
+        assert d["crude_spike_10d_pct"].iloc[10] == pytest.approx(30.0)
+        assert d["crude_spike_10d_pct"].iloc[19] == pytest.approx(30.0)
+        assert d["crude_spike_10d_pct"].iloc[20] == pytest.approx(0.0)
+        assert np.isnan(d["crude_spike_10d_pct"].iloc[9])
+
+    def test_dxy_and_gold_changes_are_fractions(self):
+        frames = _synthetic_frames()
+        idx = frames["vix"].index
+        n = len(idx)
+        frames["dxy"] = pd.DataFrame({"Close": 100.0 * 1.01 ** np.arange(n)}, index=idx)
+        frames["gold"] = pd.DataFrame({"Close": 1800.0 * 1.02 ** np.arange(n)}, index=idx)
+        d = _build_from_frames(frames)
+        assert d["dxy_change_5d"].iloc[30] == pytest.approx(1.01 ** 5 - 1)
+        assert d["dxy_change_20d"].iloc[30] == pytest.approx(1.01 ** 20 - 1)
+        assert d["gold_change_20d"].iloc[30] == pytest.approx(1.02 ** 20 - 1)
+
+    def test_vrp_columns_match_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        vrp = d["vol_risk_premium"]
+        _assert_series_matches(d["vrp_change_5d"], vrp.diff(5), "vrp_change_5d")
+        expected_neg = (vrp < 0).astype(float).where(vrp.notna())
+        _assert_series_matches(d["vrp_negative"], expected_neg, "vrp_negative")
+        assert d["vrp_negative"].isna().equals(vrp.isna()), "vrp_negative NaN must mirror VRP NaN"
+
+    def test_rvol_10d_z_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        rv = d["nifty_realized_vol_10d"]
+        expected = (rv - rv.rolling(50).mean()) / rv.rolling(50).std().replace(0, np.nan)
+        _assert_series_matches(d["rvol_10d_z"], expected, "rvol_10d_z")
+
+    def test_range_expansion_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        r = d["nifty_daily_range_pct"]
+        expected = r.rolling(5).mean() / r.rolling(20).mean().replace(0, np.nan)
+        _assert_series_matches(d["range_expansion_ratio"], expected, "range_expansion_ratio")
+
+    def test_bn_ratio_change_5d_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        expected = d["bank_nifty_ratio"].pct_change(5) * 100
+        _assert_series_matches(d["bn_ratio_change_5d"], expected, "bn_ratio_change_5d")
+
+    def test_correlation_spike_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        expected = d["india_us_correlation_20d"].diff(5)
+        _assert_series_matches(d["correlation_spike_5d"], expected, "correlation_spike_5d")
+
+    def test_gap_magnitude_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        expected = d["overnight_gap_pct"].abs().rolling(5).mean()
+        _assert_series_matches(d["gap_magnitude_avg_5d"], expected, "gap_magnitude_avg_5d")
+
+    def test_intraday_dd_expanding_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        expected = ((d["nifty_low"] - d["nifty_open"]) / d["nifty_open"] * 100).rolling(3).min()
+        _assert_series_matches(d["intraday_dd_expanding_3d"], expected, "intraday_dd_expanding_3d")
+
+    def test_distance_from_sma_definition(self, synthetic_dataset):
+        d = synthetic_dataset
+        c = d["nifty_close"]
+        _assert_series_matches(
+            d["nifty_distance_from_sma20_pct"],
+            (c - d["nifty_sma_20"]) / d["nifty_sma_20"] * 100,
+            "nifty_distance_from_sma20_pct",
+        )
+        _assert_series_matches(
+            d["nifty_distance_from_sma50_pct"],
+            (c - d["nifty_sma_50"]) / d["nifty_sma_50"] * 100,
+            "nifty_distance_from_sma50_pct",
+        )
+
+    def test_zero_variance_guards_yield_nan_not_inf(self):
+        """Flat Nifty (zero realized vol, zero range) must give NaN, never inf."""
+        frames = _synthetic_frames()
+        nifty = frames["nifty"].copy()
+        nifty[["Open", "High", "Low", "Close"]] = 20_000.0
+        frames["nifty"] = nifty
+        d = _build_from_frames(frames)
+        cols = [c for c in P3_DERIVED_COLUMNS if c in d.columns]
+        assert not np.isinf(d[cols].to_numpy(dtype=float)).any()
+        assert d["rvol_10d_z"].iloc[60:].isna().all()
+        assert d["range_expansion_ratio"].iloc[30:].isna().all()
+
+    def test_look_ahead_truncation_is_identical(self):
+        """Value at day t must not change when the input stops at day t."""
+        frames = _synthetic_frames(n=260)
+        full = _build_from_frames(frames)
+        for t in (40, 80, 120, 180, 230):
+            truncated = _build_from_frames({k: v.iloc[: t + 1] for k, v in frames.items()})
+            stamp = full.index[t]
+            assert truncated.index[-1] == stamp
+            for c in P3_DERIVED_COLUMNS:
+                a = truncated[c].iloc[-1]
+                b = full.loc[stamp, c]
+                assert np.isclose(a, b, rtol=1e-12, atol=0.0, equal_nan=True), (
+                    f"{c} at {stamp.date()} changes when future rows are removed: {a} vs {b}"
+                )
