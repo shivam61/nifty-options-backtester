@@ -174,16 +174,28 @@ class RollingWindowSimulator:
                 return cfg
         return None
 
-    def simulate_all(self) -> list[TradeResult]:
+    def simulate_all(self, entry_idx_range: Optional[range] = None) -> list[TradeResult]:
         """Run rolling simulations for all strategies and parameter variations.
 
         When config.deduplicate_by_date=True, picks ONE strategy per entry date
         based on VIX regime (mirrors live routing).  This prevents the label-
         contradiction problem that suppresses AUC: multiple strategies entering
         on the same date produce contradictory class labels from identical features.
+
+        entry_idx_range (optional, step 1) restricts ONLY the entry-bar loop to
+        those absolute row indices.  Skip rules (warm-up at row 50, stride on the
+        absolute index, remaining_days vs len(self.data)) are unchanged, so for
+        any split of range(50, n) the concatenated chunks equal the full result
+        in the same order.  None (default) = all bars, identical to before.
         """
         all_trades = []
         n_rows = len(self.data)
+        if entry_idx_range is None:
+            bar_range = range(50, n_rows)
+        else:
+            if entry_idx_range.step != 1:
+                raise ValueError("entry_idx_range must have step 1")
+            bar_range = range(max(50, entry_idx_range.start), min(n_rows, entry_idx_range.stop))
 
         dispatch = {
             "vertical":       self._simulate_trade,
@@ -197,7 +209,7 @@ class RollingWindowSimulator:
             "put_backspread": self._simulate_put_backspread,
         }
 
-        for entry_idx in range(50, n_rows):
+        for entry_idx in bar_range:
             if (entry_idx - 50) % self.config.entry_every_n_days != 0:
                 continue
 

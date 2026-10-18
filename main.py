@@ -2999,7 +2999,7 @@ def run_retrain_models(config: BacktestConfig) -> None:
     print(f"{'=' * 70}\n")
 
     # Step 1: Load existing evolved strategy params from cache
-    print("[1/3] Loading evolved strategy params from cache...")
+    print("[1/3] Loading evolved strategy params from cache...", flush=True)
     cached_evolved = StrategyEvolver.load_from_cache()
     cache_age = StrategyEvolver.cache_age_days()
     if not cached_evolved:
@@ -3015,7 +3015,7 @@ def run_retrain_models(config: BacktestConfig) -> None:
         print(f"  ⚠  Cache is {cache_age} days old — consider --mode evolve to re-optimise.")
 
     # Step 2: Load feature data (from parquet cache, no Yahoo re-fetch needed)
-    print("\n[2/3] Loading feature data...")
+    print("\n[2/3] Loading feature data...", flush=True)
     import warnings
     with warnings.catch_warnings(record=True):
         warnings.simplefilter("always")
@@ -3025,7 +3025,7 @@ def run_retrain_models(config: BacktestConfig) -> None:
           f"| {data.index.min().date()} → {data.index.max().date()}")
 
     # Step 3: Layered walk-forward ML retraining (same as evolve steps 4+5)
-    print("\n[3/3] Retraining ML models (layered walk-forward)...")
+    print("\n[3/3] Retraining ML models (layered walk-forward)...", flush=True)
     layered = run_layered_training(
         data=data,
         config=config,
