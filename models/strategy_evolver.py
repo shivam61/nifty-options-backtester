@@ -94,6 +94,18 @@ VIX_REGIMES = {
 }
 
 
+def _is_vertical_baseline(cfg: dict) -> bool:
+    """True if a baseline config carries the vertical-spread keys _simulate_param_set reads.
+
+    _simulate_param_set treats direction == "put" as a put spread and anything else
+    as a call spread, so only "put"/"call" are valid direction labels here.
+    """
+    return (
+        all(k in cfg for k in ("direction", "sd", "spread_width"))
+        and cfg["direction"] in ("put", "call")
+    )
+
+
 class StrategyEvolver:
     """
     Evolves strategy parameters using exhaustive simulation across regimes.
@@ -378,6 +390,12 @@ class StrategyEvolver:
             # Baseline
             baseline_trades = []
             for cfg in baseline_configs:
+                # The baseline is the hand-tuned VERTICAL spread comparison: only
+                # configs that define direction/sd/spread_width can be simulated by
+                # _simulate_param_set. Other types (iron condor, butterfly, calendar, ...)
+                # use different keys and are skipped rather than raising KeyError.
+                if not _is_vertical_baseline(cfg):
+                    continue
                 if cfg.get("min_vix", 0) <= vix_lo and cfg.get("max_vix", 100) >= vix_hi:
                     params = {
                         "direction": cfg["direction"],

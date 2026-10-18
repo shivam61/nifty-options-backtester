@@ -2007,6 +2007,19 @@ def _print_bs_fallback_trade(
     print(f"  Max Loss:   ₹{max_loss:.1f}/unit = ₹{max_loss * lots * lot_size:,.0f} total")
 
 
+def _safe_baseline_comparison(evolver, baseline_configs) -> dict:
+    """Run the informational baseline comparison without ever aborting evolve.
+
+    The comparison only feeds a printed table, so any failure is reported as a
+    one-line warning and replaced by an empty comparison.
+    """
+    try:
+        return evolver.compare_with_baseline(baseline_configs)
+    except Exception as e:
+        print(f"  WARNING: baseline comparison skipped: {type(e).__name__}: {e}")
+        return {"baseline": {}, "evolved": {}}
+
+
 def run_evolve(config: BacktestConfig):
     """
     Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes.
@@ -2081,7 +2094,7 @@ def run_evolve(config: BacktestConfig):
 
     # Compare evolved vs baseline
     print(f"\n[4/5] Comparing evolved vs baseline (hand-tuned)...")
-    comparison = evolver.compare_with_baseline(STRATEGY_CONFIGS)
+    comparison = _safe_baseline_comparison(evolver, STRATEGY_CONFIGS)
 
     print(f"\n  {'=' * 85}")
     print(f"  BASELINE vs EVOLVED COMPARISON")
