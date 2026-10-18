@@ -1,5 +1,7 @@
 # Daily Workflow Summary — Quick Start Guide
 
+> **SUPERSEDED (2026-10-19).** This page still describes the REST API workflow, a 3-day hold, a 2× stop and 11:30 entries. None of that is current. Use [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) and [DAILY_CHECKLIST.md](./DAILY_CHECKLIST.md). The API is not usable until fixed.
+
 **Ready to Use**: Yes ✅  
 **Time Commitment**: 15 minutes/day  
 **Start Date**: [Your trading date]

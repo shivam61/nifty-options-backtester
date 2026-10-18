@@ -1,5 +1,7 @@
 # As-Of Signal Decision: Tue 2026-09-08 11:30 IST (RETROSPECTIVE)
 
+> Historical record (2026-09-08 replay on the pre-repair cache); superseded by the 2026-10-18 cache repair - do not use for live decisions.
+
 > **RETROSPECTIVE, MODEL-ESTIMATED. NOT A LIVE TRADE RECORD.**
 > This is a replay of the signal engine with the clock pinned to 2026-09-08 11:30 IST and data cut off at 2026-09-04. No real option chain or fills were used. Any premium or P&L implied here would be Black-Scholes estimates. Nothing in this file is a paper trade.
 

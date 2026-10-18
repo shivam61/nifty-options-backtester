@@ -1,682 +1,228 @@
 # Daily Operations Guide — Paper Trading Journal
 
-**Purpose**: Step-by-step checklist for managing trades every trading day  
-**Frequency**: Daily (Mon–Fri, 10:00 AM–4:30 PM IST)  
-**Time commitment**: ~15 min/day (5 min entry, 5 min mid-session, 5 min close)  
-**Journal ID**: `phase1-sep-2026` (example; replace with your session)
+**Purpose**: Step-by-step procedure for each trading day (CLI + manual CSV flow)
+**Frequency**: Daily (Mon–Fri, 10:00 AM–4:30 PM IST, NSE trading days only)
+**Time commitment**: ~15 min/day
+**Scope**: Phase 1 = weekly track only. Forward-only from Mon 2026-10-19.
+
+> **API status: NOT USABLE until fixed.** The REST API in `api/server.py` cannot start at HEAD. Every `curl localhost:8000/...` step from the earlier version of this guide has been replaced with the CLI command or a manual step below. Known issues: [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) section (f). The API docs (`../API_GUIDE.md`) are kept for reference and are not operational.
 
 ---
 
-## Overview: Three Daily Touchpoints
+## Overview: Four Daily Touchpoints
 
-| Time | Task | Duration | API Calls |
-|------|------|----------|-----------|
-| **10:00–10:55 AM IST** | Pre-market checklist | 5 min | `GET /health`, `GET /status`, `GET /signal` |
-| **11:30 AM–1:00 PM IST** | Mid-session entry decision | 5 min | `POST /trades/open` (if signal + capital + entry window OK) |
-| **3:00–4:30 PM IST** | Monitoring & exit decisions | 5 min | `GET /monitor`, `POST /trades/{id}/close` (if target/stop hit) |
-| **4:30 PM IST** | End-of-day logging | 5 min | `POST /journal/daily-log`, review TRADES.csv |
+| Time (IST) | Task | Duration | Tool |
+|------|------|----------|------|
+| **Before 11:00** | Pre-flight: calendar, cache, models, Fyers | 5 min | Manual + `check_cache_health.sh` |
+| **11:00–13:00** | Run signal; if ENTER, take broker prices and enter | 5–10 min | `python main.py --mode signal-combined` + broker |
+| **3:00–4:30 PM** | Monitor against exit rules; exit if hit | 5 min | Broker screen |
+| **4:30 PM** | End-of-day CSV rows | 5 min | `tracker/*.csv` |
 
 ---
 
-# MORNING: PRE-MARKET CHECKLIST (10:00–10:55 AM)
+# MORNING: PRE-FLIGHT (before 11:00 AM)
 
-**Goal**: Verify systems are ready + get entry signal for today  
-**Output**: Decision: YES (open position if signal ≥ 0.50) or NO (wait)
+**Goal**: Confirm the day is a trading day and the data and models are usable.
+**Output**: Go to the entry window, or log a SKIP with a reason code.
 
-## Step 1: Server Health Check (1 min)
+## Step 1: Calendar and models (2 min)
+- Confirm the day is an NSE trading day. **Tue 2026-10-20 is a holiday (Dussehra)**, verified against NSE's holiday master (2026-10-18). On a holiday the signal prints `market closed`.
+- Confirm model acceptance (RESTART section a). Not accepted → SKIP `MODEL_NOT_ACCEPTED`.
+
+## Step 2: Cache and credentials (2 min)
 
 ```bash
-# Check API is running
-curl http://localhost:8000/health
+# Cache freshness (from main checkout, no network)
+python3 -c "import json; m=json.load(open('data/.cache/manifest.json')); print(m.get('last_date', m) if isinstance(m, dict) else m)"
+
+# Cache health (exit 0 = pass)
+ASOF=2026-10-19 PYTHON=.venv/bin/python scripts/check_cache_health.sh
+
+# Credential names only (never print values)
+cut -d= -f1 .env .env.local
 ```
 
-**Expected**: 
-```json
-{"status":"healthy","market_data_loaded":true,"models_loaded":true}
-```
+- Cache last_date < 2026-10-16 or health check fails → SKIP `DATA_STALE`.
+- Fyers session not live → SKIP `FYERS_UNAVAILABLE` (you cannot take real prices).
 
-**If not healthy**:
-- Server crashed overnight → Restart: `uvicorn api.server:app --port 8000`
-- Market data stale → Call: `curl -X POST http://localhost:8000/market/refresh`
-- Wait 30 sec, retry
-
-## Step 2: Account Status Snapshot (2 min)
-
-```bash
-# Get current account state
-curl "http://localhost:8000/status?journal_id=phase1-sep-2026"
-```
-
-**Check these fields**:
-| Field | Check | Action If Issue |
-|-------|-------|-----------------|
-| `account_equity` | > initial capital? | Good, profit growing |
-| `cumulative_pnl` | Positive trend? | Assess 5-day win rate |
-| `account_dd_pct` | < 5%? | Yellow if 5–10%; Red stop if > 15% |
-| `open_trades` | = 0 (before entry)? | Close lingering trades first |
-| `vix_now` | Note regime | Impacts position sizing below |
-| `regime` | LOW_VOL / NORMAL / ELEVATED? | Entry aggressiveness |
-
-**Copy to DAILY_LOG.csv row** (via API later):
-- Account equity
-- VIX close (from status)
-- Current regime
-
-## Step 3: Get Today's Entry Signal (2 min)
-
-```bash
-# Fetch ML signal + entry recommendation
-curl http://localhost:8000/signal | jq '.weekly'
-```
-
-**Review in detail**:
-```json
-{
-  "should_enter": true/false,
-  "quality_score": 0.XX,        ← Is it ≥ 0.50?
-  "signal": "STRONG_ENTRY",     ← Not "AVOID"?
-  "suggested_lots": 8,          ← Enough capital for margin?
-  "capital_to_deploy": 520000,  ← Available capital > this?
-  "dte_window": "3–8",          ← Expiry range (check NSE calendar)
-  "within_entry_window": true   ← Is it 11:00–13:00 IST? (mandatory)
-}
-```
-
-**Decision Tree**:
-
-```
-┌─ should_enter == false?
-│  └─ STOP. Wait for next signal (next day or later today if reopens)
-│
-├─ should_enter == true?
-│  ├─ quality_score < 0.50?
-│  │  └─ CAUTION. ML confidence low. May skip or 25% smaller size.
-│  │
-│  ├─ quality_score >= 0.50?
-│  │  ├─ suggested_lots > 0?
-│  │  │  ├─ capital_to_deploy < available_capital?
-│  │  │  │  └─ ✓ READY TO OPEN TRADE (enter during 11:00–13:00 IST window)
-│  │  │  │
-│  │  │  └─ capital_to_deploy >= available_capital?
-│  │  │     └─ ✗ SKIP. Insufficient margin. Wait for capital to free up.
-│  │  │
-│  │  └─ suggested_lots == 0?
-│  │     └─ ✗ SKIP. Position sizing blocked (DD too high or VIX extreme).
-│  │
-│  └─ within_entry_window == false?
-│     └─ Reminder: Entry window opens at 11:00 AM IST.
-│        Call this endpoint again at 11:30 AM to confirm window is open.
-```
-
-## Step 4: Prepare Entry Checklist (2 min)
-
-If `should_enter=true` and capital is sufficient:
-
-**Print this checklist to your monitor or phone**:
-
-```
-=== ENTRY CHECKLIST (11:00–13:00 IST) ===
-Before placing order:
-
-☐ VIX check — Is regime still LOW_VOL/NORMAL? (re-check at 11:30)
-☐ ML signal — Is quality_score still ≥ 0.50?
-☐ Capital check — Is available_capital > suggested_capital_to_deploy?
-☐ Open positions — Are we at 0 other trades? (max 1–2 concurrent for Phase 1)
-☐ Fyers API — Is connection live? (dummy test order if unsure)
-☐ Entry time — Is it 11:00–13:00 IST window?
-☐ DTE filter — Is expiry 3–8 days away?
-☐ READY? ✓ → Proceed to entry at 11:30 AM.
-```
+## Step 3: Account status (2 min)
+Read the last row of `tracker/DAILY_LOG.csv` and `tracker/ACCOUNT_STATE.csv`:
+- Account DD vs peak (pause rule: ≥ 15%)
+- Open positions (Phase 1 max = 1)
 
 ---
 
-# MID-SESSION: ENTRY DECISION & EXECUTION (11:30 AM–1:00 PM IST)
+# MID-SESSION: SIGNAL, ENTRY, LOG (11:00–13:00 IST)
 
-**Goal**: Verify signal still valid, enter position if all checks pass, log trade  
-**Duration**: 5–10 min (or SKIP if conditions changed)
+**Goal**: Run the signal once inside the window. Enter only if it says ENTER and you have real prices.
 
-## Step 1: Re-Verify Entry Signal (1 min)
-
-**At 11:30 AM**, re-check signal to confirm it hasn't changed:
+## Step 1: Run the signal
 
 ```bash
-curl http://localhost:8000/signal | jq '.weekly'
+python main.py --mode signal-combined --capital 2500000 --lots 30
 ```
 
-**Check**:
-- `should_enter` still true?
-- `quality_score` still ≥ 0.50?
-- `within_entry_window` now true (11:30 is in window)?
+Read only:
+- **TRACK 2 · WEEKLY**: strategy, expiry and DTE, lots, legs
+- **RISK ENGINE ASSESSMENT**: regime, risk score, `BLOCKED:` line if any
+- **CURRENT MARKET SNAPSHOT**: India VIX
 
-**If signal changed to AVOID or score < 0.50**:
-- Skip entry for today
-- Log in TRADES.csv notes: "Signal changed 11:30 AM, did not enter"
-- Try again next trading day
+Ignore TRACK 1 (monthly).
 
----
+| Printed | Decision |
+|---------|----------|
+| `ENTRY WINDOW GATE` | Outside 11:00–13:00. Re-run inside the window, or SKIP `OUTSIDE_WINDOW`. |
+| `Weekly track: SKIP` | SKIP (reason code from RESTART section c) |
+| `declined entry` | SKIP `PCS_DECLINED` |
+| `BLOCKED:` | SKIP `RISK_ENGINE_SKIP` |
+| `No weekly expiry fits` | SKIP `DTE_OUT_OF_RANGE` |
+| `SUGGESTED WEEKLY TRADE` | Go to Step 2 |
 
-## Step 2: Place Order via Fyers Broker (3–5 min)
+Expected expiry for a Mon 2026-10-19 entry: **Tue 2026-10-27, 8 DTE** (top edge of the 3–8 window; the Tue 10-20 expiry moves to Mon 10-19). The signal's premiums are labelled `[BS est]`.
 
-This is **manual** (API doesn't place orders yet; Phase 2 will add this).
+## Step 2: Get real prices and place the order (3–5 min)
 
-**Via Fyers app or web**:
-1. Open Nifty options chain (NSE)
-2. Select expiry from `dte_window` (e.g., 5 DTE)
-3. Enter legs based on strategy (`PUT_CREDIT_SPREAD` suggested by API)
-4. Place IOC order (Immediate Or Cancel)
-5. Note fill prices
+The signal does not place orders. This step is manual.
 
-**Record these**:
-- Entry time (HH:MM IST)
-- Entry price per unit (rupees)
-- Bid-ask spread (for slippage measurement)
+1. Open the Nifty options chain on the broker for the printed expiry.
+2. Read bid and ask for every printed strike.
+3. Place the IOC order at the real price for the printed lot count.
+4. Record: entry time (HH:MM IST), fill per leg, bid/ask per leg, lot count.
 
----
+**Do not use the `[BS est]` figures as fills.**
 
-## Step 3: Log Trade to API (1 min)
+## Step 3: Log the trade (within 5 min)
 
-Immediately after order fills:
+Add one row to `tracker/TRADES.csv` (27 columns; field mapping in RESTART section d):
 
-```bash
-curl -X POST http://localhost:8000/trades/open \
-  -H "Content-Type: application/json" \
-  -d '{
-    "journal_id": "phase1-sep-2026",
-    "trade_id": "PT-001",
-    "strategy": "weekly_pcs",
-    "entry_date": "2026-09-01",
-    "expiry_date": "2026-09-04",
-    "legs_str": "SELL 24800 PE 85 @ 520; BUY 24600 PE 40 @ 520",
-    "lots": 8,
-    "capital_deployed": 520000,
-    "ml_score": 0.62,
-    "entry_time_ist": "11:42",
-    "vix": 17.3,
-    "regime": "LOW_VOL",
-    "strike": 24800,
-    "notes": "Entered during low VIX, quality score 0.62"
-  }'
+```
+P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,28.1,<lots from signal>,<margin from broker>,iron_condor,17.3,<regime>,<risk score>,8,,,,,,,,,,,,"Entered 11:42 on printed lots",29528,
 ```
 
-**Key fields to extract from Fyers**:
-- `entry_time_ist`: When order filled (HH:MM IST)
-- `entry_date`: Today (YYYY-MM-DD)
-- `expiry_date`: Option expiry date (YYYY-MM-DD)
-- `lots`: Number of 65-lot units deployed
-- `capital_deployed`: Margin posted (₹)
-- `strike`: Strike price of primary leg
-- `legs_str`: Human-readable leg description
+- Leave exit fields blank until exit.
+- `ML_Score` = the printed weekly `Risk score` (tail-risk, not a win probability). Write `NA` if no risk engine loaded.
+- Add the DAILY_LOG row at 4:30 PM (`Weekly_Trades_Executed` = 1).
 
-**Expected response**:
-```json
-{"success":true,"trade_id":"PT-001","message":"Trade PT-001 opened"}
-```
-
----
-
-## Step 4: Verify TRADES.csv was Updated (1 min)
-
-Open `paper_trading/tracker/TRADES.csv` (in Excel or terminal):
+## Step 4: Verify
 
 ```bash
 tail -2 paper_trading/tracker/TRADES.csv
 ```
 
-**Should see your new row** with:
-- Trade_ID: PT-001
-- Journal_ID: phase1-sep-2026
-- Date_Entry: 2026-09-01
-- Entry_Price_Fill: 85.0
-- Lots_Size: 8
-- Exit fields empty (will fill at close)
+Check: Trade_ID is new, Lots_Size matches the signal, Expiry_DTE is 3–8, Strategy matches VIX band.
 
 ---
 
-# AFTERNOON: MONITORING & EXIT DECISIONS (3:00–4:30 PM IST)
+# AFTERNOON: MONITORING & EXIT (3:00–4:30 PM IST)
 
-**Goal**: Monitor open position + decide when to exit (profit target or stop loss)  
-**Check frequency**: Every 30 min during market hours
+**Goal**: Exit when a rule is hit. Otherwise hold.
+**Check frequency**: Every 30 min from 3:00 PM (and at 12:30 PM if the trade was entered that morning).
 
-## Step 1: Get Exit Recommendation (2 min)
+## Exit rules (check each open trade)
 
-Every 30 min during 3:00–4:30 PM (or more frequently if nervous):
+| Rule | Trigger | Action |
+|------|---------|--------|
+| Stop (100% of credit) | Loss reaches 100% of credit collected | **EXIT NOW** |
+| Stop (short strike) | Underlying breaches the short strike | **EXIT NOW** |
+| Profit target (PCS only) | 75% of max profit reached | **EXIT** |
+| IC profit target | None | Hold to rule below |
+| IC max hold | 4 trading days (as printed by the signal; pending owner confirmation) | **EXIT** |
+| Expiry day | Still open at 15:15 IST | **EXIT** |
+| Manual | Judgement call (tail event, broker or data failure) | **EXIT**, log reason |
 
-```bash
-curl "http://localhost:8000/monitor?journal_id=phase1-sep-2026"
-```
+**There is no 3-day cap.** A Tuesday-to-Tuesday trade is about 5 trading days.
 
-**Expected response**:
-```json
-{
-  "count": 1,
-  "recommendations": [
-    {
-      "trade_id": "PT-001",
-      "action": "HOLD",           ← Action to take
-      "confidence": 0.72,         ← Certainty (60–95%)
-      "current_pnl_pct": 48.2,    ← % of max profit captured
-      "pnl_rupees": 14300,        ← Unrealized P&L (₹)
-      "days_in_trade": 0,
-      "dte_remaining": 5,
-      "risk_score": 0.21,         ← Tail loss risk (0–1)
-      "reasoning": [
-        "48% of max profit captured",
-        "Risk score 0.21 — low risk",
-        "DTE 5 — time to hold"
-      ]
-    }
-  ]
-}
-```
+## Closing the trade
 
-## Step 2: Exit Decision Tree
-
-**Based on `action` recommendation**:
-
-### If `action == "HOLD"`:
-- Continue monitoring every 30 min
-- Do NOT exit yet
-- Log in notes: "Holding, 48% captured, risk low"
-
-### If `action == "BOOK_PROFIT"` OR `current_pnl_pct >= 50`:
-- **EXIT IMMEDIATELY**
-- This is your 50% profit target (key rule)
-- Close all legs in Fyers
-
-### If `action == "EXIT_NOW"` OR `risk_score >= 0.70`:
-- **EXIT IMMEDIATELY**
-- Risk is too high; don't wait
-- Close all legs in Fyers
-
-### If `action == "TRAIL_STOP"`:
-- Adjust stop-loss **higher** (follow profit up)
-- Don't close yet; lock in gains while staying long
-
-### If `action == "PARTIAL_EXIT"`:
-- Close 50% of position to lock profits
-- Let remaining 50% run for larger upside
-- Update TRADES.csv with partial exit fields
-
----
-
-## Step 3: Close Trade (if action = EXIT)
-
-**Via Fyers**:
-1. Close all legs of the trade
-2. Note exit price + exit time
-
-**Log to API**:
-
-```bash
-curl -X POST "http://localhost:8000/trades/PT-001/close?journal_id=phase1-sep-2026" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "exit_price_per_unit": 42.5,
-    "exit_reason": "profit_target",
-    "exit_time_ist": "14:05",
-    "brokerage": 320,
-    "notes": "Closed at 50% profit target, P&L +14.3K"
-  }'
-```
-
-**Exit reasons**:
-- `profit_target` — Hit 50% max profit ✓ (standard)
-- `stop_loss` — Hit 2× credit stop loss (loss limit)
-- `dte_expired` — Expiry day reached (0 DTE)
-- `time_based` — Held 3 trading days max
-- `manual` — Tail event or judgment call
-
-**Expected response**:
-```json
-{"success":true,"trade_id":"PT-001","message":"Trade PT-001 closed"}
-```
-
----
-
-## Step 4: Verify TRADES.csv Exit Fields (1 min)
-
-```bash
-tail -2 paper_trading/tracker/TRADES.csv
-```
-
-**Should now have**:
-- Date_Exit: 2026-09-02
-- Exit_Time_IST: 14:05
-- Exit_Price_Fill: 42.5
-- Exit_Reason: profit_target
-- Gross_P&L_₹: 14300
-- Net_P&L_₹: 13980 (after brokerage)
-- Win_Loss: W (or L if loss)
+1. Close all legs on the broker. Note fills and time.
+2. Update the TRADES.csv row: `Date_Exit`, `Exit_Time_IST`, `Exit_Price_Fill`, `Exit_Reason` (`profit_target`, `stop_loss_100pct`, `short_strike_breach`, `max_hold`, `expiry`, `manual`), `Days_Held` (trading days), `Gross_P&L_₹`, `Brokerage_₹`, `Net_P&L_₹`, `Win_Loss`, `P&L_vs_Max_Profit_%`, `Backtest_Deviation_%`.
 
 ---
 
 # END-OF-DAY: LOGGING & WRAP-UP (4:30 PM IST)
 
-**Goal**: Record daily account state + prepare for next day  
-**Duration**: 5 min
+## Step 1: Final account snapshot
+From the broker: account equity, cumulative P&L, open positions (should be 0 after exit), VIX close.
 
-## Step 1: Final Account Snapshot (2 min)
-
-```bash
-curl "http://localhost:8000/status?journal_id=phase1-sep-2026"
-```
-
-**Record**:
-- `account_equity`: Updated value
-- `cumulative_pnl`: Total profit to date
-- `open_trades`: Should be 0 at close
-- `win_rate_pct`: Updated if trade closed
-- `vix_now`: Final VIX of day
-- `account_dd_pct`: Current drawdown
-
-## Step 2: Log Daily Snapshot (2 min)
-
-```bash
-curl -X POST http://localhost:8000/journal/daily-log \
-  -H "Content-Type: application/json" \
-  -d '{
-    "journal_id": "phase1-sep-2026",
-    "date": "2026-09-01",
-    "account_equity": 1514300,
-    "cumulative_pnl": 14300,
-    "open_trades_count": 0,
-    "vix_close": 17.3,
-    "market_regime": "LOW_VOL",
-    "win_rate_ytd_pct": 100.0,
-    "avg_trade_pnl_ytd": 14300,
-    "account_dd_pct": 0.0,
-    "notes": "First trade: +14.3K profit on weekly PCS. Quality entry, hit 50% target."
-  }'
-```
-
-## Step 3: Review DAILY_LOG.csv (1 min)
-
-```bash
-tail -2 paper_trading/tracker/DAILY_LOG.csv
-```
-
-**Should show**:
-- Date: 2026-09-01
-- Journal_ID: phase1-sep-2026
-- Account_Equity_₹: 1514300
-- Cumulative_P&L_₹: 14300
-- Open_Trades_Count: 0
-- VIX_Close: 17.3
-- Market_Regime: LOW_VOL
-
-## Step 4: End-of-Day Checklist (1 min)
+## Step 2: Add the DAILY_LOG.csv row
+15 columns, in order (RESTART section c). Example entry day:
 
 ```
-=== END-OF-DAY CHECKLIST ===
-☐ All open positions closed? (None = 0)
-☐ TRADES.csv updated with exit? (if trade closed)
-☐ DAILY_LOG.csv updated with snapshot? (via API)
-☐ Account DD checked? (< 15% = OK)
-☐ Next day prep: Review morning checklist for tomorrow
-☐ Notes logged: Any market observations? (log in DAILY_LOG notes)
-☐ Ready for tomorrow ✓
+2026-10-19,Monday,<equity>,<cum_pnl>,0,<VIX>,<regime>,1,1,0,0,<DD%>,<win%>,<avg_pnl>,"Entered 11:42; closed <time>"
+```
+
+Example skip day:
+
+```
+2026-10-19,Monday,2500000,0,0,<VIX>,<regime>,0,0,0,0,0,,,"SKIP PCS_DECLINED: <one-line reason>"
+```
+
+## Step 3: Deviation log
+If the day was a skip or the trade deviated from the signal, add a row to the Deviation Log in `PAPER_TRADING_JOURNAL.md`.
+
+## Step 4: End-of-day checklist
+```
+☐ No open positions (or the open one is logged)
+☐ TRADES.csv has the entry (and exit, if closed)
+☐ DAILY_LOG.csv has today's row
+☐ ACCOUNT_STATE.csv updated only on a trade day
+☐ Account DD < 15% of peak (pause rule)
+☐ Deviation Log row added if needed
+✓ DONE for the day
 ```
 
 ---
 
 # HANDLING MISSED LOGGING (CATCH-UP)
 
-**If you don't log at 4:30 PM IST**, you can catch up the **next morning before 11:00 AM**.
+If you miss logging, catch up the next trading morning, before the entry window.
 
-## Scenario 1: Trade Closed Overnight But Not Logged
-
-**Morning (before entry for new trade)**:
-
-```bash
-# Check if trade still in active_trades.json
-curl "http://localhost:8000/trades?journal_id=phase1-sep-2026&status=open"
-
-# If PT-001 still shows as open but it's actually closed:
-# Get exit details from Fyers history
-```
-
-**Then log the close retroactively**:
-
-```bash
-curl -X POST "http://localhost:8000/trades/PT-001/close?journal_id=phase1-sep-2026" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "exit_price_per_unit": 42.5,
-    "exit_reason": "profit_target",
-    "exit_time_ist": "14:05",      ← Actual exit time from yesterday
-    "brokerage": 320,
-    "notes": "Logged retroactively on 2026-09-02 morning"
-  }'
-```
-
-## Scenario 2: Missed Yesterday's Daily Log
-
-**Tomorrow morning** (before new entry decision):
-
-```bash
-# Check yesterday's status
-curl "http://localhost:8000/status?journal_id=phase1-sep-2026"
-
-# Reconstruct yesterday's snapshot:
-# - Equity = initial + cumulative P&L
-# - VIX = from NSE website or previous day close
-# - Regime = infer from VIX
-
-# Log retroactively with yesterday's date:
-curl -X POST http://localhost:8000/journal/daily-log \
-  -H "Content-Type: application/json" \
-  -d '{
-    "journal_id": "phase1-sep-2026",
-    "date": "2026-09-01",          ← Yesterday
-    "account_equity": 1514300,
-    "cumulative_pnl": 14300,
-    "open_trades_count": 0,
-    "vix_close": 17.3,
-    "market_regime": "LOW_VOL",
-    "notes": "Logged retroactively on 2026-09-02 morning"
-  }'
-```
-
-## Scenario 3: Multiple Days Missed
-
-**Approach**: Log from oldest to newest, once per day:
-
-```bash
-# Day 1 (Sept 1)
-curl -X POST http://localhost:8000/journal/daily-log -d '{"date":"2026-09-01",...}'
-
-# Day 2 (Sept 2)
-curl -X POST http://localhost:8000/journal/daily-log -d '{"date":"2026-09-02",...}'
-
-# Day 3 (Sept 3) — today
-curl -X POST http://localhost:8000/journal/daily-log -d '{"date":"2026-09-03",...}'
-```
-
-**To get missing data**:
-- Account equity: `GET /status` (shows cumulative_pnl, compute equity = initial + pnl)
-- VIX close: Check NSE website or financial data provider
-- Trade count: Check TRADES.csv (count rows with Date_Exit = null for that day)
-- Win rate: Calculate from TRADES.csv closed trades
+- **Trade exit not logged**: get the fills from the broker's contract note, then update the TRADES.csv row for that trade.
+- **Daily row missed**: add the row for that date from the broker figures. Log oldest → newest.
+- **Never back-fill a trade you did not take.** Missed signals go in the Deviation Log.
 
 ---
 
-# MANAGING PREVIOUS DAY'S SUGGESTION AT 12:30 PM
-
-**Key Insight**: The 11:30 AM exit recommendation is for **active positions only**. At 12:30 PM, you **re-evaluate the suggestion** to decide if it still applies.
-
-## Workflow: 12:30 PM Checkpoint
-
-**If trade still open** (from 11:30 AM entry):
-
-```bash
-# Re-check exit recommendation at 12:30 PM
-curl "http://localhost:8000/monitor?journal_id=phase1-sep-2026" | jq '.recommendations[0].action'
-```
-
-**Decision table**:
-
-| 11:30 AM Suggestion | Current State (12:30 PM) | Action |
-|---------------------|--------------------------|--------|
-| HOLD | Still HOLD (P&L < 50%) | Continue holding, re-check at 1:00 PM |
-| HOLD | Now BOOK_PROFIT (P&L ≥ 50%) | EXIT immediately |
-| BOOK_PROFIT | Already exited | ✓ Completed (log if not done) |
-| EXIT_NOW | Already exited | ✓ Completed (log if not done) |
-| HOLD | Now EXIT_NOW (risk spike) | EXIT immediately |
-
----
-
-## Example Timeline
-
-### Scenario: Low VIX Morning, Enter at 11:42 AM
-
-```
-10:00 AM: Check status + signal → should_enter=true, quality=0.62 ✓
-
-11:30 AM: Re-verify signal → Still true, within_entry_window=true ✓
-          Place order via Fyers → Filled at ₹85 credit
-          Log: POST /trades/open
-
-11:45 AM: Position now open, unrealized P&L = +₹5,000
-
-12:30 PM: CHECK EXIT RECOMMENDATION
-          curl /monitor → action="HOLD", pnl_pct=35%, risk_score=0.15 ✓
-          Decision: KEEP HOLDING. Not at 50% yet. Risk is low.
-          Log notes: "12:30 check: holding, 35% profit, risk low"
-
-1:30 PM: RE-CHECK (optional, if anxious)
-          curl /monitor → action="BOOK_PROFIT", pnl_pct=51%, risk_score=0.25 ✓
-          Decision: EXIT. Hit 50% target.
-          Close order via Fyers → Filled at ₹42.50
-          Log: POST /trades/{id}/close
-
-4:30 PM: End-of-day logging
-          Log daily snapshot → cumulative_pnl updated
-          Verify TRADES.csv + DAILY_LOG.csv
-```
-
----
-
-# QUICK REFERENCE: DAILY COMMAND CHEAT SHEET
-
-## Pre-Market (10:00–10:55 AM)
-
-```bash
-# Health check
-curl http://localhost:8000/health
-
-# Status
-curl "http://localhost:8000/status?journal_id=phase1-sep-2026" | jq '.'
-
-# Signal
-curl http://localhost:8000/signal | jq '.weekly'
-```
-
-## Entry (11:30–1:00 PM)
-
-```bash
-# Log new trade
-curl -X POST http://localhost:8000/trades/open \
-  -H "Content-Type: application/json" \
-  -d '{"journal_id":"phase1-sep-2026",...}'
-```
-
-## Monitoring (3:00–4:30 PM, every 30 min)
-
-```bash
-# Exit recommendation
-curl "http://localhost:8000/monitor?journal_id=phase1-sep-2026" | jq '.recommendations[0]'
-
-# Close trade
-curl -X POST "http://localhost:8000/trades/PT-001/close?journal_id=phase1-sep-2026" \
-  -H "Content-Type: application/json" \
-  -d '{"exit_price_per_unit":42.5,...}'
-```
-
-## End-of-Day (4:30 PM)
-
-```bash
-# Status
-curl "http://localhost:8000/status?journal_id=phase1-sep-2026" | jq '.'
-
-# Daily log
-curl -X POST http://localhost:8000/journal/daily-log \
-  -H "Content-Type: application/json" \
-  -d '{"journal_id":"phase1-sep-2026",...}'
-```
-
----
-
-# TROUBLESHOOTING: COMMON ISSUES
+# TROUBLESHOOTING
 
 | Issue | Symptom | Fix |
 |-------|---------|-----|
-| **Server down** | "Connection refused" on curl | Restart: `uvicorn api.server:app --port 8000` |
-| **Signal stale** | Yesterday's VIX in signal response | Call: `POST /market/refresh` (wait 30s) |
-| **Trade not logged** | TRADES.csv still has empty row | Re-call: `POST /trades/open` with same trade_id |
-| **Exit stuck as HOLD** | Position at 48% profit, want to exit | Manual override: Call `POST /trades/{id}/close` anyway |
-| **Missed yesterday's log** | No DAILY_LOG row for yesterday | Log retroactively: Call with `"date": "2026-09-01"` |
-| **Multiple open trades** | Opened 2 trades, only 1 showing | Check: `GET /trades?status=open` filters by journal_id |
+| Signal prints `[BS est]` only | Expected: premiums are estimates | Take broker prices (Step 2) |
+| Cache stale | Health check fails or last_date < 2026-10-16 | Refresh via the owner's data refresh, then re-check; otherwise SKIP `DATA_STALE` |
+| Signal shows a monthly trade | Expected in TRACK 1 | Ignore it; Phase 1 is weekly only |
+| Expiry shows DTE 0 or 9+ | Out of window | SKIP `DTE_OUT_OF_RANGE`; do not force the expiry |
+| Trade row wrong | Typo in TRADES.csv | Correct it in place; keep Trade_ID |
+| API not responding | `curl` fails | Expected: API not usable. Use the CLI. |
 
 ---
 
-# WEEKLY SUMMARY (Every Friday 4:00 PM)
+# WEEKLY SUMMARY (Friday 4:00 PM)
 
-After logging final trade Friday:
-
-```bash
-# Get week summary
-curl "http://localhost:8000/journals/phase1-sep-2026" | jq '.'
-```
-
-**Record in RISK_DASHBOARD.md**:
-- Trades taken this week: N
-- Win rate: X%
-- Total P&L: ₹Y
-- Account DD: Z%
-- Any API/Fyers issues?
-- Decision: Continue? Adjust size? Pause?
+- Count weekly trades and skips this week (from DAILY_LOG.csv)
+- Net P&L and win rate (from TRADES.csv)
+- Account DD vs peak
+- Fill the weekly block in `tracker/RISK_DASHBOARD.md`
+- Decision: continue, pause (DD rule), or review
 
 ---
 
-# 30-DAY MONTHLY REVIEW (Month-End)
+# MONTHLY REVIEW (checkpoint dates in PAPER_TRADING_JOURNAL.md)
 
-At end of month (or every 30 days):
+Fill `analysis/MONTHLY_ANALYSIS.md` from TRADES.csv and DAILY_LOG.csv: trade-by-trade review, win rate vs backtest (78%), P&L vs ₹29,528 average, largest win and loss, missed signals, deviations.
 
-```bash
-# Get full session summary
-curl "http://localhost:8000/journals/phase1-sep-2026"
-```
-
-**Copy all trades to MONTHLY_ANALYSIS.md**:
-- Trade-by-trade review
-- Win rate vs backtest (78% target)
-- P&L vs backtest (₹29.5k avg target)
-- Largest win/loss
-- Missed signals
-- Backtest vs live deviation
-
-**Decision**:
-- ✅ GO: Continue Phase 1 (6-month validation)
-- ⚠️ HOLD: Collect more data (margin, win rate)
-- ❌ STOP: Investigate backtest vs live gap
+**Decision**: GO (continue Phase 1) · HOLD (more data) · STOP (investigate the backtest vs live gap)
 
 ---
 
 # BEST PRACTICES
 
-✓ **Log immediately** — Don't delay trade logs; memory fades  
-✓ **Check signal every 5 min** around 11:30 AM (entry window)  
-✓ **Monitor every 30 min** from 3:00 PM onward (profit building)  
-✓ **Never hold past 3:15 PM** on expiry day (0 DTE)  
-✓ **Always exit at 50% profit target** — Lock gains, move on  
-✓ **Never hold through stop loss** — 2× credit is hard cap  
-✓ **Catch up next morning** if you miss EOD logging (do it before new signal)  
-✓ **Review weekly** (Fridays) — Spot trends early  
+✓ **Log immediately.** Memory fades.
+✓ **Run the signal once in the window.** Re-run only if the first run hit the gate.
+✓ **Real prices only.** Never fill against `[BS est]`.
+✓ **Use the printed lot count.** Do not resize.
+✓ **Stop = 100% of credit or short-strike breach.** No exceptions.
+✓ **Review every Friday.**
 
 ---
 
-**Ready to trade!** Use this guide daily. Once familiar, most days take 10–12 minutes.
-
----
-
-**Questions?** See [API_GUIDE.md](../API_GUIDE.md) for endpoint details or [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for trading rules.
+**Questions?** See [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) (procedure and reason codes) or [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) (rules).

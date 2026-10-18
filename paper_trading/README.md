@@ -1,176 +1,125 @@
 # Paper Trading Journal & Tracking System
 
-**Status**: Ready for launch  
-**Initial Capital**: ₹15,00,000  
-**Strategy**: Weekly PCS/IC (3-day holds)  
-**Baseline Model**: Run #60 (12.07% CAGR, 78% win rate)  
+**Status**: Restarting forward-only on Mon 2026-10-19 (see [RESTART_2026-10-19.md](./RESTART_2026-10-19.md))
+**Initial Capital**: ₹25,00,000 (CLI `--capital 2500000`)
+**Strategy**: Weekly PCS/IC only. No fixed hold period; exits by rule.
+**Baseline Model**: Run #66 (11.98% CAGR, 78% weekly win rate; reference Run #60 12.07%)
 **Phase**: 1 — Validation (6 months)
+**API status**: NOT USABLE until fixed. Use the CLI and the manual CSV flow.
 
 ---
 
 ## Overview
 
-This is a complete paper trading tracking system for validating the Phase 4 baseline backtest (Run #60) against live market conditions. The system is designed to capture every trade, measure slippage, validate ML signals, and provide clear go/no-go decision criteria for advancing to Phase 2 (adding monthly trading).
+This is a complete paper trading tracking system for validating the Phase 4 baseline backtest (Run #60) against live market conditions. The system is designed to capture every trade, measure slippage, validate signals, and provide clear go/no-go decision criteria for advancing to Phase 2 (adding monthly trading).
+
+**Zero real paper trades exist.** Trade #1 (2026-08-29 IC) is a SIMULATED back-fill and is excluded from every count.
 
 ### What's Inside
 
 ```
 paper_trading/
 ├── README.md                        ← You are here
-├── PAPER_TRADING_JOURNAL.md        ← Main journal with checkpoints
+├── RESTART_2026-10-19.md           ← Start here for the Mon 10-19 restart
+├── PAPER_TRADING_JOURNAL.md        ← Main journal with checkpoints and rule changes
 ├── QUICK_REFERENCE.md              ← Laminated cheat sheet (print this)
 ├── tracker/
-│   ├── TRADES.csv                  ← Every trade logged here
-│   ├── DAILY_LOG.csv               ← End-of-day account snapshot
-│   └── RISK_DASHBOARD.md           ← Real-time risk monitoring
+│   ├── TRADES.csv                  ← Every trade logged here (27 columns)
+│   ├── DAILY_LOG.csv               ← End-of-day / skip-day snapshot (15 columns)
+│   └── RISK_DASHBOARD.md           ← Risk monitoring template
 ├── analysis/
 │   └── MONTHLY_ANALYSIS.md         ← Month-end detailed review
 ├── journal/
 │   └── [TRADE_NOTES_YYYY_MM.txt]  ← Free-form daily notes
 └── logs/
-    └── [API_LOGS_YYYY_MM_DD.log]  ← Technical execution logs
+    └── [API_LOGS_YYYY_MM_DD.log]  ← Technical execution logs (API not operational)
 ```
 
 ---
 
-## Quick Start (5 Minutes)
+## Quick Start
 
 ### 1. Account Setup
-- [ ] Open Fyers account with ₹15L capital
-- [ ] Get Fyers API credentials
-- [ ] Test API connection (place dummy order)
+- [ ] Open Fyers account funded with ₹25L (or the capital you run with)
+- [ ] Get Fyers credentials (names in `.env` or `.env.local`; never commit values)
 - [ ] Set up 2FA & withdraw-disable mode
 
 ### 2. System Initialization
-- [ ] Fill "Account Setup Date" in PAPER_TRADING_JOURNAL.md
-- [ ] Verify baseline models exist (`data/.cache/entry_model_v4.pkl`, `exit_model.pkl`)
+- [ ] Verify the models and cache per RESTART section (a) and (b)
 - [ ] Print QUICK_REFERENCE.md (keep on desk during trading)
-- [ ] Set calendar reminders for weekly checkpoints (Fridays 4 PM)
+- [ ] Set calendar reminders for weekly checkpoints (Fridays 4 PM) and the Mon 10-19 pre-flight
 
 ### 3. Pre-Trading Checklist
-- [ ] Read PAPER_TRADING_JOURNAL.md (full document, 10 min)
+- [ ] Read RESTART_2026-10-19.md (about 10 min)
 - [ ] Read QUICK_REFERENCE.md (trading rules, 5 min)
-- [ ] Simulate 3 trades mentally using the trade log template
-- [ ] Verify Fyers API latency < 2 seconds
-- [ ] Set up email/Slack alerts for P&L milestones
+- [ ] Run the signal once to see the output format: `python main.py --mode signal-combined --capital 2500000 --lots 30`
 
 ### 4. Go Live
-- [ ] Enable live trading mode in Fyers (first 2 weeks: paper mode)
-- [ ] Trade weekly PCS/IC exclusively (monthly paused)
-- [ ] Log every entry/exit in TRADES.csv within 5 min of execution
-- [ ] Update DAILY_LOG.csv at 4:30 PM (after market close)
+- [ ] Trade weekly PCS/IC only (monthly paused; ignore TRACK 1 output)
+- [ ] Take real broker bid/ask for every fill (the signal's premiums are `[BS est]`)
+- [ ] Log every entry and exit in TRADES.csv within 5 min of execution
+- [ ] Log the day in DAILY_LOG.csv at 4:30 PM (every trading day, including skips)
 
 ---
 
 ## File-by-File Guide
 
+### RESTART_2026-10-19.md
+**Purpose**: One-page runbook for a fresh session or operator
+**Key Sections**: status snapshot, pre-flight checklist for Mon 10-19, SKIP logging with reason codes, ENTRY field mapping, exit rules, known gaps
+
 ### PAPER_TRADING_JOURNAL.md
-**Purpose**: Central journal with 6 monthly checkpoints and decision criteria  
-**Update Frequency**: Monthly (every 30 days)  
+**Purpose**: Central journal with checkpoints, rule-change table and decision criteria
+**Update Frequency**: At each checkpoint (30 and 60 days from 2026-10-19, then as set)
 **Key Sections**:
-- Account overview (₹15L allocation)
-- Trading rules (STRICT)
-- 6 monthly checkpoints (fill in trade count, win rate, P&L)
-- Deviation log (trades outside backtest logic)
+- Account overview (₹25L; weekly budget ₹12.5L)
+- Trading rules (stop = 100% of credit or short-strike breach)
+- Rule changes vs the original template (2026-10-19)
+- Checkpoints (rebased to the 2026-10-19 restart)
+- Deviation log (skips and deviations)
 - Go/no-go decision criteria for Phase 2
 
-**How to Use**:
-1. Fill dates for each checkpoint now (months 1–6)
-2. Every 30 days: Fill in trades, P&L, win rate
-3. At month 6: Make Phase 2 go/no-go decision
-4. Keep this as the source of truth
-
 ### QUICK_REFERENCE.md
-**Purpose**: Laminated trading cheat sheet (one-pager equivalent)  
-**Update Frequency**: Read before every trading session  
-**Key Sections**:
-- Entry checklist (7 items, must all be ✓)
-- Exit rules (profit target, stop loss, DTE, time)
-- Risk limits (hard stops)
-- VIX regime guide
-- Trade log example (template)
-- Escalation protocol (yellow/orange/red alerts)
-- Common mistakes
-
-**How to Use**:
-- Print this. Pin to monitor.
-- Read entry checklist 10 min before 11 AM IST
-- Reference exit rules every day
+**Purpose**: Laminated trading cheat sheet
+**Key Sections**: entry checklist, exit rules, risk limits, trade log example, escalation, common mistakes
 
 ### TRADES.csv
-**Purpose**: Master log of every trade (entry → exit)  
-**Update Frequency**: After every trade exit (same day)  
-**Columns**: 25 fields (entry, exit, P&L, backtest deviation, notes)
+**Purpose**: Master log of every trade (entry → exit)
+**Update Frequency**: At entry, and again at exit
+**Columns**: 27 fields (see RESTART section d for the mapping)
 
 **How to Use**:
-1. After entering a trade, log: Trade_ID, Date, Time, Strike, Entry Price, Lots, VIX, ML Score, Expiry DTE
-2. After exiting, complete: Date_Exit, Exit_Time, Exit Price, Exit_Reason, Days_Held, P&L, Slippage
-3. Calculate: Win_Loss (W/L), P&L_vs_Max_Profit, Backtest_Deviation
-4. Every Friday: Paste this into MONTHLY_ANALYSIS.md
+1. At entry: Trade_ID, Date_Entry, Entry_Time_IST, Strike_Entry, Bid_Ask_Entry, Entry_Price_Fill, Lots_Size (as printed by the signal), Expiry_DTE, Strategy
+2. At exit: Date_Exit, Exit_Time_IST, Exit_Price_Fill, Exit_Reason, Days_Held, Gross/Net P&L, Win_Loss
+3. Calculate P&L_vs_Max_Profit_% and Backtest_Deviation_%
 
 ### DAILY_LOG.csv
-**Purpose**: Daily account snapshot (equity, DD%, open trades, VIX)  
-**Update Frequency**: Every trading day at 4:30 PM  
-**Key Columns**: Date, Account_Equity, P&L, VIX_Close, Regime, Trades_Executed, Win_Rate_YTD, Notes
-
-**How to Use**:
-1. At market close (4:30 PM), fill in the day's row
-2. Use this to spot trends (e.g., "losing streak week 3")
-3. This becomes the data source for MONTHLY_ANALYSIS.md
+**Purpose**: Daily account snapshot, one row per trading day (also on skip days)
+**Update Frequency**: Every trading day at 4:30 PM
+**Columns**: 15 fields (see RESTART section c)
 
 ### RISK_DASHBOARD.md
-**Purpose**: Real-time risk monitoring (updated daily)  
-**Update Frequency**: Before market open + end of day  
-**Key Sections**:
-- Account status (equity, P&L, DD%)
-- Open positions (unrealized P&L)
-- Risk alerts (🔴 critical, 🟡 warning, 🟢 normal)
-- Daily checklist (8 items)
-- Weekly checkpoint (Fridays)
-- Hard stops (7 triggers for pausing)
-
-**How to Use**:
-- Every morning (10 AM IST): Check 🟢/🟡/🔴 status
-- If any critical alert: STOP all new entries
-- Every Friday 4 PM: Fill weekly checkpoint
-- This is your early warning system
+**Purpose**: Risk monitoring template (updated daily, reviewed weekly)
+**Key Sections**: account status, open position, alerts, daily checklist, weekly checkpoint, the single pause rule
 
 ### MONTHLY_ANALYSIS.md
-**Purpose**: Detailed month-end review (backtest vs live)  
-**Update Frequency**: Once per month (end of month, take 1 hour)  
-**Key Sections**:
-- Summary metrics (wins, losses, P&L, max DD)
-- Trade-by-trade review (analysis of each 1–2 trades)
-- Missed signals & deviations
-- Market conditions & VIX regime analysis
-- Backtest vs live comparison table
-- Fyers API performance
-- Risk management checks (7 checks)
-- Key observations & learnings
-- Decision: Continue / Pause / Escalate
-
-**How to Use**:
-1. Copy template to new file: `ANALYSIS_2024_09.md` (date-named)
-2. Pull data from TRADES.csv and DAILY_LOG.csv
-3. Analyze each trade individually (why did it win/lose?)
-4. Compare actual results to backtest expectations
-5. Make go/no-go decision for next month
+**Purpose**: Detailed month-end review (backtest vs live)
+**Update Frequency**: Once per month
+**Key Sections**: summary, trade-by-trade review, deviations, backtest vs live table, go/no-go
 
 ---
 
-## Capital Allocation Breakdown
+## Capital Allocation
 
 | Allocation | Amount | Purpose |
 |----------|--------|---------|
-| **Weekly Trading Capital** | ₹12,00,000 (80%) | Primary strategy |
-| **Monthly Trading Capital** | ₹0 (paused, 0%) | Disabled Phase 1 |
-| **Reserve/Cushion** | ₹3,00,000 (20%) | Drawdown absorption |
-| **Margin per Trade** | ~₹5,00,000 | 65-lot position (approx) |
+| **Weekly budget** | ₹12,50,000 (50%) | Phase 1 strategy (the CLI budget split) |
+| **Monthly budget** | ₹12,50,000 (50%, paused) | Not used in Phase 1 |
 
 **Capital Usage**:
-- Open 1 weekly trade: Uses ~₹5,00,000 margin, leaving ₹7,00,000 available
-- Can open 2–3 concurrent weekly trades if signals align
-- Never deploy entire ₹12L in one position
+- One open weekly trade at a time in Phase 1
+- Lot count is set by the signal: weekly lots = max(1, int(`--lots` × 0.5)). With `--lots 30` that is 15 (weekly risk engine OFF in Phase 1). Copy the printed count.
+- Margin per trade: from the broker's margin calculator (the CLI does not print margin)
 
 ---
 
@@ -183,51 +132,38 @@ paper_trading/
 | **Trades** | 6/year | 6–8 trades | [ ] |
 | **Win Rate** | 78% | >= 75% | [ ] |
 | **Avg P&L/Trade** | ₹29,528 | >= ₹25,000 | [ ] |
-| **Total P&L** | ₹177k/year | ₹90–120k (6 mo) | [ ] |
-| **Max Single Loss** | ₹-53k | <= ₹-50k | [ ] |
-| **Max Account DD** | 6.2% | < 15% (hard cap) | [ ] |
-| **Slippage vs Backtest** | 0.75× | ±50 bp acceptable | [ ] |
+| **Total P&L** | ₹177k/year | Track vs backtest | [ ] |
+| **Worst weekly loss** | ₹-53,255 | Stop rule (100% of credit / short strike) governs; no ₹ cap | [ ] |
+| **Max Account DD** | 6.2% | < 15% (pause rule) | [ ] |
+| **Slippage vs BS estimate** | n/a | Logged for every fill | [ ] |
 
 **Decision Criteria**:
 - ✅ GO to Phase 2 if: 10+ trades, >= 75% win rate, < 12% DD
 - ⚠️ HOLD if: 5–10 trades, 70–75% win rate, < 12% DD
-- ❌ STOP if: Win rate < 60%, DD > 15%, API failures
+- ❌ STOP if: Win rate < 60%, DD ≥ 15%, data or broker failures
 
 ---
 
 ## Daily Routine (Sample Day)
 
-### 10:00 AM IST
-- Check RISK_DASHBOARD.md
-- Read entry checklist in QUICK_REFERENCE.md
-- Check Fyers API (dummy order test)
-- Review last trade's outcome
+### 10:00 AM IST — Pre-flight
+- Run the RESTART pre-flight (calendar, cache, models, Fyers credentials)
+- Read yesterday's DAILY_LOG row and open positions
 
-### 11:00 AM–1:00 PM IST (Entry Window)
-- Monitor ML signals from model
-- Check VIX current reading
-- If signal triggers: Place IOC order
-- Log entry immediately in TRADES.csv
+### 11:00 AM–1:00 PM IST — Signal and entry window
+- Run `python main.py --mode signal-combined --capital 2500000 --lots 30` once
+- Read the weekly track only
+- If ENTER: take broker bid/ask, place IOC, log the entry in TRADES.csv
+- If SKIP: log the reason code in DAILY_LOG.csv
 
-### Throughout Day
-- Monitor open position (unrealized P&L)
-- Be ready to exit at profit target or stop loss
-- No "hope trading" — follow the rules
+### 3:00 PM IST — Monitoring
+- Check the open weekly trade against the exit rules (stop, profit target, expiry, max hold)
+- Overnight holds are normal in Phase 1; exit only when a rule is hit
 
-### 3:00 PM IST
-- Start monitoring for exit opportunity
-- Prepare to close if target/stop hit
-- No holding into close (risk overnight gap)
-
-### 4:00 PM IST (Market Close)
-- Exit any remaining open positions
-- Update TRADES.csv with exit price
-- Log daily data in DAILY_LOG.csv
-
-### 4:30 PM IST
-- Update RISK_DASHBOARD.md (red/yellow/green status)
-- Review the day's trade(s)
-- Update journal notes: What went well? What was hard?
+### 4:30 PM IST — End of day
+- Update DAILY_LOG.csv (every trading day)
+- Update TRADES.csv exit fields if closed
+- Add a Deviation Log row for any skip or deviation
 
 ---
 
@@ -235,68 +171,54 @@ paper_trading/
 
 | Frequency | Task | Output |
 |-----------|------|--------|
-| **Daily** | Log entry/exit in TRADES.csv | Trade record |
-| **Daily EOD** | Update DAILY_LOG.csv | Account snapshot |
+| **Daily** | Log entry/exit in TRADES.csv; DAILY_LOG row at 4:30 PM | Trade and account record |
 | **Weekly (Fri 4 PM)** | Fill RISK_DASHBOARD checkpoint | Weekly status |
 | **Monthly (End)** | Complete MONTHLY_ANALYSIS.md | Detailed review |
-| **Monthly (Day 1)** | Make go/no-go decision for next month | Continue/Pause/Phase 2 |
+| **Checkpoints** | Go/no-go per PAPER_TRADING_JOURNAL.md | Continue/Pause/Phase 2 |
 
 ---
 
-## Escalation Protocol (Critical)
+## Escalation Protocol
 
 ### 🟡 Yellow Alert (Caution)
-**Trigger**: DD 5–10%, or win rate < 75% over 5 trades, or single loss > ₹40k  
-**Action**: Reduce position size 25%, continue monitoring
+**Trigger**: DD 5–10% of peak, or win rate < 75% over 5 trades
+**Action**: Review the signals and fills of the last trades. No size change without owner approval.
 
-### 🟠 Orange Alert (Reduce Risk)
-**Trigger**: DD 10–15%, or win rate < 60% over 5 trades, or single loss > ₹75k  
-**Action**: Reduce position size 50%, pause aggressive entries
+### 🔴 Red Alert (STOP: the only pause rule)
+**Trigger**: Account DD ≥ 15% of peak (₹3,75,000 from ₹25L)
+**Action**: Close open positions, pause all entries, review with owner
 
-### 🔴 Red Alert (STOP)
-**Trigger**: DD > 15%, or 3 consecutive losses, or API failure > 1 hour  
-**Action**: CLOSE ALL POSITIONS, PAUSE ALL TRADING  
-**Recovery**: Investigate root cause, contact support, plan restart
+**Review triggers** (not automatic pauses; owner to confirm): 3 consecutive losses; win rate < 60% over 10 trades.
 
 ---
 
 ## Phase Transition Decision (Month 6)
 
 ### Go to Phase 2 (Add Monthly)? ✅
-**Conditions**:
 - ✅ 10+ weekly trades with >= 75% win rate
 - ✅ Avg P&L >= ₹25k/trade
 - ✅ Account DD < 12%
 - ✅ Backtest vs live deviation < 30%
-- ✅ Fyers API stable (zero outages)
+- ✅ Broker and data flow stable (zero outages that affected a trade)
 - ✅ Phase 5 monthly improvements deployed (ML threshold 0.55–0.60)
 
-**Action**: Unlock ₹3,00,000 for monthly trading, update allocation to 20/80 monthly/weekly
-
 ### Hold (Collect More Data)? ⏸️
-**Conditions**:
 - 5–10 trades, 70–75% win rate, DD < 12%
 
-**Action**: Continue Phase 1 for another 3 months, no allocation change
-
 ### Stop (Investigate Issue)? ❌
-**Conditions**:
-- Win rate < 60%, OR DD > 15%, OR API consistent failures
-
-**Action**: Pause live trading, investigate backtest vs live gap, plan corrections
+- Win rate < 60%, OR DD ≥ 15%, OR repeated broker or data failures
 
 ---
 
 ## Files Checklist
 
+- [ ] RESTART_2026-10-19.md (restart runbook)
 - [ ] PAPER_TRADING_JOURNAL.md (main journal with checkpoints)
 - [ ] QUICK_REFERENCE.md (trading cheat sheet, print this)
 - [ ] TRADES.csv (every trade logged)
-- [ ] DAILY_LOG.csv (daily account snapshot)
-- [ ] RISK_DASHBOARD.md (real-time risk status)
-- [ ] MONTHLY_ANALYSIS.md (template for month-end review)
-- [ ] journal/ (free-form daily notes folder, optional but recommended)
-- [ ] logs/ (Fyers API execution logs, technical reference)
+- [ ] DAILY_LOG.csv (daily snapshot, including skips)
+- [ ] RISK_DASHBOARD.md (risk status)
+- [ ] MONTHLY_ANALYSIS.md (month-end review template)
 
 ---
 
@@ -304,16 +226,15 @@ paper_trading/
 
 **If Something Goes Wrong**:
 
-1. **API Connection Lost**: Switch to Fyers web platform, close all positions manually
-2. **Fill Quality Terrible**: Skip that trade, wait for next opportunity, log deviation
-3. **Profit Target Not Filling**: Exit manually at nearest bid, accept slippage
-4. **Account DD Spike**: Don't panic, follow hard stop rules (15% DD = pause)
-5. **Model Signal Wrong**: Log it, continue Phase 1, use for Phase 5 improvements
+1. **Broker platform down with an open position**: Use the broker's web platform, close manually, log `Exit_Reason = manual`
+2. **Fill quality poor**: Skip that trade, log the deviation
+3. **Profit target not filling**: Exit at the nearest bid and record the slippage
+4. **Account DD ≥ 15%**: Pause entries (the pause rule); do not panic-trade
+5. **Model signal wrong**: Log it, continue Phase 1, use for later model work
 
 **Contacts**:
-- Fyers API Support: https://support.fyers.in/
-- Emergency: Close manually via Fyers web + call broker
-- Questions on backtest: Review docs/BACKTEST_COMBINED_MODE.md
+- Fyers Support: https://support.fyers.in/
+- Questions on backtest: docs/BACKTEST_COMBINED_MODE.md
 
 ---
 
@@ -321,25 +242,15 @@ paper_trading/
 
 **This is validation work, not profit-chasing.**
 
-- Goal: Confirm backtest holds in live market
+- Goal: Confirm the backtest holds in live market conditions
 - Acceptable variance: ±30% from backtest
 - Acceptable win rate: >= 75% (vs 78% backtest)
-- Unacceptable: Win rate < 60%, DD > 15%, API issues
+- Unacceptable: Win rate < 60%, DD ≥ 15%, repeated data or broker failures
 
 **If live results don't match backtest within 6 months, there's work to do.** This is diagnostic, not business as usual.
 
-**Expected Outcome After 6 Months**:
-- 6–8 weekly trades executed
-- ~₹90–120k profit captured
-- Confirmation that 78% win rate is realistic
-- Green light to add monthly trading (Phase 2)
-- OR root cause analysis if things went wrong
-
 ---
 
-**Start Date**: [Fill this]  
-**Target End Date (Month 6)**: [Fill this]  
-**Status**: Ready to launch ✅
-
-Good luck!
-
+**Start Date**: 2026-10-19 (forward-only; Phase 1 counts start here)
+**Target End Date (Month 6)**: 2027-04-19
+**Status**: Restart pending the Mon 10-19 pre-flight. Weekly-track model acceptance recorded (risk engine OFF).

@@ -1,76 +1,89 @@
-# First Trade — Tue Sep 8, 2026 (Ready to fill in)
+# First Real Trade — Mon 2026-10-19 (Ready to fill in)
 
-**Trade #1 — Iron Condor** (note: Trade #1 of the Aug 29 back-fill is simulated and excluded from Phase 1 counts; this template is for the first real trade)
+**Trade ID**: P1-001 (first real Phase 1 trade)
+**Note**: The 2026-08-29 Iron Condor is a SIMULATED back-fill, excluded from Phase 1 counts. This template is for the first real trade only.
+**If the signal says SKIP**: do not fill this in. Log a SKIP row in DAILY_LOG.csv with a reason code (RESTART_2026-10-19.md section c).
 
-## Pre-Signal Checklist (Before 11:00 AM IST)
-- [ ] VIX data fetched — confirm < 18 for IC entry
-- [ ] Nifty spot noted
-- [ ] ₹12.5L capital confirmed available
-- [ ] Fyers API authenticated + test order placed
-- [ ] NSE option chain API available
-- [ ] Exit rules reviewed: 50% max profit, 2× credit stop-loss
+## Pre-Flight (before 11:00 IST; see RESTART section b)
+- [ ] Holiday check: Tue 2026-10-20 closed (Dussehra, verified against NSE 2026-10-18); its weekly expiry moves to Mon 10-19
+- [x] Models: weekly track accepted with risk engine OFF (owner decision 2026-10-19); monthly track not accepted
+- [ ] Cache: `python3 -c "import json; m=json.load(open('data/.cache/manifest.json')); print(m.get('last_date', m) if isinstance(m, dict) else m)"` → last_date ____ (≥ 2026-10-16)
+- [ ] `ASOF=2026-10-19 PYTHON=.venv/bin/python scripts/check_cache_health.sh` → exit 0
+- [ ] Fyers session live (credential names present in `.env` or `.env.local`)
+- [ ] Open weekly positions: 0
 
 ## Signal Execution (11:00–13:00 IST)
 ```
-Command: python main.py --mode signal-combined
-Time to run: Anytime 11:00–13:00 IST
-Expected output: weekly signal with strikes and DTE in the 3–8 window (Sep 8 -> Sep 15 expiry = DTE 7). At VIX ~10.7 the code selects Put Credit Spread, not IC.
+Command: python main.py --mode signal-combined --capital 2500000 --lots 30
+Run once in the window. Read TRACK 2 (WEEKLY) and RISK ENGINE ASSESSMENT only.
+Expected: weekly trade with expiry Tue 2026-10-27 (8 DTE, top edge of the 3–8 window). Premiums are [BS est].
 ```
 
-## At Entry (fill these in when signal comes)
+## At Entry (fill in when the signal says ENTER)
 
 | Field | Fill In |
 |-------|---------|
-| **Entry Time (IST)** | 11:__ AM (11:00–13:00) |
+| **Entry Time (IST)** | __:__ (11:00–13:00) |
 | **Nifty Spot at entry** | ___,___ |
-| **India VIX** | ___.__ |
-| **Short Put Strike** | ___,___ (target ~1.5σ OTM) |
-| **Short Call Strike** | ___,___ (target ~1.5σ OTM) |
-| **Entry Fill Price (put)** | ₹___.__ (credit collected) |
-| **Entry Fill Price (call)** | ₹___.__ (credit collected) |
-| **Total Credit Collected** | ₹___.__ (per lot) |
-| **Bid-Ask Spread** | __/__ (actual observed) |
-| **Lots Executed** | 65 |
-| **Capital Deployed** | ₹12,50,000 |
-| **Expiry Date** | Sep 15 (Tuesday weekly; TBD by system) |
-| **DTE** | _ days |
+| **India VIX (signal)** | ___.__ |
+| **Strategy (as printed)** | [ ] Put Credit Spread (VIX ≤ 16) [ ] Iron Condor (VIX > 16) |
+| **Expiry (as printed)** | ____ (___ DTE; must be 3–8) |
+| **Short Put Strike** | ___,___ PE (or N/A for IC: see below) |
+| **Short Call Strike** | ___,___ CE (IC only) |
+| **Broker Bid/Ask per leg** | ___/___ ; ___/___ |
+| **Entry Fill (net credit, ₹/unit)** | ₹___.__ |
+| **CLI [BS est] credit (for slippage)** | ₹___.__ |
+| **Lots (as printed by signal)** | ___ (copy exactly) |
+| **Margin blocked (broker)** | ₹___,___ |
+| **Stop level (100% of credit)** | Loss of ₹___.__ per unit, or short-strike breach at ___ |
+| **Profit target (PCS only, 75%)** | ₹___.__ per unit (IC: none) |
+| **ML_Score (printed weekly Risk score)** | ___.__ (tail-risk; not a win probability; Phase 1 engine is OFF, so write NA) |
 
-## Monitoring (Sep 9–15, daily)
+## Monitoring (daily, 11:00 and 3:00 PM IST)
 
-| Day | Nifty | Put Distance | Call Distance | Status | Notes |
-|-----|-------|--------------|---------------|--------|-------|
-| Sep 9 | ___,___ | +___ | +___ | [ ] In range / [ ] Near / [ ] Breach | |
-| Sep 14 | ___,___ | +___ | +___ | [ ] In range / [ ] Near / [ ] Breach | |
-| Sep 15 | ___,___ | +___ | +___ | [ ] EXPIRED ✓ / [ ] Breach | |
+| Day | Nifty | Distance to short strike | Status | Notes |
+|-----|-------|--------------------------|--------|-------|
+| Mon 10-19 | ___,___ | ___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Wed 10-21 | ___,___ | ___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Thu 10-22 | ___,___ | ___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Fri 10-23 | ___,___ | ___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Mon 10-26 | ___,___ | ___ | [ ] In range / [ ] Near / [ ] Breach | |
+| Tue 10-27 | ___,___ | ___ | [ ] EXPIRED / [ ] Exit earlier | |
 
-## Exit (At expiry or earlier)
+(Add rows for any day the trade is open. Tue 10-20 is an NSE holiday, verified 2026-10-18.)
+
+## Exit (at rule trigger or expiry)
 
 | Field | Value |
 |-------|-------|
-| **Exit Date** | Sep 14 or Sep 15 (depends on target hit) |
-| **Exit Time** | _:__ AM/PM |
-| **Exit Reason** | [ ] Expired worthless [ ] 50% profit target [ ] Breach / Stop-loss |
-| **Nifty at exit** | ___,___ |
-| **Final Profit/Loss** | ₹___.__ (net after brokerage) |
-| **Hold days** | _ days |
+| **Exit Date** | ____ |
+| **Exit Time (IST)** | __:__ |
+| **Exit Reason** | [ ] profit_target [ ] stop_loss_100pct [ ] short_strike_breach [ ] max_hold [ ] expiry [ ] manual |
+| **Exit fill (net debit, ₹/unit)** | ₹___.__ |
+| **Brokerage** | ₹___ |
+| **Net P&L** | ₹___,___ |
+| **Days held (trading days)** | ___ |
 | **vs Backtest Expected** | Expected ₹29,528 / Actual ₹___,___ |
 
 ## Post-Trade Logging
 
 After exit, update:
-1. `TRADES.csv` — add entry row
-2. `DAILY_LOG.csv` — add Sep 15 exit row (or the actual exit date)
-3. `PAPER_TRADING_JOURNAL.md` — note outcome under Checkpoint 1
+1. `tracker/TRADES.csv`: add the entry row (27 columns; RESTART section d) and fill the exit fields
+2. `tracker/DAILY_LOG.csv`: add a row for each trading day (15 columns; `Weekly_Trades_Executed` = 1 on entry day)
+3. `PAPER_TRADING_JOURNAL.md`: note the outcome under Checkpoint 1 and add any deviation
 
-## Sample Entry Row (for copy-paste into TRADES.csv)
+## Sample Entry Row (for copy-paste into TRADES.csv; replace every placeholder)
 
 ```
-1,2026-09-08,11:15,23500,27.5/28.5,27.9,65,1250000,iron_condor,10.68,LOW_VOL,0.68,7,2026-09-15,14:30,29.5,expired,___,___,₹125,0,₹___,WIN/LOSS,___,First IC trade - Sep 8 signal,29528,___
+P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,28.1,<lots from signal>,<margin from broker>,iron_condor,17.3,<regime>,<risk score>,8,,,,,,,,,,,,"Entered 11:42 on printed lots",29528,
 ```
+
+Note: the example row above is a placeholder. Do not treat its values as real.
 
 ---
 
-**Key Metrics to Watch:**
-- Entry fill within ±0.5 pts of expected (slippage < 20 bp)
-- Position stays in range for the full hold to expiry (Sep 15; theta capture ~100%)
-- Daily monitoring noon + 3 PM IST (check buffer to strikes)
+**Key Metrics to Watch**:
+- Fill within the broker bid/ask (no fills on `[BS est]` prices)
+- Stop rule: exit at 100% of credit or on a short-strike breach
+- PCS: take profit at 75% of max profit. IC: no profit target.
+- Daily checks at 11:00 and 3:00 PM IST

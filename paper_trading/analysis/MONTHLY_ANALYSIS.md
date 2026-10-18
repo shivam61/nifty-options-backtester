@@ -1,5 +1,7 @@
 # Paper Trading Monthly Analysis Template
 
+> **SUPERSEDED / NOT OPERATIONAL (2026-10-19).** This template still carries pre-restart values (3-day average hold, ₹50k loss cap, 65-lot base). Phase 1 is weekly only; use [RESTART_2026-10-19.md](../RESTART_2026-10-19.md). Do not use these figures for decisions.
+
 ## Month: [MMM YYYY]
 
 ---
