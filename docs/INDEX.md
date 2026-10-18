@@ -33,6 +33,7 @@
 - **[Optimization Log](analysis/OPTIMIZATION_LOG.md)** - Detailed optimization log
 - **[Position Sizing Decisions](analysis/POSITION_SIZING_DECISIONS.md)** - Position sizing methodology
 - **[OI Volume Display](analysis/OI_VOLUME_DISPLAY.md)** - Open interest and volume analysis
+- **[Backtest Integrity Remediation](analysis/BACKTEST_INTEGRITY_REMEDIATION.md)** - Data integrity issues found and fixed
 
 ### Historical Decision Records (Archive)
 
@@ -45,6 +46,8 @@ Closed experiments and "why we didn't do X" reasoning — not current reference 
 - `archive/OPTIMAL_THRESHOLDS_ANALYSIS.md` — 85% profit target selection
 - `archive/BACKTEST_COMPARISON_WITH_85_RULE.md` — 85% rule decision record
 - `archive/MONTHLY_EXIT_STRATEGY_ANALYSIS.md` — Monthly exit strategy comparison
+- `archive/PHASE_4_PLAN.md` — Phase 4 dynamic allocation plan (concluded, Run #60 locked as winner)
+- `archive/PHASE_4_IMPLEMENTATION.md` — Phase 4 implementation log
 
 ## Quick Links by Use Case
 
@@ -101,7 +104,8 @@ docs/
 │   ├── WEEKLY_EXIT_REDESIGN_LOG.md  # Weekly redesign decision record (active)
 │   ├── OPTIMIZATION_LOG.md
 │   ├── POSITION_SIZING_DECISIONS.md
-│   └── OI_VOLUME_DISPLAY.md
+│   ├── OI_VOLUME_DISPLAY.md
+│   └── BACKTEST_INTEGRITY_REMEDIATION.md
 └── archive/
     ├── README.md                    # Index — historical decision records
     ├── ARCHIVED_RUNS.md             # Historical backtest runs #3-#55
@@ -110,7 +114,9 @@ docs/
     ├── EXIT_PRIORITY_COMPARISON_FINDINGS.md
     ├── OPTIMAL_THRESHOLDS_ANALYSIS.md
     ├── BACKTEST_COMPARISON_WITH_85_RULE.md
-    └── MONTHLY_EXIT_STRATEGY_ANALYSIS.md
+    ├── MONTHLY_EXIT_STRATEGY_ANALYSIS.md
+    ├── PHASE_4_PLAN.md
+    └── PHASE_4_IMPLEMENTATION.md
 ```
 
 ## External Resources

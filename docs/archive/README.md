@@ -18,3 +18,5 @@ when the same question resurfaces.
 | `OPTIMAL_THRESHOLDS_ANALYSIS.md` | Selected 85% as optimal weekly profit target (now superseded by 100% stop-loss widening) |
 | `BACKTEST_COMPARISON_WITH_85_RULE.md` | Side-by-side confirming 85% rule wins; decision finalised |
 | `MONTHLY_EXIT_STRATEGY_ANALYSIS.md` | Monthly exit strategy comparison; superseded by `WEEKLY_EXIT_REDESIGN_LOG.md` |
+| `PHASE_4_PLAN.md` | Phase 4 dynamic allocation plan; concluded — Run #60 (3-band) locked as winner |
+| `PHASE_4_IMPLEMENTATION.md` | Phase 4 implementation log; superseded by the live `CombinedBacktestEngine` allocation logic |

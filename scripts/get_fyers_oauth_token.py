@@ -35,7 +35,7 @@ def main():
 
     if not client_id or not api_secret:
         print("❌ No credentials found in .env.local")
-        print("   Please set up credentials first (see docs/FYERS_CREDENTIAL_SETUP.md)")
+        print("   Please set up credentials first (see docs/fyers/INTEGRATION.md)")
         return False
 
     print(f"✅ Client ID: {client_id}")
@@ -208,7 +208,7 @@ Your API now has access to:
    ✅ Real bid-ask spreads
    ✅ All market data
 
-Questions? See docs/FYERS_OAUTH_TOKEN_SETUP.md
+Questions? See docs/fyers/INTEGRATION.md
 """)
 
     return True
