@@ -135,7 +135,7 @@ tail paper_trading/tracker/DAILY_LOG.csv
 ✅ **Quality Score**: ≥ 0.50 (no exceptions)  
 ✅ **Profit Target**: 50% max profit → **EXIT immediately**  
 ✅ **Stop Loss**: 2× credit amount → **EXIT immediately**  
-✅ **Max Hold**: 3 trading days (exit by EOD day 3)  
+✅ **Max Hold**: Iron Condor 4 trading days (`engine_b_max_hold_days`); put credit spread has a 2-trading-day minimum hold (`engine_a_min_hold_days`), then target/stop/DTE exits
 ✅ **Expiry Day**: Close by 3:15 PM (0 DTE)  
 ✅ **Account DD**: > 15% → **STOP ALL TRADING**  
 
