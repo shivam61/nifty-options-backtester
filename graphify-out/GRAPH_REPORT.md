@@ -1,16 +1,16 @@
 # Graph Report - nifty-options-backtester  (2026-10-19)
 
 ## Corpus Check
-- 211 files · ~353,957 words
+- 211 files · ~354,070 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8065 nodes · 14293 edges · 640 communities (577 shown, 63 thin omitted)
+- 8065 nodes · 14293 edges · 626 communities (562 shown, 64 thin omitted)
 - Extraction: 77% EXTRACTED · 23% INFERRED · 0% AMBIGUOUS · INFERRED: 3229 edges (avg confidence: 0.66)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a8709660`
+- Built from commit: `dbe4a7a4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -562,45 +562,40 @@
 - [[_COMMUNITY_Community 544|Community 544]]
 - [[_COMMUNITY_Community 545|Community 545]]
 - [[_COMMUNITY_Community 546|Community 546]]
-- [[_COMMUNITY_Community 547|Community 547]]
 - [[_COMMUNITY_Community 548|Community 548]]
-- [[_COMMUNITY_Community 549|Community 549]]
-- [[_COMMUNITY_Community 550|Community 550]]
-- [[_COMMUNITY_Community 551|Community 551]]
-- [[_COMMUNITY_Community 552|Community 552]]
 - [[_COMMUNITY_Community 553|Community 553]]
-- [[_COMMUNITY_Community 554|Community 554]]
-- [[_COMMUNITY_Community 555|Community 555]]
-- [[_COMMUNITY_Community 556|Community 556]]
-- [[_COMMUNITY_Community 557|Community 557]]
-- [[_COMMUNITY_Community 558|Community 558]]
-- [[_COMMUNITY_Community 559|Community 559]]
-- [[_COMMUNITY_Community 560|Community 560]]
-- [[_COMMUNITY_Community 562|Community 562]]
+- [[_COMMUNITY_Community 563|Community 563]]
+- [[_COMMUNITY_Community 564|Community 564]]
+- [[_COMMUNITY_Community 565|Community 565]]
+- [[_COMMUNITY_Community 566|Community 566]]
 - [[_COMMUNITY_Community 567|Community 567]]
+- [[_COMMUNITY_Community 568|Community 568]]
+- [[_COMMUNITY_Community 570|Community 570]]
+- [[_COMMUNITY_Community 571|Community 571]]
+- [[_COMMUNITY_Community 572|Community 572]]
+- [[_COMMUNITY_Community 573|Community 573]]
+- [[_COMMUNITY_Community 575|Community 575]]
+- [[_COMMUNITY_Community 576|Community 576]]
 - [[_COMMUNITY_Community 577|Community 577]]
 - [[_COMMUNITY_Community 578|Community 578]]
 - [[_COMMUNITY_Community 579|Community 579]]
 - [[_COMMUNITY_Community 580|Community 580]]
 - [[_COMMUNITY_Community 581|Community 581]]
 - [[_COMMUNITY_Community 582|Community 582]]
-- [[_COMMUNITY_Community 584|Community 584]]
+- [[_COMMUNITY_Community 583|Community 583]]
 - [[_COMMUNITY_Community 585|Community 585]]
 - [[_COMMUNITY_Community 586|Community 586]]
-- [[_COMMUNITY_Community 587|Community 587]]
-- [[_COMMUNITY_Community 589|Community 589]]
-- [[_COMMUNITY_Community 590|Community 590]]
-- [[_COMMUNITY_Community 591|Community 591]]
-- [[_COMMUNITY_Community 592|Community 592]]
-- [[_COMMUNITY_Community 593|Community 593]]
-- [[_COMMUNITY_Community 594|Community 594]]
-- [[_COMMUNITY_Community 595|Community 595]]
-- [[_COMMUNITY_Community 596|Community 596]]
-- [[_COMMUNITY_Community 597|Community 597]]
-- [[_COMMUNITY_Community 599|Community 599]]
-- [[_COMMUNITY_Community 600|Community 600]]
-- [[_COMMUNITY_Community 616|Community 616]]
-- [[_COMMUNITY_Community 617|Community 617]]
+- [[_COMMUNITY_Community 602|Community 602]]
+- [[_COMMUNITY_Community 603|Community 603]]
+- [[_COMMUNITY_Community 604|Community 604]]
+- [[_COMMUNITY_Community 605|Community 605]]
+- [[_COMMUNITY_Community 606|Community 606]]
+- [[_COMMUNITY_Community 607|Community 607]]
+- [[_COMMUNITY_Community 608|Community 608]]
+- [[_COMMUNITY_Community 609|Community 609]]
+- [[_COMMUNITY_Community 610|Community 610]]
+- [[_COMMUNITY_Community 611|Community 611]]
+- [[_COMMUNITY_Community 612|Community 612]]
 - [[_COMMUNITY_Community 618|Community 618]]
 - [[_COMMUNITY_Community 619|Community 619]]
 - [[_COMMUNITY_Community 620|Community 620]]
@@ -609,15 +604,6 @@
 - [[_COMMUNITY_Community 623|Community 623]]
 - [[_COMMUNITY_Community 624|Community 624]]
 - [[_COMMUNITY_Community 625|Community 625]]
-- [[_COMMUNITY_Community 626|Community 626]]
-- [[_COMMUNITY_Community 632|Community 632]]
-- [[_COMMUNITY_Community 633|Community 633]]
-- [[_COMMUNITY_Community 634|Community 634]]
-- [[_COMMUNITY_Community 635|Community 635]]
-- [[_COMMUNITY_Community 636|Community 636]]
-- [[_COMMUNITY_Community 637|Community 637]]
-- [[_COMMUNITY_Community 638|Community 638]]
-- [[_COMMUNITY_Community 639|Community 639]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `BacktestConfig` - 190 edges
@@ -643,91 +629,91 @@
 - `run_backtest()` --calls--> `WalkForwardManager`  [INFERRED]
   main.py → backtester/walk_forward.py
 
-## Communities (640 total, 63 thin omitted)
+## Communities (626 total, 64 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
-Nodes (267): _expiry_matches(), main(), _print_strategy_bs_trade(), _print_strategy_trade(), Generate a strategy-specific trade using live OI data + BS pricing., Fallback: BS-only pricing when live data unavailable., Check if the live option chain expiry matches our target., Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes. (+259 more)
+Nodes (279): _expiry_matches(), main(), _print_strategy_bs_trade(), _print_strategy_trade(), Generate a strategy-specific trade using live OI data + BS pricing., Fallback: BS-only pricing when live data unavailable., Check if the live option chain expiry matches our target., Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes. (+271 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.03
-Nodes (162): _generate_sim_trades(), Rolling-window simulated trades for ML training; filtered to strategies enabled, BacktestEngine, Event-driven backtesting engine.     Steps through each trading day, checks entr, Result of a single completed trade., TradeResult, DrawdownKillSwitch, KillSwitchState (+154 more)
+Cohesion: 0.02
+Nodes (164): Result of a single completed trade., TradeResult, DrawdownKillSwitch, KillSwitchState, Tracks the DD kill switch state across the backtest., Hard circuit breaker that activates at max_dd_pct drawdown.      When triggered:, Hard circuit breaker that activates at max_dd_pct drawdown.      When triggered:, Hard circuit breaker that activates at max_dd_pct drawdown.      When triggered: (+156 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.02
-Nodes (74): _confidence_scale(), _drawdown_scale(), PositionSizer, Position sizing: margin-based compounding, vol-target, regime scaling, drawdown, Computes position size using margin/vol base with regime, drawdown,     and ML c, Determine position size.          Parameters         ----------         equity, Store trade result with the equity at the time of entry for vol-target., Resolve regime scaling from config when present.          This keeps the default (+66 more)
+Cohesion: 0.03
+Nodes (67): _confidence_scale(), _drawdown_scale(), PositionSizer, Position sizing: margin-based compounding, vol-target, regime scaling, drawdown, Computes position size using margin/vol base with regime, drawdown,     and ML c, Determine position size.          Parameters         ----------         equity, Store trade result with the equity at the time of entry for vol-target., Resolve regime scaling from config when present.          This keeps the default (+59 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.04
-Nodes (60): v4: Stress test — replay crisis periods with conservative fills., run_stress_test(), CombinedBacktestEngine, CombinedResult, Combined monthly + weekly options backtesting engine.  Runs both tracks concurre, Concurrent monthly+weekly options backtester on shared capital.      Architectur, Concurrent monthly+weekly options backtester on shared capital.      Architectur, Concurrent monthly+weekly options backtester on shared capital.      Architectur (+52 more)
+Nodes (68): v4: Stress test — replay crisis periods with conservative fills., run_stress_test(), CombinedResult, BacktestEngine, BacktestResult, Core backtesting engine. Iterates through historical data day-by-day, enters/exi, Thin compatibility wrapper — delegates entirely to EntryDecisionEngine., Event-driven backtesting engine.     Steps through each trading day, checks entr (+60 more)
 
 ### Community 4 - "Community 4"
+Cohesion: 0.04
+Nodes (61): Combined monthly + weekly backtest pipeline using final evolve artifacts only., run_backtest_combined(), CombinedBacktestEngine, Combined monthly + weekly options backtesting engine.  Runs both tracks concurre, Concurrent monthly+weekly options backtester on shared capital.      Architectur, Concurrent monthly+weekly options backtester on shared capital.      Architectur, Concurrent monthly+weekly options backtester on shared capital.      Architectur, Concurrent monthly+weekly options backtester on shared capital.      Architectur (+53 more)
+
+### Community 5 - "Community 5"
 Cohesion: 0.06
 Nodes (67): cache_filename(), _cached_parquet_paths(), _check_macro_columns(), _clip_to_request(), crude(), _download(), _exact_cache_hit(), _fetch_yfinance() (+59 more)
 
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
+Cohesion: 0.04
+Nodes (56): ConditionalGapModel, DynamicWeeklyExit, _get_cache_dir(), Weekly Risk Engine — replaces the prediction-based WeeklyEntryLearner.  Philosop, Returns P(tail event) in [0, 1]. Higher = more dangerous., Returns P(tail event) in [0, 1]. Higher = more dangerous., Returns P(tail event) in [0, 1]. Higher = more dangerous., Computes Expected Tail Loss conditioned on current market state.     Not a raw h (+48 more)
+
+### Community 7 - "Community 7"
 Cohesion: 0.05
 Nodes (50): _all_weekday_in_month(), _closed_holiday_dates(), _expiry_shift(), _expiry_weekday(), get_all_thursdays(), get_holiday(), get_monthly_expiries(), get_monthly_expiry() (+42 more)
 
-### Community 6 - "Community 6"
-Cohesion: 0.06
-Nodes (40): FyersLiveDataClient, main(), Fyers Live Market Data Integration Fetches real-time quotes for Nifty options us, Check if expiry_date is a monthly contract by querying Fyers option chain., Given a target date, return the nearest valid Nifty expiry.         Useful when, Get quotes for one or more symbols.                  Args:             symbols:, Get current Nifty 50 spot price.                  Returns:             Current N, Get current India VIX value.                  Returns:             Current India (+32 more)
-
-### Community 7 - "Community 7"
-Cohesion: 0.07
-Nodes (28): IntEnum, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, validate_regime_classifier(), Factory: create TradeLearner for the active version., ML-backed regime classifier with rule-based fallback.      Training: uses rule-b, Apply rule-based labels to entire dataset., Hard override: if VIX is in vol crush, never classify as HIGH_VOL or CRASH. (+20 more)
-
 ### Community 8 - "Community 8"
-Cohesion: 0.07
-Nodes (45): v4: Ablation study — measure contribution of each strategy and ML exit., run_ablation(), create_journal_session(), DailyLogRequest, get_entry_signal(), get_journal_session(), health_check(), _infer_regime() (+37 more)
+Cohesion: 0.06
+Nodes (50): _generate_sim_trades(), Rolling-window simulated trades for ML training; filtered to strategies enabled, v4: Ablation study — measure contribution of each strategy and ML exit., run_ablation(), create_journal_session(), DailyLogRequest, get_entry_signal(), get_journal_session() (+42 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.05
-Nodes (43): DynamicWeeklyExit, _get_cache_dir(), Weekly Risk Engine — replaces the prediction-based WeeklyEntryLearner.  Philosop, Returns P(tail event) in [0, 1]. Higher = more dangerous., Returns P(tail event) in [0, 1]. Higher = more dangerous., Returns P(tail event) in [0, 1]. Higher = more dangerous., Per-regime trading parameters., Per-regime trading parameters. (+35 more)
-
-### Community 10 - "Community 10"
-Cohesion: 0.05
 Nodes (51): Agent Automation, 🤖 Agent Tools, Backtesting, Backtesting & Analysis, 🎯 Baseline & Experiments (Start Here), CLI Modes, code:block1 (Market Data (Yahoo, Fyers)), code:block10 (├── main.py                    # CLI entry point) (+43 more)
 
+### Community 10 - "Community 10"
+Cohesion: 0.09
+Nodes (27): IntEnum, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, Walk-forward validation for the RegimeClassifier.      Uses expanding yearly win, validate_regime_classifier(), Factory: create TradeLearner for the active version., ML-backed regime classifier with rule-based fallback.      Training: uses rule-b, Apply rule-based labels to entire dataset., Hard override: if VIX is in vol crush, never classify as HIGH_VOL or CRASH. (+19 more)
+
 ### Community 11 - "Community 11"
-Cohesion: 0.04
-Nodes (50): Combined monthly + weekly backtest pipeline using final evolve artifacts only., run_backtest_combined(), load_risk_engine(), _build_weekly_trade_stats(), _entry_context_for_trade(), main(), Monitor active trades and provide ML-driven exit recommendations., Monitor active trades and provide ML-driven exit recommendations. (+42 more)
-
-### Community 12 - "Community 12"
-Cohesion: 0.06
-Nodes (41): _budget_dates(), build_event_calendar(), _election_dates(), EventCalendar, MarketEvent, _monthly_expiry_dates(), NakedPositionError, ProductionGate (+33 more)
-
-### Community 13 - "Community 13"
 Cohesion: 0.11
 Nodes (38): Exception, build_parser(), build_yahoo_dataset(), check_tools(), CheckReport, compare_series(), diff_report(), extract_tool_payload() (+30 more)
 
-### Community 14 - "Community 14"
-Cohesion: 0.11
-Nodes (20): ABC, discover(), SourceAdapter, SourceMetadata, build_source_inventory(), CDSLAdapter, _coerce_number_from_mapping(), _coerce_parenthesized_number() (+12 more)
+### Community 12 - "Community 12"
+Cohesion: 0.09
+Nodes (21): ABC, Hit NSE homepage to get session cookies., Fetch live spot/VIX from NSE allIndices (works reliably)., Fetch option chain with best available data.         target_expiry: "DD-Mon-YYYY, discover(), SourceAdapter, SourceMetadata, build_source_inventory() (+13 more)
 
-### Community 15 - "Community 15"
+### Community 13 - "Community 13"
+Cohesion: 0.06
+Nodes (22): datetime, analyze_exit_logic(), Track which exit logic triggers in practice., Simulate a circuit breaker trigger with multi-asset stress., test_circuit_breaker_output(), make_symbol(), main(), Verify Fyers credentials and API structure. (+14 more)
+
+### Community 14 - "Community 14"
 Cohesion: 0.08
 Nodes (30): Config, DataFreshnessError, MonitorValidatorMiddleware, API Signal Validator — Middleware for /signal and /monitor endpoints  Ensures: -, Validate /monitor endpoint before responding, Validate market data before /monitor response          Returns:             {, Validate data before returning /signal response      Returns:         (is_valid,, Validate data before returning /monitor response      Returns:         (is_valid (+22 more)
 
-### Community 16 - "Community 16"
+### Community 15 - "Community 15"
 Cohesion: 0.06
-Nodes (25): DataRefreshStrategy, LiveDataFetcher, Live Market Data Fetcher — Fetch latest data from Fyers & NSE for live signals E, Check if market is currently open (9:15 AM - 3:30 PM IST), Check if current time is in 11:00-13:00 IST entry window, Fetch live price from Fyers API, Fetch option chain from Fyers API, Fetch latest market data from Fyers (primary) or NSE fallback (+17 more)
+Nodes (29): FyersLiveDataClient, Fyers Live Market Data Integration Fetches real-time quotes for Nifty options us, Check if expiry_date is a monthly contract by querying Fyers option chain., Given a target date, return the nearest valid Nifty expiry.         Useful when, Get quotes for one or more symbols.                  Args:             symbols:, Get current Nifty 50 spot price.                  Returns:             Current N, Get current India VIX value.                  Returns:             Current India, Get quotes for an option chain (multiple strikes).                  Args: (+21 more)
 
-### Community 17 - "Community 17"
+### Community 16 - "Community 16"
 Cohesion: 0.04
 Nodes (47): 🏗️ Architecture, code:block1 (LiveDataFetcher), code:python (# Check error logs), code:python (# Use mock data for testing), code:python (# Easy switch between Fyers and mock), code:block2 (1. Check use_mock flag), code:bash (pip install fyers-apiv3), code:python (from fyers_api import fyersModel) (+39 more)
 
-### Community 18 - "Community 18"
-Cohesion: 0.09
-Nodes (33): analyze_improvements(), determine_winner(), ExitStrategy, Fixed85ExitStrategy, HybridExitStrategy, main(), OriginalExitStrategy, print_comparison_table() (+25 more)
-
-### Community 19 - "Community 19"
+### Community 17 - "Community 17"
 Cohesion: 0.04
 Nodes (44): 1. Core Module, 1. Initial Setup, 2. Token Generator, 2. Validation Test, 3. Documentation, 3. Python API Usage, 4. Examples, API Limits & Best Practices (+36 more)
 
-### Community 20 - "Community 20"
+### Community 18 - "Community 18"
+Cohesion: 0.09
+Nodes (32): analyze_improvements(), determine_winner(), ExitStrategy, Fixed85ExitStrategy, HybridExitStrategy, main(), OriginalExitStrategy, print_comparison_table() (+24 more)
+
+### Community 19 - "Community 19"
 Cohesion: 0.04
 Nodes (45): Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats (+37 more)
+
+### Community 20 - "Community 20"
+Cohesion: 0.07
+Nodes (36): _budget_dates(), build_event_calendar(), _election_dates(), EventCalendar, MarketEvent, _monthly_expiry_dates(), NakedPositionError, ProductionGate (+28 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.04
@@ -738,92 +724,92 @@ Cohesion: 0.05
 Nodes (33): BacktestReporter, Analysis and reporting module. Generates detailed reports, charts, and learnings, Print detailed trade-by-trade log., Extract actionable learnings from backtest results., Generates comprehensive reports from backtest results., Generate comprehensive HTML dashboard with all metrics., Year-by-year performance table., Summarize what each VIX regime means for trading. (+25 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.05
-Nodes (44): find_best_iron_condor_strikes(), Find the best liquid strikes for an Iron Condor.     Returns actual market price, _print_leg_details(), _print_live_trade(), _print_trade_summary(), Print trade using actual live prices from option chain., Print leg details with live data., Print trade summary, breakevens, and warnings. (+36 more)
+Cohesion: 0.09
+Nodes (41): add_trade_to_session(), append_daily_log(), append_trade_csv(), close_trade_csv(), create_session(), _ensure_dir(), get_session(), get_session_summary() (+33 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.05
-Nodes (21): _print_bs_fallback_trade(), Fallback: print BS-estimated trade when live data unavailable., Price the current close-out debit for a multi-leg trade., Price the current close-out debit for a multi-leg trade., _print_bs_fallback_trade(), _print_oi_guided_trade(), Use live OI data for strike selection, BS for pricing on target expiry., Fallback: print BS-estimated trade when live data unavailable. (+13 more)
+Cohesion: 0.07
+Nodes (23): DataRefreshStrategy, LiveDataFetcher, Live Market Data Fetcher — Fetch latest data from Fyers & NSE for live signals E, Check if market is currently open (9:15 AM - 3:30 PM IST), Check if current time is in 11:00-13:00 IST entry window, Fetch live price from Fyers API, Fetch option chain from Fyers API, Fetch latest market data from Fyers (primary) or NSE fallback (+15 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.05
-Nodes (34): Build a minimal mock trade object., Build a minimal mock trade object., Build a minimal mock trade object., Build a minimal mock trade object., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0. (+26 more)
+Cohesion: 0.08
+Nodes (22): BaseStrategy, IronCondorStrategy, generate_legs(), Abstract base class for option strategies., should_enter(), IronCondorStrategy, Iron Condor strategy with configurable parameters. Adapts strike selection based, Entry rules:         1. VIX must be above 14 (enough premium to collect) (+14 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.05
-Nodes (41): Adding New Trades, Best Practices, Check Token Status, code:bash (python main.py --mode monitor), code:json ({), code:bash (python scripts/generate_fyers_token.py), code:bash (python scripts/refresh_fyers_token.py), code:bash (python scripts/diagnose_live_prices.py) (+33 more)
+Nodes (44): find_best_iron_condor_strikes(), Find the best liquid strikes for an Iron Condor.     Returns actual market price, _print_leg_details(), _print_live_trade(), _print_trade_summary(), Print trade using actual live prices from option chain., Print leg details with live data., Print trade summary, breakevens, and warnings. (+36 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.05
-Nodes (42): 1.1 Create Fyers Account, 1.2 Fund Account (Required for Live API), 1.3 Generate API Credentials, 2.1 Copy Template, 2.2 Edit with Your Credentials, 2.3 Verify File (Don't Show Content), 2.4 Verify it's Not in Git, 3.1 Install Dependencies (+34 more)
+Nodes (21): _print_bs_fallback_trade(), Fallback: print BS-estimated trade when live data unavailable., Price the current close-out debit for a multi-leg trade., Price the current close-out debit for a multi-leg trade., _print_bs_fallback_trade(), _print_oi_guided_trade(), Use live OI data for strike selection, BS for pricing on target expiry., Fallback: print BS-estimated trade when live data unavailable. (+13 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.09
-Nodes (40): add_trade_to_session(), append_daily_log(), append_trade_csv(), close_trade_csv(), create_session(), _ensure_dir(), get_session(), get_session_summary() (+32 more)
+Cohesion: 0.05
+Nodes (34): Build a minimal mock trade object., Build a minimal mock trade object., Build a minimal mock trade object., Build a minimal mock trade object., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0., At inference time (no trade), all trade_structure features must be 0.0. (+26 more)
 
 ### Community 29 - "Community 29"
+Cohesion: 0.05
+Nodes (41): Adding New Trades, Best Practices, Check Token Status, code:bash (python main.py --mode monitor), code:json ({), code:bash (python scripts/generate_fyers_token.py), code:bash (python scripts/refresh_fyers_token.py), code:bash (python scripts/diagnose_live_prices.py) (+33 more)
+
+### Community 30 - "Community 30"
+Cohesion: 0.05
+Nodes (42): 1.1 Create Fyers Account, 1.2 Fund Account (Required for Live API), 1.3 Generate API Credentials, 2.1 Copy Template, 2.2 Edit with Your Credentials, 2.3 Verify File (Don't Show Content), 2.4 Verify it's Not in Git, 3.1 Install Dependencies (+34 more)
+
+### Community 31 - "Community 31"
 Cohesion: 0.13
 Nodes (19): _brent_like(), _build(), md(), _ohlc(), _populate(), Regression pins for the cache-corruption incident.  Incident: on an exact-key ca, Deterministic, in-range random walk per ticker (distinct across tickers)., Deterministic, in-range random walk per ticker (distinct across tickers). (+11 more)
 
-### Community 30 - "Community 30"
-Cohesion: 0.08
-Nodes (18): datetime, analyze_exit_logic(), Track which exit logic triggers in practice., Simulate a circuit breaker trigger with multi-asset stress., test_circuit_breaker_output(), make_symbol(), main(), Verify Fyers credentials and API structure. (+10 more)
+### Community 32 - "Community 32"
+Cohesion: 0.1
+Nodes (20): Period-aware walk-forward model training and cache management., Expanding-window retraining with period-aware caches.      Every OOS period uses, WalkForwardBundle, WalkForwardManager, WalkForwardWindow, _cache_path(), metadata_from_state(), ModelPeriodMetadata (+12 more)
 
-### Community 31 - "Community 31"
+### Community 33 - "Community 33"
 Cohesion: 0.07
 Nodes (14): _calm_market(), _crash_market(), Tests for strategies/multi_strategy.py  Covers: - Each sub-strategy's entry/exit, Long put must always be below the short put regardless of dynamic_width., When spread_width != 500 the strategy skips dynamic_width and uses the fixed val, BWB accepts VIX between min_vix (18) and 20 — vix > 20 is blocked by should_ente, BWB blocks entry above max_vix (default 30)., BWB enters in the 22–30 VIX zone that the router routes to it. (+6 more)
 
-### Community 32 - "Community 32"
+### Community 34 - "Community 34"
 Cohesion: 0.05
 Nodes (36): ⚡ API Limits, Auto-Generate Strikes, code:bash (# 1. Generate token), code:block10 (symbol, strike, option_type, ltp, bid, ask, open_interest,), code:block11 (timestamp (index), open, high, low, close, volume), code:python (from data.fyers_live_data import FyersLiveDataClient), code:env (FYERS_CLIENT_ID="W4JMYLVR9Y-100"), code:python (from data.fyers_live_data import FyersLiveDataClient) (+28 more)
 
-### Community 33 - "Community 33"
+### Community 35 - "Community 35"
 Cohesion: 0.05
 Nodes (38): 1. Install Dependencies, 1. Real-time Quotes, 2. Configure Fyers Credentials, 2. Option Symbol Formatting, 3. ATM Strike Calculation, 3. Generate Access Token, 4. Option Chain Data, 5. Market Depth (+30 more)
 
-### Community 34 - "Community 34"
-Cohesion: 0.05
-Nodes (38): After (Phase 4):, Before (Baseline v10):, code:python (def get_dynamic_allocation(current_vix):), code:bash (# No code changes needed! Same dynamic allocation function.), code:bash (# Same code, same dynamic allocation function.), code:bash (# Extract metrics from changelog), code:bash (# After all 3 runs complete), code:bash (# Switch to main and merge) (+30 more)
-
-### Community 35 - "Community 35"
-Cohesion: 0.05
-Nodes (39): API Endpoint Tests: ⏳ PENDING, API Testing Results, Before Live Trading (Tomorrow), code:block1 (Input: fetch_nifty_spot_price()), code:bash (bash /tmp/manual_api_test.sh), code:bash (pytest tests/test_api_endpoints.py -v -s), code:block12 (✅ api.journal imports OK), code:block2 (Input: fetch_vix_level()) (+31 more)
-
 ### Community 36 - "Community 36"
 Cohesion: 0.05
-Nodes (39): Automatic (System Handles), code:bash (source .venv/bin/activate), code:bash (# Get real Nifty price (NOT mock)), code:bash (python main.py --mode paper-trading --journal-id phase1-live), code:block12 (http://localhost:3000?code=COPY_THIS_PART&state=sample_state), code:bash (# Stop current server (Ctrl+C)), code:bash (source .venv/bin/activate), code:bash (uvicorn api.server:app --port 8000) (+31 more)
+Nodes (38): After (Phase 4):, Before (Baseline v10):, code:python (def get_dynamic_allocation(current_vix):), code:bash (# No code changes needed! Same dynamic allocation function.), code:bash (# Same code, same dynamic allocation function.), code:bash (# Extract metrics from changelog), code:bash (# After all 3 runs complete), code:bash (# Switch to main and merge) (+30 more)
 
 ### Community 37 - "Community 37"
 Cohesion: 0.05
-Nodes (36): After Week 1, code:bash (ls -la data/.cache/entry_model_v4.pkl  # RegimeAwareLearner ), code:bash (ASOF=2026-10-19 PYTHON=.venv/bin/python scripts/check_cache_), code:bash (python main.py --mode signal-combined --capital 2500000 --lo), code:bash (ls paper_trading/{README.md, RESTART_2026-10-19.md, QUICK_RE), Contacts & Resources, Day 10–11: API Rehearsal (2 hours), Day 10–11: Broker Rehearsal (2 hours) (+28 more)
+Nodes (39): API Endpoint Tests: ⏳ PENDING, API Testing Results, Before Live Trading (Tomorrow), code:block1 (Input: fetch_nifty_spot_price()), code:bash (bash /tmp/manual_api_test.sh), code:bash (pytest tests/test_api_endpoints.py -v -s), code:block12 (✅ api.journal imports OK), code:block2 (Input: fetch_vix_level()) (+31 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.05
-Nodes (37): Appendix: Full Results, Backtest Comparison: Before vs After 85% Max Profit Rule, Before/After Summary, Broken Wing Butterfly, Calendar Spread, code:block1 (Every Trade:), code:block2 (Period: 2009-2026 (17.3 years)), code:block3 (Period: 2009-2026 (17.3 years)) (+29 more)
+Nodes (39): Automatic (System Handles), code:bash (source .venv/bin/activate), code:bash (# Get real Nifty price (NOT mock)), code:bash (python main.py --mode paper-trading --journal-id phase1-live), code:block12 (http://localhost:3000?code=COPY_THIS_PART&state=sample_state), code:bash (# Stop current server (Ctrl+C)), code:bash (source .venv/bin/activate), code:bash (uvicorn api.server:app --port 8000) (+31 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.13
-Nodes (25): _as_dicts(), _chunk_and_compare(), _e2e_frame(), _make_frame(), Regression tests for the layered-training simulation speedups.  Covers:   - Roll, Full 26-config list on a 400-day frame, uneven split with a tiny leading chunk., 600-day frame, many contiguous splits (incl. empty and single-bar chunks)., Entries whose fill row falls in the last 21 rows of a stage never become samples (+17 more)
+Cohesion: 0.05
+Nodes (36): After Week 1, code:bash (ls -la data/.cache/entry_model_v4.pkl  # RegimeAwareLearner ), code:bash (ASOF=2026-10-19 PYTHON=.venv/bin/python scripts/check_cache_), code:bash (python main.py --mode signal-combined --capital 2500000 --lo), code:bash (ls paper_trading/{README.md, RESTART_2026-10-19.md, QUICK_RE), Contacts & Resources, Day 10–11: API Rehearsal (2 hours), Day 10–11: Broker Rehearsal (2 hours) (+28 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.05
-Nodes (38): After (Phase 4):, Before (Baseline v10):, code:python (def get_dynamic_allocation(current_vix):), code:bash (# No code changes needed! Same dynamic allocation function.), code:bash (# Same code, same dynamic allocation function.), code:bash (# Extract metrics from changelog), code:bash (# After all 3 runs complete), code:bash (# Switch to main and merge) (+30 more)
+Nodes (37): Appendix: Full Results, Backtest Comparison: Before vs After 85% Max Profit Rule, Before/After Summary, Broken Wing Butterfly, Calendar Spread, code:block1 (Every Trade:), code:block2 (Period: 2009-2026 (17.3 years)), code:block3 (Period: 2009-2026 (17.3 years)) (+29 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.07
-Nodes (9): Offline tests for scripts/check_nse_mcp.py (parsing and diff logic only).  No ne, _rpc_json(), TestDiffLogic, TestHistoryParsing, TestRpcParsing, TestToolDiscovery, TestToolPayload, TestVixSanity (+1 more)
+Cohesion: 0.13
+Nodes (25): _as_dicts(), _chunk_and_compare(), _e2e_frame(), _make_frame(), Regression tests for the layered-training simulation speedups.  Covers:   - Roll, Full 26-config list on a 400-day frame, uneven split with a tiny leading chunk., 600-day frame, many contiguous splits (incl. empty and single-bar chunks)., Entries whose fill row falls in the last 21 rows of a stage never become samples (+17 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.05
-Nodes (36): 1. Morning Routine (Before 9:15 AM) - REQUIRED, 2. Monitor Active Trades, 3. Generate Trade Signal, 4. Combined Signal (Monthly + Weekly), Add New Trade, Backtesting, Close Trade, code:bash (cd nifty-options-backtester) (+28 more)
+Nodes (38): After (Phase 4):, Before (Baseline v10):, code:python (def get_dynamic_allocation(current_vix):), code:bash (# No code changes needed! Same dynamic allocation function.), code:bash (# Same code, same dynamic allocation function.), code:bash (# Extract metrics from changelog), code:bash (# After all 3 runs complete), code:bash (# Switch to main and merge) (+30 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.08
-Nodes (15): BaseStrategy, BaseStrategy, generate_legs(), Abstract base class for option strategies., Abstract base class for option strategies., Reprice all legs at current market conditions., IronButterflyStrategy, IronCondorStrategy (+7 more)
+Cohesion: 0.07
+Nodes (9): Offline tests for scripts/check_nse_mcp.py (parsing and diff logic only).  No ne, _rpc_json(), TestDiffLogic, TestHistoryParsing, TestRpcParsing, TestToolDiscovery, TestToolPayload, TestVixSanity (+1 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.11
-Nodes (36): Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade() (+28 more)
+Cohesion: 0.05
+Nodes (36): 1. Morning Routine (Before 9:15 AM) - REQUIRED, 2. Monitor Active Trades, 3. Generate Trade Signal, 4. Combined Signal (Monthly + Weekly), Add New Trade, Backtesting, Close Trade, code:bash (cd nifty-options-backtester) (+28 more)
 
 ### Community 45 - "Community 45"
 Cohesion: 0.05
@@ -834,44 +820,44 @@ Cohesion: 0.05
 Nodes (37): Appendix: Full Results, Backtest Comparison: Before vs After 85% Max Profit Rule, Before/After Summary, Broken Wing Butterfly, Calendar Spread, code:block1 (Every Trade:), code:block2 (Period: 2009-2026 (17.3 years)), code:block3 (Period: 2009-2026 (17.3 years)) (+29 more)
 
 ### Community 47 - "Community 47"
-Cohesion: 0.12
-Nodes (30): Get market depth (order book) for a single symbol.                  Args:, Get historical candle data for a symbol.                  Args:             symb, aggregate_reconstruction(), _aggregate_single_zip(), _aggregate_single_zip_star(), build_archive_month_index(), _clean_string_series(), coerce_month_start() (+22 more)
-
-### Community 48 - "Community 48"
 Cohesion: 0.05
 Nodes (24): max_dd_while_blocked must be seeded with the activation DD., max_dd_while_blocked must be seeded with the activation DD., max_dd_while_blocked must track subsequent deterioration., max_dd_while_blocked must track subsequent deterioration., max_dd_while_blocked must not decrease when DD partially improves         (but n, max_dd_while_blocked must not decrease when DD partially improves         (but n, Oscillating DD (no 3% improvement) must stay blocked indefinitely., Oscillating DD (no 3% improvement) must stay blocked indefinitely. (+16 more)
 
-### Community 49 - "Community 49"
+### Community 48 - "Community 48"
 Cohesion: 0.06
 Nodes (34): 10. **OVERVIEW** → [README.md](./README.md), 1. **START HERE** → [DAILY_WORKFLOW_SUMMARY.md](./DAILY_WORKFLOW_SUMMARY.md), 1. **START HERE** → [RESTART_2026-10-19.md](./RESTART_2026-10-19.md), 2. **LAMINATE & PRINT** → [DAILY_CHECKLIST.md](./DAILY_CHECKLIST.md), 3. **DETAILED GUIDE** → [DAILY_OPERATIONS_GUIDE.md](./DAILY_OPERATIONS_GUIDE.md), 4. **QUICK REFERENCE** → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md), 5. **API DOCUMENTATION** → [../API_GUIDE.md](../API_GUIDE.md), 6. **RISK MANAGEMENT** → [tracker/RISK_DASHBOARD.md](./tracker/RISK_DASHBOARD.md) (+26 more)
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.05
 Nodes (36): Always Do This, Answer: ❌ **NO**, Case 1: First Time Setup, Case 2: Access Token Expires (Auto-Handled), Case 3: Credentials Rotated (Security), Case 4: Credentials Compromised (Emergency), code:bash (# Copy template), code:bash (# ✅ Store in .env.local (local only)) (+28 more)
 
-### Community 51 - "Community 51"
+### Community 50 - "Community 50"
 Cohesion: 0.09
 Nodes (21): Source discovery helpers and adapters., Enrichment and sector proxy helpers., entry_date(), entry_vix(), evaluate_exit(), ExitDecision, _LegAdapter, legs() (+13 more)
 
-### Community 52 - "Community 52"
+### Community 51 - "Community 51"
 Cohesion: 0.06
 Nodes (34): 1. **Capital Allocation (50/50 split)**, 1. **Capital Allocation (70/30 split)**, 2. **Monthly Track (50% Budget)**, 2. **Monthly Track (70% Budget)**, 3. **Weekly Track (30% Budget)**, 3. **Weekly Track (50% Budget)**, 4. **Cross-Track Risk Management**, Architecture (+26 more)
 
-### Community 53 - "Community 53"
+### Community 52 - "Community 52"
 Cohesion: 0.06
 Nodes (34): A: **NO. Use Fixed 85% instead.**, Bottom Line, code:python (if vix < 15:), code:python (def should_exit_monthly(trade, spot, vix, dte):), code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), Cost-Benefit Analysis, Detailed Results, Executive Summary (+26 more)
 
-### Community 54 - "Community 54"
-Cohesion: 0.08
-Nodes (16): should_enter(), IronCondorStrategy, Iron Condor strategy with configurable parameters. Adapts strike selection based, Entry rules:         1. VIX must be above 14 (enough premium to collect), Exit rules:         1. Profit target reached (default 50% of max credit), Iron Condor: Sell OTM Call + Sell OTM Put, Buy further OTM Call + Put as hedges., Standalone put credit spread — used when call side is too risky     (e.g., stron, Calculate strike distance from spot based on VIX and DTE. (+8 more)
+### Community 53 - "Community 53"
+Cohesion: 0.12
+Nodes (31): ActiveTrade, cache_age_days(), close_trade(), ClosedTradeRecord, days_in_trade(), dte(), _infer_strategy_code(), is_short() (+23 more)
 
-### Community 55 - "Community 55"
+### Community 54 - "Community 54"
 Cohesion: 0.06
 Nodes (35): 1. RateLimiter, 2. AdaptiveTTLCache, 3. RequestQueue, 4. SmartFyersAPI, Basic Usage, Check Rate Limit Usage, code:python (from config import FyersAPIConfig), code:python (from data.rate_limiter import SmartFyersAPI) (+27 more)
 
-### Community 56 - "Community 56"
+### Community 55 - "Community 55"
 Cohesion: 0.21
 Nodes (32): _band(), build_dataset_frame(), classify(), _close_stats(), corrupt_raw(), coverage(), dataset_column_stats(), duplicate_groups() (+24 more)
+
+### Community 56 - "Community 56"
+Cohesion: 0.1
+Nodes (11): build_daily_sector_proxy(), CDSLAdapter, main(), main(), main(), main(), raw_path(), write_bytes() (+3 more)
 
 ### Community 57 - "Community 57"
 Cohesion: 0.06
@@ -894,20 +880,20 @@ Cohesion: 0.11
 Nodes (19): _days(), _FakeDatetime, holidays_on(), no_holidays(), now(), NSE holiday support, holiday-shifted expiries, IST clock and the trading-day gat, datetime subclass whose now() returns a fixed UTC instant converted to tz., run_signal_combined must stop on a closed day before fetching data or generating (+11 more)
 
 ### Community 62 - "Community 62"
+Cohesion: 0.09
+Nodes (12): BaseStrategy, Abstract base class for option strategies., IronButterflyStrategy, IronCondorStrategy, _nan(), PutCreditSpreadStrategy, Multi-strategy module: Iron Butterfly, Put Credit Spread, Broken Wing Butterfly,, Bull Put Credit Spread: Sell OTM put, buy further OTM put.     Single-direction, (+4 more)
+
+### Community 63 - "Community 63"
 Cohesion: 0.08
 Nodes (32): _append_changelog_entry(), _build_strategy_breakdown(), _build_weekly_trade_stats(), _check_fyers_token_and_warn(), _get_git_hash(), log_backtest_run(), _print_exit_recommendation(), _print_leg_details() (+24 more)
 
-### Community 63 - "Community 63"
+### Community 64 - "Community 64"
 Cohesion: 0.06
 Nodes (30): Backtest vs Live Comparison, code:block1 (Trade ID: P1-001), Common Mistakes to Avoid, Contact & Resources, DTE Expiry (EXIT), Emergency Exit Procedure, Entry Checklist (11:00–13:00 IST), Entry Checklist (Before 11:00 AM IST) (+22 more)
 
-### Community 64 - "Community 64"
+### Community 65 - "Community 65"
 Cohesion: 0.06
 Nodes (31): Best Risk-Adjusted Returns (Sharpe), code:block1 (Profit trajectory: ———— (linear decay up to max profit)), code:block2 (Profit trajectory: ∿∿∿∿ (oscillates as spot moves in range)), code:python (def should_exit(trade, spot, vix, dte, max_profit_per_unit):), Comparison: Weekly vs Monthly, Detailed Results, Executive Summary, Final Recommendations (+23 more)
-
-### Community 65 - "Community 65"
-Cohesion: 0.11
-Nodes (8): _fake_frames(), _nifty_like(), _ohlc(), Offline tests for ticker-safe cache identity, range guards, seam check and guard, TestMarketDataCacheIdentity, TestMarketDataCachePreference, TestPurgeShortParquets, _vix_like()
 
 ### Community 66 - "Community 66"
 Cohesion: 0.06
@@ -922,8 +908,8 @@ Cohesion: 0.14
 Nodes (5): _hash_snapshot(), MonthlyDiagnosticsCollector, Monthly-only trade funnel and exit attribution recorder., _safe_float(), _safe_float()
 
 ### Community 69 - "Community 69"
-Cohesion: 0.08
-Nodes (16): Verify that RollingWindowSimulator produces valid trades for all 10 strategy, Verify that RollingWindowSimulator produces valid trades for all 10 strategy, simulate_all() with full STRATEGY_CONFIGS on varied-VIX data → ≥6 distinct strat, simulate_all() with full STRATEGY_CONFIGS on varied-VIX data → ≥6 distinct strat, Every strategy name produced by the simulator must be in STRATEGY_LABELS., Every strategy name produced by the simulator must be in STRATEGY_LABELS., Iron condor pnl_pct must be in [-500, 100] — sanity check on 4-leg arithmetic., Iron condor pnl_pct must be in [-500, 100] — sanity check on 4-leg arithmetic. (+8 more)
+Cohesion: 0.16
+Nodes (27): aggregate_reconstruction(), _aggregate_single_zip(), _aggregate_single_zip_star(), build_archive_month_index(), _clean_string_series(), coerce_month_start(), _coerce_trade_date(), _coerce_transaction_code() (+19 more)
 
 ### Community 70 - "Community 70"
 Cohesion: 0.06
@@ -943,127 +929,127 @@ Nodes (30): code:block1 (Day 0: Entry (premium collected)), code:python (def sho
 
 ### Community 74 - "Community 74"
 Cohesion: 0.07
-Nodes (23): Train regime classifier + per-regime entry models.          Args:             tr, Absolute 3-class trade quality label (used in tests and as fallback)., Absolute 3-class trade quality label (used in tests and as fallback)., Train trade-quality filter on backtest results.          Key design changes from, Absolute 3-class trade quality label (used in tests and as fallback)., Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  →, Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  →, Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  → (+15 more)
+Nodes (28): Archived Experiments (#3–#55), Backtest Experiment Index, Baseline Runs Comparison (#56–#59), code:block1 (Aug 23 — Phase 1: LightGBM Migration), code:bash (# 1. Ensure ML models are cached), code:bash (# Retrain all models (15–20 min)), code:bash (# After backtest completes), code:python (# Capital allocation (main.py)) (+20 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.07
-Nodes (28): Archived Experiments (#3–#55), Backtest Experiment Index, Baseline Runs Comparison (#56–#59), code:block1 (Aug 23 — Phase 1: LightGBM Migration), code:bash (# 1. Ensure ML models are cached), code:bash (# Retrain all models (15–20 min)), code:bash (# After backtest completes), code:python (# Capital allocation (main.py)) (+20 more)
+Nodes (22): Train regime classifier + per-regime entry models.          Args:             tr, Absolute 3-class trade quality label (used in tests and as fallback)., Absolute 3-class trade quality label (used in tests and as fallback)., Train trade-quality filter on backtest results.          Key design changes from, Absolute 3-class trade quality label (used in tests and as fallback)., Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  →, Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  →, Percentile-based 3-class label for Gate 8 training.            pnl_pct < p33  → (+14 more)
 
 ### Community 76 - "Community 76"
-Cohesion: 0.12
-Nodes (14): AdjustmentAction, Check if the trade should be adjusted instead of exited.         Returns an Adju, Check if the trade should be adjusted instead of exited.         Returns an Adju, Describes a mid-trade adjustment (roll, add hedge, widen, etc.)., CalendarSpreadStrategy, PutCreditSpreadStrategy, Bull Put Credit Spread: Sell OTM put, buy further OTM put.     Single-direction,, Calendar (Time) Spread: sell near-term ATM option, buy same-strike     longer-te (+6 more)
+Cohesion: 0.16
+Nodes (24): WeeklySimConfig, _entry_index_lower_bound(), _filter_trades_in_window(), LayeredEvolveArtifacts, LayeredTrainStage, _log_progress(), Layered evolve-time retraining pipeline.  This module keeps model training out o, Smallest entry row that can produce a trade inside (prev_end, stage_end].      E (+16 more)
 
 ### Community 77 - "Community 77"
-Cohesion: 0.11
-Nodes (7): recommended_strategy(), risk_score(), CheckpointRecord, CheckpointStore, PipelinePaths, HttpClient, get_logger()
-
-### Community 78 - "Community 78"
-Cohesion: 0.11
-Nodes (9): build_daily_sector_proxy(), main(), main(), main(), raw_path(), write_bytes(), write_dataframe_outputs(), write_json() (+1 more)
-
-### Community 79 - "Community 79"
 Cohesion: 0.07
 Nodes (28): code:bash (# Install test framework), code:bash (# Test live data fetcher (mock mode)), code:bash (# 1. Create journal session), code:bash (curl http://localhost:8000/health), code:bash (# Re-verify signal), code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), code:bash (curl "http://localhost:8000/status?journal_id=phase1-sep-202), code:block8 (paper_trading/DAILY_CHECKLIST.md) (+20 more)
 
-### Community 80 - "Community 80"
-Cohesion: 0.11
-Nodes (15): AdaptiveTTLCache, RateLimiter, Fyers API Rate Limiter — Manage API call rates and adaptive caching  Handles: -, Wait until rate limit allows next call, Cache market data with adaptive TTL based on data type, Fyers API wrapper with automatic rate limit handling and caching, Track API calls against Fyers rate limits, Get rate limit usage statistics (+7 more)
+### Community 78 - "Community 78"
+Cohesion: 0.15
+Nodes (20): analyze_verdict(), main(), print_comparison(), print_exit_distribution(), print_result(), Provide verdict on which approach is better., Print formatted backtest results., main() (+12 more)
 
-### Community 81 - "Community 81"
+### Community 79 - "Community 79"
 Cohesion: 0.12
 Nodes (18): _clean_raw(), Offline tests for scripts/validate_market_cache.py.  All data is synthetic and w, _series(), test_below_threshold_not_grouped(), test_byte_identical_close_detected(), test_clean_dataset_passes_all_checks(), test_cli_scan_writes_report_to_out(), test_corrupted_dataset_fails_named_checks() (+10 more)
 
-### Community 82 - "Community 82"
+### Community 80 - "Community 80"
 Cohesion: 0.07
 Nodes (26): Appendix: Position Visualization, Aug 29 (Fri) — Entry Day, Aug 30 (Sat), Aug 31 (Mon) — Day 1 Hold, Capital & Risk, Checkpoint 1 Progress (Sep 29 target), code:block1 (Entry Nifty:      24,128), code:block2 (Nifty:            24,080) (+18 more)
 
-### Community 83 - "Community 83"
+### Community 81 - "Community 81"
 Cohesion: 0.07
 Nodes (25): Architecture Summary (for AI agents), code:block1 (main.py), DO NOT change these parameters (proven optimal via exhaustive testing):, Entry Model Evolution, Exit Model Evolution, Exit v1: Aggressive ML Expansion (REJECTED), Exit v2: Conservative ML Profit-Taking (REJECTED), Exit v3: Removed Profit Labels from Training (REJECTED) (+17 more)
 
-### Community 84 - "Community 84"
+### Community 82 - "Community 82"
 Cohesion: 0.07
 Nodes (25): Adjustment / Roll Framework, AGENTS.md — AI Codebase Guide, Architecture Overview, Black-Scholes as Historical Proxy, CLI Modes, code:block1 (main.py                    CLI entry point (10 modes)), code:block2 (Yahoo Finance (16 tickers: ^NSEI, ^INDIAVIX, BZ=F, INR=X, GC), code:block3 (For each (strategy, expiry) pair:) (+17 more)
 
-### Community 85 - "Community 85"
+### Community 83 - "Community 83"
 Cohesion: 0.13
 Nodes (6): Release absorbing drawdown locks after N consecutive flat trading days., Adaptive exit using VIX-regime-based targets + trailing stop + ML override., Find the monthly expiry closest to target DTE, respecting the NSE Thursday→Monda, Execute the backtest., Execute backtest with ML-driven exit decisions., Execute weekly options backtest.
 
-### Community 86 - "Community 86"
+### Community 84 - "Community 84"
+Cohesion: 0.14
+Nodes (12): AdjustmentAction, Check if the trade should be adjusted instead of exited.         Returns an Adju, Check if the trade should be adjusted instead of exited.         Returns an Adju, Describes a mid-trade adjustment (roll, add hedge, widen, etc.)., CalendarSpreadStrategy, Calendar (Time) Spread: sell near-term ATM option, buy same-strike     longer-te, Roll the short leg to the next monthly expiry when near expiry.         The long, _calm() (+4 more)
+
+### Community 85 - "Community 85"
 Cohesion: 0.07
 Nodes (26): 2026-10-19 — Correction: weekly exit repricing bug (all prior weekly results overstated), Engine Stats, Engine Stats, Engine Stats, Engine Stats, Key Metrics, Key Metrics, Key Metrics (+18 more)
+
+### Community 86 - "Community 86"
+Cohesion: 0.1
+Nodes (16): Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Assemble a TradeResult from common scalars., Assemble a TradeResult from common scalars., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Assemble a TradeResult from common scalars., Assemble a TradeResult from common scalars. (+8 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.13
 Nodes (7): _print_oi_guided_trade(), Use live OI data for strike selection, BS for pricing on target expiry., price_option(), Price a European option using Black-Scholes.      Args:         spot: Current un, ATM options lose value with time (theta < 0)., TestGreeks, TestPriceOption
 
 ### Community 88 - "Community 88"
-Cohesion: 0.1
-Nodes (16): Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Assemble a TradeResult from common scalars., Assemble a TradeResult from common scalars., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Return (signal_date, fill_idx, spot, vix, entry_date) for a given entry index., Assemble a TradeResult from common scalars., Assemble a TradeResult from common scalars. (+8 more)
+Cohesion: 0.13
+Nodes (7): _fake_frames(), _nifty_like(), _ohlc(), Offline tests for ticker-safe cache identity, range guards, seam check and guard, TestMarketDataCacheIdentity, TestPurgeShortParquets, _vix_like()
 
 ### Community 89 - "Community 89"
+Cohesion: 0.11
+Nodes (23): 30-DAY MONTHLY REVIEW (Month-End), AFTERNOON: MONITORING & EXIT (3:00–4:30 PM IST), BEST PRACTICES, Closing the trade, code:bash (# Check if trade still in active_trades.json), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour), code:bash (# Check yesterday's status), code:bash (# Day 1 (Sept 1)) (+15 more)
+
+### Community 90 - "Community 90"
 Cohesion: 0.09
 Nodes (26): Add a trade — supports both --leg format and legacy single-spread format., run_add_trade(), Add a trade — supports both --leg format and legacy single-spread format., run_add_trade(), add_trade(), add_trade_from_legs(), Legacy: add a single-spread trade., Add a multi-leg trade from --leg format strings. (+18 more)
 
-### Community 90 - "Community 90"
+### Community 91 - "Community 91"
+Cohesion: 0.12
+Nodes (14): AdaptiveTTLCache, RateLimiter, Fyers API Rate Limiter — Manage API call rates and adaptive caching  Handles: -, Cache market data with adaptive TTL based on data type, Check if cached data needs refresh, Fyers API wrapper with automatic rate limit handling and caching, Track API calls against Fyers rate limits, Get rate limit usage statistics (+6 more)
+
+### Community 92 - "Community 92"
 Cohesion: 0.08
 Nodes (23): Archive Index, Archived Backtest Runs (Runs #3–#55), Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats, Engine Stats (+15 more)
 
-### Community 91 - "Community 91"
+### Community 93 - "Community 93"
 Cohesion: 0.08
 Nodes (24): 1. Designed Systematic Fix Plan, 2. Implemented All 6 Fixes, 3. Created Regression Test Suite, 4. Ran Verification Backtest, 5. Created Documentation, Agent Handoff — Nifty Options Backtester Monthly Trading Fixes, code:bash (# Extend training date range to include more historical regi), code:bash (# Verify all fixes are in place) (+16 more)
 
-### Community 92 - "Community 92"
+### Community 94 - "Community 94"
 Cohesion: 0.09
 Nodes (19): Regime-aware strategy selection., Route to global model's parameter prediction., Classify regime, then use global model (single-model architecture)., Recommend the best strategy for current conditions.         In hybrid mode, elig, Recommend the best strategy for current conditions.         In hybrid mode, elig, Suggest optimal parameters based on conditions + macro., Recommend the best strategy for current conditions.         In hybrid mode, elig, Recommend the best strategy for current conditions.         In hybrid mode, elig (+11 more)
 
-### Community 93 - "Community 93"
+### Community 95 - "Community 95"
 Cohesion: 0.08
 Nodes (22): Appendix: Previous Phase Mistakes (Avoid), Baseline Learnings & Phase Transitions, code:python (# main.py run_backtest_combined()), code:markdown (## Run #X — <label> — [COMBINED|MONTHLY|WEEKLY]), code:block3 (nifty-options-backtester/), code:bash (nohup python3 main.py --mode backtest-combined --run-label "), Contact / Questions, Engine Stats (table) (+14 more)
 
-### Community 94 - "Community 94"
+### Community 96 - "Community 96"
 Cohesion: 0.08
 Nodes (23): Backtest Verification, Code Quality, code:python (# Before: if pnl_pct < -N (wrong unit space at scale)), code:python (# production_rules.py: KillSwitchState dataclass), code:python (# Before (weekly-calibrated):), code:python (# Before:), code:python (# config.py: two parameter changes), code:python (if days_in_trade >= 10 and trade.total_pnl < 0:) (+15 more)
 
-### Community 95 - "Community 95"
+### Community 97 - "Community 97"
 Cohesion: 0.13
-Nodes (13): EntryDecision, EntryDecisionEngine, EntryDecisionEngine — single authoritative entry gate shared by backtest, signal, Update the loss-streak counter after a trade closes., Used only if check() itself raises an unexpected exception., Result returned by EntryDecisionEngine.check()., Single authoritative entry gate used by backtest, signal, and monitor.      Inst, Run the full entry gate and return an EntryDecision.          Flow:           1. (+5 more)
+Nodes (6): recommended_strategy(), risk_score(), CheckpointRecord, PipelinePaths, HttpClient, get_logger()
 
-### Community 96 - "Community 96"
+### Community 98 - "Community 98"
 Cohesion: 0.13
 Nodes (14): GapDistribution, GapRiskModel, GapScenarioResult, GapStressReport, print_stress_report(), Gap Risk Model — models overnight gaps as discontinuities, not returns.  First p, Compute post-gap IV.         IV_new = VIX * (1 + k * |gap|)          k scales up, Reprice a vertical spread under multiple gap + IV shock scenarios.         Retur (+6 more)
 
-### Community 97 - "Community 97"
-Cohesion: 0.15
-Nodes (19): Print comprehensive comparison table., compare_strategies(), print_comparison(), print_final_summary(), Compare both exit priority approaches for PCS and IC., Print detailed comparison table., Current priority: ML first, then 85% rule.     This is what's already in the cod, Proposed priority: 85% rule first, then ML.          To implement this, we'll: (+11 more)
-
-### Community 98 - "Community 98"
+### Community 99 - "Community 99"
 Cohesion: 0.21
 Nodes (9): _days(), _make_engine(), Phase 2.2 — releasable drawdown locks (opt-in via rearm days).  Both DD locks ar, Soft-gate release re-bases only the realized peak. The kill switch         keeps, One day of the same ordering as CombinedBacktestEngine.run()., _step(), TestCrossTrackRearm, TestDefaultsPreserved (+1 more)
 
-### Community 99 - "Community 99"
+### Community 100 - "Community 100"
 Cohesion: 0.09
 Nodes (21): 1. Consistent Underperformance, 2. Score: 0/6 Metrics Improved, 3. Why It Doesn't Help, 4. Trade-by-Trade Impact, Approach Tested, Backtest Results, code:bash (cd /Users/shivam.gupta/cursor/dsp-repos/nifty-options-backte), code:block2 (Exit if: current_profit <= 0.80 * max_profit_seen) (+13 more)
 
-### Community 100 - "Community 100"
+### Community 101 - "Community 101"
 Cohesion: 0.09
 Nodes (21): 1. Weekly 80% max-profit booking branch, 2. Post-routing threshold tweak, code:bash (PYTHONPATH=. ./.venv/bin/python main.py --mode backtest-comb), Current Default, Delta, Do Not Circle Back Without New Evidence, Engine A — Income Core (`weekly_pcs`), Engine B — Convex Booster (`weekly_ic`) (+13 more)
 
-### Community 101 - "Community 101"
+### Community 102 - "Community 102"
 Cohesion: 0.09
 Nodes (21): 1. Hybrid Rules + ML Architecture, 2. Walk-Forward Validation, 3. Crash Detection (Two-Tier), 4. Black-Scholes as Historical Proxy, 5. Combined Strategy (Monthly + Weekly), Architecture Diagram, CLI Modes, code:block1 (main.py                    CLI entry point (10 modes)) (+13 more)
 
-### Community 102 - "Community 102"
+### Community 103 - "Community 103"
 Cohesion: 0.23
 Nodes (17): Execute weekly options backtest., build_tracker(), check_weekly_exit(), _legacy_exit_check(), Shared exit policy for weekly strategies.  The policy is deliberately runtime-sa, holding_days must be TRADING sessions held (see trading_sessions_held), not cale, holding_days must be TRADING sessions held (see trading_sessions_held), not cale, _redesigned_exit_check() (+9 more)
 
-### Community 103 - "Community 103"
+### Community 104 - "Community 104"
 Cohesion: 0.17
 Nodes (21): Enum, current_debit(), current_value(), dte_at_entry(), entry_value(), holding_days(), is_open(), max_loss() (+13 more)
-
-### Community 104 - "Community 104"
-Cohesion: 0.22
-Nodes (20): WeeklySimConfig, _entry_index_lower_bound(), _filter_trades_in_window(), LayeredEvolveArtifacts, LayeredTrainStage, _log_progress(), Layered evolve-time retraining pipeline.  This module keeps model training out o, Smallest entry row that can produce a trade inside (prev_end, stage_end].      E (+12 more)
 
 ### Community 105 - "Community 105"
 Cohesion: 0.09
@@ -1078,8 +1064,8 @@ Cohesion: 0.11
 Nodes (10): Instantiate TradeLearner without calling __init__ fully., Instantiate TradeLearner without calling __init__ fully., pnl_pct == 0.0 is break-even — not a loss, so class 1 (ok), not class 0., pnl_pct == 0.0 is break-even — not a loss, so class 1 (ok), not class 0., pnl_pct == 30.0 is exactly at the good threshold — class 2., pnl_pct == 30.0 is exactly at the good threshold — class 2., Boundary: p33 is the lower edge of class-1., Boundary: p33 is the lower edge of class-1. (+2 more)
 
 ### Community 108 - "Community 108"
-Cohesion: 0.13
-Nodes (15): Walk-forward validation for the weekly entry model (WeeklyEntryLearner).      Ex, Walk-forward validation for the weekly entry model (WeeklyEntryLearner).      Ex, walk_forward_weekly_entry_model(), load(), Weekly Entry Learner — lightweight ML quality gate for short-DTE weekly options., Predict quality score for a weekly entry candidate.          Returns quality_sco, Predict quality score for a weekly entry candidate.          Returns quality_sco, Predict quality score for a weekly entry candidate.          Returns quality_sco (+7 more)
+Cohesion: 0.16
+Nodes (18): Print comprehensive comparison table., compare_strategies(), print_comparison(), print_final_summary(), Compare both exit priority approaches for PCS and IC., Print detailed comparison table., Current priority: ML first, then 85% rule.     This is what's already in the cod, Proposed priority: 85% rule first, then ML.          To implement this, we'll: (+10 more)
 
 ### Community 109 - "Community 109"
 Cohesion: 0.15
@@ -1106,8 +1092,8 @@ Cohesion: 0.25
 Nodes (19): _engine(), _fill(), holidays(), _next_trading_day(), Thursday-era weekly signal day (WeeklyBacktestConfig.era_aware_signal_day).  Bef, _signal(), test_cutover_week_thursday_before_cutover_enters_monday_after_is_untouched(), test_default_flag_is_false() (+11 more)
 
 ### Community 115 - "Community 115"
-Cohesion: 0.2
-Nodes (6): Period-aware walk-forward model training and cache management., Expanding-window retraining with period-aware caches.      Every OOS period uses, WalkForwardBundle, WalkForwardManager, WalkForwardWindow, _cache_path()
+Cohesion: 0.12
+Nodes (21): Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade(), Remove a trade, or archive+close it when realized P&L is provided., run_remove_trade() (+13 more)
 
 ### Community 116 - "Community 116"
 Cohesion: 0.12
@@ -1115,103 +1101,103 @@ Nodes (19): get_trades(), monitor_open_trades(), List trades filtered by journal
 
 ### Community 117 - "Community 117"
 Cohesion: 0.14
-Nodes (18): At Entry (fill in when the signal says ENTER), At Entry (fill these in when signal comes), code:block1 (Command: python main.py --mode signal-combined --capital 250), code:block2 (P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,), Exit (At expiry or earlier), Exit (at rule trigger or expiry), First Real Trade — Mon 2026-10-19 (Ready to fill in), First Trade — Mon Sep 8, 2026 (Ready to fill in) (+10 more)
+Nodes (18): dataset(), Feature Store Integration Tests ================================ Validates that, Each raw price column must have median within the expected economic range., Each raw price column must have median within the expected economic range., Load the full combined dataset from parquet cache (no network)., Load the full combined dataset from parquet cache (no network)., Rolling-window features are NaN during warmup.  After warmup ends the     rest o, crash_risk_score should be 100% non-NaN after row 0. (+10 more)
 
 ### Community 118 - "Community 118"
-Cohesion: 0.1
-Nodes (20): All Prior Fixes Verified, Backtest Results, Backtest Run Summary — 2026-05-18, Code Quality, code:block1 (Budget: Monthly 70% (₹350,000) + Weekly 30% (₹150,000)), code:bash ($ python3 -m pytest tests/test_fixes.py -q), Data Issues Fixed Today, Fix #7: Circuit Breaker Threshold (NEW) (+12 more)
+Cohesion: 0.14
+Nodes (18): At Entry (fill in when the signal says ENTER), At Entry (fill these in when signal comes), code:block1 (Command: python main.py --mode signal-combined --capital 250), code:block2 (P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,), Exit (At expiry or earlier), Exit (at rule trigger or expiry), First Real Trade — Mon 2026-10-19 (Ready to fill in), First Trade — Mon Sep 8, 2026 (Ready to fill in) (+10 more)
 
 ### Community 119 - "Community 119"
-Cohesion: 0.2
-Nodes (10): _ExplodingEvolver, _make_evolver(), _make_regime_frame(), Tests for the evolve-step baseline comparison (regression for KeyError: 'directi, Synthetic frame whose VIX cycles through all four regimes.      Entries fall on, Regression: STRATEGY_CONFIGS mixes types; used to raise KeyError: 'direction'., Adding non-vertical configs must not change the baseline result., Baseline metrics for one regime equal a direct call to the private helpers. (+2 more)
+Cohesion: 0.1
+Nodes (20): All Prior Fixes Verified, Backtest Results, Backtest Run Summary — 2026-05-18, Code Quality, code:block1 (Budget: Monthly 70% (₹350,000) + Weekly 30% (₹150,000)), code:bash ($ python3 -m pytest tests/test_fixes.py -q), Data Issues Fixed Today, Fix #7: Circuit Breaker Threshold (NEW) (+12 more)
 
 ### Community 120 - "Community 120"
 Cohesion: 0.21
 Nodes (15): Store data with timestamp, _extractor_source_columns(), Every column FeatureExtractor reads must exist in the dataset., Column names FeatureExtractor.extract() reads, parsed from its AST.      Collect, Every source column FeatureExtractor.extract() reads must exist in the dataset., The documented exclusions must be read by the extractor (so the list is honest), build_quality_report(), coverage_by_year() (+7 more)
 
 ### Community 121 - "Community 121"
-Cohesion: 0.19
-Nodes (4): At VIX=23 with a monthly trade open, weekly should NOT be blocked (cap=25)., At VIX=26 with a monthly trade open, weekly must be blocked (cap=25)., BacktestEngine._get_expiry_date must delegate to expiry_calendar so that     pos, TestBacktestEngineExpiry
+Cohesion: 0.2
+Nodes (10): _ExplodingEvolver, _make_evolver(), _make_regime_frame(), Tests for the evolve-step baseline comparison (regression for KeyError: 'directi, Synthetic frame whose VIX cycles through all four regimes.      Entries fall on, Regression: STRATEGY_CONFIGS mixes types; used to raise KeyError: 'direction'., Adding non-vertical configs must not change the baseline result., Baseline metrics for one regime equal a direct call to the private helpers. (+2 more)
 
 ### Community 122 - "Community 122"
 Cohesion: 0.1
-Nodes (11): Computed/derived columns must be well-formed., Daily return must be in (-30%, +30%) range, not price levels., RSI must be in [0, 100]., Computed/derived columns must be well-formed., Daily return must be in (-30%, +30%) range, not price levels., RSI must be in [0, 100]., overnight_gap_pct is in percentage-point units (* 100).         Normal range is, VRP = VIX − realized vol; expected range roughly −40 to +40. (+3 more)
+Nodes (17): deduplicate_by_date=True must produce exactly one trade per entry date., deduplicate_by_date=True must produce exactly one trade per entry date., deduplicate_by_date=True must produce exactly one trade per entry date., deduplicate_by_date=True must produce exactly one trade per entry date., With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date. (+9 more)
 
 ### Community 123 - "Community 123"
 Cohesion: 0.14
-Nodes (6): GrowwOptionChainFetcher, Find the closest expiry to the target date., Score each strike's liquidity (0-100)., Detect OI buildup patterns., Calculate max pain strike — the price at which option writers lose the least., Fetches option chain from Groww (works 24/7 with last-traded prices).     Primar
+Nodes (18): _generate_exit_snapshots(), permutation_test_exit_model(), permutation_test_weekly_entry(), Model Validation Suite — Walk-Forward Validation + Permutation Tests  Ensures ML, Score an entry model on a set of test trades., Score an entry model on a set of test trades., Walk-forward validation for the exit model (ExitStrategyEngine).      Uses time-, Permutation test for exit model. Shuffles exit labels and compares. (+10 more)
 
 ### Community 124 - "Community 124"
+Cohesion: 0.1
+Nodes (11): Computed/derived columns must be well-formed., Daily return must be in (-30%, +30%) range, not price levels., RSI must be in [0, 100]., Computed/derived columns must be well-formed., Daily return must be in (-30%, +30%) range, not price levels., RSI must be in [0, 100]., overnight_gap_pct is in percentage-point units (* 100).         Normal range is, VRP = VIX − realized vol; expected range roughly −40 to +40. (+3 more)
+
+### Community 125 - "Community 125"
+Cohesion: 0.14
+Nodes (6): GrowwOptionChainFetcher, Find the closest expiry to the target date., Score each strike's liquidity (0-100)., Detect OI buildup patterns., Calculate max pain strike — the price at which option writers lose the least., Fetches option chain from Groww (works 24/7 with last-traded prices).     Primar
+
+### Community 126 - "Community 126"
+Cohesion: 0.14
+Nodes (9): Wait until rate limit allows next call, Get cached data if fresh, Call API method with rate limit checking, Map method name to cache key, Get cached spot price if fresh, fetch if needed, Get cached VIX if fresh, fetch if needed, Get cached option chain if fresh, fetch if needed, Get cached account info if fresh, fetch if needed (+1 more)
+
+### Community 127 - "Community 127"
 Cohesion: 0.21
 Nodes (17): average_weekly_pnl(), compute_correlation(), evaluate_decision_gate(), _fmt_currency(), _fmt_diff(), load_weekly_market_data(), main(), print_result() (+9 more)
 
-### Community 125 - "Community 125"
-Cohesion: 0.11
-Nodes (18): Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on (+10 more)
-
-### Community 126 - "Community 126"
+### Community 128 - "Community 128"
 Cohesion: 0.11
 Nodes (18): Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread., Rough net delta estimate for the weekly spread. (+10 more)
 
-### Community 127 - "Community 127"
-Cohesion: 0.13
-Nodes (13): ActiveTrade, max_loss_total(), A live trade with one or more legs., Return legs, converting from legacy format if needed., Return legs, converting from legacy format if needed., Group legs into spreads for max-loss calculation., Group legs into spreads for max-loss calculation., Compute current P&L using Black-Scholes. (+5 more)
+### Community 129 - "Community 129"
+Cohesion: 0.11
+Nodes (18): Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on, Compute a continuous [0, 1] scale factor for weekly lot sizing based on (+10 more)
 
-### Community 128 - "Community 128"
+### Community 130 - "Community 130"
 Cohesion: 0.12
 Nodes (11): VIX and all derived VIX series must be non-flat and in valid range., VIX and all derived VIX series must be non-flat and in valid range., 10-day VIX SMA must be correlated with VIX (r > 0.95)., India VIX spiked above 60 during March 2020 COVID crash., 10-day VIX SMA must be correlated with VIX (r > 0.95)., US VIX must not have Nifty price data (common cross-contamination)., vix / vix_sma_10 should be centred near 1.0., India VIX premium over US VIX: typically −2 to +20. (+3 more)
 
-### Community 129 - "Community 129"
+### Community 131 - "Community 131"
+Cohesion: 0.15
+Nodes (5): V1 Entry Model — GBM + RF Ensemble with binary win/loss labels.  This is the ORI, V1 predict: GBM + RF ensemble for win probability, regressor for         expecte, V1 multi-strategy ML model (GBM + RF ensemble).      Learns:     - WHEN to trade, Train v1 ensemble on backtest results.          Binary label: pnl > 0 → 1 (win),, TradeLearnerV1
+
+### Community 132 - "Community 132"
 Cohesion: 0.15
 Nodes (12): MarketRegime, Classifies current market conditions., Classifies current market conditions., Classifies current market conditions., Classifies current market conditions., Classifies current market conditions., Classifies current market conditions., Fyers API rate limiting configuration. (+4 more)
 
-### Community 130 - "Community 130"
+### Community 133 - "Community 133"
 Cohesion: 0.11
 Nodes (15): Account Status (Real-Time), Contacts & Resources, 🔴 Critical (Immediate Action), Daily Checklist (Execute at 10:00 AM IST), Daily Checklist (Execute Before 10:30 AM IST), Escalation Matrix, Monthly Summary (Refresh End of Month), Monthly Thresholds (HARD STOPS) (+7 more)
 
-### Community 131 - "Community 131"
+### Community 134 - "Community 134"
 Cohesion: 0.11
 Nodes (17): Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo, Multi-layer risk gate for weekly entries.          Returns None if entry is allo (+9 more)
 
-### Community 132 - "Community 132"
+### Community 135 - "Community 135"
 Cohesion: 0.12
 Nodes (8): Dataset must end within the last 30 days., Dataset must end within the last 30 days., Basic shape, index type, and date-range checks., Basic shape, index type, and date-range checks., At least 10 years of trading days (≈2500 rows)., At least 80 feature columns., At least 80 feature columns., TestFeatureStoreShape
 
-### Community 133 - "Community 133"
-Cohesion: 0.16
-Nodes (4): V1 Entry Model — GBM + RF Ensemble with binary win/loss labels.  This is the ORI, V1 predict: GBM + RF ensemble for win probability, regressor for         expecte, V1 multi-strategy ML model (GBM + RF ensemble).      Learns:     - WHEN to trade, TradeLearnerV1
-
-### Community 134 - "Community 134"
+### Community 136 - "Community 136"
 Cohesion: 0.12
 Nodes (15): Compute a bounded multiplicative prior from historical regime stats.          Th, Compute a bounded multiplicative prior from historical regime stats.          Th, Compute a bounded multiplicative prior from historical regime stats.          Th, Build a regime x strategy performance matrix for ranking priors.          The ma, Build a regime x strategy performance matrix for ranking priors.          The ma, Compute a bounded multiplicative prior from historical regime stats.          Th, Build a regime x strategy performance matrix for ranking priors.          The ma, Build a regime x strategy performance matrix for ranking priors.          The ma (+7 more)
 
-### Community 135 - "Community 135"
+### Community 137 - "Community 137"
 Cohesion: 0.4
 Nodes (15): append_records(), build_parser(), cmd_add(), cmd_decay(), cmd_mark(), cmd_render(), iso(), load_records() (+7 more)
 
-### Community 136 - "Community 136"
+### Community 138 - "Community 138"
 Cohesion: 0.12
 Nodes (14): Backtest vs Live Comparison, Decisions & Next Steps, Fyers API Performance, Key Observations, Market Conditions & VIX Regime, Missed Signals & Deviations, Month: [MMM YYYY], Paper Trading Monthly Analysis Template (+6 more)
 
-### Community 137 - "Community 137"
+### Community 139 - "Community 139"
 Cohesion: 0.12
 Nodes (15): Analysis & Results, Architecture, Baseline & Experiments, code:block1 (docs/), Contributing, Document Structure, Documentation Index, External Resources (+7 more)
 
-### Community 138 - "Community 138"
+### Community 140 - "Community 140"
 Cohesion: 0.12
 Nodes (16): ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps., ML-driven monthly entry with position sizing and risk caps. (+8 more)
 
-### Community 139 - "Community 139"
+### Community 141 - "Community 141"
 Cohesion: 0.12
 Nodes (16): VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly., VIX-adaptive exits + trailing stops + ML override for monthly. (+8 more)
-
-### Community 140 - "Community 140"
-Cohesion: 0.12
-Nodes (13): ConditionalGapModel, Computes Expected Tail Loss conditioned on current market state.     Not a raw h, Computes Expected Tail Loss conditioned on current market state.     Not a raw h, Computes Expected Tail Loss conditioned on current market state.     Not a raw h, Fit conditional gap distributions from historical OHLCV data., Fit conditional gap distributions from historical OHLCV data., Fit conditional gap distributions from historical OHLCV data., ETL = P(gap breaches short strike) * E[loss | breach]          For a put credit (+5 more)
-
-### Community 141 - "Community 141"
-Cohesion: 0.17
-Nodes (15): _generate_exit_snapshots(), permutation_test_exit_model(), permutation_test_weekly_entry(), Model Validation Suite — Walk-Forward Validation + Permutation Tests  Ensures ML, Score an entry model on a set of test trades., Score an entry model on a set of test trades., Walk-forward validation for the exit model (ExitStrategyEngine).      Uses time-, Permutation test for exit model. Shuffles exit labels and compares. (+7 more)
 
 ### Community 142 - "Community 142"
 Cohesion: 0.17
@@ -1230,76 +1216,76 @@ Cohesion: 0.12
 Nodes (16): _purge_short_parquets(), Delete per-ticker parquet caches whose earliest data row starts after     requir, Delete per-ticker parquet caches whose earliest data row starts after     requir, Delete per-ticker parquet caches whose earliest data row starts after     requir, Delete per-ticker parquet caches whose earliest data row starts after     requir, Delete per-ticker parquet caches whose earliest data row starts more than     7, Rebuild the market data feature store (88 columns, full date range) WITHOUT, Rebuild the market data feature store (88 columns, full date range) WITHOUT (+8 more)
 
 ### Community 146 - "Community 146"
-Cohesion: 0.17
-Nodes (8): Check if cached data needs refresh, Get cached data if fresh, Call API method with rate limit checking, Map method name to cache key, Get cached spot price if fresh, fetch if needed, Get cached VIX if fresh, fetch if needed, Get cached option chain if fresh, fetch if needed, Get cached account info if fresh, fetch if needed
-
-### Community 147 - "Community 147"
 Cohesion: 0.12
 Nodes (16): _generate_sim_trades(), Rolling-window simulated trades for ML training; filtered to strategies enabled, Rolling-window simulated trades for ML training; filtered to strategies enabled, v4: Ablation study — measure contribution of each strategy and ML exit., v4: Ablation study — measure contribution of each strategy and ML exit., Rolling-window simulated trades for ML training; filtered to strategies enabled, Rolling-window simulated trades for ML training; filtered to strategies enabled, Rolling-window simulated trades for ML training; filtered to strategies enabled (+8 more)
 
-### Community 148 - "Community 148"
+### Community 147 - "Community 147"
 Cohesion: 0.12
 Nodes (16): _print_strategy_bs_trade(), _print_strategy_trade(), Generate a strategy-specific trade using live OI data + BS pricing., Generate a strategy-specific trade using live OI data + BS pricing., Generate a strategy-specific trade using live OI data + BS pricing., Generate a strategy-specific trade using live OI data + BS pricing., Generate a strategy-specific trade using live OI data + BS pricing., Generate a strategy-specific trade using live OI data + BS pricing. (+8 more)
 
-### Community 149 - "Community 149"
+### Community 148 - "Community 148"
 Cohesion: 0.26
 Nodes (7): News sentiment scorer for market analysis. Uses keyword-based NLP to score finan, Score multiple headlines and aggregate., Score a single news headline., score_headline(), score_headlines(), SentimentScore, TestSentimentScoring
 
-### Community 150 - "Community 150"
-Cohesion: 0.17
-Nodes (14): AFTERNOON: MONITORING & EXIT (3:00–4:30 PM IST), BEST PRACTICES, Closing the trade, code:bash (# Check yesterday's status), code:bash (# Day 1 (Sept 1)), Exit rules (check each open trade), HANDLING MISSED LOGGING (CATCH-UP), MID-SESSION: SIGNAL, ENTRY, LOG (11:00–13:00 IST) (+6 more)
-
-### Community 151 - "Community 151"
+### Community 149 - "Community 149"
 Cohesion: 0.19
 Nodes (15): Number of trading sessions after entry_date up to and including current_date., Number of trading sessions after entry_date up to and including current_date., trading_sessions_held(), _ic_trade(), Weekly hold-time limits are TRADING sessions, not calendar days.  config.engine_, Thursday IC with credit 105 and current premiums 38 -> profitable, no stop., test_engine_ic_max_hold_uses_trading_sessions(), test_helper_accepts_tz_aware_index() (+7 more)
 
-### Community 152 - "Community 152"
+### Community 150 - "Community 150"
 Cohesion: 0.12
 Nodes (15): Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri, Return a formatted per-gate funnel summary for monthly trade entry.          Pri (+7 more)
 
-### Community 153 - "Community 153"
+### Community 151 - "Community 151"
 Cohesion: 0.29
 Nodes (10): _DummyStrategy, _priced(), _put_spread(), Tests for the monthly expiry selector hard filters and no-trade handling., selector_patches(), test_high_loss_credit_candidate_is_rejected(), test_legacy_or_unfrozen_strategy_names_are_ignored(), test_negative_ev_candidate_is_rejected() (+2 more)
 
-### Community 154 - "Community 154"
+### Community 152 - "Community 152"
 Cohesion: 0.33
 Nodes (15): _ic_legs(), _market_frame(), _pcs_legs(), run_monitor must evaluate each active trade with its own exit strategy and with, Two monthly trades of different types: each must be routed to its own sub-strate, Run run_monitor on the given trades; return the evaluate_exit call kwargs in ord, _run(), test_each_trade_gets_its_own_strategy_instance_by_type() (+7 more)
 
-### Community 155 - "Community 155"
+### Community 153 - "Community 153"
+Cohesion: 0.12
+Nodes (11): parse_leg(), Compute current P&L using Black-Scholes., Compute current P&L using Black-Scholes., A single leg of an options trade., Analyze any multi-leg trade and recommend action.          Args:             liv, Analyze any multi-leg trade and recommend action.          Args:             liv, Analyze any multi-leg trade and recommend action.          Args:             liv, Analyze any multi-leg trade and recommend action.          Args:             liv (+3 more)
+
+### Community 154 - "Community 154"
 Cohesion: 0.12
 Nodes (15): Agent Workflow, CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:bash (python main.py --mode evolve              # Grid-search para), code:block2 (tests/conftest.py          — Shared fixtures: synthetic 200-), code:bash (# Training (evolve):), Data Flow (5 Steps), Git Commit + Push Policy (mandatory) (+7 more)
 
-### Community 156 - "Community 156"
-Cohesion: 0.17
-Nodes (8): compute_geopolitical_risk_index(), compute_price_action_sentiment(), Derive a sentiment proxy from price action when news data isn't available.     U, Compute a geopolitical risk proxy from market data.     Spikes in crude + gold +, Tests for data modules: expiry_calendar.py, news_sentiment.py, config.py  Covers, TestBacktestConfig, TestGeopoliticalRiskIndex, TestPriceActionSentiment
+### Community 155 - "Community 155"
+Cohesion: 0.25
+Nodes (6): _build_official_reconstructed_frame(), _cache_path_for_record(), _find_profile(), _load_or_fetch_zip(), main(), CheckpointStore
 
-### Community 157 - "Community 157"
+### Community 156 - "Community 156"
 Cohesion: 0.13
 Nodes (15): AFTERNOON: MONITORING & EXIT DECISIONS (3:00–4:30 PM IST), code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), code:json ({), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour), code:json ({"success":true,"trade_id":"PT-001","message":"Trade PT-001 ), code:bash (tail -2 paper_trading/tracker/TRADES.csv), If `action == "BOOK_PROFIT"` OR `current_pnl_pct >= 50`:, If `action == "EXIT_NOW"` OR `risk_score >= 0.70`: (+7 more)
+
+### Community 157 - "Community 157"
+Cohesion: 0.16
+Nodes (15): code:bash (python main.py --mode signal-combined --capital 2500000 --lo), code:block3 (P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,), code:bash (tail -2 paper_trading/tracker/TRADES.csv), code:block5 (2026-10-19,Monday,<equity>,<cum_pnl>,0,<VIX>,<regime>,1,1,0,), code:block6 (2026-10-19,Monday,2500000,0,0,<VIX>,<regime>,0,0,0,0,0,,,"SK), MID-SESSION: SIGNAL, ENTRY, LOG (11:00–13:00 IST), MORNING: PRE-MARKET CHECKLIST (10:00–10:55 AM), Step 1: Run the signal (+7 more)
 
 ### Community 158 - "Community 158"
 Cohesion: 0.19
 Nodes (13): Return WEEKLY_IC or WEEKLY_PCS for the given VIX and 5-day Nifty return.      IC, select_weekly_strategy_name(), _old_engine_rule(), Unified weekly strategy-selection rule: backtest engines and live CLI must agree, Verbatim copy of the pre-unification inline rule, used as an oracle., _signal_combined_source(), spy(), test_cli_calls_shared_rule() (+5 more)
 
 ### Community 159 - "Community 159"
-Cohesion: 0.21
-Nodes (13): dataset(), Feature Store Integration Tests ================================ Validates that, Each raw price column must have median within the expected economic range., Each raw price column must have median within the expected economic range., Load the full combined dataset from parquet cache (no network)., Load the full combined dataset from parquet cache (no network)., test_cache_file_close_range(), test_has_variance() (+5 more)
-
-### Community 160 - "Community 160"
 Cohesion: 0.19
 Nodes (14): Agent Memory, Graphify, May 12, 2026, May 13, 2026, May 17, 2026, May 18, 2026, Memory Context, [nifty-options-backtester] recent context, 2026-05-12 5:52pm UTC (+6 more)
 
-### Community 161 - "Community 161"
+### Community 160 - "Community 160"
 Cohesion: 0.16
 Nodes (15): Engine Stats, Engine Stats, Engine Stats, Key Metrics, Key Metrics, Key Metrics, Run #18 — [COMBINED], Run #3 — [COMBINED] (+7 more)
 
-### Community 162 - "Community 162"
+### Community 161 - "Community 161"
 Cohesion: 0.13
 Nodes (14): Backtest Improvement Log, Cumulative Trajectory, Decision Lock — Weekly Exit Redesign (2026-04-17), Diagnosis, Engine Stats, Intermediate Run — Iron fly removed, diagonal still active, Key Metrics, Pending Investigations / Future Runs (+6 more)
 
-### Community 163 - "Community 163"
+### Community 162 - "Community 162"
 Cohesion: 0.14
 Nodes (14): Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m, Run full production model validation: walk-forward + permutation tests for ALL m (+6 more)
+
+### Community 163 - "Community 163"
+Cohesion: 0.16
+Nodes (14): _append_changelog_entry(), _build_strategy_breakdown(), _build_weekly_trade_stats(), _get_git_hash(), log_backtest_run(), Return short git commit hash, or 'unknown' if not in a repo., Aggregate per-strategy stats from trade list., Append a structured entry to BACKTEST_CHANGELOG.md and backtest_runs.jsonl. (+6 more)
 
 ### Community 164 - "Community 164"
 Cohesion: 0.16
@@ -1311,11 +1297,11 @@ Nodes (14): _append_changelog_entry(), _build_strategy_breakdown(), _build_weekl
 
 ### Community 166 - "Community 166"
 Cohesion: 0.14
-Nodes (13): Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep. (+5 more)
+Nodes (14): code:bash (curl "http://localhost:8000/status?journal_id=phase1-sep-202), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:bash (tail -2 paper_trading/tracker/DAILY_LOG.csv), code:block20 (=== END-OF-DAY CHECKLIST ===), code:block7 (☐ No open positions (or the open one is logged)), END-OF-DAY: LOGGING & WRAP-UP (4:30 PM IST), Step 1: Final account snapshot, Step 1: Final Account Snapshot (2 min) (+6 more)
 
 ### Community 167 - "Community 167"
-Cohesion: 0.18
-Nodes (9): cache_age_days(), load(), Regime-Aware Entry Model: trains separate TradeLearner per market regime.  Inste, Persist fitted sklearn models and metadata to disk (no DataFrames)., Wraps multiple TradeLearners — one per regime.      Replaces the single global T, Persist the fitted exit classifier to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames). (+1 more)
+Cohesion: 0.14
+Nodes (13): Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep., Return the Gate 8 quality threshold from the trained model's OOF sweep. (+5 more)
 
 ### Community 168 - "Community 168"
 Cohesion: 0.15
@@ -1350,20 +1336,20 @@ Cohesion: 0.15
 Nodes (13): code:python (# Quick refresh of open trades), code:python (# Monitor every 5 minutes (if trades open)), code:python (# Final state capture), code:block13 (Morning Setup:       4 calls), code:python (# 1-minute setup at market open), code:python (# Check every 60 seconds (11:30-12:30 PM = 60 checks)), Daily Summary (Single Trader), Phase 1: Entry Signal Generation (10 AM IST) (+5 more)
 
 ### Community 176 - "Community 176"
-Cohesion: 0.15
-Nodes (12): 1️⃣ Initial Setup: Getting Started, 5-Minute Overview, code:block1 (┌─────────────────────────────────────┐), code:python (from config import FyersAPIConfig), 📊 Configuration Reference, 📚 Fyers API Documentation Index, Prerequisites Checklist, 🎯 Quick Navigation (+4 more)
-
-### Community 177 - "Community 177"
 Cohesion: 0.18
 Nodes (12): Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes., Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes., Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes., Run the informational baseline comparison without ever aborting evolve.      The, Run the informational baseline comparison without ever aborting evolve.      The, Run the informational baseline comparison without ever aborting evolve.      The, Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes., Evolve strategy parameters: exhaustive search over 1080 combos × 4 regimes. (+4 more)
 
-### Community 178 - "Community 178"
+### Community 177 - "Community 177"
 Cohesion: 0.2
 Nodes (6): Queue API requests during rate limit periods, Check if queue is at capacity, Get next request from queue, Remove requests older than max age, Process queued requests if rate limit allows, RequestQueue
 
-### Community 179 - "Community 179"
+### Community 178 - "Community 178"
 Cohesion: 0.36
 Nodes (10): Tests for utils/env_loader.load_env.  Uses tmp_path files with FAKE values only., Historical .env behaviour: override=True, so the file beats the process env., .env.local uses override=False: it fills gaps, it does not replace the process e, _reset(), test_dotenv_and_local_both_loaded(), test_dotenv_overrides_process_env_as_before(), test_dotenv_wins_over_local_when_both_define_key(), test_local_only_fills_missing_not_process_env() (+2 more)
+
+### Community 179 - "Community 179"
+Cohesion: 0.17
+Nodes (11): CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:bash (python main.py --mode evolve              # Grid-search para), code:block2 (tests/conftest.py          — Shared fixtures: synthetic 200-), Data Flow (5 Steps), Key Constants, Key Gotchas, Layer Map (+3 more)
 
 ### Community 180 - "Community 180"
 Cohesion: 0.17
@@ -1375,55 +1361,55 @@ Nodes (11): CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:ba
 
 ### Community 182 - "Community 182"
 Cohesion: 0.17
-Nodes (11): CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:bash (python main.py --mode evolve              # Grid-search para), code:block2 (tests/conftest.py          — Shared fixtures: synthetic 200-), Data Flow (5 Steps), Key Constants, Key Gotchas, Layer Map (+3 more)
+Nodes (9): Capital Allocation, Capital Allocation Breakdown, Files Checklist, Key Metrics & Targets, Last Notes, Monthly Review Cadence, Paper Trading Journal & Tracking System, Phase 1 Success Criteria (6 months) (+1 more)
 
 ### Community 183 - "Community 183"
 Cohesion: 0.17
-Nodes (9): Capital Allocation, Capital Allocation Breakdown, Files Checklist, Key Metrics & Targets, Last Notes, Monthly Review Cadence, Paper Trading Journal & Tracking System, Phase 1 Success Criteria (6 months) (+1 more)
+Nodes (11): As-of replay: Phase-1 weekly track, 2026-05-15 to 2026-10-16, Consistency checks, Cross-check against CombinedBacktestEngine (weekly track), Files, Headline numbers, Honesty notes, Method (what the replay does), Per-month table (+3 more)
 
 ### Community 184 - "Community 184"
 Cohesion: 0.17
-Nodes (11): As-of replay: Phase-1 weekly track, 2026-05-15 to 2026-10-16, Consistency checks, Cross-check against CombinedBacktestEngine (weekly track), Files, Headline numbers, Honesty notes, Method (what the replay does), Per-month table (+3 more)
+Nodes (9): 1. Verdict, 2. Inputs (data cut-off 2026-09-04, as printed), 3. Gate-by-gate, 4. Why SKIP (weekly), 5. Data-integrity blocker (must fix before any monthly decision), 6. Metadata, 7. Journal status, 8. Next steps (+1 more)
 
 ### Community 185 - "Community 185"
 Cohesion: 0.17
-Nodes (9): 1. Verdict, 2. Inputs (data cut-off 2026-09-04, as printed), 3. Gate-by-gate, 4. Why SKIP (weekly), 5. Data-integrity blocker (must fix before any monthly decision), 6. Metadata, 7. Journal status, 8. Next steps (+1 more)
+Nodes (10): 1. No position sizer (Runs #1-#5), 2. Kelly Fraction as absolute lot count (Run #6, then reverted), 3. Kelly as multiplicative scale factor (Run #6 fix attempt), 4. Simplified sizer with confidence tier (Run #7 — CURRENT DEFAULT), Approaches Tried & Retired, code:block1 (final_lots = base_lots × regime_scale × dd_scale × confidenc), Configuration That Should NOT Be Changed Without Evidence, Current Default (as of Run #7, 2026-04-08) (+2 more)
 
 ### Community 186 - "Community 186"
 Cohesion: 0.17
-Nodes (10): 1. No position sizer (Runs #1-#5), 2. Kelly Fraction as absolute lot count (Run #6, then reverted), 3. Kelly as multiplicative scale factor (Run #6 fix attempt), 4. Simplified sizer with confidence tier (Run #7 — CURRENT DEFAULT), Approaches Tried & Retired, code:block1 (final_lots = base_lots × regime_scale × dd_scale × confidenc), Configuration That Should NOT Be Changed Without Evidence, Current Default (as of Run #7, 2026-04-08) (+2 more)
+Nodes (9): No cross-asset column should contain Nifty price data., No cross-asset column should contain Nifty price data., India VIX median must be in VIX range, not Nifty price range., India VIX median must be in VIX range, not Nifty price range., USD/INR must be in 40–120 range, not thousands., USD/INR must be in 40–120 range, not thousands., All cross-asset columns must have mutually distinct medians., All cross-asset columns must have mutually distinct medians. (+1 more)
 
 ### Community 187 - "Community 187"
 Cohesion: 0.17
-Nodes (9): No cross-asset column should contain Nifty price data., No cross-asset column should contain Nifty price data., India VIX median must be in VIX range, not Nifty price range., India VIX median must be in VIX range, not Nifty price range., USD/INR must be in 40–120 range, not thousands., USD/INR must be in 40–120 range, not thousands., All cross-asset columns must have mutually distinct medians., All cross-asset columns must have mutually distinct medians. (+1 more)
+Nodes (11): code:bash (# 1. Copy credentials template), code:block2 (✅ ALL END-TO-END TESTS PASSED!), code:bash (# Start live API server), 🎯 Next Steps, Quick Start: Fyers API Testing (3 Minutes), 🔐 Security, ✅ Success Indicators, 🚀 TL;DR - 4 Commands to Test (+3 more)
 
 ### Community 188 - "Community 188"
 Cohesion: 0.17
-Nodes (11): code:bash (# 1. Copy credentials template), code:block2 (✅ ALL END-TO-END TESTS PASSED!), code:bash (# Start live API server), 🎯 Next Steps, Quick Start: Fyers API Testing (3 Minutes), 🔐 Security, ✅ Success Indicators, 🚀 TL;DR - 4 Commands to Test (+3 more)
+Nodes (12): code:bash (cp .env.local.template .env.local), code:bash (# Follow the steps in Scenario 2 of:), code:python (from data.live_data_fetcher import LiveDataFetcher), code:bash (# Check rate limit stats), code:bash (# Client-side retry example in:), Issue: "401 Unauthorized" or "Invalid token", Issue: "Market data not available", Issue: "No credentials found" (+4 more)
 
 ### Community 189 - "Community 189"
 Cohesion: 0.17
-Nodes (12): code:bash (cp .env.local.template .env.local), code:bash (# Follow the steps in Scenario 2 of:), code:python (from data.live_data_fetcher import LiveDataFetcher), code:bash (# Check rate limit stats), code:bash (# Client-side retry example in:), Issue: "401 Unauthorized" or "Invalid token", Issue: "Market data not available", Issue: "No credentials found" (+4 more)
+Nodes (11): code:python (from config import FyersAPIConfig), code:bash (# Check if server is running), 📊 Configuration Reference, Emergency Commands, 📚 Fyers API Documentation Index, 🎯 Quick Navigation, 📞 Quick Reference, Rate Limit Configuration (`config.FyersAPIConfig`) (+3 more)
 
 ### Community 190 - "Community 190"
 Cohesion: 0.18
 Nodes (12): Engine Stats, Engine Stats, Key Metrics, Key Metrics, Run #57 — exp1_75w_25m — [COMBINED], Run #5 — [COMBINED], Weekly Top Losers, Weekly Top Losers (+4 more)
 
 ### Community 191 - "Community 191"
-Cohesion: 0.2
-Nodes (6): Compare evolved strategies against baseline (hand-tuned) configs., Compare evolved strategies against baseline (hand-tuned) configs., Simulate calendar or diagonal spread with rolling capability., Simulate calendar or diagonal spread with rolling capability., Evolve calendar/diagonal spread parameters per regime., Evolve calendar/diagonal spread parameters per regime.
-
-### Community 192 - "Community 192"
 Cohesion: 0.24
 Nodes (6): Generates trade signals based on multi-factor analysis.      Factors analyzed:, Analyze historical performance characteristics per VIX regime., Analyze historical data to learn profitable patterns., How likely is the market to revert after big moves in this regime., Calculate VIX mean reversion speed., SignalGenerator
 
-### Community 193 - "Community 193"
+### Community 192 - "Community 192"
 Cohesion: 0.47
 Nodes (9): _regime_from_vix(), main(), _per_strategy_metrics(), _regime_from_vix(), _regime_matrix(), _render_markdown(), run_variant(), _trade_rows() (+1 more)
 
-### Community 194 - "Community 194"
+### Community 193 - "Community 193"
 Cohesion: 0.22
 Nodes (7): API Endpoint Tests — Verify all 13 endpoints work correctly Tests cover: journal, Test trade monitoring endpoint (1 endpoint), GET /monitor — Get exit recommendations, Test logging endpoint (1 endpoint), POST /journal/daily-log — Log daily account snapshot, TestLoggingEndpoints, TestMonitoringEndpoints
+
+### Community 194 - "Community 194"
+Cohesion: 0.22
+Nodes (3): Tests for data modules: expiry_calendar.py, news_sentiment.py, config.py  Covers, TestBacktestConfig, TestMarketDataCachePreference
 
 ### Community 196 - "Community 196"
 Cohesion: 0.45
@@ -1435,483 +1421,479 @@ Nodes (11): CLAUDE.md — Nifty Options Backtester, CLI Quick Reference, code:ba
 
 ### Community 198 - "Community 198"
 Cohesion: 0.18
-Nodes (11): code:bash (curl "http://localhost:8000/status?journal_id=phase1-sep-202), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:bash (tail -2 paper_trading/tracker/DAILY_LOG.csv), code:block20 (=== END-OF-DAY CHECKLIST ===), END-OF-DAY: LOGGING & WRAP-UP (4:30 PM IST), Step 1: Final account snapshot, Step 1: Final Account Snapshot (2 min), Step 2: Log Daily Snapshot (2 min) (+3 more)
+Nodes (11): 10:00 AM IST, 10:00 AM IST — Pre-flight, 11:00 AM–1:00 PM IST (Entry Window), 11:00 AM–1:00 PM IST — Signal and entry window, 3:00 PM IST, 3:00 PM IST — Monitoring, 4:00 PM IST (Market Close), 4:30 PM IST (+3 more)
 
 ### Community 199 - "Community 199"
 Cohesion: 0.18
-Nodes (11): 10:00 AM IST, 10:00 AM IST — Pre-flight, 11:00 AM–1:00 PM IST (Entry Window), 11:00 AM–1:00 PM IST — Signal and entry window, 3:00 PM IST, 3:00 PM IST — Monitoring, 4:00 PM IST (Market Close), 4:30 PM IST (+3 more)
+Nodes (5): Composite scores built from cross-asset data must be non-trivial., Composite scores built from cross-asset data must be non-trivial., India/US 20d correlation must vary; constant 1.0 = cross-contamination., India/US 20d correlation must vary; constant 1.0 = cross-contamination., TestCrossAssetComposites
 
 ### Community 200 - "Community 200"
 Cohesion: 0.18
-Nodes (5): Composite scores built from cross-asset data must be non-trivial., Composite scores built from cross-asset data must be non-trivial., India/US 20d correlation must vary; constant 1.0 = cross-contamination., India/US 20d correlation must vary; constant 1.0 = cross-contamination., TestCrossAssetComposites
+Nodes (11): Alert Thresholds, Cache TTLs, code:python (calls_per_second_limit = 10      # Hard limit from Fyers), code:python (cache_ttl_spot_price_seconds = 30         # Spot updates eve), code:python (daily_usage_alert_pct = 80      # Alert at 80% daily usage), code:python (retry_max_attempts = 3          # Max 3 retries on rate limi), code:python (use_mock_on_daily_limit = True      # Use mock data if daily), 📋 Configuration Reference (+3 more)
 
 ### Community 201 - "Community 201"
 Cohesion: 0.18
-Nodes (11): Alert Thresholds, Cache TTLs, code:python (calls_per_second_limit = 10      # Hard limit from Fyers), code:python (cache_ttl_spot_price_seconds = 30         # Spot updates eve), code:python (daily_usage_alert_pct = 80      # Alert at 80% daily usage), code:python (retry_max_attempts = 3          # Max 3 retries on rate limi), code:python (use_mock_on_daily_limit = True      # Use mock data if daily), 📋 Configuration Reference (+3 more)
+Nodes (11): code:bash (# Follow Scenario 2 above to refresh token), code:bash (# Check if token exists), code:bash (# 1. Go to https://developers.fyers.in/), code:bash (# 1. Check internet connection), code:bash (# Test only during market hours:), ⚠️ Common Issues & Solutions, Issue: "401 Unauthorized", Issue: "Invalid Client ID or API Secret" (+3 more)
 
 ### Community 202 - "Community 202"
 Cohesion: 0.18
-Nodes (10): code:block1 (┌─ Initial Setup (Once) ────────────────────────────────────), code:bash (# Check token status), code:bash (# 1. Stop API server), Fyers Credential & Token Refresh Guide, 📋 Overview: Token Lifecycle, Quick Recovery, 📞 Quick Reference Commands, 📚 Related Documentation (+2 more)
+Nodes (11): code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (# Kill existing server), 🔑 Scenario 2: Manual Token Refresh (If Needed), Step 1: Check Current Token Status, Step 2: Get New Authorization URL (+3 more)
 
 ### Community 203 - "Community 203"
 Cohesion: 0.18
-Nodes (11): code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (source .venv/bin/activate && python3 << 'EOF'), code:bash (# Kill existing server), 🔑 Scenario 2: Manual Token Refresh (If Needed), Step 1: Check Current Token Status, Step 2: Get New Authorization URL (+3 more)
+Nodes (10): code:block1 (┌─ Initial Setup (Once) ────────────────────────────────────), code:bash (# Check token status), code:bash (# 1. Stop API server), Fyers Credential & Token Refresh Guide, 📋 Overview: Token Lifecycle, Quick Recovery, 📞 Quick Reference Commands, 📚 Related Documentation (+2 more)
 
 ### Community 204 - "Community 204"
 Cohesion: 0.18
-Nodes (11): code:bash (# Follow Scenario 2 above to refresh token), code:bash (# Check if token exists), code:bash (# 1. Go to https://developers.fyers.in/), code:bash (# 1. Check internet connection), code:bash (# Test only during market hours:), ⚠️ Common Issues & Solutions, Issue: "401 Unauthorized", Issue: "Invalid Client ID or API Secret" (+3 more)
+Nodes (11): code:block18 (✅ Fetch market status (1 call)), code:block19 (✅ Refresh every 60 seconds:), code:block20 (✅ Refresh every 5 minutes (if trades open):), code:block21 (✅ Fetch account final state (1 call)), code:block22 (Morning Setup:    4 calls), 📋 Daily Operating Plan, Daily Total, End of Day (3:30 PM - 4:00 PM) (+3 more)
 
 ### Community 205 - "Community 205"
 Cohesion: 0.18
-Nodes (11): code:block18 (✅ Fetch market status (1 call)), code:block19 (✅ Refresh every 60 seconds:), code:block20 (✅ Refresh every 5 minutes (if trades open):), code:block21 (✅ Fetch account final state (1 call)), code:block22 (Morning Setup:    4 calls), 📋 Daily Operating Plan, Daily Total, End of Day (3:30 PM - 4:00 PM) (+3 more)
+Nodes (11): Engine Stats, Engine Stats, Key Metrics, Key Metrics, Run #58 — v9-etl-tuned-cached-models — [COMBINED], Weekly Top Losers, Weekly Top Losers, Weekly Top Winners (+3 more)
 
 ### Community 206 - "Community 206"
 Cohesion: 0.18
-Nodes (11): Engine Stats, Engine Stats, Key Metrics, Key Metrics, Run #58 — v9-etl-tuned-cached-models — [COMBINED], Weekly Top Losers, Weekly Top Losers, Weekly Top Winners (+3 more)
-
-### Community 207 - "Community 207"
-Cohesion: 0.18
 Nodes (11): Engine Stats, Engine Stats, Key Metrics, Key Metrics, Run #59 — v10-no-etl-gate-ruledbased — [COMBINED], Weekly Top Losers, Weekly Top Losers, Weekly Top Winners (+3 more)
 
-### Community 208 - "Community 208"
-Cohesion: 0.2
-Nodes (6): Run the full evolution pipeline with out-of-sample validation.          Optimiza, Run the full evolution pipeline with out-of-sample validation.          Optimiza, Save evolved strategies to disk for fast loading in signal mode., Save evolved strategies to disk for fast loading in signal mode., Generate training data using evolved strategies., Generate training data using evolved strategies.
-
-### Community 209 - "Community 209"
+### Community 207 - "Community 207"
 Cohesion: 0.2
 Nodes (6): Test journal session management (4 endpoints), POST /journals — Create a new journal session, GET /journals — List all sessions, GET /journals/{journal_id} — Get session details, PATCH /journals/{journal_id} — Update session, TestJournalEndpoints
 
-### Community 210 - "Community 210"
+### Community 208 - "Community 208"
+Cohesion: 0.27
+Nodes (6): compute_geopolitical_risk_index(), compute_price_action_sentiment(), Derive a sentiment proxy from price action when news data isn't available.     U, Compute a geopolitical risk proxy from market data.     Spikes in crude + gold +, TestGeopoliticalRiskIndex, TestPriceActionSentiment
+
+### Community 209 - "Community 209"
 Cohesion: 0.2
 Nodes (10): 10. `POST /trades/{trade_id}/close?journal_id=<id>` — Close Trade, 8. `POST /trades/open` — Record New Trade, 9. `GET /monitor?journal_id=<id>` — Exit Recommendations, code:bash (curl -X POST http://localhost:8000/trades/open \), code:json ({), code:bash (# Monitor all open trades), code:json ({), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour) (+2 more)
 
-### Community 211 - "Community 211"
+### Community 210 - "Community 210"
 Cohesion: 0.2
 Nodes (8): cdsl, fallback_third_party, fyers, nsdl_latest, nse_current, sebi_fpi_statistics, Source Inventory, third_party_moneycontrol
 
-### Community 212 - "Community 212"
+### Community 211 - "Community 211"
 Cohesion: 0.2
 Nodes (8): Coverage By Year, Data Quality Report, Duplicate Rows, Missing Dates, Missing Months, Net Mismatches, Summary, Suspicious Spikes
 
-### Community 213 - "Community 213"
+### Community 212 - "Community 212"
 Cohesion: 0.36
 Nodes (8): test_backtest_combined_uses_final_caches_only(), test_monthly_training_simulator_enters_next_bar(), test_period_metadata_rejects_future_reuse(), test_smart_engine_pending_entry_fills_next_bar(), test_walk_forward_bundle_is_strictly_oos(), test_walk_forward_cache_only_does_not_train_on_miss(), test_weekly_entry_cache_requires_matching_period_metadata(), test_weekly_training_simulator_enters_next_bar()
 
-### Community 214 - "Community 214"
-Cohesion: 0.44
-Nodes (8): build(), cache_key(), metadata_from_state(), ModelPeriodMetadata, _normalize_value(), Helpers for period-aware model caches and strict out-of-sample guards., stable_config_hash(), train_end_date()
-
-### Community 215 - "Community 215"
+### Community 213 - "Community 213"
 Cohesion: 0.2
 Nodes (10): 1️⃣ Pre-flight (5 min), 2️⃣ Account Status (1 min), 3️⃣ Get Entry Signal (1 min), 4️⃣ Decision, code:bash (curl "http://localhost:8000/status?journal_id=phase1-sep-202), code:bash (curl http://localhost:8000/signal | jq '.weekly'), code:block4 (should_enter=false?  → SKIP (wait for next signal)), code:block5 (☐ VIX regime still OK?) (+2 more)
 
-### Community 216 - "Community 216"
+### Community 214 - "Community 214"
 Cohesion: 0.2
 Nodes (10): B. Account & Portfolio (2 endpoints), code:bash (curl http://localhost:8000/status), code:json ({), code:bash (curl "http://localhost:8000/status?journal_id=test-journal-0), code:json ({), code:bash (curl "http://localhost:8000/trades?journal_id=test-journal-0), code:json ({), Test 5: Get Account Status (Global) (+2 more)
 
-### Community 217 - "Community 217"
+### Community 215 - "Community 215"
 Cohesion: 0.2
 Nodes (10): code:bash (curl -X POST http://localhost:8000/trades/open \), code:json ({), code:bash (curl "http://localhost:8000/trades?journal_id=test-journal-0), code:json ({), code:bash (curl -X POST "http://localhost:8000/trades/PT-TEST-001/close), code:json ({), D. Trade Lifecycle (3 endpoints), Test 10: List Open Trades (+2 more)
 
-### Community 218 - "Community 218"
+### Community 216 - "Community 216"
 Cohesion: 0.2
 Nodes (10): code:bash (# Edit .env.local), code:bash (# Follow Scenario 2, Steps 1-4 above with new Client ID/Secr), code:bash (# Stop all services), code:bash (# Test all endpoints), 🔐 Scenario 4: Quarterly Credential Rotation (Security Best Practice), Step 1: Generate New API Credentials, Step 2: Update .env.local, Step 3: Follow OAuth Flow for New Token (+2 more)
 
-### Community 219 - "Community 219"
+### Community 217 - "Community 217"
 Cohesion: 0.2
 Nodes (10): code:bash (cd /home/shivamguptanit/github/nifty-options-backtester), code:block3 (FYERS_CLIENT_ID=YOUR_CLIENT_ID), code:bash (# Get authorization URL), code:bash (# Run end-to-end test), code:bash (# Activate virtual environment), Step 1: Create `.env.local` File, Step 2: Get OAuth Access Token, Step 3: Verify Setup (+2 more)
 
-### Community 220 - "Community 220"
+### Community 218 - "Community 218"
 Cohesion: 0.2
 Nodes (10): `backtester/engine.py` — Multi-expiry architecture fix, Changes Made, Files Modified, Key Learnings, Result, Run #2 — Fix: Remove iron fly, restrict diagonal, fix engine flow, `strategies/expiry_selector.py` — Performance-aware scoring, `strategies/multi_strategy.py` — Strategy eligibility cleanup (+2 more)
 
-### Community 221 - "Community 221"
+### Community 219 - "Community 219"
 Cohesion: 0.39
 Nodes (5): cache_age_days(), _is_vertical_baseline(), load_from_cache(), Strategy Evolver — data-driven optimization of strategy parameters per market re, True if a baseline config carries the vertical-spread keys _simulate_param_set r
 
-### Community 222 - "Community 222"
+### Community 220 - "Community 220"
 Cohesion: 0.22
 Nodes (9): _print_exit_recommendation(), Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade., Pretty-print exit recommendation for any multi-leg trade. (+1 more)
 
-### Community 223 - "Community 223"
+### Community 221 - "Community 221"
 Cohesion: 0.22
 Nodes (8): Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only., Leakage-safe threshold sweep using out-of-fold scores only.
 
-### Community 224 - "Community 224"
-Cohesion: 0.44
-Nodes (7): analyze_verdict(), main(), print_comparison(), print_exit_distribution(), print_result(), Provide verdict on which approach is better., Print formatted backtest results.
-
-### Community 225 - "Community 225"
+### Community 222 - "Community 222"
 Cohesion: 0.25
 Nodes (5): Signal generator that classifies market regime and generates trade signals. Lear, Classify current market conditions into a regime., Generate a trade signal based on current market data., Generated trade signal with confidence and reasoning., TradeSignal
 
-### Community 227 - "Community 227"
+### Community 223 - "Community 223"
 Cohesion: 0.31
 Nodes (4): TestMarketDayGate, market_day_gate(), IST market clock helpers.  The host clock is UTC, so every market-hours or tradi, None when ``day`` is a trading day. Otherwise a human-readable reason the     ma
 
-### Community 228 - "Community 228"
+### Community 224 - "Community 224"
+Cohesion: 0.39
+Nodes (7): add_max_profit_tracking_to_engine(), add_max_profit_tracking_to_strategy(), main(), print_comparison(), Print side-by-side comparison., Dynamically add 80% max profit booking to should_exit method., Add max profit tracking to the backtest engine.
+
+### Community 226 - "Community 226"
 Cohesion: 0.22
 Nodes (9): Afternoon (During Trade), code:bash (# 1. Create journal session (first time only)), code:bash (# 4. If signal is positive, open trade), code:bash (# 5. Monitor open trades for exit signals), code:bash (# 6. If profit target hit, close trade), Market Close (4:30 PM IST), Mid-Session (11:00–13:00 IST), Morning (Before 11:00 AM IST) (+1 more)
 
-### Community 229 - "Community 229"
+### Community 227 - "Community 227"
 Cohesion: 0.22
 Nodes (9): 11. `POST /journal/daily-log` — Log Daily Snapshot, 7. `GET /signal` — Entry Signals (Weekly + Monthly), API Endpoints — Complete Reference, C. Signal & Entry Guidance, code:bash (curl http://localhost:8000/signal), code:json ({), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:json ({) (+1 more)
 
-### Community 230 - "Community 230"
-Cohesion: 0.22
-Nodes (8): 30-DAY MONTHLY REVIEW (Month-End), code:bash (# Get week summary), code:bash (# Get full session summary), Daily Operations Guide — Paper Trading Journal, Overview: Four Daily Touchpoints, Overview: Three Daily Touchpoints, TROUBLESHOOTING: COMMON ISSUES, WEEKLY SUMMARY (Every Friday 4:00 PM)
-
-### Community 231 - "Community 231"
-Cohesion: 0.22
-Nodes (9): code:json ({"success":true,"trade_id":"PT-001","message":"Trade PT-001 ), code:bash (tail -2 paper_trading/tracker/TRADES.csv), code:bash (curl http://localhost:8000/signal | jq '.weekly'), code:bash (curl -X POST http://localhost:8000/trades/open \), MID-SESSION: ENTRY DECISION & EXECUTION (11:30 AM–1:00 PM IST), Step 1: Re-Verify Entry Signal (1 min), Step 2: Place Order via Fyers Broker (3–5 min), Step 3: Log Trade to API (1 min) (+1 more)
-
-### Community 232 - "Community 232"
+### Community 228 - "Community 228"
 Cohesion: 0.22
 Nodes (9): code:bash (# Health check), code:bash (# Log new trade), code:bash (# Exit recommendation), code:bash (# Status), End-of-Day (4:30 PM), Entry (11:30–1:00 PM), Monitoring (3:00–4:30 PM, every 30 min), Pre-Market (10:00–10:55 AM) (+1 more)
 
-### Community 233 - "Community 233"
+### Community 229 - "Community 229"
+Cohesion: 0.22
+Nodes (9): code:json ({"success":true,"trade_id":"PT-001","message":"Trade PT-001 ), code:bash (tail -2 paper_trading/tracker/TRADES.csv), code:bash (curl http://localhost:8000/signal | jq '.weekly'), code:bash (curl -X POST http://localhost:8000/trades/open \), MID-SESSION: ENTRY DECISION & EXECUTION (11:30 AM–1:00 PM IST), Step 1: Re-Verify Entry Signal (1 min), Step 2: Place Order via Fyers Broker (3–5 min), Step 3: Log Trade to API (1 min) (+1 more)
+
+### Community 230 - "Community 230"
 Cohesion: 0.22
 Nodes (7): Agent Memory, Current Active Memories, graphify-output-can-drift-without-committed-hooks, nse-mcp-data-is-cross-check-only-never-for-training, pd-to-datetime-dayfirst-true-misreads-iso-dates-with-day-12, Workflow, yahoo-parquet-cache-nsebank-series-is-not-bank-nifty
 
-### Community 234 - "Community 234"
+### Community 231 - "Community 231"
 Cohesion: 0.22
 Nodes (7): code:bash (# Backup models), Executive Summary, Notes, Phase 4 Plan: Dynamic VIX-Regime Capital Allocation Experiments, Phase 4F: Key Metrics to Track, Quick Reference: Command Checklist, Timeline & Checkpoints
 
-### Community 235 - "Community 235"
+### Community 232 - "Community 232"
 Cohesion: 0.25
 Nodes (4): VIX-based strategy selection for weeklies., VIX / 5-day-return strategy selection for weeklies (shared rule)., Return a shortlist of regime-appropriate strategies. The circuit breaker, Select best strategy for current regime.          Minimal black-swan circuit bre
 
-### Community 236 - "Community 236"
+### Community 233 - "Community 233"
 Cohesion: 0.22
 Nodes (9): 1️⃣ Final Status (1 min), 2️⃣ Log Daily Snapshot (1 min), 3️⃣ Verify CSV (1 min), 4️⃣ End-of-Day Checklist, code:bash (curl "http://localhost:8000/status?journal_id=phase1-sep-202), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:bash (# Check TRADES.csv), code:block14 (☐ All positions closed (open_trades = 0)?) (+1 more)
 
-### Community 237 - "Community 237"
+### Community 234 - "Community 234"
 Cohesion: 0.22
-Nodes (9): Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided., Remove a trade, or archive+close it when realized P&L is provided. (+1 more)
+Nodes (9): code:bash (curl "http://localhost:8000/monitor?journal_id=test-journal-), code:json ({), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:json ({), E. Monitoring (1 endpoint), 📋 Endpoint Tests Breakdown, F. Logging (1 endpoint), Test 12: Monitor Open Trades (+1 more)
 
-### Community 238 - "Community 238"
+### Community 235 - "Community 235"
 Cohesion: 0.22
 Nodes (8): API Testing Guide — Verify All Endpoints Work Correctly, code:bash (# Test live data fetcher (mock mode)), 📊 Live Data Freshness Tests, 🚀 Production Deployment Checklist, 📞 Support, ✅ Test Checklist, Test: Data Refresh Strategy, 🔍 Troubleshooting
 
-### Community 239 - "Community 239"
-Cohesion: 0.22
-Nodes (9): C. Signals & Entry (1 endpoint), code:bash (curl http://localhost:8000/signal | jq '.'), code:json ({), code:bash (curl -X POST http://localhost:8000/journal/daily-log \), code:json ({), 📋 Endpoint Tests Breakdown, F. Logging (1 endpoint), Test 13: Log Daily Snapshot (+1 more)
-
-### Community 240 - "Community 240"
+### Community 236 - "Community 236"
 Cohesion: 0.22
 Nodes (9): code:python (# SPOT PRICE: Cache 30 seconds), code:python (# OPTION CHAIN: Cache 5 minutes), code:python (# HOLDINGS: Cache 1 hour), code:block7 (Spot Price:     2,880 calls), 💡 Implementation: Adaptive TTL Caching, Tier 1: Fast Data (Every 30-60 seconds), Tier 2: Slower Data (Every 5 minutes), Tier 3: Rare Data (Every 1 hour) (+1 more)
 
-### Community 241 - "Community 241"
+### Community 237 - "Community 237"
 Cohesion: 0.22
 Nodes (9): code:bash (# Check health), code:bash (source .venv/bin/activate), code:bash (nohup uvicorn api.server:app --host 0.0.0.0 --port 8000 > lo), code:bash (python main.py --mode api --port 8000), Option 1: Standalone (Development), Option 2: Background (Production), Option 3: Via Main Script, 🚀 Starting Your API Server (+1 more)
 
-### Community 242 - "Community 242"
+### Community 238 - "Community 238"
 Cohesion: 0.25
 Nodes (8): _expiry_matches(), Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target., Check if the live option chain expiry matches our target.
 
-### Community 243 - "Community 243"
-Cohesion: 0.25
-Nodes (8): _print_oi_guided_trade(), Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry.
+### Community 239 - "Community 239"
+Cohesion: 0.29
+Nodes (4): Compare evolved strategies against baseline (hand-tuned) configs., Compare evolved strategies against baseline (hand-tuned) configs., Generate training data using evolved strategies., Generate training data using evolved strategies.
 
-### Community 244 - "Community 244"
+### Community 240 - "Community 240"
 Cohesion: 0.25
 Nodes (8): _print_bs_fallback_trade(), Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable., Fallback: print BS-estimated trade when live data unavailable.
 
-### Community 245 - "Community 245"
+### Community 241 - "Community 241"
 Cohesion: 0.25
-Nodes (5): GET /trades — List trades (should be empty initially), Test account & portfolio endpoints (2 endpoints), GET /status — Get global account status, GET /status?journal_id=<id> — Get journal-scoped status, TestAccountEndpoints
+Nodes (8): _print_oi_guided_trade(), Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry., Use live OI data for strike selection, BS for pricing on target expiry.
 
-### Community 246 - "Community 246"
+### Community 242 - "Community 242"
 Cohesion: 0.25
 Nodes (5): Test trade lifecycle endpoints (3 endpoints), POST /trades/open — Record new trade, GET /trades — Verify trade was logged, POST /trades/{id}/close — Close trade, TestTradeEndpoints
 
-### Community 248 - "Community 248"
-Cohesion: 0.46
-Nodes (6): add_max_profit_tracking_to_engine(), add_max_profit_tracking_to_strategy(), main(), print_comparison(), Dynamically add 80% max profit booking to should_exit method., Add max profit tracking to the backtest engine.
+### Community 243 - "Community 243"
+Cohesion: 0.25
+Nodes (5): GET /trades — List trades (should be empty initially), Test account & portfolio endpoints (2 endpoints), GET /status — Get global account status, GET /status?journal_id=<id> — Get journal-scoped status, TestAccountEndpoints
 
-### Community 249 - "Community 249"
+### Community 245 - "Community 245"
 Cohesion: 0.32
 Nodes (6): Test with moderate stress (only 2-3 assets stressed)., Test with only one extreme factor (deep correction only)., Test with low stress (all assets normal)., test_low_stress(), test_moderate_stress(), test_single_factor_extreme()
 
-### Community 250 - "Community 250"
+### Community 246 - "Community 246"
 Cohesion: 0.25
 Nodes (6): code:block35 (api/), File Structure, Next Steps, Paper Trading REST API — Complete Usage Guide, Performance Tips, Support & Troubleshooting
 
-### Community 251 - "Community 251"
+### Community 247 - "Community 247"
 Cohesion: 0.25
 Nodes (6): Future Enhancements (Phase 2+), Overview, Paper Trading Journal REST API, Performance Characteristics, Support, Testing Checklist
 
-### Community 252 - "Community 252"
-Cohesion: 0.25
-Nodes (8): code:bash (# Cache freshness (from main checkout, no network)), code:bash (python main.py --mode signal-combined --capital 2500000 --lo), MORNING: PRE-FLIGHT (before 11:00 AM), Step 1: Calendar and models (2 min), Step 1: Run the signal, Step 1: Server Health Check (1 min), Step 2: Cache and credentials (2 min), Step 3: Account status (2 min)
-
-### Community 253 - "Community 253"
+### Community 248 - "Community 248"
 Cohesion: 0.25
 Nodes (8): DAILY_LOG.csv, File-by-File Guide, MONTHLY_ANALYSIS.md, PAPER_TRADING_JOURNAL.md, QUICK_REFERENCE.md, RESTART_2026-10-19.md, RISK_DASHBOARD.md, TRADES.csv
 
-### Community 254 - "Community 254"
+### Community 249 - "Community 249"
 Cohesion: 0.25
 Nodes (8): code:bash (# Create backup directory), code:markdown (# Baseline v10 Model Backup), code:block3, code:bash (# Commit baseline backup), Phase 4A: Baseline Model Preservation, Step 1: Backup Current Models, Step 2: Document Model Metadata, Step 3: Tag in Git
 
-### Community 255 - "Community 255"
+### Community 250 - "Community 250"
 Cohesion: 0.25
 Nodes (6): Executive Summary, Exit Priority Comparison: Findings & Recommendation, Final Verdict, Iron Condor, Put Credit Spread, Results: ZERO DIFFERENCE
 
-### Community 256 - "Community 256"
+### Community 251 - "Community 251"
+Cohesion: 0.54
+Nodes (6): build(), cache_key(), _normalize_value(), Helpers for period-aware model caches and strict out-of-sample guards., stable_config_hash(), train_end_date()
+
+### Community 252 - "Community 252"
+Cohesion: 0.25
+Nodes (5): Persist fitted sklearn models and metadata to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames)., Persist the fitted exit classifier to disk (no DataFrames).
+
+### Community 253 - "Community 253"
 Cohesion: 0.25
 Nodes (5): NaN counts must stay within rolling-window warmup bounds., NaN counts must stay within rolling-window warmup bounds., No column should be entirely NaN., No column should be entirely NaN., TestNaNBudget
 
-### Community 257 - "Community 257"
+### Community 254 - "Community 254"
 Cohesion: 0.25
 Nodes (5): FeatureExtractor (models/trade_learner.py) selects 52 features from the     comb, FeatureExtractor reads 'overnight_gap_pct'.  An older cache uses         'nifty_, FeatureExtractor (models/trade_learner.py) builds 82 features (trade=None)     f, FeatureExtractor reads 'overnight_gap_pct'.  An older cache uses         'nifty_, TestFeatureExtractorColumns
 
-### Community 258 - "Community 258"
-Cohesion: 0.25
-Nodes (7): code:bash (# Backup models), Executive Summary, Notes, Phase 4 Plan: Dynamic VIX-Regime Capital Allocation Experiments, Phase 4F: Key Metrics to Track, Quick Reference: Command Checklist, Timeline & Checkpoints
-
-### Community 259 - "Community 259"
+### Community 255 - "Community 255"
 Cohesion: 0.25
 Nodes (8): code:bash (# Create backup directory), code:markdown (# Baseline v10 Model Backup), code:block3, code:bash (# Commit baseline backup), Phase 4A: Baseline Model Preservation, Step 1: Backup Current Models, Step 2: Document Model Metadata, Step 3: Tag in Git
 
-### Community 260 - "Community 260"
+### Community 256 - "Community 256"
+Cohesion: 0.25
+Nodes (7): code:bash (# Backup models), Executive Summary, Notes, Phase 4 Plan: Dynamic VIX-Regime Capital Allocation Experiments, Phase 4F: Key Metrics to Track, Quick Reference: Command Checklist, Timeline & Checkpoints
+
+### Community 257 - "Community 257"
 Cohesion: 0.25
 Nodes (7): code:block27 (✅ Calls used today: 241 / 10,000 (2.4%)), Data Freshness Requirements, Fyers API Rate Limits & Optimization Strategy, Metrics to Track, 📊 Monitoring Dashboard, 🎯 Optimal Strategy: TTL-Based Caching + Batch Requests, Summary
 
-### Community 261 - "Community 261"
+### Community 258 - "Community 258"
 Cohesion: 0.25
 Nodes (8): Changes from Run #2, Engine Stats, Files Modified, Key Learnings, Key Metrics, New Feature Importance (CRASH regime), Run #3 — bear_call removed + 12 strategy features, Strategy Breakdown
 
-### Community 262 - "Community 262"
+### Community 259 - "Community 259"
+Cohesion: 0.29
+Nodes (4): Simulate calendar or diagonal spread with rolling capability., Simulate calendar or diagonal spread with rolling capability., Evolve calendar/diagonal spread parameters per regime., Evolve calendar/diagonal spread parameters per regime.
+
+### Community 260 - "Community 260"
 Cohesion: 0.29
 Nodes (4): Fixed training defaults for evolve / layered retraining.      These values are i, TrainingFlowConfig, Fixed training defaults for evolve / layered retraining.      These values are i, TrainingFlowConfig
 
-### Community 263 - "Community 263"
-Cohesion: 0.29
-Nodes (3): Hit NSE homepage to get session cookies., Fetch live spot/VIX from NSE allIndices (works reliably)., Fetch option chain with best available data.         target_expiry: "DD-Mon-YYYY
-
-### Community 264 - "Community 264"
-Cohesion: 0.67
-Nodes (5): _build_official_reconstructed_frame(), _cache_path_for_record(), _find_profile(), _load_or_fetch_zip(), main()
-
-### Community 265 - "Community 265"
+### Community 262 - "Community 262"
 Cohesion: 0.38
 Nodes (4): check_token_status(), Fyers Token Status Checker Quickly check if your Fyers access token is valid and, Check if the Fyers access token is valid., Check if the Fyers access token is valid.
 
-### Community 266 - "Community 266"
-Cohesion: 0.29
-Nodes (7): 1. Install Dependencies, 2. Start Server, 3. Verify Server, code:bash (# Using pip (in virtual environment)), code:bash (# Option 1: Direct Uvicorn), code:bash (# Health check), Quick Start
-
-### Community 267 - "Community 267"
-Cohesion: 0.29
-Nodes (7): 12. `POST /market/refresh` — Reload Market Data, 13. `GET /health` — Health Check, code:bash (curl -X POST http://localhost:8000/market/refresh), code:json ({), code:bash (curl http://localhost:8000/health), code:json ({), F. Market Data Management
-
-### Community 268 - "Community 268"
+### Community 263 - "Community 263"
 Cohesion: 0.29
 Nodes (7): 5. `GET /status?journal_id=<id>` — Account Snapshot, 6. `GET /trades?journal_id=<id>&status=open|closed|all` — List Trades, B. Account & Portfolio Endpoints, code:bash (# Global status (all journals)), code:json ({), code:bash (# All open trades (default)), code:json ({)
 
-### Community 269 - "Community 269"
+### Community 264 - "Community 264"
 Cohesion: 0.29
-Nodes (7): 1. Install Dependencies, 2. Start Server, 3. Verify, code:bash (# In virtual environment), code:bash (# Development (auto-reload)), code:bash (curl http://localhost:8000/health), Quick Start
+Nodes (7): 1. Install Dependencies, 2. Start Server, 3. Verify Server, code:bash (# Using pip (in virtual environment)), code:bash (# Option 1: Direct Uvicorn), code:bash (# Health check), Quick Start
 
-### Community 270 - "Community 270"
+### Community 265 - "Community 265"
+Cohesion: 0.29
+Nodes (7): 12. `POST /market/refresh` — Reload Market Data, 13. `GET /health` — Health Check, code:bash (curl -X POST http://localhost:8000/market/refresh), code:json ({), code:bash (curl http://localhost:8000/health), code:json ({), F. Market Data Management
+
+### Community 266 - "Community 266"
 Cohesion: 0.29
 Nodes (7): code:bash (nohup python -m uvicorn api.server:app --host 0.0.0.0 --port), code:dockerfile (FROM python:3.11-slim), code:bash (uvicorn api.server:app --reload --port 8000), Deployment Options, Development, Docker (future), Production (nohup, background)
 
-### Community 271 - "Community 271"
+### Community 267 - "Community 267"
+Cohesion: 0.29
+Nodes (7): 1. Install Dependencies, 2. Start Server, 3. Verify, code:bash (# In virtual environment), code:bash (# Development (auto-reload)), code:bash (curl http://localhost:8000/health), Quick Start
+
+### Community 268 - "Community 268"
 Cohesion: 0.29
 Nodes (5): Best Current Profile, CDSL ZIP Reconstruction Report, Code Summary, Conclusion, Reconstruction Profiles
 
+### Community 269 - "Community 269"
+Cohesion: 0.29
+Nodes (7): After Run #60 Results, After Run #61 Results, After Run #62 Results, code:block10 (IF Run #61 CAGR > 11.16%:), code:block11 (IF Run #62 CAGR > 11.16% AND > Run #59, #60, #61:), code:block9 (IF Run #60 CAGR > 11.16%:), Phase 4D: Decision Framework
+
+### Community 270 - "Community 270"
+Cohesion: 0.29
+Nodes (7): code:bash (# Kill a stuck backtest), code:bash (# Restore from backup), code:bash (# Run diagnostic backtest with verbose logging), If Baseline Models Corrupt, If Hardware/Runtime Issues Occur, If Results Unexpected, Phase 4G: Contingency Plans
+
+### Community 271 - "Community 271"
+Cohesion: 0.29
+Nodes (7): code:bash (# 1. Update main.py with dynamic allocation function), code:bash (# 1. Code already in place (from Run #60)), code:bash (# 1. Code already in place), Phase 4C: Experiment Launch Sequence, Run #60: VIX < 18 Allocation (Aggressive), Run #61: VIX > 22 Allocation (Defensive), Run #62: Full Dynamic Blend (All Regimes Combined)
+
 ### Community 272 - "Community 272"
 Cohesion: 0.29
-Nodes (7): code:block3 (P1-001,2026-10-19,11:42,23500PE/24600CE,14.1/14.6;13.2/13.8,), code:block7 (☐ No open positions (or the open one is logged)), MORNING: PRE-MARKET CHECKLIST (10:00–10:55 AM), Step 2: Account Status Snapshot (2 min), Step 3: Log the trade (within 5 min), Step 4: End-of-day checklist, Step 4: Prepare Entry Checklist (2 min)
+Nodes (7): Actual Exit Attribution (Put Credit Spread, 20 trades), code:block1 (Daily Check Cycle:), code:block2 (Total Exit Checks: 62 (avg 3.1 checks per trade)), code:block3 (Trade Entry: Rs.67.01 credit), Exit Logic Flow (Per Trade), Key Finding: They Work in Tandem!, Why Zero Difference? Deep Dive Analysis
 
 ### Community 273 - "Community 273"
 Cohesion: 0.29
-Nodes (7): After Run #60 Results, After Run #61 Results, After Run #62 Results, code:block10 (IF Run #61 CAGR > 11.16%:), code:block11 (IF Run #62 CAGR > 11.16% AND > Run #59, #60, #61:), code:block9 (IF Run #60 CAGR > 11.16%:), Phase 4D: Decision Framework
+Nodes (7): code:block5 (Date: 2020-01-06), code:block6 (Date: 2020-04-22), code:block7 (Date: 2020-07-03), Example 1: Small Profit Erosion, Example 2: Moderate Profit Erosion, Example 3: Significant Profit Erosion, Trade Examples: 85% Rule in Action
 
 ### Community 274 - "Community 274"
 Cohesion: 0.29
-Nodes (7): code:bash (# 1. Update main.py with dynamic allocation function), code:bash (# 1. Code already in place (from Run #60)), code:bash (# 1. Code already in place), Phase 4C: Experiment Launch Sequence, Run #60: VIX < 18 Allocation (Aggressive), Run #61: VIX > 22 Allocation (Defensive), Run #62: Full Dynamic Blend (All Regimes Combined)
+Nodes (5): Backtest Integrity Remediation, Bias Removed, Expected Metric Drift, Remaining Realism Gaps, What Changed
 
 ### Community 275 - "Community 275"
 Cohesion: 0.29
-Nodes (7): code:bash (# Kill a stuck backtest), code:bash (# Restore from backup), code:bash (# Run diagnostic backtest with verbose logging), If Baseline Models Corrupt, If Hardware/Runtime Issues Occur, If Results Unexpected, Phase 4G: Contingency Plans
+Nodes (4): Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, Strategy that owns an open weekly trade: the one it was entered with.          N, Calculate transaction costs for a trade.
 
 ### Community 276 - "Community 276"
 Cohesion: 0.29
-Nodes (7): code:block5 (Date: 2020-01-06), code:block6 (Date: 2020-04-22), code:block7 (Date: 2020-07-03), Example 1: Small Profit Erosion, Example 2: Moderate Profit Erosion, Example 3: Significant Profit Erosion, Trade Examples: 85% Rule in Action
+Nodes (7): Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, run_retrain_models()
 
 ### Community 277 - "Community 277"
 Cohesion: 0.29
-Nodes (7): Actual Exit Attribution (Put Credit Spread, 20 trades), code:block1 (Daily Check Cycle:), code:block2 (Total Exit Checks: 62 (avg 3.1 checks per trade)), code:block3 (Trade Entry: Rs.67.01 credit), Exit Logic Flow (Per Trade), Key Finding: They Work in Tandem!, Why Zero Difference? Deep Dive Analysis
+Nodes (3): Columns added in build_combined_dataset() for Phase 2b, on the real cache., After 60 rows of warmup every Phase 2b column must be >= 98% non-NaN., TestP3DerivedColumns
 
 ### Community 278 - "Community 278"
 Cohesion: 0.29
-Nodes (5): Backtest Integrity Remediation, Bias Removed, Expected Metric Drift, Remaining Realism Gaps, What Changed
+Nodes (7): code:bash (curl http://localhost:8000/health), code:json ({), code:bash (curl -X POST http://localhost:8000/market/refresh), code:json ({), G. Maintenance (2 endpoints), Test 14: Health Check, Test 15: Market Refresh
 
 ### Community 279 - "Community 279"
 Cohesion: 0.29
-Nodes (4): Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, Compute realized exit P&L.          Baseline uses the current mark-to-market. Re, Strategy that owns an open weekly trade: the one it was entered with.          N, Calculate transaction costs for a trade.
+Nodes (7): After Run #60 Results, After Run #61 Results, After Run #62 Results, code:block10 (IF Run #61 CAGR > 11.16%:), code:block11 (IF Run #62 CAGR > 11.16% AND > Run #59, #60, #61:), code:block9 (IF Run #60 CAGR > 11.16%:), Phase 4D: Decision Framework
 
 ### Community 280 - "Community 280"
 Cohesion: 0.29
-Nodes (7): Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, Retrain ML models (entry, exit, weekly-risk) on current feature data using     e, run_retrain_models()
+Nodes (7): code:bash (# 1. Update main.py with dynamic allocation function), code:bash (# 1. Code already in place (from Run #60)), code:bash (# 1. Code already in place), Phase 4C: Experiment Launch Sequence, Run #60: VIX < 18 Allocation (Aggressive), Run #61: VIX > 22 Allocation (Defensive), Run #62: Full Dynamic Blend (All Regimes Combined)
 
 ### Community 281 - "Community 281"
 Cohesion: 0.29
-Nodes (5): parse_leg(), A single leg of an options trade., Negative for sells (credit), positive for buys (debit)., Parse: "SELL 21500 PE 130 @ 361.95", TradeLeg
+Nodes (7): code:bash (# Kill a stuck backtest), code:bash (# Restore from backup), code:bash (# Run diagnostic backtest with verbose logging), If Baseline Models Corrupt, If Hardware/Runtime Issues Occur, If Results Unexpected, Phase 4G: Contingency Plans
 
 ### Community 282 - "Community 282"
 Cohesion: 0.29
-Nodes (3): Columns added in build_combined_dataset() for Phase 2b, on the real cache., After 60 rows of warmup every Phase 2b column must be >= 98% non-NaN., TestP3DerivedColumns
+Nodes (7): code:python (from fastapi import FastAPI, HTTPException), code:python (@app.get("/monitor")), code:python (import time), Example 1: Basic Signal Endpoint with Validation, Example 2: Monitor Endpoint with Option Chain Validation, Example 3: Client-Side Retry Handler, 💻 Usage Examples
 
 ### Community 283 - "Community 283"
 Cohesion: 0.29
-Nodes (7): code:bash (curl http://localhost:8000/health), code:json ({), code:bash (curl -X POST http://localhost:8000/market/refresh), code:json ({), G. Maintenance (2 endpoints), Test 14: Health Check, Test 15: Market Refresh
+Nodes (7): Automated Health Check Script, code:python (#!/usr/bin/env python3), code:bash (# Add to cron (runs daily at 8 AM)), code:bash (tail -f /tmp/fyers_health.log), 📊 Monitoring Token Health, Run Daily Health Check, View Health Log
 
 ### Community 284 - "Community 284"
 Cohesion: 0.29
-Nodes (7): After Run #60 Results, After Run #61 Results, After Run #62 Results, code:block10 (IF Run #61 CAGR > 11.16%:), code:block11 (IF Run #62 CAGR > 11.16% AND > Run #59, #60, #61:), code:block9 (IF Run #60 CAGR > 11.16%:), Phase 4D: Decision Framework
+Nodes (7): 1. Adaptive TTL Cache, 2. Rate Limiter, 3. Smart API Wrapper, code:python (from datetime import datetime, timedelta), code:python (from collections import deque), code:python (class SmartFyersAPI:), 🔧 Implementation Code
 
 ### Community 285 - "Community 285"
 Cohesion: 0.29
-Nodes (7): code:bash (# 1. Update main.py with dynamic allocation function), code:bash (# 1. Code already in place (from Run #60)), code:bash (# 1. Code already in place), Phase 4C: Experiment Launch Sequence, Run #60: VIX < 18 Allocation (Aggressive), Run #61: VIX > 22 Allocation (Defensive), Run #62: Full Dynamic Blend (All Regimes Combined)
+Nodes (7): code:block1 (10,000 calls/day ÷ 1440 minutes/day = 6.94 calls/minute aver), code:block2 (200 calls/minute is the effective constraint), code:block3 (10 calls/second is the burst limit), Daily Budget, Minute Budget, 📊 Rate Limit Analysis, Second Budget
 
 ### Community 286 - "Community 286"
 Cohesion: 0.29
-Nodes (7): code:bash (# Kill a stuck backtest), code:bash (# Restore from backup), code:bash (# Run diagnostic backtest with verbose logging), If Baseline Models Corrupt, If Hardware/Runtime Issues Occur, If Results Unexpected, Phase 4G: Contingency Plans
+Nodes (7): 🔄 Common Workflows, Workflow 1: Initial Setup (First Time), Workflow 2: Get OAuth Token, Workflow 3: Daily Operations, Workflow 4: Token Needs Refresh (30+ days old), Workflow 5: Quarterly Credential Rotation (Security), Workflow 6: Troubleshooting Issues
 
 ### Community 287 - "Community 287"
 Cohesion: 0.29
-Nodes (7): code:python (from fastapi import FastAPI, HTTPException), code:python (@app.get("/monitor")), code:python (import time), Example 1: Basic Signal Endpoint with Validation, Example 2: Monitor Endpoint with Option Chain Validation, Example 3: Client-Side Retry Handler, 💻 Usage Examples
+Nodes (7): Check Rate Limit Usage, code:python (from data.rate_limiter import SmartFyersAPI), code:bash (# API logs), code:bash (# Check token health), Daily Health Check, 📈 Monitoring, View Logs
 
 ### Community 288 - "Community 288"
 Cohesion: 0.29
-Nodes (7): Automated Health Check Script, code:python (#!/usr/bin/env python3), code:bash (# Add to cron (runs daily at 8 AM)), code:bash (tail -f /tmp/fyers_health.log), 📊 Monitoring Token Health, Run Daily Health Check, View Health Log
+Nodes (7): Actual Exit Attribution (Put Credit Spread, 20 trades), code:block1 (Daily Check Cycle:), code:block2 (Total Exit Checks: 62 (avg 3.1 checks per trade)), code:block3 (Trade Entry: Rs.67.01 credit), Exit Logic Flow (Per Trade), Key Finding: They Work in Tandem!, Why Zero Difference? Deep Dive Analysis
 
 ### Community 289 - "Community 289"
 Cohesion: 0.29
-Nodes (7): 1. Adaptive TTL Cache, 2. Rate Limiter, 3. Smart API Wrapper, code:python (from datetime import datetime, timedelta), code:python (from collections import deque), code:python (class SmartFyersAPI:), 🔧 Implementation Code
+Nodes (6): 85% Rule's Strengths, Executive Summary, Exit Priority Comparison: Findings & Recommendation, Final Verdict, ML's Strengths, What IS Important: Having Both Rules
 
 ### Community 290 - "Community 290"
 Cohesion: 0.29
-Nodes (7): code:block1 (10,000 calls/day ÷ 1440 minutes/day = 6.94 calls/minute aver), code:block2 (200 calls/minute is the effective constraint), code:block3 (10 calls/second is the burst limit), Daily Budget, Minute Budget, 📊 Rate Limit Analysis, Second Budget
-
-### Community 291 - "Community 291"
-Cohesion: 0.29
-Nodes (7): Check Rate Limit Usage, code:python (from data.rate_limiter import SmartFyersAPI), code:bash (# API logs), code:bash (# Check token health), Daily Health Check, 📈 Monitoring, View Logs
-
-### Community 292 - "Community 292"
-Cohesion: 0.29
-Nodes (7): 🔄 Common Workflows, Workflow 1: Initial Setup (First Time), Workflow 2: Get OAuth Token, Workflow 3: Daily Operations, Workflow 4: Token Needs Refresh (30+ days old), Workflow 5: Quarterly Credential Rotation (Security), Workflow 6: Troubleshooting Issues
-
-### Community 293 - "Community 293"
-Cohesion: 0.29
 Nodes (7): code:block5 (Date: 2020-01-06), code:block6 (Date: 2020-04-22), code:block7 (Date: 2020-07-03), Example 1: Small Profit Erosion, Example 2: Moderate Profit Erosion, Example 3: Significant Profit Erosion, Trade Examples: 85% Rule in Action
 
-### Community 294 - "Community 294"
-Cohesion: 0.29
-Nodes (7): Actual Exit Attribution (Put Credit Spread, 20 trades), code:block1 (Daily Check Cycle:), code:block2 (Total Exit Checks: 62 (avg 3.1 checks per trade)), code:block3 (Trade Entry: Rs.67.01 credit), Exit Logic Flow (Per Trade), Key Finding: They Work in Tandem!, Why Zero Difference? Deep Dive Analysis
+### Community 291 - "Community 291"
+Cohesion: 0.33
+Nodes (4): Run the full evolution pipeline with out-of-sample validation.          Optimiza, Run the full evolution pipeline with out-of-sample validation.          Optimiza, Save evolved strategies to disk for fast loading in signal mode., Save evolved strategies to disk for fast loading in signal mode.
 
-### Community 295 - "Community 295"
-Cohesion: 0.29
-Nodes (6): Executive Summary, Exit Priority Comparison: Findings & Recommendation, Final Verdict, Iron Condor, Put Credit Spread, Results: ZERO DIFFERENCE
-
-### Community 296 - "Community 296"
+### Community 292 - "Community 292"
 Cohesion: 0.33
 Nodes (3): Volatility and moneyness-scaled slippage (v4)., Estimate total round-trip cost for a trade., Cost as percentage of credit collected.
 
-### Community 297 - "Community 297"
+### Community 293 - "Community 293"
+Cohesion: 0.4
+Nodes (4): compare_with_without(), Compare results with and without max profit booking., Verify the 85% max profit booking is working., verify_implementation()
+
+### Community 294 - "Community 294"
 Cohesion: 0.73
 Nodes (4): build_reconciliation_report(), main(), parse_official_daily_xls(), _rmse()
 
-### Community 298 - "Community 298"
+### Community 295 - "Community 295"
 Cohesion: 0.53
 Nodes (5): _engine(), _open_ic(), Open weekly trades must be repriced and exit-checked with the strategy they were, test_open_ic_is_repriced_as_ic_when_5d_return_is_large(), test_open_pcs_stays_pcs_when_5d_return_is_calm()
 
-### Community 299 - "Community 299"
+### Community 296 - "Community 296"
 Cohesion: 0.33
 Nodes (5): Simulate a single trade from entry to exit., Simulate a single trade from entry to exit., Simulate a single trade from entry to exit., Simulate a single trade from entry to exit., Simulate a single trade from entry to exit.
 
-### Community 300 - "Community 300"
+### Community 297 - "Community 297"
 Cohesion: 0.47
 Nodes (5): _engine(), WeeklyBacktestEngine must reprice and exit-check open weekly trades with their e, Mon 2026-06-01 (IC entry, calm 5d), Tue, Wed (large 5d move while the IC is open, test_open_ic_is_repriced_as_ic_when_5d_return_is_large(), test_strategy_for_trade_maps_by_entry_name()
 
-### Community 301 - "Community 301"
+### Community 298 - "Community 298"
 Cohesion: 0.33
 Nodes (4): True on the activation tick — close weekly positions immediately., True on the activation tick — close weekly positions immediately., Clear an active lock after the caller has verified the rearm condition         (, True on the activation tick — close weekly positions immediately.
 
-### Community 302 - "Community 302"
+### Community 299 - "Community 299"
 Cohesion: 0.33
 Nodes (4): Test maintenance endpoints (2 endpoints), GET /health — Server health check, POST /market/refresh — Reload market data, TestMaintenanceEndpoints
 
-### Community 303 - "Community 303"
+### Community 300 - "Community 300"
 Cohesion: 0.53
 Nodes (4): daterange(), month_iter(), parse_cdsl_archive_input(), parse_nse_date()
 
-### Community 304 - "Community 304"
+### Community 301 - "Community 301"
 Cohesion: 0.33
 Nodes (6): code:bash (# Get status for specific journal), Key Features, ML-Driven Entry Signals, Multi-Session Journal Support, Real-Time Exit Guidance, Smart Trade Filtering
 
-### Community 305 - "Community 305"
+### Community 302 - "Community 302"
 Cohesion: 0.33
 Nodes (6): code:bash (# Re-check exit recommendation at 12:30 PM), code:block26 (10:00 AM: Check status + signal → should_enter=true, quality), Example Timeline, MANAGING PREVIOUS DAY'S SUGGESTION AT 12:30 PM, Scenario: Low VIX Morning, Enter at 11:42 AM, Workflow: 12:30 PM Checkpoint
 
-### Community 306 - "Community 306"
-Cohesion: 0.4
-Nodes (6): code:bash (tail -2 paper_trading/tracker/TRADES.csv), code:block5 (2026-10-19,Monday,<equity>,<cum_pnl>,0,<VIX>,<regime>,1,1,0,), code:block6 (2026-10-19,Monday,2500000,0,0,<VIX>,<regime>,0,0,0,0,0,,,"SK), Step 2: Add the DAILY_LOG.csv row, Step 3: Get Today's Entry Signal (2 min), Step 4: Verify
-
-### Community 307 - "Community 307"
-Cohesion: 0.33
-Nodes (6): Escalation Protocol, Escalation Protocol (Critical), 🟠 Orange Alert (Reduce Risk), 🔴 Red Alert (STOP), 🔴 Red Alert (STOP: the only pause rule), 🟡 Yellow Alert (Caution)
-
-### Community 308 - "Community 308"
+### Community 303 - "Community 303"
 Cohesion: 0.53
 Nodes (6): 1. Account Setup, 2. System Initialization, 3. Pre-Trading Checklist, 4. Go Live, Quick Start, Quick Start (5 Minutes)
 
-### Community 309 - "Community 309"
+### Community 304 - "Community 304"
+Cohesion: 0.33
+Nodes (6): Escalation Protocol, Escalation Protocol (Critical), 🟠 Orange Alert (Reduce Risk), 🔴 Red Alert (STOP), 🔴 Red Alert (STOP: the only pause rule), 🟡 Yellow Alert (Caution)
+
+### Community 305 - "Community 305"
 Cohesion: 0.33
 Nodes (6): code:markdown (## Phase 4 Outcome: SUCCESS ✓), code:block20, code:markdown (## Phase 4 Outcome: STATIC 50/50 IS OPTIMAL ✓), If Phase 4 Fails (All Runs ≤ 11.16%), If Phase 4 Succeeds (Any Run > 11.16%), Phase 4I: Success Criteria & Next Phase Decision
 
+### Community 306 - "Community 306"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #52 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 307 - "Community 307"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #24 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 308 - "Community 308"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #35 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 309 - "Community 309"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #18 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
 ### Community 310 - "Community 310"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #54 — v6-phase3-dte-exit+gate8bypass+11strat — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 311 - "Community 311"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #50 — v6-phase2-threshold-0.40 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 312 - "Community 312"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #53 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 313 - "Community 313"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 314 - "Community 314"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #55 — v7-gate8-enabled-lgbm — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 315 - "Community 315"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #36 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 316 - "Community 316"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #39 — funnel-diagnostic-analysis — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 317 - "Community 317"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #38 — 10y-performance-check-full-data — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 318 - "Community 318"
 Cohesion: 0.33
 Nodes (6): Engine Stats, Key Metrics, Run #21 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
-### Community 319 - "Community 319"
+### Community 311 - "Community 311"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #51 — v6-phase2-gate8-passthrough — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 312 - "Community 312"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 313 - "Community 313"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #53 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 314 - "Community 314"
 Cohesion: 0.33
 Nodes (6): Engine Stats, Key Metrics, Run #34 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 315 - "Community 315"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #39 — funnel-diagnostic-analysis — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 316 - "Community 316"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 317 - "Community 317"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #54 — v6-phase3-dte-exit+gate8bypass+11strat — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 318 - "Community 318"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #49 — v6-phase2-threshold-cap — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+
+### Community 319 - "Community 319"
+Cohesion: 0.33
+Nodes (6): Engine Stats, Key Metrics, Run #38 — 10y-performance-check-full-data — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 320 - "Community 320"
 Cohesion: 0.33
@@ -1919,115 +1901,115 @@ Nodes (6): Engine Stats, Key Metrics, Run #26 — cache-fallback-check — [COMB
 
 ### Community 321 - "Community 321"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #51 — v6-phase2-gate8-passthrough — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #36 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 322 - "Community 322"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #50 — v6-phase2-threshold-0.40 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 323 - "Community 323"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #49 — v6-phase2-threshold-cap — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #48 — v6-phase2-percentile — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 324 - "Community 324"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #24 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #55 — v7-gate8-enabled-lgbm — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 325 - "Community 325"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #48 — v6-phase2-percentile — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #37 — 10y-performance-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 326 - "Community 326"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #18 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 327 - "Community 327"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): 1️⃣ Run the signal (once; re-run only if it hit the window gate), 1️⃣ Server Health (30 sec), 2️⃣ Get real prices (the signal's premiums are `[BS est]`), 3️⃣ Log the trade by hand (within 5 min), code:bash (python main.py --mode signal-combined --capital 2500000 --lo), 🚀 ENTRY WINDOW: 11:00–13:00 IST
 
 ### Community 328 - "Community 328"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #52 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): 1️⃣ Re-Verify Signal (30 sec at 11:30 AM), 2️⃣ Place Order (3–5 min), 3️⃣ Log Trade to API (30 sec), code:bash (curl http://localhost:8000/signal | jq '.weekly'), code:bash (curl -X POST http://localhost:8000/trades/open \), 🚀 MID-SESSION: 11:30 AM–1:00 PM IST
 
 ### Community 329 - "Community 329"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #35 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): code:bash (# Install pytest if not already installed), code:block2 (tests/test_api_endpoints.py::TestJournalEndpoints::test_01_c), code:bash (uvicorn api.server:app --port 8000), Option 1: Automated Testing (Recommended), Option 2: Manual Testing (Using curl), 🚀 Quick Start: Run All Tests
 
 ### Community 330 - "Community 330"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #37 — 10y-performance-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): code:markdown (## Phase 4 Outcome: SUCCESS ✓), code:block20, code:markdown (## Phase 4 Outcome: STATIC 50/50 IS OPTIMAL ✓), If Phase 4 Fails (All Runs ≤ 11.16%), If Phase 4 Succeeds (Any Run > 11.16%), Phase 4I: Success Criteria & Next Phase Decision
 
 ### Community 331 - "Community 331"
 Cohesion: 0.33
-Nodes (6): 1️⃣ Run the signal (once; re-run only if it hit the window gate), 1️⃣ Server Health (30 sec), 2️⃣ Get real prices (the signal's premiums are `[BS est]`), 3️⃣ Log the trade by hand (within 5 min), code:bash (python main.py --mode signal-combined --capital 2500000 --lo), 🚀 ENTRY WINDOW: 11:00–13:00 IST
+Nodes (5): 🎯 Architecture Overview, code:block1 (┌───────────────────────────────────────────────────────────), Fyers API Integration — Complete Implementation Guide, ✅ Production Readiness Checklist, 📚 Related Documentation
 
 ### Community 332 - "Community 332"
 Cohesion: 0.33
-Nodes (6): 1️⃣ Re-Verify Signal (30 sec at 11:30 AM), 2️⃣ Place Order (3–5 min), 3️⃣ Log Trade to API (30 sec), code:bash (curl http://localhost:8000/signal | jq '.weekly'), code:bash (curl -X POST http://localhost:8000/trades/open \), 🚀 MID-SESSION: 11:30 AM–1:00 PM IST
+Nodes (6): 10 Parallel Traders, 20 Parallel Traders, code:python (# Distribute calls across 60 seconds), 📈 Multi-User Scaling, Single Trader, Staggering Strategy for 20+ Traders
 
 ### Community 333 - "Community 333"
 Cohesion: 0.33
-Nodes (5): Rolling-window features are NaN during warmup.  After warmup ends the     rest o, crash_risk_score should be 100% non-NaN after row 0., Rolling-window features are NaN during warmup.  After warmup ends the     rest o, crash_risk_score should be 100% non-NaN after row 0., TestRollingWarmupNaN
+Nodes (6): Engine Stats, Key Metrics, Run #54 — v6-phase3-dte-exit+gate8bypass+11strat — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 334 - "Community 334"
 Cohesion: 0.33
-Nodes (6): code:bash (# Install pytest if not already installed), code:block2 (tests/test_api_endpoints.py::TestJournalEndpoints::test_01_c), code:bash (uvicorn api.server:app --port 8000), Option 1: Automated Testing (Recommended), Option 2: Manual Testing (Using curl), 🚀 Quick Start: Run All Tests
+Nodes (6): Engine Stats, Key Metrics, Run #38 — 10y-performance-check-full-data — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 335 - "Community 335"
 Cohesion: 0.33
-Nodes (6): code:markdown (## Phase 4 Outcome: SUCCESS ✓), code:block20, code:markdown (## Phase 4 Outcome: STATIC 50/50 IS OPTIMAL ✓), If Phase 4 Fails (All Runs ≤ 11.16%), If Phase 4 Succeeds (Any Run > 11.16%), Phase 4I: Success Criteria & Next Phase Decision
+Nodes (6): Engine Stats, Key Metrics, Run #21 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 336 - "Community 336"
 Cohesion: 0.33
-Nodes (5): 🎯 Architecture Overview, code:block1 (┌───────────────────────────────────────────────────────────), Fyers API Integration — Complete Implementation Guide, ✅ Production Readiness Checklist, 📚 Related Documentation
+Nodes (6): Engine Stats, Key Metrics, Run #49 — v6-phase2-threshold-cap — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 337 - "Community 337"
 Cohesion: 0.33
-Nodes (6): 10 Parallel Traders, 20 Parallel Traders, code:python (# Distribute calls across 60 seconds), 📈 Multi-User Scaling, Single Trader, Staggering Strategy for 20+ Traders
+Nodes (6): Engine Stats, Key Metrics, Run #62 — last_week_sep5_update — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 338 - "Community 338"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #51 — v6-phase2-gate8-passthrough — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #48 — v6-phase2-percentile — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 339 - "Community 339"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #39 — funnel-diagnostic-analysis — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #37 — 10y-performance-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 340 - "Community 340"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #35 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #36 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 341 - "Community 341"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #24 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #52 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 342 - "Community 342"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #48 — v6-phase2-percentile — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #63 — pre_fix_repro_run60 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 343 - "Community 343"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #38 — 10y-performance-check-full-data — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #51 — v6-phase2-gate8-passthrough — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 344 - "Community 344"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #21 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 345 - "Community 345"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #67 — ctrl_C_retrained — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #66 — ctrl_C_retrained_no_risk_engine — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 346 - "Community 346"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #36 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #39 — funnel-diagnostic-analysis — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 347 - "Community 347"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #55 — v7-gate8-enabled-lgbm — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 348 - "Community 348"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #26 — cache-fallback-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #50 — v6-phase2-threshold-0.40 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 349 - "Community 349"
 Cohesion: 0.33
@@ -2035,789 +2017,733 @@ Nodes (6): Engine Stats, Key Metrics, Run #34 — [COMBINED], Weekly Top Losers,
 
 ### Community 350 - "Community 350"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #60 — exp2_dynamic_vix_full — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #24 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 351 - "Community 351"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #49 — v6-phase2-threshold-cap — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #55 — v7-gate8-enabled-lgbm — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 352 - "Community 352"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #50 — v6-phase2-threshold-0.40 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #26 — cache-fallback-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 353 - "Community 353"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #65 — ctrl_B2_old_pkls_repaired_plus_features — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #53 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 354 - "Community 354"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #52 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #60 — exp2_dynamic_vix_full — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 355 - "Community 355"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #54 — v6-phase3-dte-exit+gate8bypass+11strat — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #35 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 356 - "Community 356"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #53 — v6-phase2-gate8-fix — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
+Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
 
 ### Community 357 - "Community 357"
 Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #61 — exp3_vix_5band — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 358 - "Community 358"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #23 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 359 - "Community 359"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #22 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 360 - "Community 360"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #37 — 10y-performance-check — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 361 - "Community 361"
-Cohesion: 0.33
-Nodes (6): Engine Stats, Key Metrics, Run #25 — [COMBINED], Weekly Top Losers, Weekly Top Winners, Weekly Trade Distribution
-
-### Community 362 - "Community 362"
-Cohesion: 0.33
 Nodes (5): env, GRAPHIFY_BIN, permissions, allow, spinnerTipsEnabled
 
-### Community 363 - "Community 363"
+### Community 358 - "Community 358"
 Cohesion: 0.5
 Nodes (3): generate_access_token(), Fyers Access Token Generator Generates a new access token for Fyers API v3 using, Generate Fyers access token using OAuth flow.
 
-### Community 364 - "Community 364"
+### Community 359 - "Community 359"
 Cohesion: 0.5
 Nodes (3): generate_token_from_auth_code(), Generate Fyers Access Token from Auth Code Use this script when you already have, Generate access token from auth code.
 
-### Community 365 - "Community 365"
+### Community 360 - "Community 360"
 Cohesion: 0.6
 Nodes (3): test_canonicalize_adds_required_columns(), test_net_consistency_flags_mismatch(), test_quality_report_detects_duplicate()
 
-### Community 366 - "Community 366"
-Cohesion: 0.4
-Nodes (4): Without dedup, the same date gets multiple strategy entries (baseline check)., Without dedup, the same date gets multiple strategy entries (baseline check)., Without dedup, the same date gets multiple strategy entries (baseline check)., Without dedup, the same date gets multiple strategy entries (baseline check).
-
-### Community 367 - "Community 367"
-Cohesion: 0.4
-Nodes (4): With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date., With deduplicate_by_date=True, no two trades should share an entry_date.
-
-### Community 368 - "Community 368"
-Cohesion: 0.4
-Nodes (4): Dedup mode should route low-VIX dates to calm strategies and high-VIX to defensi, Dedup mode should route low-VIX dates to calm strategies and high-VIX to defensi, Dedup mode should route low-VIX dates to calm strategies and high-VIX to defensi, Dedup mode should route low-VIX dates to calm strategies and high-VIX to defensi
-
-### Community 369 - "Community 369"
+### Community 361 - "Community 361"
 Cohesion: 0.4
 Nodes (3): GET /journals/invalid — 404 on missing journal, POST /journals with missing field — 422 validation error, TestErrorHandling
 
-### Community 370 - "Community 370"
+### Community 362 - "Community 362"
 Cohesion: 0.4
 Nodes (4): Config flag can be toggled to True for future re-enable., Config flag can be toggled to True for future re-enable., Config flag can be toggled to True for future re-enable., Config flag can be toggled to True for future re-enable.
 
-### Community 371 - "Community 371"
+### Community 363 - "Community 363"
 Cohesion: 0.4
 Nodes (4): When gate8_enabled=False, g8_ml_quality_bypassed counter increments         (not, When gate8_enabled=False, g8_ml_quality_bypassed counter increments         (not, When gate8_enabled=False, g8_ml_quality_bypassed counter increments         (not, When gate8_enabled=False, g8_ml_quality_bypassed counter increments         (not
 
-### Community 372 - "Community 372"
+### Community 364 - "Community 364"
 Cohesion: 0.4
 Nodes (4): When gate8_enabled=True the code must check quality_score against threshold., When gate8_enabled=True the code must check quality_score against threshold., When gate8_enabled=True the code must check quality_score against threshold., When gate8_enabled=True the code must check quality_score against threshold.
 
-### Community 373 - "Community 373"
+### Community 365 - "Community 365"
 Cohesion: 0.4
 Nodes (4): The bypass branch must not apply quality_score filter., The bypass branch must not apply quality_score filter., The bypass branch must not apply quality_score filter., The bypass branch must not apply quality_score filter.
 
-### Community 374 - "Community 374"
+### Community 366 - "Community 366"
 Cohesion: 0.4
 Nodes (4): Funnel report string should show BYPASSED when gate8_enabled=False., Funnel report string should show BYPASSED when gate8_enabled=False., Funnel report string should show BYPASSED when gate8_enabled=False., Funnel report string should show BYPASSED when gate8_enabled=False.
 
-### Community 375 - "Community 375"
+### Community 367 - "Community 367"
 Cohesion: 0.4
 Nodes (4): SimConfig.deduplicate_by_date defaults to False (backward compatible)., SimConfig.deduplicate_by_date defaults to False (backward compatible)., SimConfig.deduplicate_by_date defaults to False (backward compatible)., SimConfig.deduplicate_by_date defaults to False (backward compatible).
 
-### Community 376 - "Community 376"
+### Community 368 - "Community 368"
 Cohesion: 0.4
 Nodes (4): deduplicate_by_date defaults False — the all-configs mode is correct for trainin, deduplicate_by_date defaults False — the all-configs mode is correct for trainin, deduplicate_by_date defaults False — the all-configs mode is correct for trainin, deduplicate_by_date defaults False — the all-configs mode is correct for trainin
 
-### Community 377 - "Community 377"
+### Community 369 - "Community 369"
 Cohesion: 0.4
 Nodes (4): All 18 trade_structure features must be in FEATURE_NAMES., All 18 trade_structure features must be in FEATURE_NAMES., All 18 trade_structure features must be in FEATURE_NAMES., All 18 trade_structure features must be in FEATURE_NAMES.
 
-### Community 378 - "Community 378"
+### Community 370 - "Community 370"
 Cohesion: 0.4
 Nodes (4): Source inspection: train() must call extract(..., trade=trade)., Source inspection: train() must call extract(..., trade=trade)., Source inspection: train() must call extract(..., trade=trade)., Source inspection: train() must call extract(..., trade=trade).
 
-### Community 379 - "Community 379"
+### Community 371 - "Community 371"
 Cohesion: 0.4
 Nodes (4): trade_structure group must exist in FEATURE_GROUPS with 18 features., trade_structure group must exist in FEATURE_GROUPS with 18 features., trade_structure group must exist in FEATURE_GROUPS with 18 features., trade_structure group must exist in FEATURE_GROUPS with 18 features.
 
-### Community 380 - "Community 380"
+### Community 372 - "Community 372"
 Cohesion: 0.4
 Nodes (5): code:json ({), Error Handling, HTTP Status Codes, Recovery Strategy, Sample Error Response
 
-### Community 381 - "Community 381"
-Cohesion: 0.4
-Nodes (5): Architecture, code:block1 (fastapi>=0.100.0), Components, Dependencies, Integration with Existing Code
-
-### Community 382 - "Community 382"
+### Community 373 - "Community 373"
 Cohesion: 0.4
 Nodes (5): Account & Portfolio (2 endpoints), Endpoint Summary, Journal Management (4 endpoints), Logging & Maintenance (3 endpoints), Signals & Execution (4 endpoints)
 
-### Community 383 - "Community 383"
+### Community 374 - "Community 374"
 Cohesion: 0.4
 Nodes (5): code:block6 (User calls GET /signal), code:block7 (User calls GET /monitor?journal_id=phase1), Data Flow, Entry Workflow, Exit Workflow
 
-### Community 384 - "Community 384"
+### Community 375 - "Community 375"
 Cohesion: 0.4
-Nodes (5): code:python (# BEFORE (baseline v10)), Experiment A: VIX < 18 (Low-Volatility Aggressive), Experiment B: VIX > 22 (High-Volatility Defensive), Experiment C: Full Dynamic Blend (All Regimes), Phase 4B: Experiment Configuration
+Nodes (5): Architecture, code:block1 (fastapi>=0.100.0), Components, Dependencies, Integration with Existing Code
 
-### Community 385 - "Community 385"
+### Community 376 - "Community 376"
 Cohesion: 0.4
-Nodes (5): code:markdown (## Run #60 — exp2_dynamic_vix_aggressive_80_20 — [COMBINED]), code:markdown (## Phase 4 Experiment Results (Runs #60–#62)), Create Comparison Table, Phase 4E: Results Tracking, Update BACKTEST_CHANGELOG.md
+Nodes (5): code:bash (# Cache freshness (from main checkout, no network)), MORNING: PRE-FLIGHT (before 11:00 AM), Step 1: Calendar and models (2 min), Step 2: Cache and credentials (2 min), Step 3: Account status (2 min)
 
-### Community 386 - "Community 386"
+### Community 377 - "Community 377"
 Cohesion: 0.4
 Nodes (5): After Experiments Complete, Before Each Experiment, code:bash (# Create feature branch), code:bash (# Merge feature branch), Phase 4H: Git Workflow
 
-### Community 387 - "Community 387"
+### Community 378 - "Community 378"
+Cohesion: 0.4
+Nodes (5): code:python (# BEFORE (baseline v10)), Experiment A: VIX < 18 (Low-Volatility Aggressive), Experiment B: VIX > 22 (High-Volatility Defensive), Experiment C: Full Dynamic Blend (All Regimes), Phase 4B: Experiment Configuration
+
+### Community 379 - "Community 379"
+Cohesion: 0.4
+Nodes (5): code:markdown (## Run #60 — exp2_dynamic_vix_aggressive_80_20 — [COMBINED]), code:markdown (## Phase 4 Experiment Results (Runs #60–#62)), Create Comparison Table, Phase 4E: Results Tracking, Update BACKTEST_CHANGELOG.md
+
+### Community 380 - "Community 380"
 Cohesion: 0.4
 Nodes (5): 2026-08-23 — LightGBM Migration + num_leaves Regularisation, AUC Progression, Commits, Key Decisions, sklearn stays for
 
-### Community 388 - "Community 388"
+### Community 381 - "Community 381"
 Cohesion: 0.4
 Nodes (5): code:python (# In engine.py), Implementation Summary, What NOT to Do, What to Keep (Current Code), What to Monitor
 
-### Community 389 - "Community 389"
+### Community 382 - "Community 382"
 Cohesion: 0.4
 Nodes (5): Appendix: Full Test Results, code:block10 (PROFIT_TARGET:   12 trades (60%)), Conclusion, Exit Reason Breakdown (PCS), Test Configuration
 
-### Community 390 - "Community 390"
-Cohesion: 0.4
-Nodes (5): 👁️ AFTERNOON: 3:00–4:30 PM IST (check every 30 min), Close Position (if needed), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour), code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), Get Exit Recommendation
-
-### Community 391 - "Community 391"
-Cohesion: 0.4
-Nodes (5): code:bash (# Restart), code:bash (# Refresh market data (wait 30s)), code:bash (# Re-call POST /trades/open (idempotent)), code:bash (# Verify journal_id matches), 📞 HELP
-
-### Community 392 - "Community 392"
+### Community 383 - "Community 383"
 Cohesion: 0.4
 Nodes (5): 🔄 CATCH-UP (If You Missed Logging), code:bash (# Get exit time from Fyers history), code:bash (# Get data from GET /status (yesterday's equity)), Daily Log Not Recorded?, Trade Close Not Logged?
 
-### Community 393 - "Community 393"
+### Community 384 - "Community 384"
 Cohesion: 0.4
-Nodes (5): After Experiments Complete, Before Each Experiment, code:bash (# Create feature branch), code:bash (# Merge feature branch), Phase 4H: Git Workflow
+Nodes (5): 👁️ AFTERNOON: 3:00–4:30 PM IST (check every 30 min), Close Position (if needed), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour), code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), Get Exit Recommendation
 
-### Community 394 - "Community 394"
+### Community 385 - "Community 385"
 Cohesion: 0.4
-Nodes (5): code:markdown (## Run #60 — exp2_dynamic_vix_aggressive_80_20 — [COMBINED]), code:markdown (## Phase 4 Experiment Results (Runs #60–#62)), Create Comparison Table, Phase 4E: Results Tracking, Update BACKTEST_CHANGELOG.md
+Nodes (5): code:bash (# Restart), code:bash (# Refresh market data (wait 30s)), code:bash (# Re-call POST /trades/open (idempotent)), code:bash (# Verify journal_id matches), 📞 HELP
 
-### Community 395 - "Community 395"
+### Community 386 - "Community 386"
 Cohesion: 0.4
 Nodes (5): code:python (# BEFORE (baseline v10)), Experiment A: VIX < 18 (Low-Volatility Aggressive), Experiment B: VIX > 22 (High-Volatility Defensive), Experiment C: Full Dynamic Blend (All Regimes), Phase 4B: Experiment Configuration
 
-### Community 396 - "Community 396"
+### Community 387 - "Community 387"
 Cohesion: 0.4
-Nodes (5): 🚀 Integration Checklist, Phase 1: Core Components (✅ DONE), Phase 2: API Server Integration (← YOU ARE HERE), Phase 3: Testing & Validation (← NEXT), Phase 4: Monitoring & Deployment
+Nodes (5): code:markdown (## Run #60 — exp2_dynamic_vix_aggressive_80_20 — [COMBINED]), code:markdown (## Phase 4 Experiment Results (Runs #60–#62)), Create Comparison Table, Phase 4E: Results Tracking, Update BACKTEST_CHANGELOG.md
 
-### Community 397 - "Community 397"
+### Community 388 - "Community 388"
+Cohesion: 0.4
+Nodes (5): After Experiments Complete, Before Each Experiment, code:bash (# Create feature branch), code:bash (# Merge feature branch), Phase 4H: Git Workflow
+
+### Community 389 - "Community 389"
 Cohesion: 0.4
 Nodes (5): ✅ Documentation, ✅ Layer 1: Rate Limiting (`data/rate_limiter.py`), ✅ Layer 2: Data Validation (`data/data_validator.py`), ✅ Layer 3: API Middleware (`api/signal_validator.py`), 📦 What's Implemented
 
-### Community 398 - "Community 398"
+### Community 390 - "Community 390"
 Cohesion: 0.4
 Nodes (5): code:json ({), code:json ({), ⚠️ Error Handling, Out of Range Data, Stale Data (HTTP 503)
 
-### Community 399 - "Community 399"
+### Community 391 - "Community 391"
+Cohesion: 0.4
+Nodes (5): 🚀 Integration Checklist, Phase 1: Core Components (✅ DONE), Phase 2: API Server Integration (← YOU ARE HERE), Phase 3: Testing & Validation (← NEXT), Phase 4: Monitoring & Deployment
+
+### Community 392 - "Community 392"
 Cohesion: 0.4
 Nodes (5): Before Going Live, code:bash (export FYERS_CLIENT_ID="xxx"), For Credential Rotation, For Production Deployment, 🔒 Security Checklist
 
-### Community 400 - "Community 400"
+### Community 393 - "Community 393"
 Cohesion: 0.4
 Nodes (5): code:python (# Strategy 1: Use cached data), code:python (# Stop fetching live data), ⚠️ Emergency Procedures, If Daily Limit Hit, If Rate Limited
 
-### Community 401 - "Community 401"
+### Community 394 - "Community 394"
 Cohesion: 0.4
 Nodes (5): code:python (cache_ttl = {), code:python (# Spread calls across the minute), For Multiple Traders (Staggered), For Single Trader, 🎯 Recommended Settings
 
-### Community 402 - "Community 402"
+### Community 395 - "Community 395"
 Cohesion: 0.4
 Nodes (5): Core Setup Documents, 📚 Documentation Guide Map, Operational Documents, Reference Documents, Validation Documents
 
-### Community 403 - "Community 403"
+### Community 396 - "Community 396"
 Cohesion: 0.4
 Nodes (5): code:bash (# Run end-to-end test), code:bash (# Unit tests), Detailed Test, Quick Test, 🧪 Testing
 
-### Community 404 - "Community 404"
+### Community 397 - "Community 397"
 Cohesion: 0.4
 Nodes (5): 2026-08-23 — LightGBM Migration + num_leaves Regularisation, AUC Progression, Commits, Key Decisions, sklearn stays for
 
-### Community 405 - "Community 405"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #24, Strategy Breakdown
-
-### Community 406 - "Community 406"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #30, Strategy Breakdown
-
-### Community 407 - "Community 407"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #6, Strategy Breakdown
-
-### Community 408 - "Community 408"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #53, Strategy Breakdown
-
-### Community 409 - "Community 409"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #20, Strategy Breakdown
-
-### Community 410 - "Community 410"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #35 — v4.4 — v4.1 base + quality threshold 0.46 (was 0.48), Strategy Breakdown
-
-### Community 411 - "Community 411"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #36, Strategy Breakdown
-
-### Community 412 - "Community 412"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #18 — v2-r6: deprioritize PCS in recommendation, regime gates, cooldown=2d, Strategy Breakdown
-
-### Community 413 - "Community 413"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #7, Strategy Breakdown
-
-### Community 414 - "Community 414"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #52, Strategy Breakdown
-
-### Community 415 - "Community 415"
+### Community 398 - "Community 398"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #48, Strategy Breakdown
 
-### Community 416 - "Community 416"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #9 — v2_tuned: stricter threshold (0.58) + PCS penalty + regime AUC gate + 50th pctl labels, Strategy Breakdown
-
-### Community 417 - "Community 417"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #38 — v4.5 — threshold 0.46 (fixed in main.py + trade_learner), Strategy Breakdown
-
-### Community 418 - "Community 418"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #15 — v2-r3: block neg-PnL strategies, regime gates, cooldown=2d, AUC_min=0.52, Strategy Breakdown
-
-### Community 419 - "Community 419"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #13 — v2-consolidated: regime thresholds, 3d cooldown, loss-streak throttle, PCS=0.45, Strategy Breakdown
-
-### Community 420 - "Community 420"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #43, Strategy Breakdown
-
-### Community 421 - "Community 421"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #17 — v2-r5: ranked fallback, PCS=0.25, regime gates, cooldown=2d, Strategy Breakdown
-
-### Community 422 - "Community 422"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #11 — v2_tuned-r3: fix confidence sizing (0.80/1.0/1.2), AUC gate=0.53, Strategy Breakdown
-
-### Community 423 - "Community 423"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #27, Strategy Breakdown
-
-### Community 424 - "Community 424"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #32, Strategy Breakdown
-
-### Community 425 - "Community 425"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #22 — v3 baseline — cost-adjusted + iron condor + MTM, Strategy Breakdown
-
-### Community 426 - "Community 426"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #51 — v4-final-cleanup-verify, Strategy Breakdown
-
-### Community 427 - "Community 427"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #29 — v4.1 — RPS removed, caps relaxed 62%/6K/60K, starvation guard, BWB<20, Strategy Breakdown
-
-### Community 428 - "Community 428"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #23, Strategy Breakdown
-
-### Community 429 - "Community 429"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #28, Strategy Breakdown
-
-### Community 430 - "Community 430"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #50, Strategy Breakdown
-
-### Community 431 - "Community 431"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #46, Strategy Breakdown
-
-### Community 432 - "Community 432"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #54 — with-85%-max-profit-rule, Strategy Breakdown
-
-### Community 433 - "Community 433"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #56, Strategy Breakdown
-
-### Community 434 - "Community 434"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #5, Strategy Breakdown
-
-### Community 435 - "Community 435"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #33 — v4.3 — conc 62%/18 (reverted), calendar VIX<22 kept, Strategy Breakdown
-
-### Community 436 - "Community 436"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #49, Strategy Breakdown
-
-### Community 437 - "Community 437"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #44, Strategy Breakdown
-
-### Community 438 - "Community 438"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #37, Strategy Breakdown
-
-### Community 439 - "Community 439"
+### Community 399 - "Community 399"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #42, Strategy Breakdown
 
-### Community 440 - "Community 440"
+### Community 400 - "Community 400"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #10 — v2_tuned-r2: threshold=0.52, pctl=45, PCS=0.60, AUC_gate=0.54, feats=20, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #30, Strategy Breakdown
 
-### Community 441 - "Community 441"
+### Community 401 - "Community 401"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #16 — v2-r4: PCS_penalty=0.25, regime gates, cooldown=2d, streak=3L, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #32, Strategy Breakdown
 
-### Community 442 - "Community 442"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #47, Strategy Breakdown
-
-### Community 443 - "Community 443"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #40 — v4.6 — BWB removed, PCS takes over high-VIX band, Strategy Breakdown
-
-### Community 444 - "Community 444"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #26 — v4 — walk-forward + Greeks caps + normalized exits + PCS tilt, Strategy Breakdown
-
-### Community 445 - "Community 445"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #8 — v2 quality-filter: calibrated GBM + feature pruning + percentile labels, Strategy Breakdown
-
-### Community 446 - "Community 446"
+### Community 402 - "Community 402"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #41 — v4.1-FINAL — production version after 6 iteration attempts, Strategy Breakdown
 
-### Community 447 - "Community 447"
+### Community 403 - "Community 403"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #45, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #37, Strategy Breakdown
 
-### Community 448 - "Community 448"
+### Community 404 - "Community 404"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #31 — v4.2 — conc 68%/15, calendar VIX<22, vol_exp 1.05, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #5, Strategy Breakdown
 
-### Community 449 - "Community 449"
+### Community 405 - "Community 405"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #11 — v2_tuned-r3: fix confidence sizing (0.80/1.0/1.2), AUC gate=0.53, Strategy Breakdown
+
+### Community 406 - "Community 406"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #9 — v2_tuned: stricter threshold (0.58) + PCS penalty + regime AUC gate + 50th pctl labels, Strategy Breakdown
+
+### Community 407 - "Community 407"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #38 — v4.5 — threshold 0.46 (fixed in main.py + trade_learner), Strategy Breakdown
+
+### Community 408 - "Community 408"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #19 — v2-r7: PCS quality floor=0.60, regime gates, cooldown=2d, streak throttle, Strategy Breakdown
 
-### Community 450 - "Community 450"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #34, Strategy Breakdown
-
-### Community 451 - "Community 451"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #55, Strategy Breakdown
-
-### Community 452 - "Community 452"
-Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #21, Strategy Breakdown
-
-### Community 453 - "Community 453"
+### Community 409 - "Community 409"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #14 — v2-r2: regime gates(0.53-0.56), cooldown=2d, streak=3L+0.03, AUC_min=0.52, Strategy Breakdown
 
-### Community 454 - "Community 454"
+### Community 410 - "Community 410"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #25, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #7, Strategy Breakdown
 
-### Community 455 - "Community 455"
+### Community 411 - "Community 411"
 Cohesion: 0.4
-Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #39, Strategy Breakdown
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #22 — v3 baseline — cost-adjusted + iron condor + MTM, Strategy Breakdown
 
-### Community 456 - "Community 456"
+### Community 412 - "Community 412"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #43, Strategy Breakdown
+
+### Community 413 - "Community 413"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #21, Strategy Breakdown
+
+### Community 414 - "Community 414"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #44, Strategy Breakdown
+
+### Community 415 - "Community 415"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #15 — v2-r3: block neg-PnL strategies, regime gates, cooldown=2d, AUC_min=0.52, Strategy Breakdown
+
+### Community 416 - "Community 416"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #10 — v2_tuned-r2: threshold=0.52, pctl=45, PCS=0.60, AUC_gate=0.54, feats=20, Strategy Breakdown
+
+### Community 417 - "Community 417"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #28, Strategy Breakdown
+
+### Community 418 - "Community 418"
 Cohesion: 0.4
 Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #12 — v1: GBM+RF ensemble, binary labels, all features, Strategy Breakdown
 
-### Community 457 - "Community 457"
+### Community 419 - "Community 419"
 Cohesion: 0.4
-Nodes (5): code:python (# In engine.py), Implementation Summary, What NOT to Do, What to Keep (Current Code), What to Monitor
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #52, Strategy Breakdown
 
-### Community 458 - "Community 458"
+### Community 420 - "Community 420"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #18 — v2-r6: deprioritize PCS in recommendation, regime gates, cooldown=2d, Strategy Breakdown
+
+### Community 421 - "Community 421"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #8 — v2 quality-filter: calibrated GBM + feature pruning + percentile labels, Strategy Breakdown
+
+### Community 422 - "Community 422"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #51 — v4-final-cleanup-verify, Strategy Breakdown
+
+### Community 423 - "Community 423"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #25, Strategy Breakdown
+
+### Community 424 - "Community 424"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #31 — v4.2 — conc 68%/15, calendar VIX<22, vol_exp 1.05, Strategy Breakdown
+
+### Community 425 - "Community 425"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #55, Strategy Breakdown
+
+### Community 426 - "Community 426"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #24, Strategy Breakdown
+
+### Community 427 - "Community 427"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #6, Strategy Breakdown
+
+### Community 428 - "Community 428"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #13 — v2-consolidated: regime thresholds, 3d cooldown, loss-streak throttle, PCS=0.45, Strategy Breakdown
+
+### Community 429 - "Community 429"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #39, Strategy Breakdown
+
+### Community 430 - "Community 430"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #34, Strategy Breakdown
+
+### Community 431 - "Community 431"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #53, Strategy Breakdown
+
+### Community 432 - "Community 432"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #46, Strategy Breakdown
+
+### Community 433 - "Community 433"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #29 — v4.1 — RPS removed, caps relaxed 62%/6K/60K, starvation guard, BWB<20, Strategy Breakdown
+
+### Community 434 - "Community 434"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #50, Strategy Breakdown
+
+### Community 435 - "Community 435"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #56, Strategy Breakdown
+
+### Community 436 - "Community 436"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #16 — v2-r4: PCS_penalty=0.25, regime gates, cooldown=2d, streak=3L, Strategy Breakdown
+
+### Community 437 - "Community 437"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #27, Strategy Breakdown
+
+### Community 438 - "Community 438"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #35 — v4.4 — v4.1 base + quality threshold 0.46 (was 0.48), Strategy Breakdown
+
+### Community 439 - "Community 439"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #26 — v4 — walk-forward + Greeks caps + normalized exits + PCS tilt, Strategy Breakdown
+
+### Community 440 - "Community 440"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #20, Strategy Breakdown
+
+### Community 441 - "Community 441"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #49, Strategy Breakdown
+
+### Community 442 - "Community 442"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #36, Strategy Breakdown
+
+### Community 443 - "Community 443"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #47, Strategy Breakdown
+
+### Community 444 - "Community 444"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #40 — v4.6 — BWB removed, PCS takes over high-VIX band, Strategy Breakdown
+
+### Community 445 - "Community 445"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #33 — v4.3 — conc 62%/18 (reverted), calendar VIX<22 kept, Strategy Breakdown
+
+### Community 446 - "Community 446"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #45, Strategy Breakdown
+
+### Community 447 - "Community 447"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #23, Strategy Breakdown
+
+### Community 448 - "Community 448"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #54 — with-85%-max-profit-rule, Strategy Breakdown
+
+### Community 449 - "Community 449"
+Cohesion: 0.4
+Nodes (5): Engine Stats, Key Metrics, Position Sizing (3-layer), Run #17 — v2-r5: ranked fallback, PCS=0.25, regime gates, cooldown=2d, Strategy Breakdown
+
+### Community 450 - "Community 450"
 Cohesion: 0.4
 Nodes (5): Appendix: Full Test Results, code:block10 (PROFIT_TARGET:   12 trades (60%)), Conclusion, Exit Reason Breakdown (PCS), Test Configuration
 
-### Community 459 - "Community 459"
+### Community 451 - "Community 451"
+Cohesion: 0.4
+Nodes (5): code:python (# In engine.py), Implementation Summary, What NOT to Do, What to Keep (Current Code), What to Monitor
+
+### Community 452 - "Community 452"
 Cohesion: 0.5
 Nodes (4): Aggregate sizing decisions from the engine for logging., Aggregate sizing decisions from the engine for logging., Aggregate sizing decisions from the engine for logging., _summarise_sizing()
 
-### Community 460 - "Community 460"
-Cohesion: 0.5
-Nodes (3): SimConfig constructed in layered_evolve should use TRAINING_FLOW.layered_entry_e, SimConfig constructed in layered_evolve should use TRAINING_FLOW.layered_entry_e, SimConfig constructed in layered_evolve should use TRAINING_FLOW.layered_entry_e
-
-### Community 461 - "Community 461"
-Cohesion: 0.5
-Nodes (3): should_force_close_monthly() returns False during cooldown (not on first tick)., should_force_close_monthly() returns False during cooldown (not on first tick)., should_force_close_monthly() returns False during cooldown (not on first tick).
-
-### Community 462 - "Community 462"
-Cohesion: 0.5
-Nodes (3): KillSwitchState has monthly_force_closes counter., KillSwitchState has monthly_force_closes counter., KillSwitchState has monthly_force_closes counter.
-
-### Community 463 - "Community 463"
-Cohesion: 0.5
-Nodes (3): Verify stop_loss_rupees = (stop_loss/100) * credit * lots * lot_size., Verify stop-loss checks use rupee-scaled total_pnl, not per-unit percentages., Verify stop_loss_rupees = (stop_loss/100) * credit * lots * lot_size.
-
-### Community 464 - "Community 464"
-Cohesion: 0.5
-Nodes (3): Trade entry allowed if max_loss * lots * lot_size <= cap., Trade entry allowed if max_loss * lots * lot_size <= cap., Trade entry allowed if max_loss * lots * lot_size <= cap.
-
-### Community 465 - "Community 465"
-Cohesion: 0.5
-Nodes (3): max_loss must be strictly greater than if total credit were subtracted., max_loss must be strictly greater than if total credit were subtracted., max_loss must be strictly greater than if total credit were subtracted.
-
-### Community 466 - "Community 466"
+### Community 454 - "Community 454"
 Cohesion: 0.5
 Nodes (3): True on the activation tick — close monthly positions immediately., True on the activation tick — close monthly positions immediately., True on the activation tick — close monthly positions immediately.
 
-### Community 467 - "Community 467"
+### Community 455 - "Community 455"
 Cohesion: 0.5
 Nodes (3): Test signal generation (1 endpoint), GET /signal — Get ML entry signals, TestSignalEndpoints
 
-### Community 468 - "Community 468"
+### Community 456 - "Community 456"
 Cohesion: 0.5
 Nodes (3): VIX 15-20: stop_loss = 45%., VIX 15-20: stop_loss = 45%., VIX 15-20: stop_loss = 45%.
 
-### Community 469 - "Community 469"
+### Community 457 - "Community 457"
 Cohesion: 0.5
 Nodes (3): VIX 20-30: stop_loss = 40%., VIX 20-30: stop_loss = 40%., VIX 20-30: stop_loss = 40%.
 
-### Community 470 - "Community 470"
+### Community 458 - "Community 458"
 Cohesion: 0.5
 Nodes (3): Trade entry rejected if max_loss * lots * lot_size > equity * 8%., Trade entry rejected if max_loss * lots * lot_size > equity * 8%., Trade entry rejected if max_loss * lots * lot_size > equity * 8%.
 
-### Community 471 - "Community 471"
+### Community 459 - "Community 459"
 Cohesion: 0.5
 Nodes (3): Trade open 8 days → no slow-grind exit., Trade open 8 days → no slow-grind exit., Trade open 8 days → no slow-grind exit.
 
-### Community 472 - "Community 472"
+### Community 460 - "Community 460"
 Cohesion: 0.5
 Nodes (3): _monthly_smart_exit must reference 'dte' when computing profit_target,         n, _monthly_smart_exit must reference 'dte' when computing profit_target,         n, _monthly_smart_exit must reference 'dte' when computing profit_target,         n
 
-### Community 473 - "Community 473"
+### Community 461 - "Community 461"
 Cohesion: 0.5
 Nodes (3): VIX >= 30: stop_loss = 35%., VIX >= 30: stop_loss = 35%., VIX >= 30: stop_loss = 35%.
 
-### Community 475 - "Community 475"
+### Community 462 - "Community 462"
 Cohesion: 0.5
 Nodes (4): Agent Workflow, code:bash (# Training (evolve):), Git Commit + Push Policy (mandatory), Long-Running Training / Backtest Policy (mandatory)
 
-### Community 476 - "Community 476"
+### Community 463 - "Community 463"
 Cohesion: 0.5
 Nodes (4): Agent Workflow, code:bash (# Training (evolve):), Git Commit + Push Policy (mandatory), Long-Running Training / Backtest Policy (mandatory)
 
-### Community 477 - "Community 477"
+### Community 464 - "Community 464"
 Cohesion: 0.5
 Nodes (4): Agent Workflow, code:bash (# Training (evolve):), Git Commit + Push Policy (mandatory), Long-Running Training / Backtest Policy (mandatory)
 
-### Community 478 - "Community 478"
+### Community 465 - "Community 465"
 Cohesion: 0.5
 Nodes (4): Agent Workflow, code:bash (# Training (evolve):), Git Commit + Push Policy (mandatory), Long-Running Training / Backtest Policy (mandatory)
 
-### Community 479 - "Community 479"
+### Community 466 - "Community 466"
 Cohesion: 0.5
 Nodes (4): code:json ({), Common Errors, Error Handling, Example Error Response
 
-### Community 481 - "Community 481"
+### Community 468 - "Community 468"
 Cohesion: 0.5
 Nodes (4): Go to Phase 2 (Add Monthly)? ✅, Hold (Collect More Data)? ⏸️, Phase Transition Decision (Month 6), Stop (Investigate Issue)? ❌
 
-### Community 483 - "Community 483"
-Cohesion: 0.5
-Nodes (4): Current Priority (What's in code now):, Proposed Priority (What we tested):, Test Period, Test Setup
-
-### Community 484 - "Community 484"
-Cohesion: 0.5
-Nodes (4): Priority Doesn't Matter (In This Case), System Design is Sound, The 85% Rule is Working, What We Learned
-
-### Community 485 - "Community 485"
-Cohesion: 0.5
-Nodes (4): code:block4 (Scenario 1: ML wants to exit at 40% profit), Priority Doesn't Matter, The Math, Why Moving 85% to Top Makes NO Difference
-
-### Community 486 - "Community 486"
+### Community 470 - "Community 470"
 Cohesion: 0.5
 Nodes (4): code:block8 (Exit Hierarchy (Natural, not forced):), ✓ KEEP CURRENT SETUP (No Changes Needed), Recommendation, What's Working Well
 
-### Community 487 - "Community 487"
+### Community 471 - "Community 471"
+Cohesion: 0.5
+Nodes (4): Current Priority (What's in code now):, Proposed Priority (What we tested):, Test Period, Test Setup
+
+### Community 472 - "Community 472"
+Cohesion: 0.5
+Nodes (4): code:block4 (Scenario 1: ML wants to exit at 40% profit), Priority Doesn't Matter, The Math, Why Moving 85% to Top Makes NO Difference
+
+### Community 473 - "Community 473"
+Cohesion: 0.5
+Nodes (4): Priority Doesn't Matter (In This Case), System Design is Sound, The 85% Rule is Working, What We Learned
+
+### Community 474 - "Community 474"
 Cohesion: 0.5
 Nodes (3): Strategy that owns an open weekly trade: the one it was entered with.          N, Strategy that owns an open weekly trade: the one it was entered with.          N, Strategy that owns an open weekly trade: the one it was entered with.          N
 
-### Community 488 - "Community 488"
+### Community 475 - "Community 475"
 Cohesion: 0.5
-Nodes (4): code:bash (curl "http://localhost:8000/monitor?journal_id=test-journal-), code:json ({), E. Monitoring (1 endpoint), Test 12: Monitor Open Trades
+Nodes (4): C. Signals & Entry (1 endpoint), code:bash (curl http://localhost:8000/signal | jq '.'), code:json ({), Test 8: Get Entry Signal
 
-### Community 489 - "Community 489"
-Cohesion: 0.5
-Nodes (4): code:block10 (Entry window (11:00-13:00): 3 API calls), code:block11 (40 traders × 241 calls/trader = 9,640 calls), Daily Budget: 10,000 calls, 📊 Rate Limit Budget Allocation
-
-### Community 490 - "Community 490"
-Cohesion: 0.5
-Nodes (4): 📝 Implementation Roadmap, Week 1: Integration, Week 2: Testing & Hardening, Week 3: Monitoring & Deployment
-
-### Community 491 - "Community 491"
-Cohesion: 0.5
-Nodes (4): End-to-End Tests, Integration Tests, 🧪 Testing Checklist, Unit Tests
-
-### Community 492 - "Community 492"
+### Community 476 - "Community 476"
 Cohesion: 0.5
 Nodes (4): Data Validation, Error Handling, 🎓 Key Learnings, Rate Limiting
 
-### Community 493 - "Community 493"
+### Community 477 - "Community 477"
+Cohesion: 0.5
+Nodes (4): code:block10 (Entry window (11:00-13:00): 3 API calls), code:block11 (40 traders × 241 calls/trader = 9,640 calls), Daily Budget: 10,000 calls, 📊 Rate Limit Budget Allocation
+
+### Community 478 - "Community 478"
+Cohesion: 0.5
+Nodes (4): End-to-End Tests, Integration Tests, 🧪 Testing Checklist, Unit Tests
+
+### Community 479 - "Community 479"
+Cohesion: 0.5
+Nodes (4): 📝 Implementation Roadmap, Week 1: Integration, Week 2: Testing & Hardening, Week 3: Monitoring & Deployment
+
+### Community 480 - "Community 480"
 Cohesion: 0.5
 Nodes (4): code:python (# SmartFyersAPI automatically detects and handles token refr), code:bash (# View logs), How It Works, 🔄 Scenario 1: Daily Auto-Refresh (Normal Case)
 
-### Community 494 - "Community 494"
+### Community 481 - "Community 481"
 Cohesion: 0.5
 Nodes (4): ✅ Completion Checklist, One-Time Setup, Ongoing Operations, When Needed
 
-### Community 495 - "Community 495"
+### Community 482 - "Community 482"
 Cohesion: 0.5
-Nodes (4): Current Priority (What's in code now):, Proposed Priority (What we tested):, Test Period, Test Setup
+Nodes (4): 1️⃣ Initial Setup: Getting Started, 5-Minute Overview, code:block1 (┌─────────────────────────────────────┐), Prerequisites Checklist
 
-### Community 496 - "Community 496"
-Cohesion: 0.5
-Nodes (4): Priority Doesn't Matter (In This Case), System Design is Sound, The 85% Rule is Working, What We Learned
-
-### Community 497 - "Community 497"
-Cohesion: 0.5
-Nodes (4): code:block4 (Scenario 1: ML wants to exit at 40% profit), Priority Doesn't Matter, The Math, Why Moving 85% to Top Makes NO Difference
-
-### Community 498 - "Community 498"
+### Community 483 - "Community 483"
 Cohesion: 0.5
 Nodes (4): code:block8 (Exit Hierarchy (Natural, not forced):), ✓ KEEP CURRENT SETUP (No Changes Needed), Recommendation, What's Working Well
 
-### Community 514 - "Community 514"
+### Community 484 - "Community 484"
+Cohesion: 0.5
+Nodes (4): Current Priority (What's in code now):, Proposed Priority (What we tested):, Test Period, Test Setup
+
+### Community 485 - "Community 485"
+Cohesion: 0.5
+Nodes (4): Priority Doesn't Matter (In This Case), System Design is Sound, The 85% Rule is Working, What We Learned
+
+### Community 486 - "Community 486"
+Cohesion: 0.5
+Nodes (4): code:block4 (Scenario 1: ML wants to exit at 40% profit), Priority Doesn't Matter, The Math, Why Moving 85% to Top Makes NO Difference
+
+### Community 502 - "Community 502"
 Cohesion: 0.67
 Nodes (3): CSV Schema, DAILY_LOG.csv (11 columns), TRADES.csv (25 columns)
 
-### Community 515 - "Community 515"
-Cohesion: 0.67
-Nodes (3): code:bash (# Check if trade still in active_trades.json), code:bash (curl -X POST "http://localhost:8000/trades/PT-001/close?jour), Scenario 1: Trade Closed Overnight But Not Logged
-
-### Community 516 - "Community 516"
+### Community 503 - "Community 503"
 Cohesion: 0.67
 Nodes (3): code:block1 (paper_trading/), Overview, What's Inside
 
-### Community 517 - "Community 517"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #40 — post-refresh-full-history — [COMBINED]
-
-### Community 518 - "Community 518"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #6 — [COMBINED]
-
-### Community 519 - "Community 519"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #4 — v4-testing — [COMBINED]
-
-### Community 520 - "Community 520"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #46 — v6-phase1-dd-v4 — [COMBINED]
-
-### Community 521 - "Community 521"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #5 — [COMBINED]
-
-### Community 522 - "Community 522"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #32 — [COMBINED]
-
-### Community 523 - "Community 523"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #10 — [COMBINED]
-
-### Community 524 - "Community 524"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #47 — v6-phase2-ml — [COMBINED]
-
-### Community 525 - "Community 525"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #16 — [COMBINED]
-
-### Community 526 - "Community 526"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #43 — v6-phase1-dd — [COMBINED]
-
-### Community 527 - "Community 527"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #42 — post-retrain-ml-active — [COMBINED]
-
-### Community 528 - "Community 528"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #9 — post-feature-fix-baseline — [COMBINED]
-
-### Community 529 - "Community 529"
+### Community 504 - "Community 504"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #29 — [COMBINED]
 
-### Community 530 - "Community 530"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #33 — [COMBINED]
-
-### Community 531 - "Community 531"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #44 — v6-phase1-dd-v2 — [COMBINED]
-
-### Community 532 - "Community 532"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #30 — [COMBINED]
-
-### Community 533 - "Community 533"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #28 — [COMBINED]
-
-### Community 534 - "Community 534"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #45 — v6-phase1-dd-v3 — [COMBINED]
-
-### Community 535 - "Community 535"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #7 — [COMBINED]
-
-### Community 536 - "Community 536"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #8 — [COMBINED]
-
-### Community 537 - "Community 537"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #15 — weekly-exit-redesign-opt2-thresholds — [COMBINED]
-
-### Community 538 - "Community 538"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #14 — analysis-exit-dist — [COMBINED]
-
-### Community 539 - "Community 539"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #31 — [COMBINED]
-
-### Community 540 - "Community 540"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #41 — post-refresh-full-history — [COMBINED]
-
-### Community 541 - "Community 541"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #12 — weekly-exit-redesign-baseline — [COMBINED]
-
-### Community 542 - "Community 542"
-Cohesion: 0.67
-Nodes (3): 85% Rule's Strengths, ML's Strengths, What IS Important: Having Both Rules
-
-### Community 543 - "Community 543"
-Cohesion: 0.67
-Nodes (3): Check Exit Recommendation, code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), 📊 MID-AFTERNOON: 12:30 PM CHECKPOINT (Optional)
-
-### Community 544 - "Community 544"
-Cohesion: 0.67
-Nodes (3): code:bash (# Check if server is running), Emergency Commands, 📞 Quick Reference
-
-### Community 545 - "Community 545"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #6 — [COMBINED]
-
-### Community 546 - "Community 546"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #45 — v6-phase1-dd-v3 — [COMBINED]
-
-### Community 547 - "Community 547"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #12 — weekly-exit-redesign-baseline — [COMBINED]
-
-### Community 548 - "Community 548"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #11 — [COMBINED]
-
-### Community 549 - "Community 549"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #19 — cache-only-verify
-
-### Community 550 - "Community 550"
+### Community 505 - "Community 505"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #16 — [COMBINED]
 
-### Community 551 - "Community 551"
+### Community 506 - "Community 506"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #42 — post-retrain-ml-active — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #5 — [COMBINED]
 
-### Community 552 - "Community 552"
+### Community 507 - "Community 507"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #17 — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #9 — post-feature-fix-baseline — [COMBINED]
 
-### Community 553 - "Community 553"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #46 — v6-phase1-dd-v4 — [COMBINED]
-
-### Community 554 - "Community 554"
-Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #33 — [COMBINED]
-
-### Community 555 - "Community 555"
+### Community 508 - "Community 508"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #4 — v4-testing — [COMBINED]
 
-### Community 556 - "Community 556"
+### Community 509 - "Community 509"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #30 — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #13 — weekly-exit-redesign-opt1-combined-routing — [COMBINED]
 
-### Community 557 - "Community 557"
+### Community 510 - "Community 510"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #43 — v6-phase1-dd — [COMBINED]
+Nodes (3): Engine Stats, Key Metrics, Run #7 — [COMBINED]
 
-### Community 558 - "Community 558"
+### Community 511 - "Community 511"
 Cohesion: 0.67
-Nodes (3): Engine Stats, Key Metrics, Run #27
+Nodes (3): Engine Stats, Key Metrics, Run #11 — [COMBINED]
 
-### Community 559 - "Community 559"
+### Community 512 - "Community 512"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #15 — weekly-exit-redesign-opt2-thresholds — [COMBINED]
+
+### Community 513 - "Community 513"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #46 — v6-phase1-dd-v4 — [COMBINED]
+
+### Community 514 - "Community 514"
 Cohesion: 0.67
 Nodes (3): Engine Stats, Key Metrics, Run #41 — post-refresh-full-history — [COMBINED]
 
-### Community 560 - "Community 560"
+### Community 515 - "Community 515"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #30 — [COMBINED]
+
+### Community 516 - "Community 516"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #45 — v6-phase1-dd-v3 — [COMBINED]
+
+### Community 517 - "Community 517"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #19 — cache-only-verify
+
+### Community 518 - "Community 518"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #31 — [COMBINED]
+
+### Community 519 - "Community 519"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #8 — [COMBINED]
+
+### Community 520 - "Community 520"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #10 — [COMBINED]
+
+### Community 521 - "Community 521"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #42 — post-retrain-ml-active — [COMBINED]
+
+### Community 522 - "Community 522"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #44 — v6-phase1-dd-v2 — [COMBINED]
+
+### Community 523 - "Community 523"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #43 — v6-phase1-dd — [COMBINED]
+
+### Community 524 - "Community 524"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #14 — analysis-exit-dist — [COMBINED]
+
+### Community 525 - "Community 525"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #47 — v6-phase2-ml — [COMBINED]
+
+### Community 526 - "Community 526"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #32 — [COMBINED]
+
+### Community 527 - "Community 527"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #27
+
+### Community 528 - "Community 528"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #17 — [COMBINED]
+
+### Community 529 - "Community 529"
 Cohesion: 0.67
 Nodes (3): 85% Rule's Strengths, ML's Strengths, What IS Important: Having Both Rules
+
+### Community 530 - "Community 530"
+Cohesion: 0.67
+Nodes (3): Check Exit Recommendation, code:bash (curl "http://localhost:8000/monitor?journal_id=phase1-sep-20), 📊 MID-AFTERNOON: 12:30 PM CHECKPOINT (Optional)
+
+### Community 531 - "Community 531"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #47 — v6-phase2-ml — [COMBINED]
+
+### Community 532 - "Community 532"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #27
+
+### Community 533 - "Community 533"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #13 — weekly-exit-redesign-opt1-combined-routing — [COMBINED]
+
+### Community 534 - "Community 534"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #15 — weekly-exit-redesign-opt2-thresholds — [COMBINED]
+
+### Community 535 - "Community 535"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #45 — v6-phase1-dd-v3 — [COMBINED]
+
+### Community 536 - "Community 536"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #19 — cache-only-verify
+
+### Community 537 - "Community 537"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #16 — [COMBINED]
+
+### Community 538 - "Community 538"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #29 — [COMBINED]
+
+### Community 539 - "Community 539"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #7 — [COMBINED]
+
+### Community 540 - "Community 540"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #28 — [COMBINED]
+
+### Community 541 - "Community 541"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #8 — [COMBINED]
+
+### Community 542 - "Community 542"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #32 — [COMBINED]
+
+### Community 543 - "Community 543"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #33 — [COMBINED]
+
+### Community 544 - "Community 544"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #14 — analysis-exit-dist — [COMBINED]
+
+### Community 545 - "Community 545"
+Cohesion: 0.67
+Nodes (3): Engine Stats, Key Metrics, Run #42 — post-retrain-ml-active — [COMBINED]
+
+### Community 546 - "Community 546"
+Cohesion: 0.67
+Nodes (3): Iron Condor, Put Credit Spread, Results: ZERO DIFFERENCE
 
 ## Knowledge Gaps
 - **3861 isolated node(s):** `Check if Fyers token is valid during market hours and show helpful warning if ex`, `Return short git commit hash, or 'unknown' if not in a repo.`, `Aggregate per-strategy stats from trade list.`, `Aggregate sizing decisions from the engine for logging.`, `Append a structured entry to BACKTEST_CHANGELOG.md and backtest_runs.jsonl.` (+3856 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **63 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **64 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `BacktestConfig` connect `Community 2` to `Community 0`, `Community 1`, `Community 256`, `Community 3`, `Community 4`, `Community 132`, `Community 6`, `Community 128`, `Community 8`, `Community 257`, `Community 5`, `Community 11`, `Community 12`, `Community 129`, `Community 18`, `Community 149`, `Community 154`, `Community 156`, `Community 30`, `Community 159`, `Community 39`, `Community 298`, `Community 173`, `Community 58`, `Community 187`, `Community 61`, `Community 193`, `Community 65`, `Community 196`, `Community 69`, `Community 200`, `Community 76`, `Community 77`, `Community 333`, `Community 213`, `Community 95`, `Community 97`, `Community 98`, `Community 226`, `Community 227`, `Community 104`, `Community 370`, `Community 115`, `Community 114`, `Community 247`, `Community 248`, `Community 121`, `Community 122`?**
+- **Why does `BacktestConfig` connect `Community 2` to `Community 0`, `Community 1`, `Community 130`, `Community 3`, `Community 4`, `Community 5`, `Community 132`, `Community 135`, `Community 8`, `Community 7`, `Community 13`, `Community 18`, `Community 148`, `Community 152`, `Community 32`, `Community 293`, `Community 295`, `Community 41`, `Community 173`, `Community 58`, `Community 186`, `Community 61`, `Community 192`, `Community 194`, `Community 196`, `Community 199`, `Community 76`, `Community 78`, `Community 208`, `Community 84`, `Community 212`, `Community 223`, `Community 224`, `Community 97`, `Community 225`, `Community 99`, `Community 362`, `Community 108`, `Community 114`, `Community 244`, `Community 117`, `Community 122`, `Community 124`, `Community 253`, `Community 254`?**
   _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Why does `MarketDataFetcher` connect `Community 0` to `Community 256`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 132`, `Community 6`, `Community 128`, `Community 8`, `Community 257`, `Community 11`, `Community 13`, `Community 145`, `Community 18`, `Community 147`, `Community 22`, `Community 280`, `Community 30`, `Community 159`, `Community 163`, `Community 164`, `Community 165`, `Community 173`, `Community 177`, `Community 187`, `Community 62`, `Community 193`, `Community 69`, `Community 200`, `Community 333`, `Community 224`, `Community 97`, `Community 109`, `Community 248`, `Community 121`, `Community 122`, `Community 124`?**
+- **Why does `MarketDataFetcher` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 130`, `Community 135`, `Community 8`, `Community 11`, `Community 13`, `Community 145`, `Community 18`, `Community 146`, `Community 276`, `Community 22`, `Community 162`, `Community 163`, `Community 164`, `Community 293`, `Community 165`, `Community 173`, `Community 176`, `Community 186`, `Community 63`, `Community 192`, `Community 199`, `Community 78`, `Community 224`, `Community 108`, `Community 109`, `Community 117`, `Community 122`, `Community 124`, `Community 253`, `Community 254`, `Community 127`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `CombinedBacktestEngine` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 131`, `Community 5`, `Community 6`, `Community 8`, `Community 9`, `Community 138`, `Community 139`, `Community 12`, `Community 11`, `Community 18`, `Community 152`, `Community 164`, `Community 165`, `Community 166`, `Community 298`, `Community 43`, `Community 172`, `Community 68`, `Community 69`, `Community 196`, `Community 85`, `Community 98`, `Community 102`, `Community 487`, `Community 114`, `Community 121`, `Community 125`, `Community 126`?**
+- **Why does `CombinedBacktestEngine` connect `Community 4` to `Community 128`, `Community 129`, `Community 2`, `Community 3`, `Community 1`, `Community 0`, `Community 134`, `Community 7`, `Community 6`, `Community 140`, `Community 141`, `Community 18`, `Community 20`, `Community 150`, `Community 25`, `Community 163`, `Community 164`, `Community 165`, `Community 167`, `Community 295`, `Community 172`, `Community 62`, `Community 68`, `Community 196`, `Community 78`, `Community 83`, `Community 474`, `Community 99`, `Community 103`, `Community 114`, `Community 122`?**
   _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Are the 188 inferred relationships involving `BacktestConfig` (e.g. with `SizingDecision` and `_TradeReturn`) actually correct?**
   _`BacktestConfig` has 188 INFERRED edges - model-reasoned connections that need verification._
