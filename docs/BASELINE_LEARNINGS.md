@@ -47,7 +47,7 @@
 
 **Problem Identified**:
 - `WeeklyRiskEngine` had hardcoded `1.0×` ETL threshold
-- Blocked 78% of weekly entries (363/465) uniformly across all market regimes
+- 363/465 weekly entries (78%) were reported as ETL skips, but they were fill-time DTE drops (see CLAUDE.md gotchas); the ETL gate itself is counted separately as `weekly_etl_gate_skips`
 - Collapsed trade volume without improving risk-adjusted returns
 - Scikit-learn serialization version mismatch (1.8.0 → 1.5.0)
 

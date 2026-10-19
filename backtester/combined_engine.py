@@ -70,7 +70,12 @@ class CombinedResult:
     dd_kill_entries_blocked: int = 0
     event_calendar_blocks: int = 0
     # Risk engine stats
+    # weekly_etl_skips is a legacy total (ETL-gate skips + fill-time DTE drops), kept
+    # with its historical value. Use the split counters below for reporting.
     weekly_etl_skips: int = 0
+    weekly_etl_gate_skips: int = 0       # real WeeklyRiskEngine ETL > credit*multiplier skips
+    weekly_fill_dte_drops: int = 0       # fill-date DTE outside [min,max] (signal-time expiry)
+    weekly_expiry_past_drops: int = 0    # dte_check_at_signal=True: expiry already passed at fill
     weekly_regime_skips: int = 0
     weekly_risk_score_avg: float = 0.0
     weekly_dynamic_exit_count: int = 0
@@ -217,6 +222,9 @@ class CombinedBacktestEngine:
         self.monthly_smart_exits = 0
         self.weekly_entries = 0
         self.weekly_etl_skips = 0
+        self.weekly_etl_gate_skips = 0
+        self.weekly_fill_dte_drops = 0
+        self.weekly_expiry_past_drops = 0
         self.weekly_regime_skips = 0
         self._w_risk_scores: list[float] = []
         self.weekly_dynamic_exit_count = 0
@@ -352,14 +360,27 @@ class CombinedBacktestEngine:
         dte = max((pending["expiry"] - current_date).days, 0)
         min_dte = getattr(self.w_config, "min_dte_entry", 3)
         max_dte = getattr(self.w_config, "max_dte_entry", 8)
-        if not (min_dte <= dte <= max_dte):
+        if getattr(self.w_config, "dte_check_at_signal", False):
+            # The signal path already picked an expiry inside [min, max] on signal_date;
+            # only guard against an expiry that has passed by the fill date.
+            if (pending["expiry"] - current_date).days < 0:
+                _log.warning(
+                    "Weekly entry dropped: expiry %s already passed on fill date %s "
+                    "(signal_date=%s)",
+                    pending["expiry"], current_date, pending["signal_date"],
+                )
+                self.weekly_expiry_past_drops += 1
+                self._pending_weekly_entry = None
+                return
+        elif not (min_dte <= dte <= max_dte):
             _log.warning(
                 "Weekly entry dropped: DTE=%d outside [%d, %d] on fill date %s "
                 "(signal_date=%s, expiry=%s)",
                 dte, min_dte, max_dte,
                 current_date, pending["signal_date"], pending["expiry"],
             )
-            self.weekly_etl_skips += 1
+            self.weekly_fill_dte_drops += 1
+            self.weekly_etl_skips += 1  # legacy total; see CombinedResult
             self._pending_weekly_entry = None
             return
         strategy = pending["strategy"]
@@ -1497,7 +1518,8 @@ class CombinedBacktestEngine:
 
             if sizing.skip:
                 if "etl" in sizing.skip_reason:
-                    self.weekly_etl_skips += 1
+                    self.weekly_etl_gate_skips += 1
+                    self.weekly_etl_skips += 1  # legacy total; see CombinedResult
                 elif "regime" in sizing.skip_reason:
                     self.weekly_regime_skips += 1
                 return
@@ -1695,6 +1717,9 @@ class CombinedBacktestEngine:
             dd_kill_entries_blocked=self.prod_gate.kill_switch.state.entries_blocked,
             event_calendar_blocks=self.prod_gate.event_blocks,
             weekly_etl_skips=self.weekly_etl_skips,
+            weekly_etl_gate_skips=self.weekly_etl_gate_skips,
+            weekly_fill_dte_drops=self.weekly_fill_dte_drops,
+            weekly_expiry_past_drops=self.weekly_expiry_past_drops,
             weekly_regime_skips=self.weekly_regime_skips,
             weekly_risk_score_avg=(
                 round(float(np.mean(self._w_risk_scores)), 3) if self._w_risk_scores else 0.0

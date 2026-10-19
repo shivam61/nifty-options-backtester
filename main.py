@@ -237,6 +237,9 @@ def log_backtest_run(
             "dd_kill_entries_blocked": result.dd_kill_entries_blocked,
             "event_calendar_blocks": result.event_calendar_blocks,
             "weekly_etl_skips": result.weekly_etl_skips,
+            "weekly_etl_gate_skips": result.weekly_etl_gate_skips,
+            "weekly_fill_dte_drops": result.weekly_fill_dte_drops,
+            "weekly_expiry_past_drops": result.weekly_expiry_past_drops,
             "weekly_regime_skips": result.weekly_regime_skips,
             "weekly_risk_score_avg": result.weekly_risk_score_avg,
             "weekly_dynamic_exit_count": result.weekly_dynamic_exit_count,
@@ -767,7 +770,10 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"    Emergency weekly exits: {result.emergency_weekly_exits}")
     
     print(f"\n  Weekly Risk Engine:")
-    print(f"    ETL > credit skips: {result.weekly_etl_skips}")
+    print(f"    ETL > credit skips: {result.weekly_etl_gate_skips}")
+    print(f"    Fill-time DTE drops (expiry outside [min,max] at fill): {result.weekly_fill_dte_drops}")
+    if result.weekly_expiry_past_drops:
+        print(f"    Expiry-already-passed drops at fill: {result.weekly_expiry_past_drops}")
     print(f"    Regime skips: {result.weekly_regime_skips}")
     print(f"    Avg risk score: {result.weekly_risk_score_avg:.3f}")
     print(f"    Dynamic exits: {result.weekly_dynamic_exit_count}")

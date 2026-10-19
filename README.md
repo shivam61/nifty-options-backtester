@@ -98,7 +98,7 @@ python main.py --mode monitor
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 - **2026-08-23** — Mid-session 11 AM IST entry window made permanent baseline (+2.47% CAGR, MaxDD 8.9%→4.7%)
 - **2026-08-23** — Capital split changed from 70/30 to **50/50** monthly/weekly
-- **2026-08-23** — Weekly DTE gate enforced from config: `[min_dte_entry, max_dte_entry]` = [3, 8]; logged as WARNING
+- **2026-08-23** — Weekly DTE gate enforced from config: `[min_dte_entry, max_dte_entry]` = [3, 8]; logged as WARNING (fill-time drops counted as `weekly_fill_dte_drops`, not ETL-gate skips)
 - **2026-08-23** — Weekly stop-loss widened 80%→**100%** (prevents kill-switch trigger under moderate slippage)
 - **2026-08-23** — IST timezone fix for live market hours gate (uses `zoneinfo.ZoneInfo` on cloud/UTC hosts)
 

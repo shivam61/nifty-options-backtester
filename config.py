@@ -183,6 +183,10 @@ class WeeklyBacktestConfig:
 
     min_dte_entry: int = 3
     max_dte_entry: int = 8
+    # False (default): fill-time backtest re-checks DTE on the fill date against [min, max]
+    # and drops the entry if outside (counted in weekly_fill_dte_drops).
+    # True: the expiry chosen at signal time is trusted; only expiry < fill date is dropped.
+    dte_check_at_signal: bool = False
     profit_target_pct: float = 50.0
     stop_loss_pct: float = 100.0
     max_vix_entry: float = 25.0
@@ -206,7 +210,7 @@ class WeeklyBacktestConfig:
     monthly_loss_block_min_hold_days: int = 3
 
     # ETL gate tuning — controls how strict the expected-tail-loss skip is.
-    # 1.0 = skip if ETL >= credit (zero tolerance; was hardcoded, caused 363 skips in exp1).
+    # 1.0 = skip if ETL >= credit (zero tolerance; was hardcoded, exp1 skip counts were mis-attributed; see weekly_fill_dte_drops).
     # 1.5 = allow up to 1.5× ETL/credit; ML tail scorer + regime scale still size down risky trades.
     # 2.0 = loose; only use if retrained engine still skips >200 trades/17yr window.
     etl_skip_multiplier: float = 1.5
