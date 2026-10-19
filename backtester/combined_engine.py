@@ -1303,6 +1303,15 @@ class CombinedBacktestEngine:
                 return self.weekly_ic
         return self.weekly_pcs
 
+    def _weekly_strategy_for_trade(self, trade):
+        """Strategy that owns an open weekly trade: the one it was entered with.
+
+        Never re-selected from today's market data; that would reprice an open Iron Condor
+        as a Put Credit Spread (or the reverse) on any day the entry-time rule flips.
+        """
+        name = (trade.strategy_name or "").lower()
+        return self.weekly_ic if "weekly_ic" in name else self.weekly_pcs
+
     def _process_weekly_exit(self, row, current_date, spot, vix, market_data) -> float:
         if self.weekly_trade is None:
             return 0.0
@@ -1310,7 +1319,7 @@ class CombinedBacktestEngine:
         dte = max((self._w_expiry - current_date).days, 0) if self._w_expiry else 0
         strategy_name = self.weekly_trade.strategy_name.lower()
 
-        strategy = self._select_weekly_strategy(self._w_entry_vix, market_data)
+        strategy = self._weekly_strategy_for_trade(self.weekly_trade)
         if hasattr(strategy, "update_premiums"):
             strategy.update_premiums(
                 self.weekly_trade, spot, vix, max(dte, 0), self.w_config.risk_free_rate,

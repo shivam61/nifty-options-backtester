@@ -798,3 +798,12 @@ For complete historical context (Runs #3–#55), see [Archived Runs](docs/archiv
 | 2024-09-12 | weekly_ic | trailing_delta | ₹-13,216 |
 | 2026-01-08 | weekly_pcs | stop_loss | ₹-12,167 |
 
+
+## 2026-10-19 — Correction: weekly exit repricing bug (all prior weekly results overstated)
+`CombinedBacktestEngine._process_weekly_exit` re-selected the weekly strategy every day from the current `nifty_return_5d`, so an open Iron Condor could be repriced by `WeeklyPutCreditSpread.update_premiums` (all legs as puts). 305 open-trade-days mismatched in the 17-year run; 40 of 102 trades affected. Fix: exit uses the strategy the trade was entered with (`_weekly_strategy_for_trade`).
+| Run (2009-01-01..2026-08-29, engine OFF, cache-only) | Trades | CAGR | MaxDD | Sharpe | PF | Weekly P&L |
+|---|---|---|---|---|---|---|
+| Pre-fix (Run C repro) | 102 | 11.98% | 6.2% | 0.97 | 6.48 | Rs2,995,460 |
+| Post-fix | 94 | 0.35% | 15.6% | 0.10 | 1.11 | Rs30,806 |
+| Post-fix + dte_check_at_signal | 42 | -0.84% | 15.0% | -0.48 | 0.33 | Rs-67,819 |
+Pre-fix 11.98%, Run #60 12.07% and the 17.97% what-if are not valid performance figures. Source: whatif_work/exitfix (runA/runB/runC logs + JSON).
