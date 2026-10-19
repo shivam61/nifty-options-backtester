@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from config import WeeklyBacktestConfig, CostModel
-from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, update_tracker, WeeklyExitTracker
+from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, trading_sessions_held, update_tracker, WeeklyExitTracker
 from pricing.black_scholes import OptionType, iv_from_vix, price_option
 from strategies.base import Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
@@ -237,7 +237,7 @@ class WeeklyBacktestEngine:
                     dte=dte,
                     entry_vix=entry_vix,
                     current_equity=self._current_equity,
-                    holding_days=(current_date - self.open_trade.entry_date).days,
+                    holding_days=trading_sessions_held(self.data.index, self.open_trade.entry_date, current_date),
                 )
 
                 if not should_exit:

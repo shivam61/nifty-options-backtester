@@ -22,7 +22,7 @@ import pandas as pd
 
 from config import BacktestConfig, WeeklyBacktestConfig, CostModel
 from backtester.fills import ConservativeFillModel
-from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, update_tracker, WeeklyExitTracker
+from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, trading_sessions_held, update_tracker, WeeklyExitTracker
 from strategies.base import BaseStrategy, Trade, TradeAction, ExitReason
 from strategies.expiry_selector import select_optimal_entry
 from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
@@ -1379,7 +1379,7 @@ class CombinedBacktestEngine:
             dte=dte,
             entry_vix=self._w_entry_vix,
             current_equity=self._combined_equity,
-            holding_days=(current_date - self.weekly_trade.entry_date).days,
+            holding_days=trading_sessions_held(self.data.index, self.weekly_trade.entry_date, current_date),
         )
 
         if not should_exit:

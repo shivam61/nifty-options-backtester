@@ -12,6 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+import pandas as pd
+
 from config import WeeklyBacktestConfig
 from strategies.base import ExitReason, Trade
 
@@ -43,6 +45,28 @@ def update_tracker(tracker: WeeklyExitTracker, trade: Trade, spot: float) -> Non
     tracker.low_spot = min(tracker.low_spot, spot)
 
 
+def trading_sessions_held(session_index, entry_date, current_date) -> int:
+    """Number of trading sessions after entry_date up to and including current_date.
+
+    session_index is the engine's own trading-day index (e.g. ``self.data.index``),
+    so weekends and exchange holidays are never counted. Counting is over sessions
+    in (entry_date, current_date]; the entry session itself is day 0.
+
+    Examples: Tuesday entry -> Monday of the following week is 4 sessions
+    (Wed, Thu, Fri, Mon) when no holiday falls in between, i.e. 4 trading days,
+    not the 6 calendar days (Saturday) that a calendar count would give.
+    """
+    sessions = pd.DatetimeIndex(session_index)
+    if sessions.tz is not None:
+        sessions = sessions.tz_localize(None)
+    sessions = sessions.normalize()
+    entry = pd.Timestamp(entry_date).normalize()
+    current = pd.Timestamp(current_date).normalize()
+    if current <= entry:
+        return 0
+    return int(sessions.searchsorted(current, side="right") - sessions.searchsorted(entry, side="right"))
+
+
 def check_weekly_exit(
     *,
     config: WeeklyBacktestConfig,
@@ -55,6 +79,11 @@ def check_weekly_exit(
     current_equity: float,
     holding_days: int,
 ) -> tuple[bool, Optional[ExitReason]]:
+    """holding_days must be TRADING sessions held (see trading_sessions_held), not calendar days.
+
+    config.engine_a_min_hold_days (PCS) and config.engine_b_max_hold_days (IC) are trading-day
+    limits; passing calendar days made weekends count as hold time.
+    """
     if config.weekly_exit_policy == "legacy":
         return _legacy_exit_check(
             config=config,
