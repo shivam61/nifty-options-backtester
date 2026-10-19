@@ -187,6 +187,13 @@ class WeeklyBacktestConfig:
     # and drops the entry if outside (counted in weekly_fill_dte_drops).
     # True: the expiry chosen at signal time is trusted; only expiry < fill date is dropped.
     dte_check_at_signal: bool = False
+    # False (default): the weekly signal fires on Mon/Tue as before. In the Thursday-expiry
+    # era (signal date < 2024-04-04) that signal selects the Thursday expiry at 2-3 DTE and the
+    # Tuesday fill is dropped by the fill-time window (weekly_fill_dte_drops).
+    # True: in the Thursday era the signal fires on Thursday (the expiry day, mirroring the
+    # Monday-era Monday signal) and targets the next Thursday, so the next-day (Friday) fill
+    # lands at 6 DTE inside [min_dte_entry, max_dte_entry]. Post-cutover behaviour is unchanged.
+    era_aware_signal_day: bool = False
     profit_target_pct: float = 50.0
     stop_loss_pct: float = 100.0
     max_vix_entry: float = 25.0

@@ -111,6 +111,11 @@ def get_all_thursdays(year: int, month: int) -> list[date]:
 
 # ── Core helpers ────────────────────────────────────────────────────────────
 
+def is_thursday_expiry_era(ref_date: date) -> bool:
+    """True for the pre-2024-04-04 era in which NIFTY weekly expiries fall on Thursday."""
+    return ref_date < _MONDAY_CUTOVER
+
+
 def get_monthly_expiry(year: int, month: int, ref_date: Optional[date] = None) -> date:
     """
     Last expiry day of the month (raw last Tuesday/Monday/Thursday, shifted to

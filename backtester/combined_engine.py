@@ -9,6 +9,7 @@ Runs both tracks concurrently on shared capital:
 - Single combined equity curve
 """
 
+import calendar
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -36,7 +37,11 @@ from backtester.production_rules import (
     ProductionGate, ProductionRulesConfig, DrawdownKillSwitch, validate_no_naked,
 )
 from models.weekly_risk_engine import WeeklyRiskEngine, WeeklyEntrySizing
-from data.expiry_calendar import get_monthly_expiry, get_weekly_expiry_in_range
+from data.expiry_calendar import (
+    get_monthly_expiry,
+    get_weekly_expiry_in_range,
+    is_thursday_expiry_era,
+)
 
 
 @dataclass
@@ -79,6 +84,7 @@ class CombinedResult:
     weekly_etl_gate_skips: int = 0       # real WeeklyRiskEngine ETL > credit*multiplier skips
     weekly_fill_dte_drops: int = 0       # fill-date DTE outside [min,max] (signal-time expiry)
     weekly_expiry_past_drops: int = 0    # dte_check_at_signal=True: expiry already passed at fill
+    weekly_era_signal_entries: int = 0   # era_aware_signal_day: Thursday-era signals issued
     weekly_regime_skips: int = 0
     weekly_risk_score_avg: float = 0.0
     weekly_dynamic_exit_count: int = 0
@@ -228,6 +234,7 @@ class CombinedBacktestEngine:
         self.weekly_etl_gate_skips = 0
         self.weekly_fill_dte_drops = 0
         self.weekly_expiry_past_drops = 0
+        self.weekly_era_signal_entries = 0
         self.weekly_regime_skips = 0
         self._w_risk_scores: list[float] = []
         self.weekly_dynamic_exit_count = 0
@@ -1444,10 +1451,19 @@ class CombinedBacktestEngine:
 
         return vix_scale * dd_scale * streak_scale * monthly_stress_scale
 
+    def _era_signal_day_applies(self, current_date) -> bool:
+        """Thursday-era signal-day override: opt-in, applies only before the Monday cutover."""
+        return (bool(getattr(self.w_config, "era_aware_signal_day", False))
+                and is_thursday_expiry_era(current_date))
+
     def _process_weekly_entry(self, row, current_date, spot, vix, market_data,
                               equity, data_idx, dd_pct):
         weekday = current_date.weekday()
-        if weekday not in (0, 1):
+        era_signal = self._era_signal_day_applies(current_date)
+        if era_signal:
+            if weekday != calendar.THURSDAY:
+                return
+        elif weekday not in (0, 1):
             return
         if vix < self.w_config.min_vix_entry or vix > self.w_config.max_vix_entry:
             return
@@ -1569,6 +1585,8 @@ class CombinedBacktestEngine:
         self._w_entry_delta = self._estimate_weekly_delta(spot, vix, dte)
         self._w_regime_name = sizing.regime if sizing else "low_vol_grind"
 
+        if era_signal:
+            self.weekly_era_signal_entries += 1
         self._pending_weekly_entry = {
             "signal_date": current_date,
             "signal_spot": spot,
@@ -1729,6 +1747,7 @@ class CombinedBacktestEngine:
             weekly_etl_gate_skips=self.weekly_etl_gate_skips,
             weekly_fill_dte_drops=self.weekly_fill_dte_drops,
             weekly_expiry_past_drops=self.weekly_expiry_past_drops,
+            weekly_era_signal_entries=self.weekly_era_signal_entries,
             weekly_regime_skips=self.weekly_regime_skips,
             weekly_risk_score_avg=(
                 round(float(np.mean(self._w_risk_scores)), 3) if self._w_risk_scores else 0.0
