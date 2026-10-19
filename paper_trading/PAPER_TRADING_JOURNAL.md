@@ -5,7 +5,7 @@
 **Initial Capital**: ₹25,00,000 (CLI `--capital 2500000`)
 **Strategy**: Weekly PCS/IC only. No fixed hold period; exits by rule. Monthly paused.
 **Baseline Model**: retrained 2026-10-18, validated by Run #66 (11.98% CAGR, MaxDD 6.2%, Sharpe 0.97 on the 17-year backtest, weekly risk engine OFF); pre-retrain reference Run #60 (12.07%)
-**Target**: Validate ≥75% weekly win rate, capture ₹25k+ avg profit, DD < 15% over 6 months
+**Target**: Validate positive expectancy per lot (backtest ₹3,134), payoff ratio (avg win ÷ avg loss) ≥ ~1.5, no loss worse than the backtest tail (₹-5,326 per lot), DD < 15% over 6 months. Win rate is tracked for information only: for premium selling it is high by construction and says little about risk.
 
 **Note**: Trade #1 (Aug 29 IC) is a SIMULATED back-fill, not a live paper trade, and is excluded from Phase 1 counts. Zero real trades have been taken. Phase 1 counts start on 2026-10-19. See `analysis/ASOF_2026-09-08_DECISION.md` for the earlier as-of run and [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) for the restart procedure.
 
@@ -34,11 +34,14 @@
 
 | Metric | Backtest | Live Target | Status |
 |--------|----------|-------------|--------|
-| **Weekly win rate** | 78% | >= 75% | [ ] |
-| **Avg profit/trade** | ₹29,528 | >= ₹25,000 | [ ] |
+| **Avg P&L per lot (expectancy)** | ₹3,134 | > 0, ideally >= ₹2,500 | [ ] |
+| **Payoff ratio (avg win ÷ avg loss)** | 1.92 | >= 1.5 | [ ] |
+| **Stop-out rate** | 34% (35/102) | Tracked; compare, do not target | [ ] |
+| **Avg profit/trade (₹, 15 lots)** | ₹29,528 | >= ₹25,000 | [ ] |
+| **Weekly win rate (informational only)** | 78% | Tracked, not a pass/fail gate | [ ] |
 | **Fill quality** | Backtest mid-session fill + 0.75× slippage | Real broker bid/ask logged for every fill | [ ] |
 | **Trade frequency** | 6/year | 1–2/month pace | [ ] |
-| **Worst weekly loss** | ₹-53,255 | Tracked; stop rule governs (no ₹ cap) | [ ] |
+| **Worst weekly loss** | ₹-53,255 (₹-5,326 per lot) | Tracked; stop rule governs (no ₹ cap) | [ ] |
 | **Signal-to-fill latency** | N/A | Logged | [ ] |
 
 ---
@@ -87,7 +90,7 @@ Every other row below is labelled **Fact (code behaviour)**, **Fact (doc fix)**,
 ### Open questions for the owner
 
 1. IC max-hold 4 trading days (keep as code prints?)
-2. ₹1L daily-loss / 3-consecutive-loss / win-rate<60% triggers: hard pause or review-only?
+2. ₹1L daily-loss / 3-consecutive-loss / win-rate<60% triggers: hard pause or review-only? (Suggestion: review-only, and replace the win-rate trigger with rolling expectancy per lot or drawdown, since win rate is not a risk measure for premium selling.)
 3. Checkpoint dates (2026-11-18 / 2026-12-18)
 4. Slippage formula
 5. Strike_Entry/Capital_Deployed formats
