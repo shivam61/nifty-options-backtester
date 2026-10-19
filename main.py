@@ -3556,13 +3556,25 @@ def run_signal_combined(config: BacktestConfig) -> None:
     if not weekly_eligible:
         print(f"  Weekly track: SKIP  — {' | '.join(weekly_blocks)}")
     else:
-        # Strategy selection: PCS if VIX ≤ 16, IC if 16-25 (mirrors _select_weekly_strategy)
-        if vix <= 16:
-            w_strategy_obj = WeeklyPutCreditSpread(lots=weekly_lots, lot_size=config.lot_size)
-            w_strategy_name = "Weekly Put Credit Spread"
-        else:
+        # Strategy selection: same rule as the backtest engines (weekly_exit_policy.select_weekly_strategy_name).
+        # The 5-day Nifty return is the nifty_return_5d column that build_combined_dataset() produces
+        # (market_data.py: nifty_close.pct_change(5)); recompute it from nifty_close only if missing.
+        from backtester.weekly_exit_policy import WEEKLY_IC, select_weekly_strategy_name
+        _ret_5d = latest.get("nifty_return_5d", None)
+        if _ret_5d is None or pd.isna(_ret_5d):
+            _closes = data["nifty_close"].dropna() if "nifty_close" in data.columns else None
+            if _closes is not None and len(_closes) > 5:
+                _ret_5d = float(_closes.iloc[-1] / _closes.iloc[-6] - 1.0)
+        if _ret_5d is None or pd.isna(_ret_5d):
+            print("  WARNING: 5-day Nifty return unavailable — weekly strategy defaults to PCS")
+            _ret_5d = None
+        _w_rule = select_weekly_strategy_name(vix, _ret_5d)
+        if _w_rule == WEEKLY_IC:
             w_strategy_obj = WeeklyIronCondor(lots=weekly_lots, lot_size=config.lot_size)
             w_strategy_name = "Weekly Iron Condor"
+        else:
+            w_strategy_obj = WeeklyPutCreditSpread(lots=weekly_lots, lot_size=config.lot_size)
+            w_strategy_name = "Weekly Put Credit Spread"
 
         w_action = w_strategy_obj.should_enter(spot, vix, latest.to_dict()
                                                 if hasattr(latest, "to_dict") else dict(latest))

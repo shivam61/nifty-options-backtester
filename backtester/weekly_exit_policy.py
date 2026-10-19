@@ -9,6 +9,7 @@ The policy is deliberately runtime-safe:
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Optional
 
@@ -16,6 +17,36 @@ import pandas as pd
 
 from config import WeeklyBacktestConfig
 from strategies.base import ExitReason, Trade
+
+# ── Weekly strategy-selection rule (single source of truth) ─────────────────
+# Used by CombinedBacktestEngine, WeeklyBacktestEngine and the live CLI
+# (main.py run_signal_combined). Change it here only.
+WEEKLY_IC_VIX_MIN = 12.0          # inclusive
+WEEKLY_IC_VIX_MAX = 22.0          # inclusive
+WEEKLY_IC_MAX_ABS_RET_5D = 0.02   # strict: |5-day Nifty return| must be < 2%
+
+WEEKLY_IC = "weekly_ic"
+WEEKLY_PCS = "weekly_pcs"
+
+
+def select_weekly_strategy_name(vix, nifty_return_5d) -> str:
+    """Return WEEKLY_IC or WEEKLY_PCS for the given VIX and 5-day Nifty return.
+
+    IC only when VIX is in [WEEKLY_IC_VIX_MIN, WEEKLY_IC_VIX_MAX] and the 5-day
+    return is known with |ret| < WEEKLY_IC_MAX_ABS_RET_5D. Anything else
+    (VIX outside the band, NaN or None return) falls back to PCS.
+    """
+    if not (WEEKLY_IC_VIX_MIN <= vix <= WEEKLY_IC_VIX_MAX):
+        return WEEKLY_PCS
+    try:
+        ret = float(nifty_return_5d)
+    except (TypeError, ValueError):
+        return WEEKLY_PCS
+    if math.isnan(ret):
+        return WEEKLY_PCS
+    if abs(ret) < WEEKLY_IC_MAX_ABS_RET_5D:
+        return WEEKLY_IC
+    return WEEKLY_PCS
 
 
 @dataclass

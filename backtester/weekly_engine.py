@@ -14,7 +14,10 @@ import numpy as np
 import pandas as pd
 
 from config import WeeklyBacktestConfig, CostModel
-from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, trading_sessions_held, update_tracker, WeeklyExitTracker
+from backtester.weekly_exit_policy import (
+    WEEKLY_IC, build_tracker, check_weekly_exit, select_weekly_strategy_name,
+    trading_sessions_held, update_tracker, WeeklyExitTracker,
+)
 from pricing.black_scholes import OptionType, iv_from_vix, price_option
 from strategies.base import Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
@@ -164,12 +167,9 @@ class WeeklyBacktestEngine:
         return raw_pnl - cost, fill_adjustment, fill_worsened
 
     def _select_strategy(self, vix: float, market_data: dict):
-        """VIX-based strategy selection for weeklies."""
-        if 12 <= vix <= 22:
-            nifty_5d = market_data.get("nifty_return_5d", 0)
-            if not (isinstance(nifty_5d, float) and np.isnan(nifty_5d)) and abs(nifty_5d) < 0.02:
-                return self.ic
-        return self.pcs
+        """VIX / 5-day-return strategy selection for weeklies (shared rule)."""
+        name = select_weekly_strategy_name(vix, market_data.get("nifty_return_5d", 0))
+        return self.ic if name == WEEKLY_IC else self.pcs
 
     def _strategy_for_trade(self, trade: Trade):
         """Strategy that owns an open weekly trade: the one it was entered with.

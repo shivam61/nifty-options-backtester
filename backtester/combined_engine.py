@@ -22,7 +22,10 @@ import pandas as pd
 
 from config import BacktestConfig, WeeklyBacktestConfig, CostModel
 from backtester.fills import ConservativeFillModel
-from backtester.weekly_exit_policy import build_tracker, check_weekly_exit, trading_sessions_held, update_tracker, WeeklyExitTracker
+from backtester.weekly_exit_policy import (
+    WEEKLY_IC, build_tracker, check_weekly_exit, select_weekly_strategy_name,
+    trading_sessions_held, update_tracker, WeeklyExitTracker,
+)
 from strategies.base import BaseStrategy, Trade, TradeAction, ExitReason
 from strategies.expiry_selector import select_optimal_entry
 from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
@@ -1297,11 +1300,8 @@ class CombinedBacktestEngine:
     # ═══════════════════════════════════════════════════════════════════
 
     def _select_weekly_strategy(self, vix, market_data):
-        if 12 <= vix <= 22:
-            nifty_5d = market_data.get("nifty_return_5d", 0)
-            if not (isinstance(nifty_5d, float) and np.isnan(nifty_5d)) and abs(nifty_5d) < 0.02:
-                return self.weekly_ic
-        return self.weekly_pcs
+        name = select_weekly_strategy_name(vix, market_data.get("nifty_return_5d", 0))
+        return self.weekly_ic if name == WEEKLY_IC else self.weekly_pcs
 
     def _weekly_strategy_for_trade(self, trade):
         """Strategy that owns an open weekly trade: the one it was entered with.
