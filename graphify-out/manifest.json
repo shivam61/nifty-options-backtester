@@ -348,8 +348,8 @@
     "hash": "a97f68c2f0ade17b10307948ba720893"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/weekly_engine.py": {
-    "mtime": 1778607219.0546975,
-    "hash": "1ef0f513735def93b5ef73fe01645bf9"
+    "mtime": 1792404347.3667486,
+    "hash": "0b33d097d3a2e0497215dffff3b29b7e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/backtester/weekly_simulator.py": {
     "mtime": 1778607219.0546975,
@@ -442,6 +442,10 @@
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_feature_store.py": {
     "mtime": 1792307116.7650917,
     "hash": "1dc45e2757002c47e371c601161efa4f"
+  },
+  "/home/shivamguptanit/github/nifty-options-backtester/tests/test_weekly_engine_exit_strategy.py": {
+    "mtime": 1792404347.3667486,
+    "hash": "941a54b962d994befbee8c69d5bc55cc"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/tests/test_base.py": {
     "mtime": 1787463413.3511593,
@@ -696,16 +700,12 @@
     "hash": "1dc031233365f03f45a13a865dd0244e"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/PAPER_TRADING_JOURNAL.md": {
-    "mtime": 1792397982.0000455,
+    "mtime": 1792400708.9276857,
     "hash": "47c1f940fd252f5e9aa7d0768f694dbb"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/FIRST_TRADE_TEMPLATE.md": {
     "mtime": 1792314766.806789,
     "hash": "f9c4c45a8a522d60aa6ae19ae27afbd0"
-  },
-  "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/TRADE_001_RECAP.md": {
-    "mtime": 1791912124.4074607,
-    "hash": "39019033e224d4d1bfbb9a10b5736458"
   },
   "/home/shivamguptanit/github/nifty-options-backtester/paper_trading/tracker/RISK_DASHBOARD.md": {
     "mtime": 1792314766.806789,

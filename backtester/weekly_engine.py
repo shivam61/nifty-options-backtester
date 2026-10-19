@@ -171,6 +171,15 @@ class WeeklyBacktestEngine:
                 return self.ic
         return self.pcs
 
+    def _strategy_for_trade(self, trade: Trade):
+        """Strategy that owns an open weekly trade: the one it was entered with.
+
+        Never re-selected from today's market data; that would reprice an open Iron Condor
+        as a Put Credit Spread (or the reverse) on any day the entry-time rule flips.
+        """
+        name = (trade.strategy_name or "").lower()
+        return self.ic if "weekly_ic" in name else self.pcs
+
     def _apply_costs(self, trade: Trade) -> float:
         """Calculate transaction costs for a trade."""
         if not self.cost_model:
@@ -204,7 +213,7 @@ class WeeklyBacktestEngine:
                 self._days_in_market += 1
                 dte = (expiry_date - current_date).days if expiry_date else 0
 
-                strategy = self._select_strategy(entry_vix, market_data)
+                strategy = self._strategy_for_trade(self.open_trade)
                 if hasattr(strategy, "update_premiums"):
                     strategy.update_premiums(
                         self.open_trade, spot, vix, max(dte, 0),
