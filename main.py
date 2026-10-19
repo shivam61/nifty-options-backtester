@@ -237,6 +237,7 @@ def log_backtest_run(
             "dd_kill_switch_activations": result.dd_kill_switch_activations,
             "dd_kill_weekly_closes": result.dd_kill_weekly_closes,
             "dd_kill_entries_blocked": result.dd_kill_entries_blocked,
+            "dd_lock_releases": result.dd_lock_releases,
             "event_calendar_blocks": result.event_calendar_blocks,
             "weekly_etl_skips": result.weekly_etl_skips,
             "weekly_etl_gate_skips": result.weekly_etl_gate_skips,
@@ -739,6 +740,9 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
             enforce_no_naked=True,
             enforce_hedge_ratio=True,
             max_spread_width_pct=3.0,
+            # Opt-in lock release (Phase 2.2). 0 = locks stay absorbing (current behaviour).
+            cross_dd_rearm_days=0,
+            kill_switch_rearm_days=0,
         ),
         walk_forward_manager=None,
     )

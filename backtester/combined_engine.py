@@ -76,6 +76,7 @@ class CombinedResult:
     dd_kill_switch_activations: int = 0
     dd_kill_weekly_closes: int = 0
     dd_kill_entries_blocked: int = 0
+    dd_lock_releases: int = 0            # opt-in rearm releases (cross-track or kill switch)
     event_calendar_blocks: int = 0
     # Risk engine stats
     # weekly_etl_skips is a legacy total (ETL-gate skips + fill-time DTE drops), kept
@@ -220,6 +221,11 @@ class CombinedBacktestEngine:
         # falling below a static floor.
         self._cross_dd_worst_while_blocked: float = 0.0
         self._cross_dd_improvement_pct: float = 0.03   # 3% improvement required
+        # Opt-in lock release (Phase 2.2): consecutive flat trading days while a
+        # lock is active, and the number of releases performed.
+        self._cross_flat_days: int = 0
+        self._kill_flat_days: int = 0
+        self.dd_lock_releases: int = 0
         self.weekly_vix_gate_blocks = 0
         self.weekly_open_cap_blocks = 0
         self.weekly_monthly_loss_blocks = 0
@@ -474,6 +480,10 @@ class CombinedBacktestEngine:
                 self._peak_equity = equity_mtm
             if equity_realized > self._peak_equity_realized:
                 self._peak_equity_realized = equity_realized
+
+            # Opt-in lock release (no-op unless cross_dd_rearm_days / kill_switch_rearm_days > 0).
+            # Runs before the DD figures below so they are measured from any re-based peak.
+            self._apply_dd_lock_rearm(current_date, equity_realized, equity_mtm)
 
             dd_pct = max(0, (self._peak_equity - equity_mtm) / self._peak_equity) if self._peak_equity > 0 else 0
 
@@ -1240,6 +1250,84 @@ class CombinedBacktestEngine:
     #  Weekly track — risk gates
     # ═══════════════════════════════════════════════════════════════════
 
+    def _apply_dd_lock_rearm(self, current_date, equity_realized, equity_mtm) -> None:
+        """
+        Release absorbing drawdown locks after N consecutive flat trading days.
+
+        Both locks are absorbing when the account is flat: with no open trades
+        MTM == realized and neither can move, so the DD that tripped the lock
+        never improves. With rearm N > 0 a lock that has been active and flat
+        for N consecutive trading days is released and the peak it measures
+        DD against is re-based to the current (flat) equity, so DD restarts at
+        0. Re-basing happens only on release and only when flat, so no open
+        position's loss is hidden; new losses after release are measured from
+        the new peak as usual. Both defaults (0) return immediately.
+
+        - Cross-track gate: active when realized DD > cross_track_dd_pct or the
+          worst-while-blocked tracker is set. Release re-bases the REALIZED peak
+          only; the MTM peak (kill-switch measure) is left untouched so the
+          20% hard stop is not silently forgiven by the soft gate.
+        - Kill switch: active when is_active. Requires N flat days AND cooldown
+          elapsed. Release re-bases BOTH peaks (flat, so MTM == realized) and
+          clears the cross-track tracker, since its realized peak was re-based.
+        """
+        cfg = self.prod_gate.config
+        cross_n = int(getattr(cfg, "cross_dd_rearm_days", 0) or 0)
+        kill_n = int(getattr(cfg, "kill_switch_rearm_days", 0) or 0)
+        if cross_n <= 0 and kill_n <= 0:
+            return
+
+        flat = self.monthly_trade is None and self.weekly_trade is None
+        ks = self.prod_gate.kill_switch
+
+        # ── Kill switch (hard stop) ──
+        if kill_n > 0 and ks.state.is_active:
+            self._kill_flat_days = self._kill_flat_days + 1 if flat else 0
+            cooldown_ok = (
+                ks.state.cooldown_until is None or current_date >= ks.state.cooldown_until
+            )
+            if flat and cooldown_ok and self._kill_flat_days >= kill_n:
+                old_peak = self._peak_equity
+                ks.release_for_rearm()
+                self._peak_equity = equity_mtm
+                self._peak_equity_realized = equity_realized
+                self._cross_dd_worst_while_blocked = 0.0
+                self._cross_flat_days = 0
+                self._kill_flat_days = 0
+                self.dd_lock_releases += 1
+                _log.warning(
+                    "DD kill switch released on %s after %d flat trading days; "
+                    "peak re-based %.0f -> %.0f",
+                    current_date, kill_n, old_peak, equity_mtm,
+                )
+        elif not ks.state.is_active:
+            self._kill_flat_days = 0
+
+        # ── Cross-track gate (soft, weekly only) ──
+        if cross_n > 0:
+            peak_r = self._peak_equity_realized
+            cross_dd = max(0.0, (peak_r - equity_realized) / peak_r) if peak_r > 0 else 0.0
+            cross_locked = (
+                self._cross_dd_worst_while_blocked > 0
+                or cross_dd > self.cross_track_dd_pct
+            )
+            if cross_locked and flat:
+                self._cross_flat_days += 1
+            else:
+                self._cross_flat_days = 0
+            if (cross_locked and flat and not ks.state.is_active
+                    and self._cross_flat_days >= cross_n):
+                old_peak = self._peak_equity_realized
+                self._peak_equity_realized = equity_realized
+                self._cross_dd_worst_while_blocked = 0.0
+                self._cross_flat_days = 0
+                self.dd_lock_releases += 1
+                _log.warning(
+                    "Cross-track DD gate released on %s after %d flat trading days; "
+                    "realized peak re-based %.0f -> %.0f",
+                    current_date, cross_n, old_peak, equity_realized,
+                )
+
     def _weekly_entry_blocked(self, equity, dd_pct, vix) -> Optional[str]:
         """
         Multi-layer risk gate for weekly entries.
@@ -1665,6 +1753,7 @@ class CombinedBacktestEngine:
                 initial_capital=capital,
                 equity_curve=self.equity_curve,
                 daily_pnl=self.daily_pnl,
+                dd_lock_releases=self.dd_lock_releases,
                 diagnostics=self.monthly_diagnostics.summary(),
             )
 
@@ -1742,6 +1831,7 @@ class CombinedBacktestEngine:
             dd_kill_switch_activations=self.prod_gate.kill_switch.state.total_activations,
             dd_kill_weekly_closes=self.prod_gate.kill_switch.state.weekly_force_closes,
             dd_kill_entries_blocked=self.prod_gate.kill_switch.state.entries_blocked,
+            dd_lock_releases=self.dd_lock_releases,
             event_calendar_blocks=self.prod_gate.event_blocks,
             weekly_etl_skips=self.weekly_etl_skips,
             weekly_etl_gate_skips=self.weekly_etl_gate_skips,

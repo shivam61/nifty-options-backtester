@@ -333,6 +333,23 @@ class DrawdownKillSwitch:
 
         return False
 
+    def release_for_rearm(self) -> bool:
+        """
+        Clear an active lock after the caller has verified the rearm condition
+        (N consecutive flat trading days, cooldown elapsed). The caller is
+        responsible for re-basing the equity peaks it measures DD against.
+        Returns True if a lock was cleared.
+        """
+        st = self.state
+        if not st.is_active:
+            return False
+        st.is_active = False
+        st.activated_date = None
+        st.cooldown_until = None
+        st.max_dd_while_blocked = 0.0
+        st.just_activated = False
+        return True
+
     def should_force_close_weekly(self) -> bool:
         """True on the activation tick — close weekly positions immediately."""
         return self.state.is_active and self.state.just_activated
@@ -353,6 +370,11 @@ class ProductionRulesConfig:
     dd_kill_pct: float = 0.20
     dd_recovery_pct: float = 0.16
     dd_cooldown_days: int = 5
+    # Opt-in lock release (Phase 2.2). 0 = disabled (locks are absorbing when
+    # the account is flat, the historical behaviour). N > 0 = release the lock
+    # after N consecutive flat trading days and re-base the DD peak.
+    cross_dd_rearm_days: int = 0
+    kill_switch_rearm_days: int = 0
     block_events: bool = True
     enforce_no_naked: bool = True
     enforce_hedge_ratio: bool = True
