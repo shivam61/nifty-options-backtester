@@ -108,6 +108,12 @@ class ActiveTrade:
     notes: str = ""
     strategy_code: Optional[str] = None
 
+    # Entry-time market context, persisted so exit checks compare against the
+    # VIX/spot at entry rather than today's values. None for trades added before
+    # these fields existed (monitor falls back to current values with a warning).
+    entry_vix: Optional[float] = None
+    entry_spot: Optional[float] = None
+
     # Persisted peak P&L for 85% max profit booking (survives across monitor runs)
     peak_pnl_per_unit: float = 0.0
 
@@ -955,6 +961,8 @@ def add_trade_from_legs(
     current_pnl: Optional[float] = None,
     notes: str = "",
     strategy_code: Optional[str] = None,
+    entry_vix: Optional[float] = None,
+    entry_spot: Optional[float] = None,
 ) -> ActiveTrade:
     """Add a multi-leg trade from --leg format strings."""
     parsed_legs = [parse_leg(s) for s in leg_strings]
@@ -967,6 +975,8 @@ def add_trade_from_legs(
         current_pnl=current_pnl,
         notes=notes,
         strategy_code=strategy_code,
+        entry_vix=entry_vix,
+        entry_spot=entry_spot,
     )
     trades = [t for t in trades if t.trade_id != trade_id]
     trades.append(trade)
@@ -986,6 +996,8 @@ def add_trade(
     lot_size: int = 75,
     notes: str = "",
     strategy_code: Optional[str] = None,
+    entry_vix: Optional[float] = None,
+    entry_spot: Optional[float] = None,
 ) -> ActiveTrade:
     """Legacy: add a single-spread trade."""
     ot = "PE" if direction == "put" else "CE"
@@ -1010,6 +1022,8 @@ def add_trade(
         lot_size=lot_size,
         notes=notes,
         strategy_code=strategy_code,
+        entry_vix=entry_vix,
+        entry_spot=entry_spot,
     )
     trades = [t for t in trades if t.trade_id != trade_id]
     trades.append(trade)

@@ -30,6 +30,7 @@ Every backtest run auto-appends results to:
 
 import argparse
 import json
+import logging
 import os
 import sys
 import random
@@ -68,6 +69,7 @@ from strategies.multi_strategy import (
     STRATEGY_DISPLAY,
 )
 from strategies.expiry_selector import select_optimal_entry
+from strategies.weekly_strategies import WeeklyIronCondor, WeeklyPutCreditSpread
 from backtester.engine import SmartBacktestEngine
 from signals.generator import SignalGenerator
 from analysis.reporter import BacktestReporter
@@ -2173,6 +2175,45 @@ def run_evolve(config: BacktestConfig):
 
 
 
+_monitor_log = logging.getLogger(__name__)
+
+
+def _monitor_strategy_for_trade(trade, config: BacktestConfig):
+    """Fresh exit-strategy instance for one trade.
+
+    RegimeAdaptiveStrategy pins the sub-strategy it selects in ``_active_strategy``
+    (evaluate_exit only selects it while that is None), so one shared instance prices
+    every later trade with the first trade's sub-strategy. Weekly trades are identified
+    by ``strategy_code`` (the journal has no other strategy field) and use the weekly
+    strategy they were entered with.
+    """
+    code = (trade.strategy_code or "").lower()
+    if "weekly_ic" in code:
+        return WeeklyIronCondor(lots=config.max_lots, lot_size=config.lot_size)
+    if "weekly_pcs" in code:
+        return WeeklyPutCreditSpread(lots=config.max_lots, lot_size=config.lot_size)
+    return RegimeAdaptiveStrategy(
+        lots=config.max_lots,
+        lot_size=config.lot_size,
+        allow_bwb=not config.monthly_disable_bwb,
+    )
+
+
+def _entry_context_for_trade(trade, fallback_spot: float, fallback_vix: float) -> tuple[float, float]:
+    """(entry_vix, entry_spot) from the journal; falls back to current values with a warning."""
+    entry_vix = trade.entry_vix if trade.entry_vix else None
+    entry_spot = trade.entry_spot if trade.entry_spot else None
+    if entry_vix is None:
+        _monitor_log.warning("Trade %s has no stored entry_vix; using current VIX %.2f",
+                             trade.trade_id, fallback_vix)
+        entry_vix = fallback_vix
+    if entry_spot is None:
+        _monitor_log.warning("Trade %s has no stored entry_spot; using current spot %.2f",
+                             trade.trade_id, fallback_spot)
+        entry_spot = fallback_spot
+    return entry_vix, entry_spot
+
+
 def run_monitor(config: BacktestConfig) -> None:
     """Monitor active trades and provide ML-driven exit recommendations."""
 
@@ -2461,13 +2502,11 @@ def run_monitor(config: BacktestConfig) -> None:
     from exits import evaluate_exit, TradeAdapter, ExitDecision
     from models.trade_monitor import ExitRecommendation
 
-    monitor_strategy = RegimeAdaptiveStrategy(
-        lots=config.max_lots,
-        lot_size=config.lot_size,
-        allow_bwb=not config.monthly_disable_bwb,
-    )
-
     for trade in trades:
+        # One strategy instance per trade (see _monitor_strategy_for_trade)
+        monitor_strategy = _monitor_strategy_for_trade(trade, config)
+        entry_vix, entry_spot = _entry_context_for_trade(trade, spot, vix)
+
         # Step 1: Compute live P&L using Fyers LTP (or BS fallback)
         legs = trade.get_legs()
         dte = max(trade.dte, 1)
@@ -2516,7 +2555,7 @@ def run_monitor(config: BacktestConfig) -> None:
             print(f"  📈 Initialized peak P&L tracking at ₹{peak_pnl:.2f} per unit")
 
         # Step 3: Build adapter so strategy.should_exit() can evaluate
-        adapter = TradeAdapter(trade, total_pnl, pnl_per_unit, entry_vix=vix,
+        adapter = TradeAdapter(trade, total_pnl, pnl_per_unit, entry_vix=entry_vix,
                                peak_pnl_per_unit=peak_pnl)
         
         # Step 4: Update peak if current P&L is higher
@@ -2534,8 +2573,8 @@ def run_monitor(config: BacktestConfig) -> None:
             market_data=latest,
             equity=config.initial_capital,
             exit_engine=engine if engine.is_trained else None,
-            entry_spot=spot,
-            entry_vix=vix,
+            entry_spot=entry_spot,
+            entry_vix=entry_vix,
             peak_pnl_per_unit=peak_pnl,
         )
 
@@ -2687,6 +2726,8 @@ def run_add_trade(args) -> None:
             current_pnl=args.current_pnl,
             notes=args.notes or "",
             strategy_code=args.strategy_code,
+            entry_vix=args.entry_vix,
+            entry_spot=args.entry_spot,
         )
         legs = trade.get_legs()
         print(f"\n  Trade added: {trade.trade_id}")
@@ -2712,6 +2753,8 @@ def run_add_trade(args) -> None:
             lot_size=args.lot_size,
             notes=args.notes or "",
             strategy_code=args.strategy_code,
+            entry_vix=args.entry_vix,
+            entry_spot=args.entry_spot,
         )
         print(f"\n  Trade added: {trade.trade_id}")
         print(f"  {trade.strategy_name}")
@@ -2842,8 +2885,11 @@ def main():
     parser.add_argument("--realized-pnl", type=float, help="Realized P&L in ₹ when closing a trade")
     parser.add_argument(
         "--strategy-code", type=str,
-        help="Optional learner strategy code for training, e.g. put_credit_spread or iron_condor",
+        help="Optional learner strategy code for training, e.g. put_credit_spread or iron_condor. "
+             "Use weekly_ic or weekly_pcs for weekly trades (monitor exit logic keys off this)",
     )
+    parser.add_argument("--entry-vix", type=float, help="India VIX at entry (monitor exit checks)")
+    parser.add_argument("--entry-spot", type=float, help="Nifty spot at entry (monitor exit checks)")
     # Legacy single-spread args (still supported)
     parser.add_argument("--direction", type=str, choices=["put", "call"], help="Spread direction (legacy)")
     parser.add_argument("--short-strike", type=float, help="Short strike price (legacy)")
