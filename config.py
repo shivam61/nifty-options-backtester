@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date, timedelta
+from typing import Optional
 
 
 @dataclass
@@ -231,6 +232,16 @@ class WeeklyBacktestConfig:
         slippage_vix_scale=0.06,
     ))
     apply_costs: bool = True
+
+    # First date the weekly track may SIGNAL (and so trade). None (default) = no gate.
+    # Only weekly entries are gated: market data, features and ML models still use the full
+    # history from start_date. The engine starts its equity curve, DD peaks and metrics at this
+    # date (see CombinedBacktestEngine._build_result). Accepts a date or 'YYYY-MM-DD'.
+    weekly_trade_start_date: Optional[date] = None
+
+    def __post_init__(self):
+        if isinstance(self.weekly_trade_start_date, str):
+            self.weekly_trade_start_date = date.fromisoformat(self.weekly_trade_start_date)
 
 
 @dataclass

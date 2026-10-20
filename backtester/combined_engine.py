@@ -185,6 +185,14 @@ class CombinedBacktestEngine:
         self.weekly_completed: list = []
         self.equity_curve: list[float] = []
         self.daily_pnl: list[float] = []
+        self._curve_dates: list = []   # date of each equity_curve entry (metrics window)
+
+        # Weekly trade-start gate (WeeklyBacktestConfig.weekly_trade_start_date). None = off.
+        _wstart = getattr(weekly_config, "weekly_trade_start_date", None)
+        if isinstance(_wstart, str):
+            _wstart = date.fromisoformat(_wstart)
+        self._weekly_trade_start: Optional[date] = _wstart
+        self._window_started = False
 
         self._combined_equity = monthly_config.initial_capital
         self._peak_equity = monthly_config.initial_capital
@@ -452,6 +460,7 @@ class CombinedBacktestEngine:
             if self._evaluation_start_date is not None and current_date < self._evaluation_start_date:
                 self.equity_curve.append(capital)
                 self.daily_pnl.append(0.0)
+                self._curve_dates.append(current_date)
                 continue
             self._sync_walk_forward_models(current_date)
             self._fill_pending_monthly_entry(current_date, row)
@@ -476,6 +485,12 @@ class CombinedBacktestEngine:
                 equity_mtm += self.monthly_trade.total_pnl
             if self.weekly_trade:
                 equity_mtm += self.weekly_trade.total_pnl
+            if (self._weekly_trade_start is not None and not self._window_started
+                    and current_date >= self._weekly_trade_start):
+                # Metrics window opens: DD peaks start from the equity at the first tradable day.
+                self._window_started = True
+                self._peak_equity = equity_mtm
+                self._peak_equity_realized = equity_realized
             if equity_mtm > self._peak_equity:
                 self._peak_equity = equity_mtm
             if equity_realized > self._peak_equity_realized:
@@ -524,6 +539,7 @@ class CombinedBacktestEngine:
                     combined_eq += self.weekly_trade.total_pnl
                 self.equity_curve.append(combined_eq)
                 self.daily_pnl.append(daily_combined_pnl)
+                self._curve_dates.append(current_date)
                 continue
 
             # ── Emergency cross-track exit: close weekly if combined open loss is too large ──
@@ -593,6 +609,7 @@ class CombinedBacktestEngine:
 
             self.equity_curve.append(combined_eq)
             self.daily_pnl.append(daily_combined_pnl)
+            self._curve_dates.append(current_date)
 
         # Close any open trades at end
         if self.monthly_trade:
@@ -1546,6 +1563,8 @@ class CombinedBacktestEngine:
 
     def _process_weekly_entry(self, row, current_date, spot, vix, market_data,
                               equity, data_idx, dd_pct):
+        if self._weekly_trade_start is not None and current_date < self._weekly_trade_start:
+            return   # weekly track does not trade before weekly_trade_start_date
         weekday = current_date.weekday()
         era_signal = self._era_signal_day_applies(current_date)
         if era_signal:
@@ -1745,29 +1764,56 @@ class CombinedBacktestEngine:
     #  Results
     # ═══════════════════════════════════════════════════════════════════
 
+    def _metrics_window(self):
+        """(monthly_trades, weekly_trades, equity_curve, daily_pnl) for the reported metrics.
+
+        Without weekly_trade_start_date this is the full history, unchanged. With it, the
+        curve starts at the first recorded date >= the start date and is rebased so the window
+        opens at initial capital (pre-window P&L, if any, is removed from the curve). Trades
+        count when they exit inside the window, so their P&L matches the curve.
+        """
+        full_curve, full_pnl = self.equity_curve, self.daily_pnl
+        start = self._weekly_trade_start
+        if start is None:
+            return self.monthly_completed, self.weekly_completed, full_curve, full_pnl
+        capital = self.m_config.initial_capital
+        k = next((i for i, d in enumerate(self._curve_dates) if d >= start), None)
+        if k is None:
+            return [], [], [], []
+        base = full_curve[k - 1] if k > 0 else capital
+        curve = [capital + (v - base) for v in full_curve[k:]]
+        in_window = lambda t: t["exit_date"] >= start
+        return (
+            [t for t in self.monthly_completed if in_window(t)],
+            [t for t in self.weekly_completed if in_window(t)],
+            curve,
+            full_pnl[k:],
+        )
+
     def _build_result(self) -> CombinedResult:
         capital = self.m_config.initial_capital
-        all_trades = self.monthly_completed + self.weekly_completed
+        monthly_done, weekly_done, equity_curve, daily_pnl = self._metrics_window()
+        all_trades = monthly_done + weekly_done
         if not all_trades:
             return CombinedResult(
                 initial_capital=capital,
-                equity_curve=self.equity_curve,
-                daily_pnl=self.daily_pnl,
+                equity_curve=equity_curve,
+                daily_pnl=daily_pnl,
                 dd_lock_releases=self.dd_lock_releases,
                 diagnostics=self.monthly_diagnostics.summary(),
             )
 
         pnls = [t["total_pnl"] for t in all_trades]
-        m_pnls = [t["total_pnl"] for t in self.monthly_completed]
-        w_pnls = [t["total_pnl"] for t in self.weekly_completed]
+        m_pnls = [t["total_pnl"] for t in monthly_done]
+        w_pnls = [t["total_pnl"] for t in weekly_done]
 
         total_pnl = sum(pnls)
-        n_days = len(self.equity_curve)
+        n_days = len(equity_curve)
         years = n_days / 252 if n_days > 0 else 1
         final = capital + total_pnl
         cagr = ((final / capital) ** (1 / years) - 1) * 100 if final > 0 and years > 0 else 0
 
-        eq = np.array(self.equity_curve) if self.equity_curve else np.array([capital])
+        eq = np.array(equity_curve) if equity_curve else np.array([capital])
         peak = np.maximum.accumulate(eq)
         dd = (eq - peak) / peak * 100
         max_dd = abs(dd.min()) if len(dd) > 0 else 0
@@ -1791,8 +1837,8 @@ class CombinedBacktestEngine:
         m_wins = sum(1 for p in m_pnls if p > 0)
         w_wins = sum(1 for p in w_pnls if p > 0)
 
-        m_hold = [t["holding_days"] for t in self.monthly_completed]
-        w_hold = [t["holding_days"] for t in self.weekly_completed]
+        m_hold = [t["holding_days"] for t in monthly_done]
+        w_hold = [t["holding_days"] for t in weekly_done]
 
         total_hold = sum(t["holding_days"] for t in all_trades)
         first = min(t["entry_date"] for t in all_trades)
@@ -1803,8 +1849,8 @@ class CombinedBacktestEngine:
         return CombinedResult(
             initial_capital=capital,
             total_trades=len(all_trades),
-            monthly_trades=len(self.monthly_completed),
-            weekly_trades=len(self.weekly_completed),
+            monthly_trades=len(monthly_done),
+            weekly_trades=len(weekly_done),
             total_pnl=round(total_pnl),
             monthly_pnl=round(sum(m_pnls)),
             weekly_pnl=round(sum(w_pnls)),
@@ -1847,8 +1893,8 @@ class CombinedBacktestEngine:
             weekly_regime_distribution=dict(self._w_regime_counts),
             best_trade_pnl=round(max(pnls)) if pnls else 0,
             worst_trade_pnl=round(min(pnls)) if pnls else 0,
-            equity_curve=self.equity_curve,
-            daily_pnl=self.daily_pnl,
+            equity_curve=equity_curve,
+            daily_pnl=daily_pnl,
             all_trades=all_trades,
             diagnostics=self.monthly_diagnostics.summary(),
         )

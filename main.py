@@ -645,7 +645,8 @@ def run_backtest(config: BacktestConfig, target_dte: int = 21, run_label: str = 
     return result, data
 
 
-def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_label: str = "") -> None:
+def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_label: str = "",
+                          weekly_start: str | None = None) -> None:
     """
     Combined monthly + weekly backtest pipeline using final evolve artifacts only.
 
@@ -676,7 +677,7 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"  Loaded {len(data)} trading days")
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
-    wc = WeeklyBacktestConfig()
+    wc = WeeklyBacktestConfig(weekly_trade_start_date=weekly_start)
     exit_engine = None
     entry_model = None
     weekly_risk_engine = None
@@ -2861,6 +2862,10 @@ def main():
     )
     parser.add_argument("--start", type=str, default="2009-01-01", help="Start date (YYYY-MM-DD)")
     parser.add_argument("--end", type=str, default=str(date.today()), help="End date (YYYY-MM-DD, default: today)")
+    parser.add_argument(
+        "--weekly-start", type=str, default=None,
+        help="backtest-combined: first date the weekly track may trade (YYYY-MM-DD); metrics start here. Features/models still use full history from --start.",
+    )
     parser.add_argument("--capital", type=float, default=500000, help="Initial capital (INR)")
     parser.add_argument("--lots", type=int, default=15, help="Max lots per trade")
     parser.add_argument("--dte", type=int, default=21, help="Target DTE for entry")
@@ -2914,7 +2919,8 @@ def main():
     if args.mode == "backtest":
         run_backtest(config, args.dte, run_label=args.run_label)
     elif args.mode == "backtest-combined":
-        run_backtest_combined(config, args.dte, run_label=args.run_label)
+        run_backtest_combined(config, args.dte, run_label=args.run_label,
+                              weekly_start=args.weekly_start)
     elif args.mode == "signal":
         run_signal(config)
     elif args.mode == "signal-combined":
