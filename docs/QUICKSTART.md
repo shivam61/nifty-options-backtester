@@ -131,8 +131,8 @@ Shows exactly what data is being fetched and if `[LIVE]` tags will appear.
 - **Fallback:** NSE/Groww outside market hours
 
 ### NSE Expiry Schedule
-- **Weekly:** Every Monday
-- **Monthly:** Last Monday of month
+- **Weekly:** Every Tuesday from 2025-09-02 (Thursday before 2025-08-28)
+- **Monthly:** Last Tuesday of month (last Thursday before 2025-08-28)
 
 ## Next Steps
 

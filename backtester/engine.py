@@ -158,7 +158,7 @@ class BacktestEngine:
             self._evaluation_start_date = self.walk_forward_manager.windows[0].test_start.date()
 
     def _get_expiry_date(self, current_date: date) -> date:
-        """Find the monthly expiry closest to target DTE, respecting the NSE Thursday→Monday cutover."""
+        """Find the monthly expiry closest to target DTE, respecting the NSE Thursday→Tuesday cutover."""
         from data.expiry_calendar import get_best_expiry_for_dte
         expiry, _ = get_best_expiry_for_dte(current_date, self.target_dte)
         return expiry

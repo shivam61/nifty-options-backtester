@@ -6,7 +6,7 @@ Bug fixes:
   - Fix #1: _generate_sim_trades is callable (ablation mode NameError)
   - Fix #2: BacktestEngine._get_expiry_date uses expiry_calendar, not hardcoded Thursday
   - Fix #3: TradeResult.pnl_pct uses net P&L (post-cost), not gross
-  - Fix #4: Expiry calendar era-awareness (Thursday pre-2024, Monday post-2024)
+  - Fix #4: Expiry calendar era-awareness (Thursday until 2025-08-28, Tuesday from 2025-09-02)
   - Fix #5: FeatureExtractor reads 'overnight_gap_pct' not 'nifty_gap_pct'
   - Fix #6: cross-geo tickers produce real features in market_data
 
@@ -27,7 +27,7 @@ from datetime import date, timedelta
 from unittest.mock import MagicMock, patch
 
 from config import BacktestConfig
-from data.expiry_calendar import get_best_expiry_for_dte, _MONDAY_CUTOVER, _TUESDAY_CUTOVER
+from data.expiry_calendar import get_best_expiry_for_dte, _TUESDAY_CUTOVER
 from strategies.base import Leg, Trade
 
 
@@ -51,7 +51,7 @@ class TestGenerateSimTradesExists:
 
 
 # ---------------------------------------------------------------------------
-# Fix #2 — BacktestEngine._get_expiry_date respects Monday cutover
+# Fix #2 — BacktestEngine._get_expiry_date respects the Tuesday cutover
 # ---------------------------------------------------------------------------
 
 class TestBacktestEngineExpiry:
@@ -84,11 +84,12 @@ class TestBacktestEngineExpiry:
             f"Pre-cutover expiry {expiry} should be Thursday (weekday 3), got {expiry.weekday()}"
         )
 
-    def test_monday_era_returns_monday(self):
+    def test_thursday_era_2025_returns_thursday(self):
+        """2024-04..2025-08 was a Thursday-expiry period (there was no Monday era)."""
         engine = self._make_engine(date(2025, 6, 1))
         expiry = engine._get_expiry_date(date(2025, 6, 1))
-        assert expiry.weekday() == 0, (
-            f"Monday-era expiry {expiry} should be Monday (weekday 0), got {expiry.weekday()}"
+        assert expiry.weekday() == 3, (
+            f"Thursday-era expiry {expiry} should be Thursday (weekday 3), got {expiry.weekday()}"
         )
 
     def test_tuesday_era_returns_tuesday(self):
@@ -103,10 +104,11 @@ class TestBacktestEngineExpiry:
         expiry = engine._get_expiry_date(date(2026, 4, 1))
         assert expiry > date(2026, 4, 1)
 
-    def test_cutover_boundary_day_returns_monday(self):
-        engine = self._make_engine(_MONDAY_CUTOVER)
-        expiry = engine._get_expiry_date(_MONDAY_CUTOVER)
-        assert expiry.weekday() == 0
+    def test_last_thursday_era_month_returns_thursday(self):
+        """August 2025: monthly expiry is the last Thursday (2025-08-28)."""
+        engine = self._make_engine(date(2025, 8, 1))
+        expiry = engine._get_expiry_date(date(2025, 8, 1))
+        assert expiry == date(2025, 8, 28)
 
     def test_second_cutover_boundary_day_returns_tuesday(self):
         engine = self._make_engine(_TUESDAY_CUTOVER)

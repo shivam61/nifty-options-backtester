@@ -346,9 +346,9 @@ See `requirements.txt` for complete list.
 - Fyers data used only during market hours
 - Automatic fallback to NSE/historical data outside hours
 
-### NSE Expiry Schedule (Changed 2024)
-- Weekly: Every Monday
-- Monthly: Last Monday of month
+### NSE Expiry Schedule (Changed 2025-09)
+- Weekly: Every Tuesday from 2025-09-02 (Thursday before 2025-08-28)
+- Monthly: Last Tuesday of month (last Thursday before 2025-08-28)
 
 ## Troubleshooting
 

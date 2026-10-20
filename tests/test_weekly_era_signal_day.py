@@ -1,11 +1,11 @@
 """
 Thursday-era weekly signal day (WeeklyBacktestConfig.era_aware_signal_day).
 
-Before 2024-04-04 NIFTY weekly expiries were Thursdays. The legacy Monday/Tuesday signal
-selects the Thursday expiry at 3 DTE on Monday, then the Tuesday fill sits at 2 DTE and is
-dropped by the fill-time window. With the flag on, the Thursday-era signal fires on Thursday
-(expiry day, mirroring the Monday-era Monday signal) and targets the next Thursday, so the
-Friday fill lands at 6 DTE. Post-cutover behaviour must be identical with the flag on or off.
+NIFTY weekly expiries were Thursdays until 2025-08-28 (no Monday era) and Tuesdays from
+2025-09-02. The default Monday/Tuesday signal selects the Thursday expiry at 3 DTE on Monday,
+then the Tuesday fill sits at 2 DTE and is dropped by the fill-time window. With the flag on,
+the Thursday-era signal fires on Thursday (expiry day) and targets the next weekly expiry, so
+the Friday fill lands at about 6 DTE. Tuesday-era behaviour must be identical with the flag on or off.
 """
 
 from datetime import date, timedelta
@@ -19,7 +19,8 @@ from config import BacktestConfig, WeeklyBacktestConfig
 from backtester.combined_engine import CombinedBacktestEngine
 from strategies.base import TradeAction
 
-CUTOVER = date(2024, 4, 4)
+THURSDAY_ERA_END = date(2025, 8, 28)     # last Thursday expiry
+TUESDAY_CUTOVER = date(2025, 9, 1)       # ec._TUESDAY_CUTOVER
 
 
 def _engine(era_aware: bool) -> CombinedBacktestEngine:
@@ -83,9 +84,10 @@ def test_default_flag_is_false():
 
 
 def test_is_thursday_expiry_era_boundary():
-    assert ec.is_thursday_expiry_era(date(2024, 4, 3)) is True
-    assert ec.is_thursday_expiry_era(CUTOVER) is False
     assert ec.is_thursday_expiry_era(date(2023, 10, 2)) is True
+    assert ec.is_thursday_expiry_era(date(2024, 4, 4)) is True      # no Monday era: still Thursday
+    assert ec.is_thursday_expiry_era(THURSDAY_ERA_END) is True
+    assert ec.is_thursday_expiry_era(TUESDAY_CUTOVER) is False
 
 
 # ── Flag off: legacy behaviour pinned ──────────────────────────────────────
@@ -151,22 +153,31 @@ def test_flag_on_sweep_every_thursday_era_week_fills_inside_window():
 
 # ── Cutover boundary ───────────────────────────────────────────────────────
 
-def test_cutover_week_thursday_before_cutover_enters_monday_after_is_untouched():
+def test_thursday_era_week_across_cutover_with_flag_on_is_thursday_only():
     eng = _engine(era_aware=True)
-    _signal(eng, date(2024, 3, 28))                # Thu pre-cutover: expiry 2024-04-04, 7 DTE
+    _signal(eng, date(2024, 3, 28))                # Thu: expiry 2024-04-04, 7 DTE
     _fill(eng, date(2024, 3, 29))                  # Fri fill -> 6 DTE
     assert eng.weekly_entries == 1
-    # Monday 2024-04-01 is pre-cutover: no Monday signal under the flag (no drop either).
+    # Monday 2024-04-01 is in the Thursday era: no Monday signal under the flag (no drop either).
     _signal(eng, date(2024, 4, 1))
     assert eng._pending_weekly_entry is None
     assert eng.weekly_fill_dte_drops == 0
 
 
-def test_post_cutover_pending_entries_identical_flag_on_and_off():
+def test_last_thursday_era_signal_targets_first_tuesday_expiry():
+    eng = _engine(era_aware=True)
+    _signal(eng, THURSDAY_ERA_END)                 # Thu 2025-08-28 (expiry day) -> Tue 2025-09-02, 5 DTE
+    assert eng._pending_weekly_entry["expiry"] == date(2025, 9, 2)
+    _fill(eng, date(2025, 8, 29))                  # Fri fill -> 4 DTE, inside window
+    assert eng.weekly_entries == 1
+    assert eng.weekly_fill_dte_drops == 0
+
+
+def test_tuesday_era_pending_entries_identical_flag_on_and_off():
     off, on = _engine(era_aware=False), _engine(era_aware=True)
     compared = 0
-    d = CUTOVER
-    while d <= date(2024, 12, 31):
+    d = TUESDAY_CUTOVER
+    while d <= date(2026, 3, 31):
         for eng in (off, on):
             eng._pending_weekly_entry = None
             _signal(eng, d)
@@ -178,14 +189,15 @@ def test_post_cutover_pending_entries_identical_flag_on_and_off():
                 assert p_off[key] == p_on[key], (d, key)
             compared += 1
         d += timedelta(days=1)
-    assert compared > 30           # Monday-era cadence present
+    assert compared > 30           # Tuesday-era cadence present
     assert on.weekly_era_signal_entries == 0
 
 
-def test_post_cutover_monday_signal_still_fills_tuesday_at_six_dte_with_flag_on():
+def test_tuesday_era_monday_signal_still_fills_tuesday_at_seven_dte_with_flag_on():
     eng = _engine(era_aware=True)
-    _signal(eng, date(2024, 4, 8))                 # Monday -> Mon 2024-04-15, 7 DTE
-    _fill(eng, date(2024, 4, 9))
+    _signal(eng, date(2025, 9, 8))                 # Mon -> Tue 09-09 (1 DTE, skipped) -> Tue 09-16, 8 DTE
+    assert eng._pending_weekly_entry["expiry"] == date(2025, 9, 16)
+    _fill(eng, date(2025, 9, 9))                   # Tue fill -> 7 DTE
     assert eng.weekly_entries == 1
     assert eng.weekly_fill_dte_drops == 0
     assert eng.weekly_era_signal_entries == 0

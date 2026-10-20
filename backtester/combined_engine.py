@@ -1557,7 +1557,7 @@ class CombinedBacktestEngine:
         return vix_scale * dd_scale * streak_scale * monthly_stress_scale
 
     def _era_signal_day_applies(self, current_date) -> bool:
-        """Thursday-era signal-day override: opt-in, applies only before the Monday cutover."""
+        """Thursday-era signal-day override: opt-in, applies only while weeklies expire on Thursday (before 2025-09-01)."""
         return (bool(getattr(self.w_config, "era_aware_signal_day", False))
                 and is_thursday_expiry_era(current_date))
 

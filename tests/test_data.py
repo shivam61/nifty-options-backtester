@@ -33,9 +33,9 @@ from config import BacktestConfig, MarketRegime
 # ---------------------------------------------------------------------------
 
 class TestExpiryCalendar:
-    # Pre-2024-04-04: expiry is Thursday (weekday 3)
-    # 2024-04-04 .. 2025-08-31: expiry is Monday (weekday 0)
-    # 2025-09-01 onward: expiry is Tuesday (weekday 1)
+    # Up to 2025-08-28: weekly and monthly expiry is Thursday (weekday 3)
+    # 2025-09-02 onward: weekly and monthly expiry is Tuesday (weekday 1)
+    # There was no Monday era (see tests/test_expiry_calendar_vs_archive.py).
 
     def test_all_thursdays_in_april_2023(self):
         """get_all_thursdays is a legacy helper — always returns Thursdays."""
@@ -49,15 +49,19 @@ class TestExpiryCalendar:
         next_week = exp + timedelta(days=7)
         assert next_week.month != 4
 
-    def test_monthly_expiry_monday_era(self):
+    def test_monthly_expiry_tuesday_era_april_2026(self):
         exp = get_monthly_expiry(2026, 4)
         assert exp.weekday() == 1  # Tuesday
         next_week = exp + timedelta(days=7)
         assert next_week.month != 4
 
-    def test_monthly_expiry_monday_transition_era(self):
+    def test_monthly_expiry_last_thursday_before_switch(self):
         exp = get_monthly_expiry(2025, 8)
-        assert exp.weekday() == 0  # Monday
+        assert exp == date(2025, 8, 28)  # last Thursday, still Thursday era
+
+    def test_monthly_expiry_first_tuesday_after_switch(self):
+        exp = get_monthly_expiry(2025, 9)
+        assert exp == date(2025, 9, 30)  # last Tuesday, Tuesday era
 
     def test_monthly_expiry_tuesday_era(self):
         exp = get_monthly_expiry(2026, 12)
@@ -74,21 +78,27 @@ class TestExpiryCalendar:
         start = date(2026, 4, 1)
         end = date(2026, 4, 30)
         weeklies = get_weekly_expiries(start, end)
-        assert all(d.weekday() == 1 for d in weeklies)
+        # 2026-04-14 (Tuesday) was a holiday: its expiry moved to Monday 2026-04-13
+        assert weeklies == [date(2026, 4, 7), date(2026, 4, 13), date(2026, 4, 21), date(2026, 4, 28)]
 
     def test_monthly_expiries_in_range_pre_cutover(self):
         start = date(2023, 1, 1)
         end = date(2023, 6, 30)
         monthlies = get_monthly_expiries(start, end)
         assert len(monthlies) == 6
-        assert all(d.weekday() == 3 for d in monthlies)
+        # Jan 2023 (Republic Day Thursday) -> Wed 01-25; Mar 2023 (Ram Navami Thursday) -> Wed 03-29
+        shifted = {date(2023, 1, 25), date(2023, 3, 29), date(2023, 6, 28)}
+        assert all(d.weekday() == 3 or d in shifted for d in monthlies)
+        assert monthlies[-1] == date(2023, 6, 28)
 
     def test_monthly_expiries_in_range_post_cutover(self):
         start = date(2026, 1, 1)
         end = date(2026, 6, 30)
         monthlies = get_monthly_expiries(start, end)
         assert len(monthlies) == 6
-        assert all(d.weekday() == 1 for d in monthlies)
+        # March 2026 monthly moved to Monday 2026-03-30 (Tuesday 2026-03-31 holiday)
+        assert all(d.weekday() == 1 or d == date(2026, 3, 30) for d in monthlies)
+        assert monthlies[2] == date(2026, 3, 30)
 
     def test_next_monthly_expiry_pre_cutover(self):
         today = date(2023, 4, 8)

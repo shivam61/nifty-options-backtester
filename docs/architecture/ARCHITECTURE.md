@@ -182,7 +182,7 @@ Bonuses: longer DTE (fewer trades), vega-positive in low IV, theta quality.
 
 6. **Nifty strikes are rounded to nearest 50** (`round(price / 50) * 50`). This is NSE convention.
 
-7. **Expiry calendar**: Nifty monthly expiry = last Monday of month (changed in 2024). Weekly expiry = every Monday.
+7. **Expiry calendar**: Nifty weekly and monthly expiries were Thursday until 2025-08-28 and are Tuesday from 2025-09-02 (monthly = last of the month). No Monday era. See `data/expiry_calendar.py`.
 
 ## Testing
 

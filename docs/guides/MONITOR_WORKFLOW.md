@@ -240,13 +240,13 @@ python scripts/diagnose_live_prices.py
 
 ### Wrong Expiry Date
 
-Edit `data/.cache/active_trades.json` and correct the `expiry_date` field. Use correct NSE expiry format (last Monday of month for monthly, every Monday for weekly).
+Edit `data/.cache/active_trades.json` and correct the `expiry_date` field. Use correct NSE expiry format (last Tuesday of month for monthly, every Tuesday for weekly, since 2025-09-02).
 
 ### Invalid Symbol Error
 
 Verify:
 1. Strike is valid NSE strike (multiple of 50)
-2. Expiry date is valid NSE expiry (Monday)
+2. Expiry date is valid NSE expiry (Tuesday since 2025-09-02; Thursday before)
 3. Option type is PE or CE (not PUT/CALL)
 
 ## Related Documentation

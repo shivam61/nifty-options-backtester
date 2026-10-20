@@ -1,19 +1,27 @@
 """
 Nifty option expiry calendar.
 
-NSE moved NIFTY expiries twice in recent years:
-  Pre  2024-04-04: weekly = every Thursday, monthly = last Thursday of month
-  2024-04-04 .. 2025-08-31: weekly = every Monday, monthly = last Monday of month
-  Post 2025-09-01: weekly = every Tuesday, monthly = last Tuesday of month
+NIFTY option expiry schedule, verified against the NSE F&O archive
+(tests/test_expiry_calendar_vs_archive.py):
+  Weekly and monthly expiries fall on Thursday up to and including
+  2025-08-28 (the first weekly expiry in the archive is 2019-02-14).
+  Weekly and monthly expiries fall on Tuesday from 2025-09-02.
+  Monthly expiry = the last weekly expiry of the month, so the monthly
+  weekday switches in the same week as the weekly one.
+  There was no Monday-expiry era for NIFTY.
 
-Trading holidays (data/nse_holidays.json): when a raw expiry day is a
-segment-closed exchange holiday, the expiry moves to the previous trading day.
-The holiday file only lists forward-looking dates, so historical expiries are
-unchanged. Muhurat sessions are informational and do not shift expiries.
+Holidays: when a raw expiry day is a segment-closed exchange holiday, the
+expiry moves to the previous trading day. Two sources are merged:
+  - data/nse_holidays.json ``holidays``: forward-looking NSE holiday list;
+  - data/nse_holidays.json ``historical_expiry_closures``: raw expiry days
+    before 2026-10-19 that the archive shows as shifted (19 days, 2019-2026).
+Muhurat sessions do not shift expiries by themselves.
 
-All public functions accept an optional ``ref_date`` to select the correct
-weekday automatically. When omitted they default to today, so code that only
-ever runs in the present (signal mode, monitor) just works.
+``ref_date`` arguments: the expiry weekday is always chosen from the date of
+the candidate expiry itself (not from the query date), so a query made on
+2025-08-29 for September 2025 correctly sees Tuesday expiries. ``ref_date``
+on ``get_monthly_expiry`` is accepted for backward compatibility and no longer
+affects the result.
 """
 
 import calendar
@@ -22,9 +30,14 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
-# NSE expiry schedule cutovers.
-_MONDAY_CUTOVER = date(2024, 4, 4)
+# NSE expiry weekday cutover: Thursday before, Tuesday from this date. The archive
+# shows the last Thursday expiry on 2025-08-28 and the first Tuesday expiry on
+# 2025-09-02; any value in 2025-08-29 .. 2025-09-02 yields the same schedule.
 _TUESDAY_CUTOVER = date(2025, 9, 1)
+
+# First weekly NIFTY expiry in the archive. Earlier dates keep the Thursday
+# convention (no archive coverage to verify against).
+_FIRST_OBSERVED_WEEKLY = date(2019, 2, 14)
 
 # Holiday shifts can chain over several closed days; bound the lookahead used
 # when scanning raw expiry days so a shifted expiry is never missed.
@@ -32,12 +45,13 @@ _MAX_SHIFT_DAYS = 14
 
 _HOLIDAYS_PATH = Path(__file__).resolve().parent / "nse_holidays.json"
 _holiday_cache: Optional[dict[date, dict]] = None
+_historical_cache: Optional[dict[date, dict]] = None
 
 
 # ── Holiday calendar ────────────────────────────────────────────────────────
 
 def _load_holidays() -> dict[date, dict]:
-    """Load data/nse_holidays.json once, keyed by date."""
+    """Load the forward-looking ``holidays`` list of data/nse_holidays.json once, keyed by date."""
     global _holiday_cache
     if _holiday_cache is None:
         payload = json.loads(_HOLIDAYS_PATH.read_text(encoding="utf-8"))
@@ -48,14 +62,31 @@ def _load_holidays() -> dict[date, dict]:
     return _holiday_cache
 
 
+def _load_historical_closures() -> dict[date, dict]:
+    """Archive-derived raw expiry days that were exchange holidays (``historical_expiry_closures``)."""
+    global _historical_cache
+    if _historical_cache is None:
+        payload = json.loads(_HOLIDAYS_PATH.read_text(encoding="utf-8"))
+        _historical_cache = {
+            date.fromisoformat(entry["date"]): entry
+            for entry in payload.get("historical_expiry_closures", [])
+        }
+    return _historical_cache
+
+
 def _closed_holiday_dates() -> frozenset[date]:
-    """Dates on which the equity and derivatives segments are closed."""
-    return frozenset(d for d, h in _load_holidays().items() if h.get("segment_closed"))
+    """Dates on which the equity and derivatives segments are closed (forward + historical)."""
+    forward = (d for d, h in _load_holidays().items() if h.get("segment_closed"))
+    historical = (d for d, h in _load_historical_closures().items() if h.get("segment_closed"))
+    return frozenset(forward) | frozenset(historical)
 
 
 def get_holiday(d: date) -> Optional[dict]:
-    """Holiday record for ``d`` (any kind, including Muhurat), or None."""
-    return _load_holidays().get(d)
+    """Holiday record for ``d`` (any kind, including Muhurat), or None.
+
+    Historical expiry closures are returned for dates before the forward list.
+    """
+    return _load_holidays().get(d) or _load_historical_closures().get(d)
 
 
 def is_trading_day(d: date) -> bool:
@@ -85,17 +116,15 @@ def _expiry_shift(d: date) -> date:
 
 # ── Backward-compat; callers in legacy code path ───────────────────────────
 
-def _expiry_weekday(ref_date: date) -> int:
-    """Return calendar weekday constant for NSE expiry on the given date."""
-    if ref_date >= _TUESDAY_CUTOVER:
+def _expiry_weekday(expiry_date: date) -> int:
+    """Calendar weekday of the raw NIFTY weekly/monthly expiry for a contract expiring on ``expiry_date``."""
+    if expiry_date >= _TUESDAY_CUTOVER:
         return calendar.TUESDAY
-    if ref_date >= _MONDAY_CUTOVER:
-        return calendar.MONDAY
     return calendar.THURSDAY
 
 
 def _all_weekday_in_month(year: int, month: int, weekday: int) -> list[date]:
-    """All dates in (year, month) that fall on ``weekday`` (calendar.MONDAY etc.)."""
+    """All dates in (year, month) that fall on ``weekday`` (calendar.TUESDAY etc.)."""
     cal = calendar.monthcalendar(year, month)
     return [
         date(year, month, week[weekday])
@@ -105,32 +134,36 @@ def _all_weekday_in_month(year: int, month: int, weekday: int) -> list[date]:
 
 
 def get_all_thursdays(year: int, month: int) -> list[date]:
-    """Get all Thursdays in a given month (legacy — pre-2024 use only)."""
+    """Get all Thursdays in a given month (legacy helper; Thursday-era only)."""
     return _all_weekday_in_month(year, month, calendar.THURSDAY)
 
 
 # ── Core helpers ────────────────────────────────────────────────────────────
 
 def is_thursday_expiry_era(ref_date: date) -> bool:
-    """True for the pre-2024-04-04 era in which NIFTY weekly expiries fall on Thursday."""
-    return ref_date < _MONDAY_CUTOVER
+    """True while NIFTY weekly expiries fall on Thursday (before the 2025-09-01 Tuesday cutover).
+
+    The Thursday era runs from the first observed weekly (2019-02-14) through
+    2025-08-28; earlier dates are included by convention.
+    """
+    return ref_date < _TUESDAY_CUTOVER
 
 
 def get_monthly_expiry(year: int, month: int, ref_date: Optional[date] = None) -> date:
     """
-    Last expiry day of the month (raw last Tuesday/Monday/Thursday, shifted to
-    the previous trading day if that day is an NSE holiday).
-    ``ref_date`` defaults to mid-month of the requested year/month.
+    Last expiry day of the month: the last Thursday (pre-cutover) or Tuesday
+    (post-cutover), shifted to the previous trading day if that day is an NSE
+    holiday. The weekday is chosen from the month's own expiry date, so
+    ``ref_date`` is accepted for backward compatibility but is not used.
     """
-    if ref_date is None:
-        ref_date = date(year, month, 15)
-    weekday = _expiry_weekday(ref_date)
+    last_day = date(year, month, calendar.monthrange(year, month)[1])
+    weekday = _expiry_weekday(last_day)
     days = _all_weekday_in_month(year, month, weekday)
     return _expiry_shift(max(days))
 
 
 def get_weekly_expiries(start_date: date, end_date: date) -> list[date]:
-    """All weekly expiry dates (Tuesdays, Mondays or Thursdays by era) in [start, end]."""
+    """All weekly expiry dates (Tuesdays or Thursdays by era) in [start, end]."""
     expiries: set[date] = set()
     current = start_date
     scan_end = end_date + timedelta(days=_MAX_SHIFT_DAYS)
@@ -200,14 +233,13 @@ def format_expiry_label(expiry: date) -> str:
 
 def get_next_weekly_expiry(from_date: date) -> tuple[date, int]:
     """
-    Next weekly expiry *after* ``from_date`` (Tue, Mon or Thu depending on era),
-    holiday-shifted. Returns (expiry_date, dte) with DTE measured to the shifted
-    expiry.
+    Next weekly expiry *after* ``from_date`` (Tuesday or Thursday by the era of
+    the candidate expiry), holiday-shifted. Returns (expiry_date, dte) with DTE
+    measured to the shifted expiry.
     """
-    weekday = _expiry_weekday(from_date)
     current = from_date + timedelta(days=1)
     while True:
-        if current.weekday() == weekday:
+        if current.weekday() == _expiry_weekday(current):
             shifted = _expiry_shift(current)
             if shifted > from_date:
                 return shifted, (shifted - from_date).days
@@ -246,7 +278,7 @@ def get_weekly_expiry_in_range(
 
 
 def get_upcoming_weekly_expiries(from_date: date, count: int = 4) -> list[dict]:
-    """Next ``count`` weekly expiries (Tue, Mon or Thu) with DTE info."""
+    """Next ``count`` weekly expiries (Tuesday or Thursday by era) with DTE info."""
     results: list[dict] = []
     seen: set[date] = set()
     current = from_date + timedelta(days=1)
@@ -271,7 +303,7 @@ def get_upcoming_weekly_expiries(from_date: date, count: int = 4) -> list[dict]:
 def get_upcoming_expiries(from_date: date, count: int = 5) -> list[dict]:
     """
     Next ``count`` *monthly* expiries with DTE info.
-    Weekday is Tuesday, Monday or Thursday depending on ``from_date``.
+    Weekday is Tuesday or Thursday depending on each expiry's date.
     """
     results: list[dict] = []
     y, m = from_date.year, from_date.month
@@ -301,20 +333,18 @@ def get_all_expiries(from_date: date, count: int = 8) -> list[dict]:
     """
     Next ``count`` expiries mixing both weekly AND monthly dates.
 
-    In the Monday/Tuesday eras every weekly expiry day is a potential expiry;
+    Every weekly expiry day (Thursday or Tuesday by era) is a potential expiry;
     the last such day of each month is additionally tagged as monthly.
-    Pre-2024 the same logic applies to Thursdays. Holiday-shifted expiries are
-    reported on the trading day they actually settle.
+    Holiday-shifted expiries are reported on the trading day they actually settle.
 
     Useful for ExpirySelector (backtest + signal) so it can compare
     short-DTE weekly trades against longer-DTE monthly ones.
     """
-    weekday = _expiry_weekday(from_date)
     results: list[dict] = []
     seen: set[date] = set()
     current = from_date + timedelta(days=1)
     while len(results) < count:
-        if current.weekday() == weekday:
+        if current.weekday() == _expiry_weekday(current):
             exp = _expiry_shift(current)
             if exp > from_date and exp not in seen:
                 seen.add(exp)

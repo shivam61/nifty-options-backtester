@@ -23,7 +23,7 @@ A Python backtester + live-signal system for **NSE Nifty 50 index options sellin
 |----------|-------|--------|
 | `lot_size` | 65 | `config.BacktestConfig` |
 | `initial_capital` | ₹500,000 | `config.BacktestConfig` |
-| `_MONDAY_CUTOVER` | 2024-04-04 | `data/expiry_calendar.py` — NSE switched from Thursday to Monday expiry |
+| `_TUESDAY_CUTOVER` | 2025-09-01 | `data/expiry_calendar.py` — NIFTY weekly + monthly expiry moved Thursday → Tuesday (last Thursday 2025-08-28, first Tuesday 2025-09-02, archive-verified). There was no Monday-expiry era. |
 | `entry_threshold` | 0.50 | `config.BacktestConfig.monthly_entry_threshold` → `CombinedBacktestEngine` |
 | `monthly_max_lots_cap` | 30 | `CombinedBacktestEngine.__init__` (`safe_monthly_cap`) |
 | `monthly_budget_pct` | 50% | `main.py:_monthly_pct` in `run_backtest_combined()` |
@@ -91,7 +91,8 @@ tests/test_black_scholes.py — Option pricing, Greeks sign-correctness, IV smil
 tests/test_strategies.py   — Entry/exit logic, leg generation, circuit breaker for all strategies
 tests/test_models.py       — Regime labeling, feature extraction shape/NaN handling, classifier
 tests/test_base.py         — Leg/Trade P&L math, net credit, max loss properties
-tests/test_data.py         — Expiry calendar (era-aware: Thursday pre-2024, Monday post-2024), config
+tests/test_data.py         — Expiry calendar (Thursday until 2025-08-28, Tuesday from 2025-09-02), config
+tests/test_expiry_calendar_vs_archive.py — Calendar vs NSE F&O archive facts (fixture: tests/fixtures/nifty_expiries_archive.json)
 tests/test_multi_expiry.py — Calendar roll logic, AdjustmentAction, ExpirySelector scoring
 tests/test_position_sizer.py — Position sizing across regimes, drawdown, confidence tiers
 tests/test_fixes.py        — Regression: bug fixes #1–#6 + CAGR improvements #1–#6
@@ -148,7 +149,7 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
 
 ## Key Gotchas
 
-- **NSE expiry cutover (2024-04-04)** — Before this date expiry = last Thursday; on/after = last Monday. Always pass `ref_date` to `get_monthly_expiry()` when backtesting periods that straddle this boundary. `BacktestEngine._get_expiry_date()` uses `get_best_expiry_for_dte()` which handles this automatically.
+- **NSE expiry cutover (2025-09-01)** — NIFTY weekly and monthly expiries were Thursday from the first weekly (2019-02-14) through 2025-08-28, and Tuesday from 2025-09-02. There was no Monday era (2024-04..2025-08 was Thursday). The weekday is chosen from each candidate expiry's own date, so queries that straddle the cutover are correct without `ref_date`; `get_monthly_expiry()`'s `ref_date` is ignored. `BacktestEngine._get_expiry_date()` uses `get_best_expiry_for_dte()` which handles this automatically.
 
 - **`overnight_gap_pct` column name** — `market_data.py` produces this column (renamed from an older `nifty_gap_pct`). `FeatureExtractor` reads `overnight_gap_pct`. Any cached parquet written before the rename will produce NaN for this feature — delete cache and regenerate.
 
@@ -186,4 +187,4 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
 
 - **ETL gate is now configurable** — `WeeklyRiskEngine` previously had a hardcoded `etl > entry_credit` (1.0×) skip threshold. Correction: the ~363/465 weekly entries previously reported under `ETL > credit skips` were fill-time DTE drops (expiry re-checked on the fill date against `[min_dte_entry, max_dte_entry]`), not ETL-gate skips; those are now reported as `weekly_fill_dte_drops`. The real ETL-gate count is `weekly_etl_gate_skips` (printed as `ETL > credit skips`). Now controlled by `WeeklyBacktestConfig.etl_skip_multiplier` (default 1.5). The multiplier is applied at runtime via `CombinedBacktestEngine.__init__` — no retrain needed to change it. After any retrain, check `ETL > credit skips` in backtest output (the ETL-gate count only); target < 100 over 17yr.
 
-- **NSE holidays** — an expiry on a segment-closed holiday moves to the previous trading day. Holidays live in `data/nse_holidays.json` (forward-looking only, so historical backtests are unchanged). Add each new exchange holiday list there every year and re-verify against the NSE circular.
+- **NSE holidays** — an expiry on a segment-closed holiday moves to the previous trading day. `data/nse_holidays.json` has two lists: `holidays` (forward-looking, on/after 2026-10-19) and `historical_expiry_closures` (19 raw expiry days 2019-2026 that the NSE F&O archive shows as shifted, e.g. Holi, Eid, Diwali). Historical weekly/monthly expiries therefore differ from pure weekday logic only at those 19 dates; backtests that span them change. Add each new exchange holiday list to `holidays` every year and re-verify against the NSE circular.

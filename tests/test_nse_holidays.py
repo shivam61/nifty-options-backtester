@@ -2,9 +2,10 @@
 NSE holiday support, holiday-shifted expiries, IST clock and the trading-day gate.
 
 Covers:
-- data/nse_holidays.json is forward-looking only (historical backtests unchanged)
+- data/nse_holidays.json ``holidays`` is forward-looking only
 - Holiday-shifted weekly/monthly expiries for 2026-10-19 .. 2026-12-31
 - Historical expiries (2019-01-01 .. 2026-08-29) equal the pure weekday logic
+  plus the archive-derived ``historical_expiry_closures`` (see test_expiry_calendar_vs_archive.py)
 - previous_trading_day across weekends and chained holidays
 - market_day_gate / is_market_open_day for the signal entry gate
 - now_ist() and is_market_hours() with a monkeypatched clock
@@ -42,16 +43,15 @@ def _ref_weekly(start, end):
 
 
 def _ref_monthly(year, month):
-    mid = date(year, month, 15)
-    wd = ec._expiry_weekday(mid)
+    last = date(year, month, calendar.monthrange(year, month)[1])
+    wd = ec._expiry_weekday(last)
     return max(d for d in (date(year, month, day) for day in range(1, calendar.monthrange(year, month)[1] + 1))
                if d.weekday() == wd)
 
 
 def _ref_next_weekly(from_date):
-    wd = ec._expiry_weekday(from_date)
     cur = from_date + timedelta(days=1)
-    while cur.weekday() != wd:
+    while cur.weekday() != ec._expiry_weekday(cur):   # era of the candidate expiry
         cur += timedelta(days=1)
     return cur, (cur - from_date).days
 
@@ -68,15 +68,24 @@ def _ref_in_range(from_date, min_dte, max_dte, cycles=3):
 
 
 def _ref_all_expiries(from_date, count):
-    wd = ec._expiry_weekday(from_date)
     out = []
     cur = from_date + timedelta(days=1)
     while len(out) < count:
-        if cur.weekday() == wd:
+        if cur.weekday() == ec._expiry_weekday(cur):
             is_m = cur == _ref_monthly(cur.year, cur.month)
             out.append((cur, (cur - from_date).days, is_m))
         cur += timedelta(days=1)
     return out
+
+
+ARCHIVE_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "nifty_expiries_archive.json"
+
+
+def _archive_closures() -> dict:
+    """raw expiry day -> shifted expiry, from the archive fixture (historical holidays)."""
+    payload = json.loads(ARCHIVE_FIXTURE.read_text(encoding="utf-8"))
+    return {date.fromisoformat(c["raw"]): date.fromisoformat(c["expiry"])
+            for c in payload["raw_day_closures"]}
 
 
 def _days(start, end):
@@ -254,6 +263,8 @@ class TestShiftedExpiries:
 # ---------------------------------------------------------------------------
 
 class TestHistoricalInvariance:
+    """Pure weekday logic with no holidays, plus the archive-derived closures as the only historical change."""
+
     def test_weekly_and_monthly_lists_match_pure_weekday_logic(self, no_holidays):
         weekly = ec.get_weekly_expiries(HIST_START, HIST_END)
         assert weekly == _ref_weekly(HIST_START, HIST_END)
@@ -267,29 +278,21 @@ class TestHistoricalInvariance:
             m, y = (m + 1, y) if m < 12 else (1, y + 1)
         assert monthly == ref_monthly
 
-    def test_real_holidays_do_not_change_historical_weekly_or_monthly(self):
-        assert ec.get_weekly_expiries(HIST_START, HIST_END) == _ref_weekly(HIST_START, HIST_END)
-        for y in range(2019, 2027):
-            for m in range(1, 13):
-                if date(y, m, 1) > HIST_END:
-                    break
-                assert ec.get_monthly_expiry(y, m) == _ref_monthly(y, m), (y, m)
+    def test_historical_holidays_only_move_archive_closures(self):
+        """With the real holiday data, the weekly list differs from pure weekday logic only at the archive closures."""
+        closures = _archive_closures()
+        expected = []
+        for raw in _ref_weekly(HIST_START, HIST_END):
+            expected.append(closures.get(raw, raw))
+        assert ec.get_weekly_expiries(HIST_START, HIST_END) == sorted(set(expected))
+        assert all(raw not in ec.get_weekly_expiries(HIST_START, HIST_END) for raw in closures)
 
     def test_every_historical_day_matches_reference_next_and_in_range(self, no_holidays):
         for d in _days(HIST_START, HIST_END):
             assert ec.get_next_weekly_expiry(d) == _ref_next_weekly(d), d
             assert ec.get_weekly_expiry_in_range(d, 3, 8) == _ref_in_range(d, 3, 8), d
 
-    def test_real_holidays_do_not_change_historical_in_range(self):
-        for d in _days(HIST_START, HIST_END):
-            assert ec.get_weekly_expiry_in_range(d, 3, 8) == _ref_in_range(d, 3, 8), d
-
     def test_every_historical_day_all_expiries_matches_reference(self, no_holidays):
-        for d in _days(HIST_START, HIST_END):
-            got = [(r["expiry"], r["dte"], r["is_monthly"]) for r in ec.get_all_expiries(d, count=4)]
-            assert got == _ref_all_expiries(d, 4), d
-
-    def test_real_holidays_do_not_change_historical_all_expiries(self):
         for d in _days(HIST_START, HIST_END):
             got = [(r["expiry"], r["dte"], r["is_monthly"]) for r in ec.get_all_expiries(d, count=4)]
             assert got == _ref_all_expiries(d, 4), d

@@ -243,8 +243,8 @@ Tests are organized by module:
 8. **Nifty strikes are rounded to nearest 50** (`round(price / 50) * 50`).
    This is NSE convention for index options.
 
-9. **Expiry calendar**: Nifty monthly expiry = last Thursday of the month.
-   Weekly expiry = every Thursday. The backtester uses monthly expiries only.
+9. **Expiry calendar**: Nifty weekly and monthly expiries are Thursday until 2025-08-28 and Tuesday from 2025-09-02
+   (monthly = last of the month). Holiday-shifted expiries move to the previous trading day.
 
 10. **`format_expiry_label` uses `%-d`** which is Linux/macOS only.
     On Windows, use `%#d` instead.

@@ -1,10 +1,10 @@
 {
   "_notes": [
     "NSE trading holidays used by data/expiry_calendar.py. An expiry that falls on a segment_closed holiday moves to the previous trading day.",
-    "Forward-looking only (on/after 2026-10-19). Historical expiries (and therefore every backtest ending 2026-08-29) are deliberately unaffected.",
+    "Forward-looking only (on/after 2026-10-19) for 'holidays'. Historical exchange holidays that shifted an expiry before 2026-10-19 are listed separately under 'historical_expiry_closures' (derived from the NSE F&O archive, see tests/test_expiry_calendar_vs_archive.py); they do not affect the 'holidays' list.",
     "Add each new exchange holiday list here every year and re-verify against the NSE holiday circular/API.",
     "verified=true means confirmed against the official NSE holiday master (source field). verified=false means not confirmed; the entry is still applied.",
-    "Muhurat sessions are informational only (muhurat_session=true, segment_closed=false) and do not shift expiries."
+    "Muhurat sessions are informational only (muhurat_session=true, segment_closed=false) and do not shift expiries by themselves. Diwali days on which the archive shows the expiry moved (2021-11-04, 2025-10-21) are listed under historical_expiry_closures."
   ],
   "holidays": [
     {
@@ -42,6 +42,141 @@
       "verified": true,
       "source": "https://www.nseindia.com/api/holiday-master?type=trading (CM and FO segments); https://www.nseindia.com/resources/exchange-communication-holidays",
       "notes": "Tuesday. Monthly expiry (last Tuesday of Nov 2026) moves to Monday 2026-11-23."
+    }
+  ],
+  "historical_expiry_closures": [
+    {
+      "date": "2019-03-21",
+      "shifted_expiry": "2019-03-20",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2019-08-15",
+      "shifted_expiry": "2019-08-14",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2020-04-02",
+      "shifted_expiry": "2020-04-01",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2021-03-11",
+      "shifted_expiry": "2021-03-10",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2021-05-13",
+      "shifted_expiry": "2021-05-12",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2021-08-19",
+      "shifted_expiry": "2021-08-18",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2021-11-04",
+      "shifted_expiry": "2021-11-03",
+      "name": "Diwali holiday (archive file exists, Muhurat-style session; expiry still moved to previous trading day)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2022-04-14",
+      "shifted_expiry": "2022-04-13",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2023-01-26",
+      "shifted_expiry": "2023-01-25",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2023-03-30",
+      "shifted_expiry": "2023-03-29",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2023-06-29",
+      "shifted_expiry": "2023-06-28",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2024-04-11",
+      "shifted_expiry": "2024-04-10",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2024-08-15",
+      "shifted_expiry": "2024-08-14",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2025-04-10",
+      "shifted_expiry": "2025-04-09",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2025-05-01",
+      "shifted_expiry": "2025-04-30",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2025-10-21",
+      "shifted_expiry": "2025-10-20",
+      "name": "Diwali holiday (archive file exists, Muhurat-style session; expiry still moved to previous trading day)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2026-03-03",
+      "shifted_expiry": "2026-03-02",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2026-03-31",
+      "shifted_expiry": "2026-03-30",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
+    },
+    {
+      "date": "2026-04-14",
+      "shifted_expiry": "2026-04-13",
+      "name": "not named in archive (raw expiry weekday had no expiry settlement)",
+      "segment_closed": true,
+      "source": "NSE F&O archive: expiry settled on the previous trading day, no settlement for the raw weekday"
     }
   ]
 }
