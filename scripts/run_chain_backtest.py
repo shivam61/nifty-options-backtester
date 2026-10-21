@@ -97,6 +97,8 @@ def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lot
         "expiry_index_vs_nifty_max": max(bt.index_vs_nifty) if bt.index_vs_nifty else None,
         "expiry_index_vs_nifty_n": len(bt.index_vs_nifty),
     }
+    if not cfg.fully_legacy:  # legacy mode keeps the pre-change diag schema byte for byte
+        diag["cfg"].update({"cash_settlement": cfg.cash_settlement, "legacy_costs": cfg.legacy_costs})
     return trades, diag, bt.skip_log
 
 
@@ -122,6 +124,11 @@ def main(argv=None) -> int:
                     help="family F1: PCS and IC held to expiry settle; every other exit disabled")
     ap.add_argument("--min-vix", type=float, default=None,
                     help="family F2: skip entry signals with India VIX below this value (default: no floor)")
+    ap.add_argument("--legacy-settlement", action="store_true",
+                    help="legacy: expiry is an exit order (exit slippage and exit fees) instead of cash "
+                         "settlement at intrinsic value")
+    ap.add_argument("--legacy-costs", action="store_true",
+                    help="legacy: CostModel round-trip fee formula on the net credit (GST on brokerage only)")
     ap.add_argument("--fixed-capital-protection", action="store_true",
                     help="legacy: capital-protection stop uses a fixed Rs20,000 total at any lot count")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
@@ -151,10 +158,14 @@ def main(argv=None) -> int:
                                     hold_to_expiry=a.no_early_exits),
         "min_vix_floor": a.min_vix,
         "capital_protection_per_lot": not a.fixed_capital_protection,
+        "cash_settlement": not a.legacy_settlement,
+        "legacy_costs": a.legacy_costs,
     }
     summary["arms"] = {"pcs_put_sd": a.pcs_put_sd, "breach_stop": not a.no_breach_stop,
                        "ic_hold_to_expiry": a.ic_hold_to_expiry, "hold_to_expiry": a.no_early_exits}
     summary["cfg"] = {"min_vix_floor": a.min_vix, "capital_protection_per_lot": not a.fixed_capital_protection}
+    if not (a.legacy_settlement and a.legacy_costs):  # fully-legacy summary schema unchanged
+        summary["cfg"].update({"cash_settlement": not a.legacy_settlement, "legacy_costs": a.legacy_costs})
     for mult in a.slippage:
         tag = f"x{mult:g}"
         trades, diag, skip_log = run_one(arch, market, a.start, a.end, mult, a.lots, overrides)

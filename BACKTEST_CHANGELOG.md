@@ -868,3 +868,17 @@ Per-lot net expectancy (Rs), lots=10:
 - The capital-protection stop now scales with lots (`ChainConfig.capital_protection_per_lot`, default True; `--fixed-capital-protection` restores the old fixed Rs20,000). It is not what makes results lot-dependent; flat per-order brokerage is.
 - Caveat for F1: cash-settled expiry has no exit order, but the engine still charges exit slippage and brokerage; a rough what-if without them gives about -7 per lot at 1.5x (approximation, not a pass). The settlement model should be corrected and decided before any holdout look.
 - F2's 13 floor is in-sample (derived from the Step 0 audit); a pass could only be confirmed on the holdout.
+
+## 2026-10-21 — Settlement and cost-model correction; Step 2 re-run (dev window, lots=10)
+- Cash settlement at expiry now has no exit order (no exit slippage, no exit brokerage); STT on exercised ITM long legs at 0.125% of intrinsic; date-aware STT/exchange rates (`backtester/nse_option_rates.py`, `docs/COSTS_NSE_OPTIONS.md`, sources cited). Legacy behaviour is reproducible with `--legacy-settlement --legacy-costs` (byte-identical to the previous outputs, including the three full-period files).
+- Per-lot net expectancy (Rs), dev window 2019-02-11..2023-12-31, lots=10, corrected model:
+| slip | baseline | F1 hold to expiry | F2 VIX>=13 |
+|---|---:|---:|---:|
+| 0 | +123 | +149 | +238 |
+| 0.5x | -17 | +106 | +78 |
+| 0.75x | -76 | +78 | +13 |
+| 1.0x | -133 | +49 | -50 |
+| 1.5x | -253 | -10 | -183 |
+- Break-even slippage multiplier: baseline ~0.44x, F1 ~1.42x, F2 ~0.80x. About 91% of F1's earlier shortfall was the settlement-model error.
+- Pre-registered rule at 1.5x (beats baseline AND > 0 AND year-cluster CI lower bound > 0 AND >= 4/5 positive years): F1 FAILS (-10; year CI [-218, +189]; 3/5 years), F2 FAILS (-183; 2/5 years). Holdout not evaluated.
+- Open: brokerage on expired/exercised contracts (Rs20/order) is not modelled; exchange/exercise-STT history for 2019-2022 and pre-2020-07 stamp duty are proxies.

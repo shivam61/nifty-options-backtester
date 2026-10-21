@@ -49,6 +49,16 @@ import numpy as np
 import pandas as pd
 
 from config import WeeklyBacktestConfig
+from backtester.nse_option_rates import (
+    BROKERAGE_PER_ORDER,
+    EXCHANGE_TXN_PCT,
+    GST_PCT,
+    SEBI_PCT,
+    STAMP_BUY_PCT,
+    STT_EXERCISE_PCT,
+    STT_SELL_PCT,
+    rate_on,
+)
 from strategies.base import Leg, Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
 from backtester.weekly_exit_policy import (
@@ -89,6 +99,20 @@ class ChainConfig:
     capital_protection_per_lot: bool = True
     # Family F2 entry gate: skip signals with VIX below this value (None = no floor, baseline).
     min_vix_floor: Optional[float] = None
+    # Expiry settlement. True (default): a leg still open at expiry is cash-settled at intrinsic
+    # value vs the archive index settle: no exit order, so no exit slippage and no exit brokerage;
+    # long in-the-money legs pay STT on exercise. False (legacy): expiry is an exit order priced at
+    # the intrinsic mark with exit slippage and exit fees.
+    cash_settlement: bool = True
+    # Fee model. False (default): per-order schedule from backtester.nse_option_rates (date-aware
+    # STT / exchange rates; GST on brokerage + exchange + SEBI; entry and exit turnover charged
+    # separately). True: legacy CostModel round-trip formula on the net credit (GST on brokerage only).
+    legacy_costs: bool = False
+
+    @property
+    def fully_legacy(self) -> bool:
+        """Both legacy switches on: output schema and values are the pre-settlement-fix ones."""
+        return (not self.cash_settlement) and self.legacy_costs
 
 
 class ChainBacktest:
@@ -150,6 +174,29 @@ class ChainBacktest:
         brokerage = self.cm.brokerage_per_order * n_legs * 2
         gst = brokerage * self.cm.gst_on_brokerage_pct / 100
         return stt + exchange + sebi + stamp + brokerage + gst
+
+    def _order_fees(self, day: date, sold_rs: float, bought_rs: float, n_orders: int) -> dict:
+        """Charges on one set of orders (entry or exit) dated `day`, date-aware rates.
+
+        sold_rs / bought_rs: premium turnover (price x quantity) of the option legs sold / bought.
+        STT is on the sell side only; stamp duty on the buy side only; exchange and SEBI on both.
+        GST 18% on brokerage + exchange + SEBI (not on STT or stamp). Sources: nse_option_rates.
+        """
+        turnover = sold_rs + bought_rs
+        stt = sold_rs * rate_on(STT_SELL_PCT, day) / 100
+        exchange = turnover * rate_on(EXCHANGE_TXN_PCT, day) / 100
+        sebi = turnover * rate_on(SEBI_PCT, day) / 100
+        stamp = bought_rs * rate_on(STAMP_BUY_PCT, day) / 100
+        brokerage = BROKERAGE_PER_ORDER * n_orders
+        gst = (brokerage + exchange + sebi) * GST_PCT / 100
+        total = stt + exchange + sebi + stamp + brokerage + gst
+        return {"stt": stt, "exchange": exchange, "sebi": sebi, "stamp": stamp,
+                "brokerage": brokerage, "gst": gst, "total": total}
+
+    @staticmethod
+    def _exercise_stt(day: date, itm_long_intrinsic_rs: float) -> float:
+        """STT on exercise: 0.125% of intrinsic value of bought options that finish in the money."""
+        return itm_long_intrinsic_rs * rate_on(STT_EXERCISE_PCT, day) / 100
 
     def _capital_base(self) -> float:
         """Equity used by the capital-protection stop (see ChainConfig.capital_protection_per_lot)."""
@@ -289,13 +336,16 @@ class ChainBacktest:
         st["last_vix"] = vix
         dte = (expiry - d).days
         marks = []
+        raw_marks = []  # unfloored price: cash settlement uses this (intrinsic can be 0)
         for i, leg in enumerate(trade.legs):
             r = self.arch.row(d, expiry, leg.strike, leg.option_type)
             if r is None or r["px_src"] < 0 or not np.isfinite(r["px"]):
                 st["stale_marks"] += 1
                 s = st["last_marks"][i]
+                raw = s
             else:
                 s = r["px"]
+                raw = s
                 if r["px_src"] == 1:
                     self.diag["close_fallback_mark"] += 1
                 if r["px_src"] in (2, 3):
@@ -304,6 +354,7 @@ class ChainBacktest:
                     self.diag["settle_floored_mark"] += 1
                     s = TICK
             marks.append(s)
+            raw_marks.append(raw)
         st["last_marks"] = marks
         # greeks (model) refreshed, then prices overwritten with real settle marks
         if dte >= 0:
@@ -339,7 +390,7 @@ class ChainBacktest:
                 should_exit, reason = True, (r2 if r2 else ExitReason.EXPIRY)
         if should_exit:
             return {"date": d, "spot": spot, "vix": vix, "reason": reason, "dte": dte,
-                    "marks": marks, "holding_sessions": holding}
+                    "marks": marks, "raw_marks": raw_marks, "holding_sessions": holding}
         update_tracker(st["tracker"], trade, spot)
         return None
 
@@ -350,22 +401,60 @@ class ChainBacktest:
         gross_settle = 0.0
         pen_exit_rs = 0.0
         legs_out = []
-        for i, (leg, s_exit) in enumerate(zip(trade.legs, ex["marks"])):
-            slip = self._slip_unit(vix, leg.strike, spot)
+        # A leg open on its expiry day (dte == 0) is cash-settled, not traded out (new model).
+        cash = bool(self.cfg.cash_settlement and ex["dte"] == 0)
+        exit_marks = ex["raw_marks"] if cash else ex["marks"]
+        n_legs = len(trade.legs)
+        entry_sold_rs = entry_bought_rs = 0.0   # entry premium turnover, short / long legs
+        exit_sold_rs = exit_bought_rs = 0.0     # exit-order turnover (not used when cash-settled)
+        itm_long_intrinsic_rs = 0.0             # long legs that finish in the money (exercised)
+        for i, (leg, s_exit) in enumerate(zip(trade.legs, exit_marks)):
+            q = leg.quantity
             if leg.is_short:
-                f_exit = s_exit + slip
-                gross_fill += (leg.entry_premium - f_exit) * leg.quantity
-                gross_settle += (st["entry_settle"][i] - s_exit) * leg.quantity
+                entry_sold_rs += leg.entry_premium * q
             else:
-                f_exit = max(s_exit - slip, TICK)
-                gross_fill += (f_exit - leg.entry_premium) * leg.quantity
-                gross_settle += (s_exit - st["entry_settle"][i]) * leg.quantity
-            pen_exit_rs += abs(f_exit - s_exit) * leg.quantity
+                entry_bought_rs += leg.entry_premium * q
+            if cash:
+                f_exit = s_exit  # settlement value, no order: no slippage
+                if not leg.is_short and s_exit > 0:
+                    itm_long_intrinsic_rs += s_exit * q
+            else:
+                slip = self._slip_unit(vix, leg.strike, spot)
+                if leg.is_short:
+                    f_exit = s_exit + slip
+                    exit_bought_rs += f_exit * q
+                else:
+                    f_exit = max(s_exit - slip, TICK)
+                    exit_sold_rs += f_exit * q
+            if leg.is_short:
+                gross_fill += (leg.entry_premium - f_exit) * q
+                gross_settle += (st["entry_settle"][i] - s_exit) * q
+            else:
+                gross_fill += (f_exit - leg.entry_premium) * q
+                gross_settle += (s_exit - st["entry_settle"][i]) * q
+            pen_exit_rs += abs(f_exit - s_exit) * q
             legs_out.append({"type": leg.option_type, "strike": leg.strike, "short": bool(leg.is_short),
                              "entry_settle": st["entry_settle"][i], "entry_fill": leg.entry_premium,
                              "exit_settle": s_exit, "exit_fill": f_exit})
         credit = trade.net_credit
-        fee = self._fee_rs(credit, len(trade.legs), self.cfg.lots)
+        extra: dict = {}
+        if self.cfg.legacy_costs:
+            fee = self._fee_rs(credit, n_legs, self.cfg.lots)
+            ent_fee = ex_fee = ex_stt = None
+        else:
+            ent = self._order_fees(st["fill_date"], entry_sold_rs, entry_bought_rs, n_legs)
+            if cash:
+                ex_stt = self._exercise_stt(d, itm_long_intrinsic_rs)
+                ex_fee = ex_stt  # no exit order: no exit brokerage, exchange, SEBI, GST or stamp
+            else:
+                ex_fee = self._order_fees(d, exit_sold_rs, exit_bought_rs, n_legs)["total"]
+                ex_stt = None
+            ent_fee = ent["total"]
+            fee = ent_fee + ex_fee
+            extra = {"entry_fee_rs": ent_fee, "exit_fee_rs": ex_fee,
+                     "exercise_stt_rs": ex_stt if cash else 0.0}
+        if not self.cfg.fully_legacy:
+            extra["settled_at_expiry"] = cash
         pnl = gross_fill - fee
         lots = self.cfg.lots
         rec = {
@@ -385,6 +474,7 @@ class ChainBacktest:
             "stale_marks": st["stale_marks"], "expiry_intrinsic_dev": st["expiry_dev_max"],
             "legs": legs_out, "slip_multiplier": self.cfg.slippage_multiplier,
         }
+        rec.update(extra)  # new-model fields; absent in fully-legacy mode (schema unchanged)
         return rec
 
     # ------------------------------------------------------------ main loop

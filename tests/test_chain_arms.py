@@ -56,6 +56,8 @@ def _market(days, vix, spot_map=None):
 def _run(root, days, market, mult=1.0, **cfg_extra):
     """One ChainBacktest run; cfg_extra are ChainConfig fields (e.g. exit_arms, pcs_put_sd)."""
     arch = NseFoArchive(archive_dir=str(root))
+    # legacy settlement + legacy fees: these hand-computed arm cases pin the pre-fix model
+    cfg_extra = {"cash_settlement": False, "legacy_costs": True, **cfg_extra}
     cfg = ChainConfig(slippage_multiplier=mult, start=S, end=S, **cfg_extra)
     bt = ChainBacktest(arch, market, cfg)
     return bt, bt.run()
@@ -171,7 +173,7 @@ def test_cli_defaults_reproduce_baseline_on_test_run_chain_backtest_archive(tmp_
     monkeypatch.setattr(cli, "load_market", lambda end, market_start=None: _synthetic_market(days))
     out = tmp_path / "out"
     assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
-                     "--out", str(out)]) == 0
+                     "--out", str(out), "--legacy-settlement", "--legacy-costs"]) == 0
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
     summ = json.load(open(out / "summary.json"))["arms"]
@@ -185,7 +187,8 @@ def test_cli_arm_flags_are_recorded_and_do_not_touch_ic_world(tmp_path, monkeypa
     monkeypatch.setattr(cli, "load_market", lambda end, market_start=None: _synthetic_market(days))
     out = tmp_path / "out"
     assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
-                     "--out", str(out), "--pcs-put-sd", "1.2", "--no-breach-stop"]) == 0
+                     "--out", str(out), "--pcs-put-sd", "1.2", "--no-breach-stop",
+                     "--legacy-settlement", "--legacy-costs"]) == 0
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
     summ = json.load(open(out / "summary.json"))["arms"]
@@ -555,4 +558,6 @@ def test_cli_new_flags_are_recorded_and_gate_entries(tmp_path, monkeypatch):
                      "--out", str(out), "--min-vix", "20"]) == 0
     assert json.load(open(out / "trades_x1.json"))["n"] == 0
     assert json.load(open(out / "diag_x1.json"))["skips"]["vix_floor"] >= 1
-    assert json.load(open(out / "summary.json"))["cfg"] == {"min_vix_floor": 20.0, "capital_protection_per_lot": True}
+    assert json.load(open(out / "summary.json"))["cfg"] == {
+        "min_vix_floor": 20.0, "capital_protection_per_lot": True,
+        "cash_settlement": True, "legacy_costs": False}

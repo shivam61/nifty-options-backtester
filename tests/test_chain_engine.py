@@ -52,7 +52,9 @@ def _market(days, spot=SPOT, vix=15.0, spot_map=None):
 
 
 def _cfg(mult=1.0):
-    return ChainConfig(slippage_multiplier=mult, start=S, end=S)
+    # Pre-settlement-fix model: these hand-computed cases pin the legacy expiry-as-exit model and
+    # the legacy round-trip fee formula. The new model is tested by the cases appended below.
+    return ChainConfig(slippage_multiplier=mult, start=S, end=S, cash_settlement=False, legacy_costs=True)
 
 
 def _run(root, days, market, mult=1.0, index_fallback=None):  # market gives the calendar
@@ -217,3 +219,142 @@ def test_slippage_multiplier_scales_penalties(tmp_path):
     # each of the 4 legs moves 0.45 per unit more at 2x than at 1x: credit falls by 4*0.45
     assert t1[0]["entry_credit_fill"] - t2[0]["entry_credit_fill"] == pytest.approx(4 * 0.45)
     assert t2[0]["pnl"] < t1[0]["pnl"]
+
+
+# ================================================================ settlement + cost model (new default)
+# Hand-computed cases for cash_settlement=True / legacy_costs=False. Lots=1, quantity 65.
+# Baseline PCS strikes at spot 23000, VIX 11, 6 DTE: short PE 22650, long PE 22450 (asserted below).
+# Rates in force: STT sell 0.1%, exchange 0.03503%, SEBI 0.0001%, stamp 0.003% (buy), STT exercise
+# 0.125% of intrinsic on bought ITM options, Rs20 per order, GST 18% on brokerage+exchange+SEBI.
+from backtester.nse_option_rates import (  # noqa: E402
+    EXCHANGE_TXN_PCT, STT_EXERCISE_PCT, STT_SELL_PCT, rate_on,
+)
+from strategies.weekly_strategies import WeeklyExitArms  # noqa: E402
+
+SP, LP = 22650, 22450
+E_DAYS_D6, E_DAYS_D7 = date(2025, 1, 6), date(2025, 1, 7)
+
+
+def _pcs_settle_world(root, index_settle, d6_marks=(40.0, 15.0)):
+    _write(root, S, [_row(S, S, 23000, "PE", 1.0)])
+    _write(root, F, [_row(F, E, SP, "PE", 40.0), _row(F, E, LP, "PE", 15.0)])
+    _write(root, E_DAYS_D6, [_row(E_DAYS_D6, E, SP, "PE", d6_marks[0]), _row(E_DAYS_D6, E, LP, "PE", d6_marks[1])])
+    _write(root, E_DAYS_D7, [_row(E_DAYS_D7, E, SP, "PE", 40.0), _row(E_DAYS_D7, E, LP, "PE", 15.0)])
+    _write(root, E, [_row(E, E, SP, "PE", index_settle, close=0.0), _row(E, E, LP, "PE", index_settle, close=0.0)])
+    days = [S, F, E_DAYS_D6, E_DAYS_D7, E]
+    return days, _market(days, SPOT, vix=11.0)
+
+
+def _run_cfg(root, days, market, **cfg_extra):
+    arch = NseFoArchive(archive_dir=str(root))
+    cfg = ChainConfig(start=S, end=S, **cfg_extra)
+    bt = ChainBacktest(arch, market, cfg)
+    return bt, bt.run()
+
+
+def test_rate_table_boundaries():
+    from datetime import date as D
+    assert rate_on(STT_SELL_PCT, D(2023, 3, 31)) == 0.05
+    assert rate_on(STT_SELL_PCT, D(2023, 4, 1)) == 0.0625
+    assert rate_on(STT_SELL_PCT, D(2024, 9, 30)) == 0.0625
+    assert rate_on(STT_SELL_PCT, D(2024, 10, 1)) == 0.1
+    assert rate_on(EXCHANGE_TXN_PCT, D(2023, 3, 31)) == 0.053
+    assert rate_on(EXCHANGE_TXN_PCT, D(2023, 4, 1)) == 0.05
+    assert rate_on(EXCHANGE_TXN_PCT, D(2024, 3, 31)) == 0.05
+    assert rate_on(EXCHANGE_TXN_PCT, D(2024, 4, 1)) == 0.0495
+    assert rate_on(EXCHANGE_TXN_PCT, D(2024, 9, 30)) == 0.0495
+    assert rate_on(EXCHANGE_TXN_PCT, D(2024, 10, 1)) == 0.03503
+    assert rate_on(STT_EXERCISE_PCT, D(2019, 2, 11)) == 0.125
+    with pytest.raises(ValueError):
+        rate_on(STT_SELL_PCT, D(2018, 12, 31))
+
+
+@pytest.mark.parametrize("index_settle, short_intrinsic, long_intrinsic, exercise_stt", [
+    # both legs ITM: long 22450 put intrinsic 150 is exercised -> STT 0.125% x 150 x 65 = 12.1875
+    (22300.0, 350.0, 150.0, 12.1875),
+    # long leg OTM at settle: intrinsic exactly 0 (not the 0.05 tick floor), no exercise STT
+    (22500.0, 150.0, 0.0, 0.0),
+])
+def test_held_to_expiry_pcs_cash_settled_hand_computed(tmp_path, index_settle, short_intrinsic,
+                                                       long_intrinsic, exercise_stt):
+    """PCS held to expiry E, fills 40 (short) / 15 (long), slippage 0 so fills equal settles.
+
+    Gross = (40 - short_intr)*65 + (long_intr - 15)*65   (no exit order, no exit slippage)
+    Entry fees on 2600 sold + 975 bought (turnover 3575), fill date 2025-01-03:
+      STT 2600*0.1%=2.6 | exchange 3575*0.03503%=1.2523225 | SEBI 3575*0.0001%=0.003575
+      stamp 975*0.003%=0.02925 | brokerage 2 orders*20=40 | GST 18%*(40+1.2523225+0.003575)=7.42606155
+      entry total 51.31120905. No exit brokerage, exchange, SEBI, GST or stamp at expiry.
+    """
+    days, mk = _pcs_settle_world(tmp_path, index_settle)
+    arms = WeeklyExitArms(hold_to_expiry=True)
+    bt, trades = _run_cfg(tmp_path, days, mk, slippage_multiplier=0.0, exit_arms=arms)
+    assert len(trades) == 1, (trades, bt.skip_log, dict(bt.diag))
+    t = trades[0]
+    assert t["exit_date"] == str(E) and t["dte_at_exit"] == 0
+    assert t["settled_at_expiry"] is True
+    short, long_ = t["legs"]
+    assert short["strike"] == SP and short["exit_fill"] == pytest.approx(short_intrinsic)
+    assert long_["strike"] == LP and long_["exit_fill"] == pytest.approx(long_intrinsic)
+    gross = (40.0 - short_intrinsic) * 65 + (long_intrinsic - 15.0) * 65
+    entry_fee = 51.31120905
+    assert t["entry_fee_rs"] == pytest.approx(entry_fee, abs=1e-6)
+    assert t["exit_fee_rs"] == pytest.approx(exercise_stt, abs=1e-6)
+    assert t["exercise_stt_rs"] == pytest.approx(exercise_stt, abs=1e-6)
+    assert t["close_slip_rs"] == 0.0           # no exit slippage on a settled trade
+    assert t["fee_rs"] == pytest.approx(entry_fee + exercise_stt, abs=1e-6)
+    assert t["pnl"] == pytest.approx(gross - entry_fee - exercise_stt, abs=0.01)
+
+
+def test_early_exit_pcs_keeps_exit_slippage_and_order_fees(tmp_path):
+    """Baseline PCS exit on DTE 1 (X), slippage 1.0. WeeklyBacktestConfig.cost_model base slippage is
+    0.45/unit at VIX 11 (no VIX or OTM extra).
+
+    Fills: short 40-0.45=39.55, long 15+0.45=15.45. Exit orders: short bought at 10+0.45=10.45,
+    long sold at max(4-0.45, 0.05)=3.55.  gross = (39.55-10.45)*65 + (3.55-15.45)*65 = 1118.0.
+    Entry turnover 2570.75 sold / 1004.25 bought: fees 51.28283655 (STT 0.1%, exchange 0.03503%,
+    SEBI, stamp, 40 brokerage, GST 18% on brokerage+exchange+SEBI).
+    Exit turnover 230.75 sold / 679.25 bought (2025-01-08): fees 47.82835344.
+    Exit slippage = (0.45 + 0.45) * 65 = 58.5.
+    """
+    days, mk = _pcs_settle_world(tmp_path, 22300.0)
+    # rebuild as an early-exit world: exit day X=2025-01-08 with DTE 1 and marks 10 / 4
+    _write(tmp_path, X, [_row(X, E, SP, "PE", 10.0), _row(X, E, LP, "PE", 4.0)])
+    days = [S, F, E_DAYS_D6, E_DAYS_D7, X, E]
+    mk = _market(days, SPOT, vix=11.0)
+    bt, trades = _run_cfg(tmp_path, days, mk, slippage_multiplier=1.0)
+    assert len(trades) == 1, (trades, bt.skip_log, dict(bt.diag))
+    t = trades[0]
+    assert t["exit_date"] == str(X) and t["exit_reason"] == "dte_limit"
+    assert t["settled_at_expiry"] is False
+    assert t["exercise_stt_rs"] == 0.0
+    assert t["close_slip_rs"] == pytest.approx(0.45 * 65 * 2, abs=1e-6)
+    assert t["entry_fee_rs"] == pytest.approx(51.28283655, abs=1e-6)
+    assert t["exit_fee_rs"] == pytest.approx(47.82835344, abs=1e-6)
+    assert t["pnl"] == pytest.approx(1118.0 - 51.28283655 - 47.82835344, abs=0.01)
+    assert t["pnl"] == pytest.approx(1018.88881001, abs=0.01)
+
+
+def test_legacy_settlement_charges_exit_slippage_at_expiry(tmp_path):
+    """cash_settlement=False: expiry is an exit order. Slippage 1.0 on the intrinsic marks, and the
+    legacy_costs fee formula (round trip on the credit) for the trade."""
+    days, mk = _pcs_settle_world(tmp_path, 22300.0)
+    bt, trades = _run_cfg(tmp_path, days, mk, slippage_multiplier=1.0, cash_settlement=False,
+                          legacy_costs=True, exit_arms=WeeklyExitArms(hold_to_expiry=True))
+    assert len(trades) == 1, (trades, bt.skip_log, dict(bt.diag))
+    t = trades[0]
+    # cash_settlement=False + legacy_costs=True is the fully-legacy schema: no new fields
+    assert "settled_at_expiry" not in t and "entry_fee_rs" not in t
+    # exit: short buys at 350+0.45, long sells at max(150-0.45, 0.05)
+    assert t["close_slip_rs"] == pytest.approx((0.45 + 0.45) * 65, abs=1e-6)
+    assert t["legs"][0]["exit_fill"] == pytest.approx(350.45)
+    assert t["legs"][1]["exit_fill"] == pytest.approx(149.55)
+
+
+def test_legacy_costs_formula_on_settled_trade(tmp_path):
+    days, mk = _pcs_settle_world(tmp_path, 22300.0)
+    bt, trades = _run_cfg(tmp_path, days, mk, slippage_multiplier=0.0,
+                          legacy_costs=True, exit_arms=WeeklyExitArms(hold_to_expiry=True))
+    t = trades[0]
+    gross = (40.0 - 350.0) * 65 + (150.0 - 15.0) * 65
+    assert t["fee_rs"] == pytest.approx(_expected_fees(25.0, 2), abs=1e-6)
+    assert t["pnl"] == pytest.approx(gross - _expected_fees(25.0, 2), abs=0.01)
