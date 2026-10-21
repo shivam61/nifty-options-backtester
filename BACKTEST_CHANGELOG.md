@@ -842,3 +842,17 @@ Arms (default off; `scripts/run_chain_backtest.py --pcs-put-sd 1.2 | --no-breach
 | B: no close-based strike-breach stop | 201 | -325 (identical; the breach stop is redundant with the credit stop) | |
 | C: ICs held to expiry | 203 | -158 | [-220, -90] |
 Pre-registered rule (beats baseline AND > 0 AND CI lower bound > 0): no arm passes; C narrows the loss only. The 2024+ holdout was NOT evaluated, by design (no arm passed). No parameter tuning was done.
+
+## 2026-10-21 — Step 0 (dev window 2019-02-11..2023-12-31): cost decomposition and premium audit
+Per-lot net expectancy of the baseline weekly IC/PCS on real EOD settle prices (CostModel: Rs20/order brokerage; slippage multiplier on the model's per-unit slippage):
+| lots \ slippage | 0x | 0.5x | 0.75x | 1.0x | 1.5x |
+|---|---:|---:|---:|---:|---:|
+| 1 | -4 | -145 | -207 | -262 | -325 |
+| 5 | +112 | -29 | -88 | -145 | -266 |
+| 10 | +113 | -14 | -74 | -129 | -250 |
+| 30 | +70 | -62 | -130 | -189 | -291 |
+- Fees are small once lots scale (lots=30, 1.0x: gross +54, entry slippage -117, exit slippage -121, fees -6). Slippage assumptions dominate the verdict; real bid/ask is the missing input.
+- Premium audit (weekly, n=250): mean implied move 1.644% vs realised 1.588%; implied > realised in 61.6% of weeks; ATM straddle gross +8.2 pts/unit (CI crosses zero); 0.9 SD strangle +5.4 pts/unit. By VIX: <13 -3.8, 13-16 +10.2, 16-20 +25.2, 20-25 +14.8, 25+ -57.7. Monthly (n=57): implied 3.19% vs realised 3.28%, no premium.
+- Gate G0 (stop only if 30-lot <=1.0x clearly negative AND implied <= realised): implied > realised on the traded weekly cadence, so CONTINUE.
+- Accounting notes: capital-protection stop is a fixed Rs20,000, so it binds at ~Rs667/lot at 30 lots (per-lot metric not lot-invariant); fees are charged on entry-credit notional only (immaterial); 1.0x here is harsher than the old engine's 0.75x entry scale.
+- VRP tercile and VIX-bucket cuts are in-sample candidates for Step 1, not evidence. No 2024+ data was used.
