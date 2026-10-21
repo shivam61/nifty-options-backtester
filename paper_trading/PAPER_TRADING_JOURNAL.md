@@ -1,5 +1,7 @@
 # Paper Trading Journal — Phase 1 Validation (Run #66 validation)
 
+> **2026-10-21 STATUS: the weekly track is NOT a validated candidate.** The real-price backtest is unsupported (pre-registered verdict NOT SUPPORTED; see `../BACKTEST_CHANGELOG.md`, 2026-10-21). Live paper logging is data collection only. Monday-expiry era statements are wrong; the NIFTY calendar was corrected in commit 97e6974. Premiums and figures in this file are Black-Scholes estimates unless marked otherwise.
+
 **Account Setup Date**: 2026-08-29 (14:26 UTC / 19:56 IST) — pre-restart; nothing before the restart counts
 **Phase 1 Forward-Only Restart**: Mon 2026-10-19
 **Initial Capital**: ₹25,00,000 (CLI `--capital 2500000`)

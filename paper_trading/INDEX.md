@@ -1,5 +1,7 @@
 # Paper Trading Documentation Index
 
+> **2026-10-21 STATUS: the weekly track is NOT a validated candidate.** The real-price backtest is unsupported (pre-registered verdict NOT SUPPORTED; see `../BACKTEST_CHANGELOG.md`, 2026-10-21). Live paper logging is data collection only. Monday-expiry era statements are wrong; the NIFTY calendar was corrected in commit 97e6974. Premiums and figures in this file are Black-Scholes estimates unless marked otherwise.
+
 **Status**: Restarting forward-only on Mon 2026-10-19. Weekly-track model acceptance recorded (risk engine OFF); the Mon 10-19 pre-flight is still to run.
 **Last Updated**: 2026-10-18
 **API Server**: ⚠️ **API status: NOT USABLE until fixed** (`api/server.py` cannot start at HEAD). Use the CLI and the CSVs. Known issues: [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) section (f). The API docs are kept for reference but are not operational.

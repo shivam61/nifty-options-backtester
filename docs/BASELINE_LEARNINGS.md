@@ -2,7 +2,8 @@
 
 **Document**: Standard format for recording findings and phase changes  
 **Last Updated**: 2026-08-24  
-**Baseline**: Run #59 (11.16% CAGR, rule-based)
+**Baseline**: Run #59 (11.16% CAGR, rule-based)  
+**Caveat (2026-10-21)**: the weekly track is priced by Black-Scholes, which overstates entry credit. Real-price repricing gives -170 Rs/lot, and the real-price chain engine gives NOT SUPPORTED. Weekly CAGR figures in this document are not validated. See `BACKTEST_CHANGELOG.md` (2026-10-21).
 
 ---
 
@@ -81,7 +82,7 @@
 2. **Rule-based wins**: Simple circuit breakers (VIX zones, DTE windows, % stops) outperform complex ML scoring
 3. **Capital utilization paradox**: v10 uses 43.1% capital but achieves best CAGR; v9 tried 64.9% and suffered
 4. **Serialization risk**: Cross-version scikit-learn compatibility is real; consider version pinning in requirements
-5. **Weekly strategy is sound**: 102 trades at 77.5% win rate shows core IC/PCS logic works
+5. **Weekly strategy is sound**: 102 trades at 77.5% win rate shows core IC/PCS logic works *(2026-10-21 caveat: not supported; model-priced, and the real-price chain engine gives expectancy -177 Rs/lot at 1.0x slippage)*
 
 **Status**: ✅ Complete | Baseline v10 stable and documented
 

@@ -1,5 +1,7 @@
 # Daily Workflow Summary — Quick Start Guide
 
+> **2026-10-21 STATUS: the weekly track is NOT a validated candidate.** The real-price backtest is unsupported (pre-registered verdict NOT SUPPORTED; see `../BACKTEST_CHANGELOG.md`, 2026-10-21). Live paper logging is data collection only. Monday-expiry era statements are wrong; the NIFTY calendar was corrected in commit 97e6974. Premiums and figures in this file are Black-Scholes estimates unless marked otherwise.
+
 > **SUPERSEDED (2026-10-19).** This page still describes the REST API workflow, a 3-day hold, a 2× stop and 11:30 entries. None of that is current. Use [RESTART_2026-10-19.md](./RESTART_2026-10-19.md) and [DAILY_CHECKLIST.md](./DAILY_CHECKLIST.md). The API is not usable until fixed.
 
 **Ready to Use**: Yes ✅  

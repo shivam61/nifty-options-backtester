@@ -807,3 +807,28 @@ For complete historical context (Runs #3–#55), see [Archived Runs](docs/archiv
 | Post-fix | 94 | 0.35% | 15.6% | 0.10 | 1.11 | Rs30,806 |
 | Post-fix + dte_check_at_signal | 42 | -0.84% | 15.0% | -0.48 | 0.33 | Rs-67,819 |
 Pre-fix 11.98%, Run #60 12.07% and the 17.97% what-if are not valid performance figures. Source: whatif_work/exitfix (runA/runB/runC logs + JSON).
+
+
+## 2026-10-21 — Correction: model-priced weekly results are not evidence of an edge
+Black-Scholes pricing overstates weekly entry credit, including after 2019. Model median entry credit is 31 Rs/unit against a real NSE settle of 21.
+
+**Repricing of the BS backtest (R1):** 179 priceable trades repriced at real NSE settle gave **-170 Rs/lot** (year-cluster CI -391..+60), against +349 Rs/lot under the model. Source: `~/whatif_work/realprice/repricing_summary.json`.
+
+**Real-price chain engine (commit 9877dca):** `backtester/chain_engine.py` + `data/nse_fo_archive.py` price NIFTY option legs from the NSE F&O bhavcopy archive. Window 2019-02-11..2026-08-28, one lot, EOD settle marks, liquidity filter (a leg with 0 contracts and 0 OI is skipped).
+
+| Slippage | Trades | Expectancy (Rs/lot) |
+|---|---:|---:|
+| 1.0x | 330 | -177 |
+| 1.5x | 326 | -238 |
+| 2.0x | 322 | -348 |
+
+- Year-cluster 95% CI at 1.5x: [-475, -46].
+- At 1.0x: IC -172, PCS -183.
+- By year: 2024 +172, 2025 +267, 2022 -541, 2026 -945.
+- Pre-registered verdict: **NOT SUPPORTED**. Outputs in `~/whatif_work/chain/out/`.
+- Caveats: EOD marks only, no bid/ask. Intraday stops would be worse. No sizing or kill-switch is modelled.
+- On expiry day the archive `settle` is the index settlement value, not an option price. The engine prices expiry-day marks at intrinsic.
+
+**Expiry calendar (commit 97e6974):** there was no Monday-expiry era. NIFTY weekly and monthly expiries were Thursday through 2025-08-28 and Tuesday from 2025-09-02. Any statement of a Monday era is wrong.
+
+**Status:** the earlier model-priced results (11.98% and 12.07% CAGR, the 17.97% what-if, the 6.05% era-aware run, Rs334/lot) are **not evidence of an edge**. The weekly track is not a validated candidate. Live paper logging is data collection only.

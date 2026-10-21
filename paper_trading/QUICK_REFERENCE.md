@@ -1,5 +1,7 @@
 # Paper Trading Quick Reference Guide
 
+> **2026-10-21 STATUS: the weekly track is NOT a validated candidate.** The real-price backtest is unsupported (pre-registered verdict NOT SUPPORTED; see `../BACKTEST_CHANGELOG.md`, 2026-10-21). Live paper logging is data collection only. Monday-expiry era statements are wrong; the NIFTY calendar was corrected in commit 97e6974. Premiums and figures in this file are Black-Scholes estimates unless marked otherwise.
+
 **Account**: ₹25,00,000 (weekly budget ₹12,50,000) | **Strategy**: Weekly PCS/IC only | **Phase**: 1 (Validation), forward-only from Mon 2026-10-19
 
 > **API: NOT USABLE until fixed.** Use the CLI and the CSVs. See [RESTART_2026-10-19.md](./RESTART_2026-10-19.md).

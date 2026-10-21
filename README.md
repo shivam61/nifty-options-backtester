@@ -21,6 +21,8 @@ A **dual-track backtester** (monthly 50% + weekly 50% capital) combining:
 4. **Risk Gates** — Circuit breakers (VIX, drawdown, crash detection) block trading during black swans
 
 **Baseline Performance** (Rule-Based Weekly, LightGBM Monthly)
+> **Caveat (2026-10-21):** weekly figures are Black-Scholes priced and are not validated. The real-price chain engine gives NOT SUPPORTED (expectancy -177 Rs/lot at 1.0x slippage). See `BACKTEST_CHANGELOG.md`.
+
 - **CAGR**: 11.16% | **Sharpe**: 1.05 | **Max DD**: 6.9%
 - **Win Rate**: 59.2% (Monthly 53.3%, Weekly 77.5%) | **P&L**: ₹2.57M (17-year backtest)
 - **Profit Factor**: 4.47 (4.47× win/loss ratio)
@@ -83,7 +85,7 @@ python main.py --mode monitor
 | **Dual-track capital allocation** | Monthly and weekly track simultaneously with cross-risk limits; adapt to market regimes |
 | **LightGBM entry/exit models** | AUC 0.696 entry classifier; parallelized training; interpretable feature importance |
 | **11 AM mid-session fills** | Tighter bid-ask spreads (0.75× slippage vs open) + stable spot; +2.47% CAGR vs open-only |
-| **Rule-based weekly** | No ML filtering; simple DTE + stop-loss % gates; 77.5% win rate on 102 trades/17yr |
+| **Rule-based weekly** | No ML filtering; simple DTE + stop-loss % gates; 77.5% win rate on 102 trades/17yr (BS-priced; not validated, see 2026-10-21 caveat) |
 | **Live Fyers integration** | Real-time option chain, Greeks, P&L tracking; automatic IST market-hours fallback |
 | **17-year backtest** | 2009–2026 data; walk-forward validation; handles 2008 crash, 2020 COVID, 2022 FOMC stress |
 
