@@ -856,3 +856,15 @@ Per-lot net expectancy of the baseline weekly IC/PCS on real EOD settle prices (
 - Gate G0 (stop only if 30-lot <=1.0x clearly negative AND implied <= realised): implied > realised on the traded weekly cadence, so CONTINUE.
 - Accounting notes: capital-protection stop is a fixed Rs20,000, so it binds at ~Rs667/lot at 30 lots (per-lot metric not lot-invariant); fees are charged on entry-credit notional only (immaterial); 1.0x here is harsher than the old engine's 0.75x entry scale.
 - VRP tercile and VIX-bucket cuts are in-sample candidates for Step 1, not evidence. No 2024+ data was used.
+
+## 2026-10-21 — Step 2 (dev window 2019-02-11..2023-12-31, lots=10): pre-registered families F1/F2
+Per-lot net expectancy (Rs), lots=10:
+| Family | 0x | 0.5x | 0.75x | 1.0x | 1.5x | break-even slippage |
+|---|---:|---:|---:|---:|---:|---:|
+| Baseline (capital stop scaled per lot) | +126 | -14 | -74 | -129 | -251 | 0.47x |
+| F1 defined-risk hold to expiry (`--no-early-exits`) | +144 | +72 | +28 | -16 | -105 | 0.91x |
+| F2 VIX floor 13 (`--min-vix 13`) | +241 | +81 | +15 | -45 | -181 | 0.81x |
+- Pre-registered pass rule (beats baseline at 1.5x AND > 0 AND year-cluster CI lower bound > 0 AND >= 4/5 positive dev years): F1 FAILS (-105, CI [-300,+79], 2/5 years), F2 FAILS (-181, CI [-395,+36], 2/5 years). Holdout not evaluated.
+- The capital-protection stop now scales with lots (`ChainConfig.capital_protection_per_lot`, default True; `--fixed-capital-protection` restores the old fixed Rs20,000). It is not what makes results lot-dependent; flat per-order brokerage is.
+- Caveat for F1: cash-settled expiry has no exit order, but the engine still charges exit slippage and brokerage; a rough what-if without them gives about -7 per lot at 1.5x (approximation, not a pass). The settlement model should be corrected and decided before any holdout look.
+- F2's 13 floor is in-sample (derived from the Step 0 audit); a pass could only be confirmed on the holdout.

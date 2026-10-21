@@ -8,6 +8,12 @@
 
 Defaults must reproduce the baseline exactly: tests/fixtures/chain_arms_baseline.json was generated
 from the pre-arm code (git main 7a1b3ea) by _baseline_snapshot(). All data is synthetic.
+
+  F1  ChainConfig.exit_arms.hold_to_expiry=True / --no-early-exits
+                                                PCS and IC held to expiry settle; no other exit
+  F2  ChainConfig.min_vix_floor=13 / --min-vix 13
+                                                entry gate: skip signals with VIX below the floor
+  T0  ChainConfig.capital_protection_per_lot    capital-protection equity scales with lots (default True)
 """
 
 import json
@@ -18,6 +24,7 @@ from pathlib import Path
 import pytest
 
 from backtester.chain_engine import ChainBacktest, ChainConfig
+from backtester.weekly_exit_policy import check_weekly_exit
 from config import WeeklyBacktestConfig
 from data.nse_fo_archive import NseFoArchive
 from strategies.base import Leg, Trade, TradeAction
@@ -168,7 +175,7 @@ def test_cli_defaults_reproduce_baseline_on_test_run_chain_backtest_archive(tmp_
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
     summ = json.load(open(out / "summary.json"))["arms"]
-    assert summ == {"pcs_put_sd": 0.9, "breach_stop": True, "ic_hold_to_expiry": False}
+    assert summ == {"pcs_put_sd": 0.9, "breach_stop": True, "ic_hold_to_expiry": False, "hold_to_expiry": False}
 
 
 def test_cli_arm_flags_are_recorded_and_do_not_touch_ic_world(tmp_path, monkeypatch, baseline_fixture):
@@ -182,7 +189,7 @@ def test_cli_arm_flags_are_recorded_and_do_not_touch_ic_world(tmp_path, monkeypa
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
     summ = json.load(open(out / "summary.json"))["arms"]
-    assert summ == {"pcs_put_sd": 1.2, "breach_stop": False, "ic_hold_to_expiry": False}
+    assert summ == {"pcs_put_sd": 1.2, "breach_stop": False, "ic_hold_to_expiry": False, "hold_to_expiry": False}
     assert json.load(open(out / "diag_x1.json"))["arms"]["pcs_put_sd"] == 1.2
 
 
@@ -375,3 +382,177 @@ def _ic_trade(marks=(30.0, 10.0, 25.0, 8.0)):
     legs = [Leg(o, k, s, f, m, 1, 65) for (o, k, s), f, m in zip(spec, fills, marks)]
     return Trade(strategy_name="weekly_ic", entry_date=F, legs=legs, entry_spot=23000.0,
                  entry_vix=VIX_IC, lots=1, lot_size=65)
+
+
+# ----------------------------------------------------------------- T0: capital-protection scaling
+def _loss_trade(lots, loss_per_unit, credit=400.0):
+    """PCS 22650/22450 with net credit `credit`, short-leg mark up by `loss_per_unit` (long at entry).
+    Spot 23000 is inside the short strike and the credit-multiple stop is not reached when loss < credit."""
+    short = Leg("PE", 22650, True, credit + 100.0, credit + 100.0 + loss_per_unit, lots, 65)
+    long_ = Leg("PE", 22450, False, 100.0, 100.0, lots, 65)
+    return Trade(strategy_name="weekly_pcs", entry_date=F, legs=[short, long_], entry_spot=23000.0,
+                 entry_vix=VIX_PCS, lots=lots, lot_size=65)
+
+
+def test_capital_base_defaults_to_per_lot_scaling(tmp_path):
+    days = _write_ic_archive(tmp_path)
+    arch = NseFoArchive(archive_dir=str(tmp_path))
+    mk = _market(days, VIX_IC)
+    base = lambda **kw: ChainBacktest(arch, mk, ChainConfig(start=S, end=S, **kw))._capital_base()
+    assert ChainConfig().capital_protection_per_lot is True
+    assert base() == 500_000.0                                     # lots=1: unchanged
+    assert base(lots=10) == 5_000_000.0                            # 500k per lot-unit of sizing
+    assert base(lots=10, capital_protection_per_lot=False) == 500_000.0   # legacy fixed base
+    for lots in (1, 10, 30):
+        assert 0.04 * base(lots=lots) / lots == pytest.approx(20_000.0)   # Rs20,000 per lot at any lot count
+
+
+@pytest.mark.parametrize("lots, loss_per_unit, scaled_fires, fixed_fires", [
+    (1, 77.0, False, False),     # total -5,005: below Rs20,000 under both bases
+    (1, 385.0, True, True),      # total -25,025: above Rs20,000 under both bases
+    (10, 154.0, False, True),    # total -100,100: fixed Rs20,000 binds, per-lot Rs200,000 does not
+    (10, 400.0, True, True),     # total -260,000 (per lot 26,000): binds under both bases
+])
+def test_capital_protection_threshold_scaling(lots, loss_per_unit, scaled_fires, fixed_fires):
+    trade = _loss_trade(lots, loss_per_unit)
+    kw = dict(config=WeeklyBacktestConfig(), tracker=None, spot=23000.0, vix=VIX_PCS, dte=5,
+              entry_vix=VIX_PCS, holding_days=1)
+    from backtester.weekly_exit_policy import build_tracker
+    kw["tracker"] = build_tracker(trade)
+    got_scaled = check_weekly_exit(trade=trade, current_equity=500_000.0 * lots, **kw)
+    got_fixed = check_weekly_exit(trade=trade, current_equity=500_000.0, **kw)
+    assert (got_scaled[0] is True) == scaled_fires
+    assert (got_fixed[0] is True) == fixed_fires
+    if scaled_fires:
+        assert got_scaled == (True, _stop())
+
+
+def test_capital_protection_scaling_at_chain_level_matches_lots1(tmp_path):
+    """With per-lot scaling a 10-lot run has the same exit reasons and gross P&L per lot as a 1-lot run."""
+    sp, lp = _pcs_strikes()
+    days, mk = _pcs_world(tmp_path, sp, lp, d6=(80.0, 5.0), spot_map={D6: 22400.0})
+    _, one = _run(tmp_path, days, mk, 1.0, lots=1)
+    days, mk = _pcs_world(tmp_path, sp, lp, d6=(80.0, 5.0), spot_map={D6: 22400.0})
+    _, ten = _run(tmp_path, days, mk, 1.0, lots=10)
+    assert [t["exit_reason"] for t in one] == [t["exit_reason"] for t in ten]
+    # gross P&L is linear in lots; only the flat per-order brokerage differs per lot (not tested here)
+    assert one[0]["gross_fill_rs"] == pytest.approx(ten[0]["gross_fill_rs"] / 10, abs=1e-6)
+    assert ten[0]["lots"] == 10 and one[0]["lots"] == 1
+
+
+def test_lots1_legacy_capital_mode_is_identical(tmp_path):
+    """At lots=1 the fixed and per-lot capital bases are the same number, so trades are identical."""
+    days, mk, _ = _ic_world(tmp_path / "ic", d6_marks=(80.0, 10.0, 25.0, 8.0))
+    _, a = _run(tmp_path / "ic", days, mk, 1.0)
+    _, b = _run(tmp_path / "ic", days, mk, 1.0, capital_protection_per_lot=False)
+    assert [_snapshot_trade(t) for t in a] == [_snapshot_trade(t) for t in b]
+
+
+# ----------------------------------------------------------------- F1: hold to expiry
+def test_f1_policy_and_strategy_disable_every_exit():
+    from backtester.weekly_exit_policy import build_tracker
+    cfg = WeeklyBacktestConfig()
+    f1 = _arms(hold_to_expiry=True)
+    pcs = _pcs_trade(spot_entry=23000.0)
+    ic = _ic_trade(marks=(80.0, 10.0, 25.0, 8.0))          # credit-multiple stop would fire
+    big = _loss_trade(10, 2000.0)                           # capital stop would fire at any base
+    cases = [
+        (pcs, 22600.0, 5), (pcs, 22600.0, 1),              # breach, and DTE-1 exit
+        (ic, 23400.0, 3), (ic, 23000.0, 1),                 # breach / DTE exit, credit stop marks
+        (big, 23000.0, 5),                                  # capital protection
+    ]
+    for trade, spot, dte in cases:
+        kw = dict(config=cfg, trade=trade, tracker=build_tracker(trade), spot=spot, vix=15.0, dte=dte,
+                  entry_vix=15.0, current_equity=500_000.0 * trade.lots, holding_days=1)
+        assert check_weekly_exit(arms=f1, **kw) == (False, None)
+    assert check_weekly_exit(config=cfg, trade=ic, tracker=build_tracker(ic), spot=23000.0, dte=3,
+                             current_equity=500_000.0, entry_vix=15.0, vix=15.0, holding_days=1)[0] is True
+    assert WeeklyPutCreditSpread(lots=1).should_exit(pcs, 22600.0, 15.0, 1, arms=f1)[0] == TradeAction.HOLD
+    assert WeeklyPutCreditSpread(lots=1).should_exit(pcs, 22600.0, 15.0, 5, arms=f1)[0] == TradeAction.HOLD
+    assert WeeklyIronCondor(lots=1).should_exit(ic, 23400.0, 15.0, 3, arms=f1)[0] == TradeAction.HOLD
+    assert WeeklyIronCondor(lots=1).should_exit(ic, 23000.0, 15.0, 1, arms=f1)[0] == TradeAction.HOLD
+
+
+def test_f1_pcs_credit_stop_holds_to_expiry_settle(tmp_path):
+    """Baseline stops on D6 (marks 80/5 on a 24.10 credit). F1 holds, and the trade closes at the
+    expiry settle E at intrinsic (both legs OTM -> 0.05 floor). Loss is capped by the 200-pt width."""
+    sp, lp = _pcs_strikes()
+    spot = {D6: 22400.0}
+    days, mk = _pcs_world(tmp_path, sp, lp, d6=(80.0, 5.0), spot_map=spot)
+    _, base = _run(tmp_path, days, mk, 1.0)
+    assert base[0]["exit_reason"] == "stop_loss" and base[0]["exit_date"] == str(D6)
+    _expiry_rows(tmp_path, [(sp, "PE"), (lp, "PE")])
+    days, mk = _pcs_world(tmp_path, sp, lp, d6=(80.0, 5.0), spot_map=spot)
+    days = days + [E]
+    mk = _market(days, VIX_PCS, spot)
+    bt, f1 = _run(tmp_path, days, mk, 1.0, exit_arms=_arms(hold_to_expiry=True))
+    assert len(f1) == 1, (f1, bt.skip_log)
+    t = f1[0]
+    assert t["exit_reason"] == "expiry" and t["exit_date"] == str(E)
+    assert all(l["exit_settle"] == pytest.approx(0.05) for l in t["legs"])
+    fees = _expected_fees(t["entry_credit_fill"], 2)
+    assert t["pnl"] == pytest.approx((39.55 - t["legs"][0]["exit_fill"]) * 65
+                                     + (t["legs"][1]["exit_fill"] - 15.45) * 65 - fees, abs=0.01)
+    assert t["pnl"] >= -(200 - t["entry_credit_fill"]) * 65 - fees - 0.01
+
+
+def test_f1_ic_breach_and_credit_stop_hold_to_expiry(tmp_path):
+    """IC breached on D6 (spot 23400 > short call 23350) with a credit blow-up. F1 holds to E."""
+    spot = {D6: 23400.0, D7: 23400.0}
+    days, mk, _ = _ic_world(tmp_path, d6_marks=(80.0, 10.0, 25.0, 8.0), spot_map=spot)
+    _, base = _run(tmp_path, days, mk, 1.0)
+    assert base[0]["exit_reason"] == "stop_loss" and base[0]["exit_date"] == str(D6)
+    _expiry_rows(tmp_path, [(23350, "CE"), (23600, "CE"), (22450, "PE"), (22200, "PE")])
+    days, mk, _ = _ic_world(tmp_path, d6_marks=(80.0, 10.0, 25.0, 8.0), spot_map=spot)
+    days = days + [E]
+    mk = _market(days, VIX_IC, spot)
+    bt, f1 = _run(tmp_path, days, mk, 1.0, exit_arms=_arms(hold_to_expiry=True))
+    assert len(f1) == 1, (f1, bt.skip_log)
+    t = f1[0]
+    assert t["exit_reason"] == "expiry" and t["exit_date"] == str(E)
+    # one side can finish in the money, so the max loss is the 250-pt wing less the credit
+    assert t["pnl"] >= -(250 - t["entry_credit_fill"]) * 65 - _expected_fees(t["entry_credit_fill"], 4) - 0.01
+
+
+# ----------------------------------------------------------------- F2: VIX floor
+def test_f2_min_vix_floor_skips_low_vix_signal(tmp_path):
+    sp, lp = _pcs_strikes()
+    days, mk = _pcs_world(tmp_path, sp, lp)                 # signal VIX 11
+    _, base = _run(tmp_path, days, mk, 1.0)
+    assert len(base) == 1
+    days, mk = _pcs_world(tmp_path, sp, lp)
+    bt, gated = _run(tmp_path, days, mk, 1.0, min_vix_floor=13.0)
+    assert gated == []
+    assert bt.skips["vix_floor"] == 1
+    assert bt.skip_log[0]["reason"] == "vix_floor" and bt.skip_log[0]["vix"] == pytest.approx(11.0)
+
+
+def test_f2_floor_is_strict_and_inactive_at_or_above(tmp_path):
+    """Floor is 'skip when VIX < floor': VIX equal to the floor and above it trade exactly as baseline."""
+    days = _write_ic_world(tmp_path)                        # signal VIX 15
+    mk = _market(days, VIX_IC)
+    _, base = _run(tmp_path, days, mk, 1.0)
+    assert len(base) == 1
+    for floor in (13.0, 15.0, None):
+        bt, got = _run(tmp_path, days, mk, 1.0, min_vix_floor=floor)
+        assert [_snapshot_trade(t) for t in got] == [_snapshot_trade(t) for t in base], floor
+        assert bt.skips["vix_floor"] == 0
+    bt, got = _run(tmp_path, days, mk, 1.0, min_vix_floor=15.01)
+    assert got == [] and bt.skips["vix_floor"] == 1
+
+
+# ----------------------------------------------------------------- CLI flags
+def test_cli_new_flags_are_recorded_and_gate_entries(tmp_path, monkeypatch):
+    arch_dir = tmp_path / "archive"
+    days = _write_ic_archive(arch_dir)
+    monkeypatch.setattr(cli, "load_market", lambda end, market_start=None: _synthetic_market(days))
+    out = tmp_path / "out_f1"
+    assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
+                     "--out", str(out), "--no-early-exits"]) == 0
+    assert json.load(open(out / "summary.json"))["arms"]["hold_to_expiry"] is True
+    out = tmp_path / "out_f2"
+    assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
+                     "--out", str(out), "--min-vix", "20"]) == 0
+    assert json.load(open(out / "trades_x1.json"))["n"] == 0
+    assert json.load(open(out / "diag_x1.json"))["skips"]["vix_floor"] >= 1
+    assert json.load(open(out / "summary.json"))["cfg"] == {"min_vix_floor": 20.0, "capital_protection_per_lot": True}

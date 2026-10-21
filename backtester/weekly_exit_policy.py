@@ -119,6 +119,8 @@ def check_weekly_exit(
 
     arms=None (or the default WeeklyExitArms) reproduces the baseline exactly. See WeeklyExitArms.
     """
+    if arms is not None and arms.hold_to_expiry:
+        return False, None  # F1: no policy exit at all; the chain engine settles at expiry
     if arms is not None and arms.ic_hold_to_expiry and "weekly_ic" in trade.strategy_name.lower():
         return _ic_hold_to_expiry_check(config=config, trade=trade, dte=dte)
     if config.weekly_exit_policy == "legacy":

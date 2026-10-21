@@ -22,9 +22,16 @@ class WeeklyExitArms:
     ic_hold_to_expiry:  False -> baseline IC exits
                         True  -> IC exits only on the credit-multiple stop (pnl < -stop_loss_pct
                                  of credit) and on expiry-day settle; PCS is unaffected
+    hold_to_expiry:     False -> baseline exits (both structures)
+                        True  -> family F1 "defined-risk hold to expiry": for PCS and IC every exit is
+                                 disabled (credit-multiple stop, profit target, trailing, breach, VIX
+                                 spike, capital protection, DTE exit). Only expiry-day settle at
+                                 intrinsic closes the trade; the loss is capped by the spread width.
+                                 Takes precedence over every other arm.
     """
     breach_stop: bool = True
     ic_hold_to_expiry: bool = False
+    hold_to_expiry: bool = False
 
 
 def _nan(val) -> bool:
@@ -83,6 +90,8 @@ class WeeklyPutCreditSpread(BaseStrategy):
         return TradeAction.ENTER
 
     def should_exit(self, trade, spot, vix, dte_remaining, arms=None):
+        if arms is not None and arms.hold_to_expiry:
+            return TradeAction.HOLD, None  # F1: expiry settle is handled by the chain engine
         if dte_remaining <= 1:
             return TradeAction.EXIT, ExitReason.DTE_LIMIT
 
@@ -177,7 +186,7 @@ class WeeklyIronCondor(BaseStrategy):
         return TradeAction.ENTER
 
     def should_exit(self, trade, spot, vix, dte_remaining, arms=None):
-        if arms is not None and arms.ic_hold_to_expiry:
+        if arms is not None and (arms.ic_hold_to_expiry or arms.hold_to_expiry):
             # Held to expiry: the credit-multiple stop lives in the exit policy and the expiry
             # settle in the chain engine; nothing here may exit an IC early.
             return TradeAction.HOLD, None

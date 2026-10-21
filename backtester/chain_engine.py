@@ -66,6 +66,7 @@ SKIP_REASONS = (
     "vix_gate", "streak_cooldown", "strategy_gate", "fill_day_missing_archive",
     "no_expiry_in_dte_window", "expiry_not_listed_on_fill", "strike_not_listed",
     "illiquid_leg", "no_price", "no_spot_on_fill", "invalid_structure", "non_positive_credit",
+    "vix_floor",
 )
 
 
@@ -81,6 +82,13 @@ class ChainConfig:
     # Structural / exit arms (defaults = baseline). See strategies.weekly_strategies.WeeklyExitArms.
     pcs_put_sd: float = 0.9                 # arm A: PCS short-put distance in 1-SD units (baseline 0.9)
     exit_arms: WeeklyExitArms = field(default_factory=WeeklyExitArms)  # arms B and C
+    # Capital-protection stop (WeeklyBacktestConfig.capital_protection_pct x equity, total Rs P&L).
+    # True (default): equity = initial_equity x lots, i.e. 4% of Rs5L per lot-unit of sizing, so the
+    # per-lot threshold is Rs20,000 at every lot count. False: legacy fixed Rs20,000 total (binds
+    # only at large lot counts and makes per-lot results depend on lots). At lots=1 both are identical.
+    capital_protection_per_lot: bool = True
+    # Family F2 entry gate: skip signals with VIX below this value (None = no floor, baseline).
+    min_vix_floor: Optional[float] = None
 
 
 class ChainBacktest:
@@ -142,6 +150,12 @@ class ChainBacktest:
         brokerage = self.cm.brokerage_per_order * n_legs * 2
         gst = brokerage * self.cm.gst_on_brokerage_pct / 100
         return stt + exchange + sebi + stamp + brokerage + gst
+
+    def _capital_base(self) -> float:
+        """Equity used by the capital-protection stop (see ChainConfig.capital_protection_per_lot)."""
+        if self.cfg.capital_protection_per_lot:
+            return self.cfg.initial_equity * self.cfg.lots
+        return self.cfg.initial_equity
 
     def _skip(self, reason: str, d: date, **detail) -> None:
         self.skips[reason] += 1
@@ -316,7 +330,7 @@ class ChainBacktest:
         prior = copy.copy(st["tracker"])
         should_exit, reason = check_weekly_exit(
             config=self.w, trade=trade, tracker=prior, spot=spot, vix=vix, dte=dte,
-            entry_vix=st["signal_vix"], current_equity=self.cfg.initial_equity, holding_days=holding,
+            entry_vix=st["signal_vix"], current_equity=self._capital_base(), holding_days=holding,
             arms=self.cfg.exit_arms,
         )
         if not should_exit:
@@ -413,6 +427,9 @@ class ChainBacktest:
             vix = float(mk["vix"])
             if vix < self.w.min_vix_entry or vix > self.w.max_vix_entry:
                 self._skip("vix_gate", d, vix=vix)
+                continue
+            if self.cfg.min_vix_floor is not None and vix < self.cfg.min_vix_floor:
+                self._skip("vix_floor", d, vix=vix)
                 continue
             if cooldown_until is not None and d < cooldown_until:
                 self._skip("streak_cooldown", d)

@@ -85,7 +85,10 @@ def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lot
     diag = {
         "mult": mult, "start": str(start), "end": str(end), "lots": lots,
         "arms": {"pcs_put_sd": cfg.pcs_put_sd, "breach_stop": cfg.exit_arms.breach_stop,
-                 "ic_hold_to_expiry": cfg.exit_arms.ic_hold_to_expiry},
+                 "ic_hold_to_expiry": cfg.exit_arms.ic_hold_to_expiry,
+                 "hold_to_expiry": cfg.exit_arms.hold_to_expiry},
+        "cfg": {"min_vix_floor": cfg.min_vix_floor, "capital_protection_per_lot": cfg.capital_protection_per_lot,
+                "hold_to_expiry": cfg.exit_arms.hold_to_expiry},
         "signal_days": bt.signal_days, "signals_while_open": bt.signals_while_open,
         "trades": len(trades), "skips": dict(bt.skips), "diag": dict(bt.diag),
         "expiry_close_vs_intrinsic_max": max(bt.expiry_intrinsic_dev) if bt.expiry_intrinsic_dev else None,
@@ -115,6 +118,12 @@ def main(argv=None) -> int:
                     help="arm B: disable the close-based short-strike breach stop (PCS and IC)")
     ap.add_argument("--ic-hold-to-expiry", action="store_true",
                     help="arm C: IC exits only on the credit-multiple stop and expiry settle")
+    ap.add_argument("--no-early-exits", action="store_true",
+                    help="family F1: PCS and IC held to expiry settle; every other exit disabled")
+    ap.add_argument("--min-vix", type=float, default=None,
+                    help="family F2: skip entry signals with India VIX below this value (default: no floor)")
+    ap.add_argument("--fixed-capital-protection", action="store_true",
+                    help="legacy: capital-protection stop uses a fixed Rs20,000 total at any lot count")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
@@ -138,10 +147,14 @@ def main(argv=None) -> int:
     overrides = {
         "pcs_put_sd": a.pcs_put_sd,
         "exit_arms": WeeklyExitArms(breach_stop=not a.no_breach_stop,
-                                    ic_hold_to_expiry=a.ic_hold_to_expiry),
+                                    ic_hold_to_expiry=a.ic_hold_to_expiry,
+                                    hold_to_expiry=a.no_early_exits),
+        "min_vix_floor": a.min_vix,
+        "capital_protection_per_lot": not a.fixed_capital_protection,
     }
     summary["arms"] = {"pcs_put_sd": a.pcs_put_sd, "breach_stop": not a.no_breach_stop,
-                       "ic_hold_to_expiry": a.ic_hold_to_expiry}
+                       "ic_hold_to_expiry": a.ic_hold_to_expiry, "hold_to_expiry": a.no_early_exits}
+    summary["cfg"] = {"min_vix_floor": a.min_vix, "capital_protection_per_lot": not a.fixed_capital_protection}
     for mult in a.slippage:
         tag = f"x{mult:g}"
         trades, diag, skip_log = run_one(arch, market, a.start, a.end, mult, a.lots, overrides)
