@@ -130,7 +130,8 @@ def main(argv=None) -> int:
     market = load_market(a.end, a.market_start)
     # expiry-day index settlement fallback for archive days with no positive index settle (2019)
     fallback = {d.date(): float(v) for d, v in market["nifty_close"].items()}
-    arch = NseFoArchive(archive_dir=a.archive_dir, index_fallback=fallback)
+    # rows dated after --end are dropped at load time (never indexed)
+    arch = NseFoArchive(archive_dir=a.archive_dir, index_fallback=fallback, max_date=a.end)
 
     summary = {"start": str(a.start), "end": str(a.end), "market_start": str(a.market_start),
                "market_rows": int(len(market)), "archive_rows": int(arch.n_rows), "runs": []}

@@ -104,7 +104,8 @@ def build_cache(archive_dir: Optional[str] = None, force: bool = False) -> str:
 class NseFoArchive:
     """In-memory index over the cached archive. Read-only."""
 
-    def __init__(self, archive_dir: Optional[str] = None, index_fallback: Optional[dict] = None):
+    def __init__(self, archive_dir: Optional[str] = None, index_fallback: Optional[dict] = None,
+                 max_date: Optional[date] = None):
         """index_fallback: {expiry_day: index settlement value} used on expiry days where the
         archive carries no positive index settle (2019 files). Supplied by the caller from the
         repo's Nifty close."""
@@ -112,6 +113,8 @@ class NseFoArchive:
         index_fallback = index_fallback or {}
         pq = build_cache(self.archive_dir)
         df = pd.read_parquet(pq)
+        if max_date is not None:  # drop later rows right after load, before any indexing
+            df = df[df["date"] <= pd.Timestamp(max_date)].reset_index(drop=True)
         df["d"] = df["date"].dt.date
         df["e"] = df["expiry"].dt.date
         self._days = sorted(df["d"].unique())

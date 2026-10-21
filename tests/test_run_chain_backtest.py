@@ -90,10 +90,10 @@ def synthetic(tmp_path, monkeypatch):
 def test_cli_writes_trades_diag_skips_and_summary(tmp_path, synthetic):
     arch_dir, calls = synthetic
     out = tmp_path / "out"
-    rc = cli.main(["--start", str(S), "--end", str(S), "--slippage", "1.0", "2.0",
+    rc = cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "2.0",
                    "--archive-dir", str(arch_dir), "--out", str(out)])
     assert rc == 0
-    assert calls == [(S, cli.DEFAULT_MARKET_START)]     # pinned end, default market history start
+    assert calls == [(X, cli.DEFAULT_MARKET_START)]     # pinned end (= last exit date, archive cut here), default market history start
 
     t1 = json.load(open(out / "trades_x1.json"))
     t2 = json.load(open(out / "trades_x2.json"))
@@ -118,7 +118,7 @@ def test_cli_writes_trades_diag_skips_and_summary(tmp_path, synthetic):
 def test_cli_rejects_inverted_window(tmp_path, synthetic):
     arch_dir, _ = synthetic
     with pytest.raises(SystemExit):
-        cli.main(["--start", str(E), "--end", str(S), "--archive-dir", str(arch_dir),
+        cli.main(["--start", str(E), "--end", str(X), "--archive-dir", str(arch_dir),
                   "--out", str(tmp_path / "bad")])
 
 
@@ -128,7 +128,7 @@ def test_analyze_cli_on_chain_output(tmp_path, synthetic):
     spec.loader.exec_module(an)
     arch_dir, _ = synthetic
     out = tmp_path / "out"
-    cli.main(["--start", str(S), "--end", str(S), "--slippage", "1.0", "--archive-dir", str(arch_dir),
+    cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
               "--out", str(out)])
     res_path = tmp_path / "analysis.json"
     assert an.main(["--trades", str(out), "--out", str(res_path)]) == 0

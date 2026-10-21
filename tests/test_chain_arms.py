@@ -163,7 +163,7 @@ def test_cli_defaults_reproduce_baseline_on_test_run_chain_backtest_archive(tmp_
     days = _write_ic_archive(arch_dir)
     monkeypatch.setattr(cli, "load_market", lambda end, market_start=None: _synthetic_market(days))
     out = tmp_path / "out"
-    assert cli.main(["--start", str(S), "--end", str(S), "--slippage", "1.0", "--archive-dir", str(arch_dir),
+    assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
                      "--out", str(out)]) == 0
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
@@ -177,7 +177,7 @@ def test_cli_arm_flags_are_recorded_and_do_not_touch_ic_world(tmp_path, monkeypa
     days = _write_ic_archive(arch_dir)
     monkeypatch.setattr(cli, "load_market", lambda end, market_start=None: _synthetic_market(days))
     out = tmp_path / "out"
-    assert cli.main(["--start", str(S), "--end", str(S), "--slippage", "1.0", "--archive-dir", str(arch_dir),
+    assert cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
                      "--out", str(out), "--pcs-put-sd", "1.2", "--no-breach-stop"]) == 0
     got = [_snapshot_trade(t) for t in json.load(open(out / "trades_x1.json"))["trades"]]
     _assert_same_trades(got, baseline_fixture["ic_world"])
