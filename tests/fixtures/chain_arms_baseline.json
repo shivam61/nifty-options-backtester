@@ -1,0 +1,179 @@
+{
+ "ic_call_breach_world": [
+  {
+   "entry_credit_fill": 35.2,
+   "exit_date": "2025-01-06",
+   "exit_reason": "stop_loss",
+   "expiry": "2025-01-09",
+   "fill_date": "2025-01-03",
+   "legs": [
+    [
+     "CE",
+     23350.0,
+     true,
+     29.55,
+     30.45
+    ],
+    [
+     "CE",
+     23600.0,
+     false,
+     10.45,
+     9.55
+    ],
+    [
+     "PE",
+     22450.0,
+     true,
+     24.55,
+     25.45
+    ],
+    [
+     "PE",
+     22200.0,
+     false,
+     8.45,
+     7.4474
+    ]
+   ],
+   "pnl": -431.0111,
+   "strategy": "weekly_ic"
+  }
+ ],
+ "ic_credit_blowup_world": [
+  {
+   "entry_credit_fill": 35.2,
+   "exit_date": "2025-01-06",
+   "exit_reason": "stop_loss",
+   "expiry": "2025-01-09",
+   "fill_date": "2025-01-03",
+   "legs": [
+    [
+     "CE",
+     23350.0,
+     true,
+     29.55,
+     80.45
+    ],
+    [
+     "CE",
+     23600.0,
+     false,
+     10.45,
+     9.55
+    ],
+    [
+     "PE",
+     22450.0,
+     true,
+     24.55,
+     25.45
+    ],
+    [
+     "PE",
+     22200.0,
+     false,
+     8.45,
+     7.55
+    ]
+   ],
+   "pnl": -3674.3444,
+   "strategy": "weekly_ic"
+  }
+ ],
+ "ic_world": [
+  {
+   "entry_credit_fill": 35.2,
+   "exit_date": "2025-01-08",
+   "exit_reason": "dte_limit",
+   "expiry": "2025-01-09",
+   "fill_date": "2025-01-03",
+   "legs": [
+    [
+     "CE",
+     23350.0,
+     true,
+     29.55,
+     5.45
+    ],
+    [
+     "CE",
+     23600.0,
+     false,
+     10.45,
+     1.55
+    ],
+    [
+     "PE",
+     22450.0,
+     true,
+     24.55,
+     6.45
+    ],
+    [
+     "PE",
+     22200.0,
+     false,
+     8.45,
+     2.55
+    ]
+   ],
+   "pnl": 1590.6556,
+   "strategy": "weekly_ic"
+  }
+ ],
+ "pcs_breach_world": [
+  {
+   "entry_credit_fill": 24.1,
+   "exit_date": "2025-01-06",
+   "exit_reason": "stop_loss",
+   "expiry": "2025-01-09",
+   "fill_date": "2025-01-03",
+   "legs": [
+    [
+     "PE",
+     22650.0,
+     true,
+     39.55,
+     40.45
+    ],
+    [
+     "PE",
+     22450.0,
+     false,
+     15.45,
+     14.55
+    ]
+   ],
+   "pnl": -212.4574,
+   "strategy": "weekly_pcs"
+  }
+ ],
+ "pcs_world": [
+  {
+   "entry_credit_fill": 24.1,
+   "exit_date": "2025-01-08",
+   "exit_reason": "dte_limit",
+   "expiry": "2025-01-09",
+   "fill_date": "2025-01-03",
+   "legs": [
+    [
+     "PE",
+     22650.0,
+     true,
+     39.55,
+     10.45
+    ],
+    [
+     "PE",
+     22450.0,
+     false,
+     15.45,
+     3.55
+    ]
+   ],
+   "pnl": 1022.5426,
+   "strategy": "weekly_pcs"
+  }
+ ]
+}

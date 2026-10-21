@@ -50,7 +50,7 @@ import pandas as pd
 
 from config import WeeklyBacktestConfig
 from strategies.base import Leg, Trade, TradeAction, ExitReason
-from strategies.weekly_strategies import WeeklyPutCreditSpread, WeeklyIronCondor
+from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
 from backtester.weekly_exit_policy import (
     WEEKLY_IC,
     build_tracker,
@@ -78,6 +78,9 @@ class ChainConfig:
     start: date = date(2019, 2, 11)         # first signal date considered
     end: date = date(2026, 8, 28)           # last signal date considered
     liquidity_min_contracts: int = 0        # illiquid = contracts <= this AND open_int == 0
+    # Structural / exit arms (defaults = baseline). See strategies.weekly_strategies.WeeklyExitArms.
+    pcs_put_sd: float = 0.9                 # arm A: PCS short-put distance in 1-SD units (baseline 0.9)
+    exit_arms: WeeklyExitArms = field(default_factory=WeeklyExitArms)  # arms B and C
 
 
 class ChainBacktest:
@@ -107,6 +110,7 @@ class ChainBacktest:
             "weekly_pcs": WeeklyPutCreditSpread(lots=cfg.lots, lot_size=self.lot_size),
             "weekly_ic": WeeklyIronCondor(lots=cfg.lots, lot_size=self.lot_size),
         }
+        self.strategies["weekly_pcs"].put_sd = cfg.pcs_put_sd   # arm A (baseline 0.9 unchanged)
         self.skips: Counter = Counter()
         self.skip_log: list[dict] = []
         self.diag: Counter = Counter()
@@ -313,9 +317,10 @@ class ChainBacktest:
         should_exit, reason = check_weekly_exit(
             config=self.w, trade=trade, tracker=prior, spot=spot, vix=vix, dte=dte,
             entry_vix=st["signal_vix"], current_equity=self.cfg.initial_equity, holding_days=holding,
+            arms=self.cfg.exit_arms,
         )
         if not should_exit:
-            action, r2 = strat.should_exit(trade, spot, vix, dte)
+            action, r2 = strat.should_exit(trade, spot, vix, dte, arms=self.cfg.exit_arms)
             if action == TradeAction.EXIT or dte <= 0:
                 should_exit, reason = True, (r2 if r2 else ExitReason.EXPIRY)
         if should_exit:

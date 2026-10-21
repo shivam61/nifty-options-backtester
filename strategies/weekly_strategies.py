@@ -7,8 +7,24 @@ VIX gates to avoid gamma blowups.
 """
 
 import math
+from dataclasses import dataclass
 from strategies.base import BaseStrategy, Leg, Trade, TradeAction, ExitReason
 from pricing.black_scholes import price_option, iv_from_vix, OptionType
+
+
+@dataclass(frozen=True)
+class WeeklyExitArms:
+    """Opt-in exit/strike variants used only by the real-price chain backtest (default = baseline).
+
+    breach_stop:        True  -> close-based short-strike breach stop fires (baseline)
+                        False -> that stop is disabled for both PCS and IC; the credit-multiple
+                                 stop and the DTE exit are unchanged
+    ic_hold_to_expiry:  False -> baseline IC exits
+                        True  -> IC exits only on the credit-multiple stop (pnl < -stop_loss_pct
+                                 of credit) and on expiry-day settle; PCS is unaffected
+    """
+    breach_stop: bool = True
+    ic_hold_to_expiry: bool = False
 
 
 def _nan(val) -> bool:
@@ -66,7 +82,7 @@ class WeeklyPutCreditSpread(BaseStrategy):
             return TradeAction.NO_TRADE
         return TradeAction.ENTER
 
-    def should_exit(self, trade, spot, vix, dte_remaining):
+    def should_exit(self, trade, spot, vix, dte_remaining, arms=None):
         if dte_remaining <= 1:
             return TradeAction.EXIT, ExitReason.DTE_LIMIT
 
@@ -83,7 +99,8 @@ class WeeklyPutCreditSpread(BaseStrategy):
             if pnl_unit < 0 and abs(pnl_unit) > max_loss_unit * 0.5:
                 return TradeAction.EXIT, ExitReason.STOP_LOSS
 
-        if short_leg and spot < short_leg.strike:
+        breach_stop = arms is None or arms.breach_stop
+        if breach_stop and short_leg and spot < short_leg.strike:
             return TradeAction.EXIT, ExitReason.STOP_LOSS
 
         return TradeAction.HOLD, None
@@ -159,7 +176,11 @@ class WeeklyIronCondor(BaseStrategy):
             return TradeAction.NO_TRADE
         return TradeAction.ENTER
 
-    def should_exit(self, trade, spot, vix, dte_remaining):
+    def should_exit(self, trade, spot, vix, dte_remaining, arms=None):
+        if arms is not None and arms.ic_hold_to_expiry:
+            # Held to expiry: the credit-multiple stop lives in the exit policy and the expiry
+            # settle in the chain engine; nothing here may exit an IC early.
+            return TradeAction.HOLD, None
         if dte_remaining <= 1:
             return TradeAction.EXIT, ExitReason.DTE_LIMIT
 
@@ -171,9 +192,10 @@ class WeeklyIronCondor(BaseStrategy):
         short_call = next((l for l in trade.legs if l.is_short and l.option_type == "CE"), None)
         short_put = next((l for l in trade.legs if l.is_short and l.option_type == "PE"), None)
 
-        if short_call and spot > short_call.strike:
+        breach_stop = arms is None or arms.breach_stop
+        if breach_stop and short_call and spot > short_call.strike:
             return TradeAction.EXIT, ExitReason.STOP_LOSS
-        if short_put and spot < short_put.strike:
+        if breach_stop and short_put and spot < short_put.strike:
             return TradeAction.EXIT, ExitReason.STOP_LOSS
 
         long_call = next((l for l in trade.legs if not l.is_short and l.option_type == "CE"), None)

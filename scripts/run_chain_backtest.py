@@ -40,6 +40,7 @@ if str(REPO_ROOT) not in sys.path:
 import pandas as pd  # noqa: E402
 
 from backtester.chain_engine import ChainBacktest, ChainConfig  # noqa: E402
+from strategies.weekly_strategies import WeeklyExitArms  # noqa: E402
 
 DEFAULT_START = date(2019, 2, 11)
 DEFAULT_END = date(2026, 8, 28)
@@ -76,12 +77,15 @@ def load_market(end: date, market_start: date = DEFAULT_MARKET_START) -> pd.Data
     return m
 
 
-def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lots: int):
-    cfg = ChainConfig(slippage_multiplier=mult, lots=lots, start=start, end=end)
+def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lots: int,
+            overrides: dict | None = None):
+    cfg = ChainConfig(slippage_multiplier=mult, lots=lots, start=start, end=end, **(overrides or {}))
     bt = ChainBacktest(arch, market, cfg)
     trades = bt.run()
     diag = {
         "mult": mult, "start": str(start), "end": str(end), "lots": lots,
+        "arms": {"pcs_put_sd": cfg.pcs_put_sd, "breach_stop": cfg.exit_arms.breach_stop,
+                 "ic_hold_to_expiry": cfg.exit_arms.ic_hold_to_expiry},
         "signal_days": bt.signal_days, "signals_while_open": bt.signals_while_open,
         "trades": len(trades), "skips": dict(bt.skips), "diag": dict(bt.diag),
         "expiry_close_vs_intrinsic_max": max(bt.expiry_intrinsic_dev) if bt.expiry_intrinsic_dev else None,
@@ -104,6 +108,13 @@ def main(argv=None) -> int:
     ap.add_argument("--slippage", type=float, nargs="+", default=[1.0],
                     help="slippage multipliers, one run each (default: 1.0)")
     ap.add_argument("--lots", type=int, default=1)
+    # Structural / exit arms; defaults reproduce the baseline. Each can be run on its own.
+    ap.add_argument("--pcs-put-sd", type=float, default=0.9,
+                    help="arm A: PCS short-put distance in 1-SD units (default %(default)s = baseline)")
+    ap.add_argument("--no-breach-stop", action="store_true",
+                    help="arm B: disable the close-based short-strike breach stop (PCS and IC)")
+    ap.add_argument("--ic-hold-to-expiry", action="store_true",
+                    help="arm C: IC exits only on the credit-multiple stop and expiry settle")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
@@ -123,9 +134,16 @@ def main(argv=None) -> int:
 
     summary = {"start": str(a.start), "end": str(a.end), "market_start": str(a.market_start),
                "market_rows": int(len(market)), "archive_rows": int(arch.n_rows), "runs": []}
+    overrides = {
+        "pcs_put_sd": a.pcs_put_sd,
+        "exit_arms": WeeklyExitArms(breach_stop=not a.no_breach_stop,
+                                    ic_hold_to_expiry=a.ic_hold_to_expiry),
+    }
+    summary["arms"] = {"pcs_put_sd": a.pcs_put_sd, "breach_stop": not a.no_breach_stop,
+                       "ic_hold_to_expiry": a.ic_hold_to_expiry}
     for mult in a.slippage:
         tag = f"x{mult:g}"
-        trades, diag, skip_log = run_one(arch, market, a.start, a.end, mult, a.lots)
+        trades, diag, skip_log = run_one(arch, market, a.start, a.end, mult, a.lots, overrides)
         json.dump({"variant": f"chain_{tag}", "n": len(trades), "trades": trades},
                   open(a.out / f"trades_{tag}.json", "w"), indent=1, default=str)
         json.dump(diag, open(a.out / f"diag_{tag}.json", "w"), indent=1, default=str)

@@ -832,3 +832,13 @@ Black-Scholes pricing overstates weekly entry credit, including after 2019. Mode
 **Expiry calendar (commit 97e6974):** there was no Monday-expiry era. NIFTY weekly and monthly expiries were Thursday through 2025-08-28 and Tuesday from 2025-09-02. Any statement of a Monday era is wrong.
 
 **Status:** the earlier model-priced results (11.98% and 12.07% CAGR, the 17.97% what-if, the 6.05% era-aware run, Rs334/lot) are **not evidence of an edge**. The weekly track is not a validated candidate. Live paper logging is data collection only.
+
+## 2026-10-21 — Pre-registered structural alternatives on the real-price engine (development window only)
+Arms (default off; `scripts/run_chain_backtest.py --pcs-put-sd 1.2 | --no-breach-stop | --ic-hold-to-expiry`), development window 2019-02-11..2023-12-31, slippage 1.5x, per-lot expectancy (year-cluster CI, 5 clusters = weak):
+| Run | n | Rs/lot | CI year |
+|---|---:|---:|---|
+| baseline | 201 | -325 | [-498, -175] |
+| A: PCS short strike at 1.2 SD | 192 | -371 | [-479, -259] |
+| B: no close-based strike-breach stop | 201 | -325 (identical; the breach stop is redundant with the credit stop) | |
+| C: ICs held to expiry | 203 | -158 | [-220, -90] |
+Pre-registered rule (beats baseline AND > 0 AND CI lower bound > 0): no arm passes; C narrows the loss only. The 2024+ holdout was NOT evaluated, by design (no arm passed). No parameter tuning was done.

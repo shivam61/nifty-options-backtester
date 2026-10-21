@@ -17,6 +17,7 @@ import pandas as pd
 
 from config import WeeklyBacktestConfig
 from strategies.base import ExitReason, Trade
+from strategies.weekly_strategies import WeeklyExitArms
 
 # ── Weekly strategy-selection rule (single source of truth) ─────────────────
 # Used by CombinedBacktestEngine, WeeklyBacktestEngine and the live CLI
@@ -109,12 +110,17 @@ def check_weekly_exit(
     entry_vix: float,
     current_equity: float,
     holding_days: int,
+    arms: Optional[WeeklyExitArms] = None,
 ) -> tuple[bool, Optional[ExitReason]]:
     """holding_days must be TRADING sessions held (see trading_sessions_held), not calendar days.
 
     config.engine_a_min_hold_days (PCS) and config.engine_b_max_hold_days (IC) are trading-day
     limits; passing calendar days made weekends count as hold time.
+
+    arms=None (or the default WeeklyExitArms) reproduces the baseline exactly. See WeeklyExitArms.
     """
+    if arms is not None and arms.ic_hold_to_expiry and "weekly_ic" in trade.strategy_name.lower():
+        return _ic_hold_to_expiry_check(config=config, trade=trade, dte=dte)
     if config.weekly_exit_policy == "legacy":
         return _legacy_exit_check(
             config=config,
@@ -125,6 +131,7 @@ def check_weekly_exit(
             dte=dte,
             entry_vix=entry_vix,
             current_equity=current_equity,
+            arms=arms,
         )
     return _redesigned_exit_check(
         config=config,
@@ -136,7 +143,26 @@ def check_weekly_exit(
         entry_vix=entry_vix,
         current_equity=current_equity,
         holding_days=holding_days,
+        arms=arms,
     )
+
+
+def _ic_hold_to_expiry_check(*, config: WeeklyBacktestConfig, trade: Trade, dte: int) -> tuple[bool, Optional[ExitReason]]:
+    """IC held to expiry (arm C). Only the credit-multiple stop can fire here.
+
+    Disabled for IC in this arm: capital-protection stop, DTE<=expiry_exit_dte exit, short-strike
+    breach stop, VIX-spike stop, trailing-delta, trend-reversal, max-hold and profit-target exits.
+    On dte<=0 this returns no exit; the chain engine closes the trade at the expiry settle.
+    """
+    if dte <= 0:
+        return False, None
+    net_credit = trade.net_credit
+    if net_credit <= 0:
+        return False, None
+    pnl_pct = trade.pnl_per_unit / net_credit * 100
+    if pnl_pct < -config.stop_loss_pct:
+        return True, ExitReason.STOP_LOSS
+    return False, None
 
 
 def _legacy_exit_check(
@@ -149,6 +175,7 @@ def _legacy_exit_check(
     dte: int,
     entry_vix: float,
     current_equity: float,
+    arms: Optional[WeeklyExitArms] = None,
 ) -> tuple[bool, Optional[ExitReason]]:
     max_loss_abs = current_equity * config.capital_protection_pct
     if trade.total_pnl < -max_loss_abs:
@@ -163,7 +190,9 @@ def _legacy_exit_check(
     if dte <= config.expiry_exit_dte:
         return True, ExitReason.DTE_LIMIT
 
-    for short_leg in (leg for leg in trade.legs if leg.is_short):
+    breach_stop = arms is None or arms.breach_stop
+    short_legs = [leg for leg in trade.legs if leg.is_short] if breach_stop else []
+    for short_leg in short_legs:
         if short_leg.option_type in ("PUT", "PE") and spot < short_leg.strike:
             return True, ExitReason.STOP_LOSS
         if short_leg.option_type in ("CALL", "CE") and spot > short_leg.strike:
@@ -198,6 +227,7 @@ def _redesigned_exit_check(
     entry_vix: float,
     current_equity: float,
     holding_days: int,
+    arms: Optional[WeeklyExitArms] = None,
 ) -> tuple[bool, Optional[ExitReason]]:
     max_loss_abs = current_equity * config.capital_protection_pct
     if trade.total_pnl < -max_loss_abs:
@@ -212,7 +242,8 @@ def _redesigned_exit_check(
     if dte <= config.expiry_exit_dte:
         return True, ExitReason.DTE_LIMIT
 
-    short_legs = [leg for leg in trade.legs if leg.is_short]
+    breach_stop = arms is None or arms.breach_stop
+    short_legs = [leg for leg in trade.legs if leg.is_short] if breach_stop else []
     for short_leg in short_legs:
         if short_leg.option_type in ("PUT", "PE") and spot < short_leg.strike:
             return True, ExitReason.STOP_LOSS
