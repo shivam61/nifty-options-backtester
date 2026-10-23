@@ -68,3 +68,6 @@ compare with the supported rule, always-trade and never-trade; same adoption rul
 - Tests for every new option (defaults reproduce -177/-238/-348 byte-for-byte; extend `tests/test_chain_arms.py`, `tests/test_chain_engine.py`).
 - Main thread re-extracts metrics from saved trade JSONs; confirm no run touches 2024+ before Step 3 (use `--end 2023-12-31`; note NseFoArchive.build_cache loads all files).
 - Commit + push each unit; BACKTEST_CHANGELOG entry per decision; keep disk free (>2GB) and never leave full repo copies in the scratchpad.
+
+## Follow-on
+Project 2 (separate pre-registration, per Step 5): `docs/plans/PROJECT2_STRUCTURE_PREREG.md`.

@@ -882,3 +882,8 @@ Per-lot net expectancy (Rs), lots=10:
 - Break-even slippage multiplier: baseline ~0.44x, F1 ~1.42x, F2 ~0.80x. About 91% of F1's earlier shortfall was the settlement-model error.
 - Pre-registered rule at 1.5x (beats baseline AND > 0 AND year-cluster CI lower bound > 0 AND >= 4/5 positive years): F1 FAILS (-10; year CI [-218, +189]; 3/5 years), F2 FAILS (-183; 2/5 years). Holdout not evaluated.
 - Open: brokerage on expired/exercised contracts (Rs20/order) is not modelled; exchange/exercise-STT history for 2019-2022 and pre-2020-07 stamp duty are proxies.
+
+## 2026-10-23 — Project 2 pre-registered; quote-log break-evens corrected
+- `docs/plans/PROJECT2_STRUCTURE_PREREG.md` registered before any run: four hold-to-expiry arms (VIX floor 13, PCS-only, fixed wings 200 / 500), comparator F1, Holm family of 4, Gate 0 on measured real/model slippage. NOT RUN. Needs two engine options (`force_strategy`, `wing_width`) built with default-unchanged tests first.
+- `scripts/evaluate_prereg_arms.py` applies the pass rule mechanically (dev window only unless `--allow-holdout`).
+- `scripts/summarize_quote_log.py` break-even axis updated from 0.47 / 0.80 / 0.90 to 0.44 / 0.80 / 1.42 (corrected settlement and cost model). No backtest numbers changed.
