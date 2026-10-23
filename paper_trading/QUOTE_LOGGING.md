@@ -124,8 +124,11 @@ Columns (`QUOTE_LOG.csv` header is authoritative):
 3. The headline: the median of `half_spread_to_model` over structure legs (short, long, atm). This
    is the implied slippage multiplier.
 4. Where that multiplier sits against the break-even reference points in the owner's brief:
-   baseline 0.47x, VIX >= 13 subset 0.80x, hold-to-expiry 0.90x. Below a threshold means the real
-   cost is tolerable for that structure on this model; above means it is not.
+   baseline 0.44x, VIX >= 13 subset 0.80x, hold-to-expiry 1.42x (corrected cost and settlement
+   model, dev window, lots=10; see `BACKTEST_CHANGELOG.md`). Below a threshold means the real
+   cost is tolerable for that structure on this model; above means it is not. Even below the
+   threshold only means break-even, not a pass: the strategy search still needs a positive
+   expectancy with a year-cluster lower bound above zero.
 5. Warnings when there are fewer than 20 snapshots or fewer than 5 distinct dates.
 
 Read the headline together with the `neighbour` and moneyness rows. Wider strikes have wider

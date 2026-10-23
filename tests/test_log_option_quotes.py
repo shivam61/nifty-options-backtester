@@ -335,8 +335,9 @@ def test_summary_report_reads_break_even_axis(tmp_path, payload):
     LQ.append_rows(log, _snapshot_rows(payload, 0.2, "2026-10-21T11:30:05+05:30"))
     report = SQ.format_report(SQ.load(log), min_snapshots=1)
     assert "break-even axis" in report
-    assert "baseline (expiry-day exits)" in report and "0.47x" in report
-    assert "BELOW" in report                       # 0.2x of the observed spread is well under 0.47x
+    assert "baseline (expiry-day exits)" in report and "0.44x" in report
+    assert "hold-to-expiry (F1)" in report and "1.42x" in report
+    assert "BELOW" in report                       # 0.2x of the observed spread is well under 0.44x
     assert "WARNING: only 1 distinct dates" in report
 
 

@@ -12,9 +12,13 @@ USAGE
     python scripts/summarize_quote_log.py
     python scripts/summarize_quote_log.py --log /path/to/QUOTE_LOG.csv --min-snapshots 30
 
-Reference break-evens (multiples of the model's per-unit slippage) are taken from the owner's
-brief and are NOT re-derived here. Read: a measured multiplier below a threshold means the
-real cost is below the level at which that structure stops being profitable on this model.
+Reference break-evens (multiples of the model's per-unit slippage) are taken from
+BACKTEST_CHANGELOG.md "Settlement and cost-model correction; Step 2 re-run" (dev window
+2019-02-11..2023-12-31, lots=10, cash settlement at expiry) and are NOT re-derived here.
+Before that correction the table read 0.47 / 0.80 / 0.90; the hold-to-expiry value moved
+because ~91% of its earlier shortfall was the settlement-model error. Read: a measured
+multiplier below a threshold means the real cost is below the level at which that structure
+stops being profitable on this model.
 """
 
 from __future__ import annotations
@@ -30,9 +34,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOG = REPO_ROOT / "paper_trading" / "tracker" / "QUOTE_LOG.csv"
 
 BREAK_EVEN = {
-    "baseline (expiry-day exits)": 0.47,
+    "baseline (expiry-day exits)": 0.44,
     "VIX >= 13 subset": 0.80,
-    "hold-to-expiry (F1)": 0.90,
+    "hold-to-expiry (F1)": 1.42,
 }
 STRUCTURE_ROLES = ("short", "long", "atm")
 NUMERIC = ["strike", "bid", "ask", "half_spread", "model_slip_unit", "half_spread_to_model",
