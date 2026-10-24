@@ -19,9 +19,9 @@ EXIT CODES
     2  source unavailable (blocked, HTTP error, bad JSON) or required input missing (no VIX/spot)
     3  nothing written: market closed, outside the entry window, or duplicate snapshot
 
-No credentials are read or stored. Requests: NSE homepage (cookies), option-chain-indices and
-allIndices, with ~1 s between calls. One run = at most 3 HTTP requests. Do not loop it faster
-than every few minutes.
+No credentials are read or stored. Requests: NSE homepage (cookies), option-chain-v3 once per
+expiry (window and next), and allIndices, with ~1 s between calls. One run = at most 4 HTTP
+requests. Do not loop it faster than every few minutes.
 """
 
 from __future__ import annotations
@@ -47,12 +47,15 @@ from backtester.chain_engine import ChainBacktest, ChainConfig  # noqa: E402
 from backtester.weekly_exit_policy import WEEKLY_IC, select_weekly_strategy_name  # noqa: E402
 from config import BacktestConfig, WeeklyBacktestConfig  # noqa: E402
 from data.expiry_calendar import get_next_weekly_expiry, get_weekly_expiry_in_range  # noqa: E402
-from data.option_chain import GROWW_OC_URL, HEADERS, NSE_BASE, OPTION_CHAIN_URL, GrowwOptionChainFetcher  # noqa: E402
+from data.option_chain import GROWW_OC_URL, HEADERS, NSE_BASE, GrowwOptionChainFetcher  # noqa: E402
 from strategies.weekly_strategies import WeeklyIronCondor, WeeklyPutCreditSpread  # noqa: E402
 from utils.market_clock import IST, market_day_gate, now_ist  # noqa: E402
 
 DEFAULT_LOG = REPO_ROOT / "paper_trading" / "tracker" / "QUOTE_LOG.csv"
 NSE_INDICES_URL = f"{NSE_BASE}/api/allIndices"
+# The old /api/option-chain-indices route now returns HTTP 404. option-chain-v3 serves one expiry per
+# request (verified live 2026-10-24); records.data then holds that expiry's rows only.
+NSE_CHAIN_V3_URL = f"{NSE_BASE}/api/option-chain-v3?type=Indices&symbol=NIFTY&expiry={{expiry}}"
 STRIKE_STEP = 50
 NEIGHBOUR_OFFSETS = (-2, -1, 1, 2)
 EXPIRY_FMT = "%d-%b-%Y"
@@ -107,19 +110,30 @@ def _num(v) -> Optional[float]:
     return f if f == f else None
 
 
-def parse_nse_chain(payload: dict) -> Snapshot:
-    """Parse NSE /api/option-chain-indices?symbol=NIFTY.
+def _pick(leg: dict, *keys):
+    """First non-null value among alternative field names (legacy vs option-chain-v3)."""
+    for k in keys:
+        if leg.get(k) is not None:
+            return leg[k]
+    return None
 
-    Field names (as read by data/option_chain.py NSEOptionChainFetcher._parse_response):
+
+def parse_nse_chain(payload: dict) -> Snapshot:
+    """Parse NSE option chain for NIFTY (option-chain-v3, or the legacy option-chain-indices shape).
+
+    Field names:
       records.underlyingValue, records.timestamp, records.expiryDates,
-      records.data[i].expiryDate, .strikePrice, .CE / .PE with
-      bidprice, askPrice, bidQty, askQty, lastPrice, totalTradedVolume, openInterest.
+      records.data[i].expiryDate (legacy) or .expiryDates (v3), .strikePrice, .CE / .PE with
+      bid: bidprice (legacy) | buyPrice1 (v3); ask: askPrice | sellPrice1;
+      bidQty | buyQuantity1; askQty | sellQuantity1; lastPrice, totalTradedVolume, openInterest.
+    In v3, buyPrice1/sellPrice1 are read as best bid and best ask: on the live 2026-10-23 close the
+    ATM strikes show buyPrice1 < sellPrice1. This is inferred from the field names, not from NSE docs.
     """
     rec = payload.get("records", {})
     spot = _num(rec.get("underlyingValue")) or 0.0
     quotes: dict = {}
     for row in rec.get("data", []):
-        exp = row.get("expiryDate")
+        exp = row.get("expiryDate") or row.get("expiryDates")
         strike = row.get("strikePrice")
         if not exp or strike is None:
             continue
@@ -128,10 +142,10 @@ def parse_nse_chain(payload: dict) -> Snapshot:
             if not leg:
                 continue
             quotes[(exp, int(strike), opt)] = {
-                "bid": _num(leg.get("bidprice")),
-                "ask": _num(leg.get("askPrice")),
-                "bid_qty": _num(leg.get("bidQty")),
-                "ask_qty": _num(leg.get("askQty")),
+                "bid": _num(_pick(leg, "bidprice", "buyPrice1")),
+                "ask": _num(_pick(leg, "askPrice", "sellPrice1")),
+                "bid_qty": _num(_pick(leg, "bidQty", "buyQuantity1")),
+                "ask_qty": _num(_pick(leg, "askQty", "sellQuantity1")),
                 "last": _num(leg.get("lastPrice")),
                 "volume": _num(leg.get("totalTradedVolume")),
                 "oi": _num(leg.get("openInterest")),
@@ -147,14 +161,19 @@ def parse_nse_chain(payload: dict) -> Snapshot:
 
 
 def parse_nse_indices(payload: dict) -> dict:
-    """Return {'vix': float|None, 'nifty': float|None} from NSE /api/allIndices."""
-    out = {"vix": None, "nifty": None}
+    """Return {'vix', 'nifty', 'nifty_week_ago'} (floats or None) from NSE /api/allIndices.
+
+    nifty_week_ago is oneWeekAgoVal: the NIFTY 50 close seven calendar days back, which is five
+    trading days back when no exchange holiday falls in between (same weekday, prior week).
+    """
+    out = {"vix": None, "nifty": None, "nifty_week_ago": None}
     for idx in payload.get("data", []) or []:
         sym = idx.get("indexSymbol", "")
         if sym == "INDIA VIX":
             out["vix"] = _num(idx.get("last", idx.get("lastPrice")))
         elif sym == "NIFTY 50":
             out["nifty"] = _num(idx.get("last", idx.get("lastPrice")))
+            out["nifty_week_ago"] = _num(idx.get("oneWeekAgoVal"))
     return out
 
 
@@ -248,6 +267,16 @@ def build_structures(spot: float, vix: float, dte: int, rf: float, ret_5d: Optio
 
 # ─────────────────────────────────────────────────────────────── row building
 
+def target_expiries(today: date, window_expiry: Optional[date]) -> list[tuple[str, date]]:
+    """(role, expiry) pairs that build_rows records: the window expiry (or, when no weekly expiry
+    fits the DTE window, the next expiry as 'window_fallback') and the expiry after it."""
+    if window_expiry is None:
+        first = ("window_fallback", get_next_weekly_expiry(today)[0])
+    else:
+        first = ("window", window_expiry)
+    return [first, ("next", get_next_weekly_expiry(first[1])[0])]
+
+
 def build_rows(snap: Snapshot, *, vix: float, today: date, ts_ist: str, fetched_ist: str,
                in_window: bool, forced: bool, ret_5d: Optional[float], rf: float,
                window_expiry: Optional[date]) -> list[dict]:
@@ -255,15 +284,8 @@ def build_rows(snap: Snapshot, *, vix: float, today: date, ts_ist: str, fetched_
     the next expiry. Missing strikes or expiries are recorded with quote_status not_listed."""
     wc = WeeklyBacktestConfig()
     spot = snap.spot
-    if window_expiry is None:
-        next_exp, _ = get_next_weekly_expiry(today)
-        window_dte_ok = False
-        exp_targets = [("window_fallback", next_exp)]
-    else:
-        window_dte_ok = True
-        exp_targets = [("window", window_expiry)]
-    base = window_expiry if window_expiry is not None else exp_targets[0][1]
-    exp_targets.append(("next", get_next_weekly_expiry(base)[0]))
+    window_dte_ok = window_expiry is not None
+    exp_targets = target_expiries(today, window_expiry)
 
     rows: list[dict] = []
     for role_name, exp_date in exp_targets:
@@ -349,21 +371,58 @@ def _get(session: requests.Session, url: str, timeout: int = 15) -> dict:
         raise SourceUnavailable(f"{url.split('?')[0]} returned non-JSON") from e
 
 
-def fetch_nse() -> dict:
-    """Three polite requests: homepage (cookies), option chain, allIndices (VIX)."""
+def _nse_session() -> requests.Session:
     s = requests.Session()
     s.headers.update(HEADERS)
+    # HEADERS asks for br. requests only decodes br when the brotli package is installed; without it
+    # the body is undecodable bytes and every NSE JSON call fails. gzip is always decodable.
+    s.headers["Accept-Encoding"] = "gzip, deflate"
+    return s
+
+
+def merge_chain_payloads(payloads: list[dict]) -> dict:
+    """Combine per-expiry option-chain-v3 responses into one payload of the legacy shape.
+
+    Rows are concatenated. The timestamp and underlying come from the first response that has rows.
+    expiryDates is the union, so the snapshot's expiry list covers every request.
+    """
+    recs = [p.get("records", {}) or {} for p in payloads]
+    live = [r for r in recs if r.get("data")]
+    base = live[0] if live else {}
+    data: list = []
+    expiries: list = []
+    for r in recs:
+        data.extend(r.get("data", []) or [])
+        for e in r.get("expiryDates", []) or []:
+            if e not in expiries:
+                expiries.append(e)
+    return {"records": {"data": data, "timestamp": base.get("timestamp", ""),
+                        "underlyingValue": base.get("underlyingValue", 0), "expiryDates": expiries}}
+
+
+def fetch_nse(expiries: list[str]) -> dict:
+    """Homepage (cookies), one option-chain-v3 request per expiry, then allIndices (VIX, 1-week close).
+
+    expiries are DD-Mon-YYYY strings. Returns {'option_chain': merged payload, 'all_indices': ...}.
+    """
+    s = _nse_session()
     try:
         s.get(NSE_BASE, timeout=10)
     except requests.RequestException as e:
         raise SourceUnavailable(f"NSE homepage request failed: {type(e).__name__}") from e
     time.sleep(1.0)
-    chain = _get(s, OPTION_CHAIN_URL)
-    if not chain.get("records", {}).get("data"):
-        raise SourceUnavailable("NSE option chain response has no records (market closed or endpoint changed)")
+    chains = []
+    for i, exp in enumerate(expiries):
+        if i:
+            time.sleep(1.0)
+        chains.append(_get(s, NSE_CHAIN_V3_URL.format(expiry=exp)))
+    merged = merge_chain_payloads(chains)
+    if not merged["records"]["data"]:
+        raise SourceUnavailable(f"NSE option chain has no rows for {', '.join(expiries)} "
+                                "(market closed, expiry not listed, or endpoint changed)")
     time.sleep(1.0)
     indices = _get(s, NSE_INDICES_URL)
-    return {"option_chain": chain, "all_indices": indices}
+    return {"option_chain": merged, "all_indices": indices}
 
 
 def fetch_groww() -> dict:
@@ -384,10 +443,13 @@ class RunResult:
 
 
 def _in_window(now: datetime) -> bool:
+    """Minute-level test. A cron tick at 13:00:00 starts Python a second or two late, so seconds must
+    not push a 13:00 tick out of the window."""
     bt = BacktestConfig()
     start = dtime(bt.entry_window_start_hour, bt.entry_window_start_minute)
     end = dtime(bt.entry_window_end_hour, bt.entry_window_end_minute)
-    return now.weekday() < 5 and start <= now.time().replace(tzinfo=None) <= end
+    minute = now.time().replace(second=0, microsecond=0, tzinfo=None)
+    return now.weekday() < 5 and start <= minute <= end
 
 
 def _window_expiry(today: date) -> Optional[date]:
@@ -416,6 +478,7 @@ def run_once(*, source: str = "nse", from_json: Optional[Path] = None, log_path:
                              f"IST entry window (now {now:%H:%M}). Nothing logged.", 3)
 
     in_window = _in_window(now) and market_day_gate(today) is None
+    window_expiry = _window_expiry(today)
 
     try:
         if from_json is not None:
@@ -423,7 +486,7 @@ def run_once(*, source: str = "nse", from_json: Optional[Path] = None, log_path:
         elif source == "groww":
             raw = fetch_groww()
         else:
-            raw = fetch_nse()
+            raw = fetch_nse([d.strftime(EXPIRY_FMT) for _, d in target_expiries(today, window_expiry)])
     except SourceUnavailable as e:
         return RunResult("source_unavailable", f"Source '{source}' unavailable: {e}. "
                          "Try --source groww (no bid/ask) or re-run later.", 2)
@@ -446,6 +509,11 @@ def run_once(*, source: str = "nse", from_json: Optional[Path] = None, log_path:
     if not snap.quotes:
         return RunResult("no_input", "Option chain has no strikes; nothing logged.", 2)
 
+    # Unattended runs have no --ret-5d. NSE allIndices gives the close one week ago (5 trading days
+    # back when no holiday intervenes), so the rule label uses spot / that close - 1 (spot is intraday).
+    if ret_5d is None and indices.get("nifty_week_ago") and snap.spot > 0:
+        ret_5d = snap.spot / indices["nifty_week_ago"] - 1.0
+
     ts_ist = parse_exchange_ts(snap.exchange_ts, now) if snap.exchange_ts else fetched_ist
     if write and (ts_ist, snap.source) in read_existing_keys(log_path):
         return RunResult("duplicate", f"Snapshot {ts_ist} ({snap.source}) already logged; not appended.", 3,
@@ -453,7 +521,7 @@ def run_once(*, source: str = "nse", from_json: Optional[Path] = None, log_path:
 
     rows = build_rows(snap, vix=snap.vix, today=today, ts_ist=ts_ist, fetched_ist=fetched_ist,
                       in_window=in_window, forced=force, ret_5d=ret_5d, rf=WeeklyBacktestConfig().risk_free_rate,
-                      window_expiry=_window_expiry(today))
+                      window_expiry=window_expiry)
     if write:
         append_rows(log_path, rows)
     return RunResult("appended", f"Appended {len(rows)} rows to {log_path}" if write else "dry run",
@@ -495,7 +563,8 @@ def main(argv: Optional[list] = None) -> int:
     p.add_argument("--log", type=Path, default=DEFAULT_LOG)
     p.add_argument("--vix", type=float, default=None, help="Override India VIX (needed for --source groww).")
     p.add_argument("--ret-5d", type=float, default=None,
-                   help="5-day Nifty return as a fraction (e.g. -0.012). Only sets the rule_selected label.")
+                   help="5-day Nifty return as a fraction (e.g. -0.012). Only sets the rule_selected label. "
+                        "Default for NSE: spot vs the NIFTY close one week ago from allIndices.")
     p.add_argument("--force", action="store_true", help="Bypass the market-day and 11-13 IST window gate.")
     p.add_argument("--dry-run", action="store_true", help="Fetch and summarise, do not append.")
     a = p.parse_args(argv)

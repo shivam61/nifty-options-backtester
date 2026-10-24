@@ -46,18 +46,25 @@ snapshot timestamp is already in the log).
   `in_window=0, forced=1` so they can be excluded.
 - Cadence: every 10 minutes is enough. The NSE chain is a snapshot; running more often mostly
   duplicates timestamps, which the script skips.
-- Each run makes at most 3 HTTP requests (NSE homepage for cookies, option chain, allIndices), with
-  about 1 s between them. Do not put it in a tight loop.
+- Each run makes at most 4 HTTP requests (NSE homepage for cookies, option-chain-v3 for the window
+  expiry, option-chain-v3 for the next expiry, allIndices), with about 1 s between them. Do not put
+  it in a tight loop.
 
 ### Cron (owner's machine)
 
-`cron` uses the system timezone. Use `CRON_TZ` so the schedule is in IST, and escape `%` in the
-log file name. Example crontab entries:
+The machine runs in UTC (`/etc/timezone` = `Etc/UTC`). IST is UTC+05:30, so the 11:00-13:00 IST
+window is 05:30-07:30 UTC. This entry uses UTC and needs no `CRON_TZ`. Ticks outside the window
+fail the gate and exit 3 before any HTTP request:
 
 ```cron
-CRON_TZ=Asia/Kolkata
-*/10 11-13 * * 1-5  cd /home/shivamguptanit/github/nifty-options-backtester && .venv/bin/python scripts/log_option_quotes.py >> logs/quote_log_$(date +\%Y\%m\%d).log 2>&1
+*/10 5-7 * * 1-5  cd /home/shivamguptanit/github/nifty-options-backtester && .venv/bin/python scripts/log_option_quotes.py >> logs/quote_logger.log 2>&1
 ```
+
+If the cron implementation supports `CRON_TZ` (check it first), the IST form is equivalent:
+`CRON_TZ=Asia/Kolkata` then `*/10 11-13 * * 1-5`.
+
+Check that the daemon runs (`pgrep -a cron`). The `cron` package is not always installed; on
+2026-10-24 `crontab` was missing and the package was not installed.
 
 The script itself skips NSE holidays (`market_day_gate`), so no holiday list is needed in cron.
 Create `logs/` first (`mkdir -p logs`); it is gitignored.
@@ -101,12 +108,12 @@ Columns (`QUOTE_LOG.csv` header is authoritative):
 | `in_window`, `forced` | 1 if inside 11:00-13:00 IST on a trading day; 1 if the gate was bypassed |
 | `spot` | NSE `records.underlyingValue` (fallback: allIndices NIFTY 50 `last`) |
 | `vix` | NSE allIndices `INDIA VIX` `last`, or `--vix` |
-| `ret_5d` | Only if `--ret-5d` is passed (label only) |
+| `ret_5d` | `--ret-5d` if passed. Otherwise, for NSE, spot / allIndices `oneWeekAgoVal` - 1: the close one week back, which is five trading days back when no holiday falls between (spot is intraday). Label only: it sets `rule_selected`, not the quotes |
 | `expiry`, `expiry_role`, `dte`, `dte_in_window` | Expiry `DD-Mon-YYYY` as NSE lists it; calendar DTE |
 | `structure`, `rule_selected`, `role`, `offset_strikes` | Leg construction (see above). `role` is `short`, `long`, `atm` or `neighbour` |
 | `strike`, `option_type`, `moneyness`, `moneyness_bucket`, `vix_bucket` | Strike and option type; strike/spot; buckets `lt1pct`, `1to2pct`, `2to4pct`, `gt4pct`; `vix_lt13` / `vix_ge13` |
-| `bid`, `ask` | NSE `bidprice`, `askPrice`: best bid and ask only |
-| `bid_qty`, `ask_qty` | NSE `bidQty`, `askQty`: quantity at the best price only (blank if the field is absent) |
+| `bid`, `ask` | NSE option-chain-v3 `buyPrice1` (best bid), `sellPrice1` (best ask). Legacy `bidprice`/`askPrice` also accepted. Best price only |
+| `bid_qty`, `ask_qty` | NSE `buyQuantity1`, `sellQuantity1`: quantity at the best price only (blank if the field is absent) |
 | `last`, `volume`, `oi` | NSE `lastPrice`, `totalTradedVolume`, `openInterest` |
 | `mid`, `spread`, `half_spread` | (ask+bid)/2, ask-bid, spread/2. Blank unless `quote_status=ok` |
 | `quote_status` | `ok`, `one_sided` (bid or ask is 0), `no_quote`, `crossed` (ask < bid), `not_listed` (expiry not in the chain), `strike_not_listed` |
@@ -144,12 +151,17 @@ reference numbers from the owner's earlier analysis. This script does not re-der
   thin book is not captured.
 - **1 lot assumed.** Quantities are not used for sizing. The quote is the top-of-book price for
   any size, and `bid_qty`/`ask_qty` are informational.
-- **Field names are unverified against a live response.** `bidprice` and `askPrice` are the
-  names the repo's parser already uses. `bidQty` and `askQty` are the names this script expects
-  but the repo does not read them, so they are not confirmed. Check `bid_qty` and `ask_qty` on the
-  first live run. If they are blank, the field name differs and `parse_nse_chain` needs fixing.
-- **NSE may block the IP.** The script makes one attempt per endpoint and reports `HTTP 403` or
-  similar as `source_unavailable`. It does not loop. `--source groww` returns LTP, OI and volume
+- **Field names are checked against one closing book, not a window snapshot.** On 2026-10-24 the
+  option-chain-v3 response for 2026-10-23 (after the close) had `buyPrice1 < sellPrice1` on the
+  ATM strikes. The bid/ask mapping rests on those names. On the first in-window run, check that
+  `bid < ask` on most two-sided rows and that `bid_qty` and `ask_qty` are populated. If they are
+  blank, `parse_nse_chain` needs fixing.
+- **NSE moves endpoints.** `/api/option-chain-indices` returned HTTP 404 on 2026-10-24, so the
+  script uses `/api/option-chain-v3`, one request per expiry. The NSE JSON needs
+  `Accept-Encoding: gzip, deflate`. `br` is undecodable without the `brotli` package, and the
+  script's session overrides it.
+- **NSE may block the IP.** The script makes one attempt per endpoint and reports `HTTP 403`,
+  `HTTP 404`, a non-JSON body, or an empty chain as `source_unavailable`. It does not loop. `--source groww` returns LTP, OI and volume
   with no bid or ask, so it cannot measure spreads. It is a fallback for spot and OI only.
 - **Model slippage is the chain engine's entry-side value at multiplier 1.0.** The
   `CombinedBacktestEngine` applies 0.75x on entry. The chain backtest uses 1.0x. The
@@ -161,3 +173,12 @@ reference numbers from the owner's earlier analysis. This script does not re-der
   outside the chain are logged as `strike_not_listed`.
 - **Half-spread is not the full execution cost.** It excludes market impact, queue position and
   the behaviour of a resting order. Use it as the minimum cost to cross from mid to touch.
+
+## Scheduler on this machine (systemd user timer, not cron)
+
+`cron` is not installed here, so collection runs from a systemd user timer (UTC, no `CRON_TZ` needed):
+`~/.config/systemd/user/nifty-quote-logger.{service,timer}`, `OnCalendar=Mon..Fri *-*-* 05,06,07:00/10:00 UTC`
+(the script itself only logs inside 11:00-13:00 IST and exits 3 otherwise; the unit treats exit 3 as success).
+Linger is enabled, so it runs without a login session. Output: `logs/quote_logger.log`.
+Check: `systemctl --user list-timers nifty-quote-logger.timer`, `tail logs/quote_logger.log`,
+`wc -l paper_trading/tracker/QUOTE_LOG.csv` (about 61 rows per snapshot).

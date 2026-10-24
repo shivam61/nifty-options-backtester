@@ -30,9 +30,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOG = REPO_ROOT / "paper_trading" / "tracker" / "QUOTE_LOG.csv"
 
 BREAK_EVEN = {
-    "baseline (expiry-day exits)": 0.47,
+    "baseline (expiry-day exits)": 0.44,
     "VIX >= 13 subset": 0.80,
-    "hold-to-expiry (F1)": 0.90,
+    "hold-to-expiry (F1)": 1.42,
 }
 STRUCTURE_ROLES = ("short", "long", "atm")
 NUMERIC = ["strike", "bid", "ask", "half_spread", "model_slip_unit", "half_spread_to_model",

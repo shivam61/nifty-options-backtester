@@ -65,7 +65,99 @@ def test_parse_nse_chain_zero_bid_is_kept_as_zero_not_dropped(payload):
 
 def test_parse_indices_vix(payload):
     ix = LQ.parse_nse_indices(payload["all_indices"])
-    assert ix == {"vix": 14.5, "nifty": 23000.0}
+    assert ix == {"vix": 14.5, "nifty": 23000.0, "nifty_week_ago": None}
+
+
+def _to_v3(payload):
+    """The legacy fixture rewritten into option-chain-v3 field names (live 2026-10-24 shape)."""
+    out = json.loads(json.dumps(payload))
+    for row in out["option_chain"]["records"]["data"]:
+        row["expiryDates"] = row.pop("expiryDate")
+        for opt in ("CE", "PE"):
+            leg = row.get(opt)
+            if not leg:
+                continue
+            for old, new in (("bidprice", "buyPrice1"), ("askPrice", "sellPrice1"),
+                             ("bidQty", "buyQuantity1"), ("askQty", "sellQuantity1")):
+                leg[new] = leg.pop(old, None)
+    return out
+
+
+def test_parse_v3_shape_matches_legacy_shape(payload):
+    legacy = LQ.parse_nse_chain(payload["option_chain"])
+    v3 = LQ.parse_nse_chain(_to_v3(payload)["option_chain"])
+    assert v3.quotes == legacy.quotes
+    assert v3.spot == legacy.spot and v3.expiries == legacy.expiries
+
+
+def test_nse_session_never_requests_brotli():
+    # requests cannot decode br without the brotli package; NSE then returns undecodable bytes
+    tokens = [t.strip() for t in LQ._nse_session().headers["Accept-Encoding"].split(",")]
+    assert "br" not in tokens and "gzip" in tokens
+
+
+def test_fetch_nse_one_v3_request_per_expiry(payload, monkeypatch):
+    v3 = _to_v3(payload)
+    all_rows = v3["option_chain"]["records"]["data"]
+    urls = []
+
+    class _NoopSession:
+        def get(self, url, timeout=None):
+            return None
+
+    def fake_get(session, url, timeout=15):
+        urls.append(url)
+        if "option-chain-v3" in url:
+            exp = url.split("expiry=")[1]
+            rows = [r for r in all_rows if r["expiryDates"] == exp]
+            return {"records": {"data": rows, "timestamp": v3["option_chain"]["records"]["timestamp"],
+                                "underlyingValue": 23000.0,
+                                "expiryDates": v3["option_chain"]["records"]["expiryDates"]}}
+        return payload["all_indices"]
+
+    monkeypatch.setattr(LQ, "_nse_session", lambda: _NoopSession())
+    monkeypatch.setattr(LQ, "_get", fake_get)
+    monkeypatch.setattr(LQ.time, "sleep", lambda _s: None)
+    out = LQ.fetch_nse(["27-Oct-2026", "03-Nov-2026"])
+
+    chain_urls = [u for u in urls if "option-chain-v3" in u]
+    assert [u.split("expiry=")[1] for u in chain_urls] == ["27-Oct-2026", "03-Nov-2026"]
+    assert all("symbol=NIFTY" in u for u in chain_urls)
+    snap = LQ.parse_nse_chain(out["option_chain"])
+    assert ("27-Oct-2026", 23350, "CE") in snap.quotes
+    assert snap.expiries == v3["option_chain"]["records"]["expiryDates"]
+    assert snap.exchange_ts == "21-Oct-2026 11:30:05"
+
+
+def test_fetch_nse_no_rows_is_source_unavailable(monkeypatch):
+    class _NoopSession:
+        def get(self, url, timeout=None):
+            return None
+
+    empty = {"records": {"data": [], "timestamp": "", "underlyingValue": 0, "expiryDates": ["27-Oct-2026"]}}
+    monkeypatch.setattr(LQ, "_nse_session", lambda: _NoopSession())
+    monkeypatch.setattr(LQ, "_get", lambda session, url, timeout=15: empty)
+    monkeypatch.setattr(LQ.time, "sleep", lambda _s: None)
+    with pytest.raises(LQ.SourceUnavailable, match="no rows"):
+        LQ.fetch_nse(["27-Oct-2026"])
+
+
+def test_unattended_ret_5d_from_one_week_close_and_override(tmp_path, payload):
+    p = json.loads(json.dumps(payload))
+    for d in p["all_indices"]["data"]:
+        if d.get("indexSymbol") == "NIFTY 50":
+            d["oneWeekAgoVal"] = 23230.0            # close five trading days back
+    f = tmp_path / "week.json"
+    f.write_text(json.dumps(p))
+    res = LQ.run_once(from_json=f, log_path=tmp_path / "Q.csv", now=TUE_1130, write=False)
+    assert res.status == "appended"
+    assert res.rows[0]["ret_5d"] == round(23000 / 23230 - 1, 5)          # -0.0099: inside the 2% band
+    assert {r["rule_selected"] for r in res.rows if r["structure"] == "IC"} == {"1"}
+
+    # an explicit --ret-5d still wins over the derived value
+    res = LQ.run_once(from_json=f, log_path=tmp_path / "Q.csv", now=TUE_1130, ret_5d=-0.03, write=False)
+    assert res.rows[0]["ret_5d"] == -0.03
+    assert {r["rule_selected"] for r in res.rows if r["structure"] == "IC"} == {"0"}
 
 
 def test_parse_groww_has_no_bid_ask():
@@ -245,6 +337,17 @@ def test_closed_market_weekend_writes_nothing(tmp_path, payload):
     assert not log.exists()
 
 
+def test_window_edges_are_minute_level(tmp_path, payload):
+    # cron fires on the minute; Python starts 1-2 s later, so 13:00:02 and 11:00:03 must count
+    assert LQ._in_window(datetime(2026, 10, 21, 13, 0, 2, tzinfo=IST))
+    assert LQ._in_window(datetime(2026, 10, 21, 11, 0, 3, tzinfo=IST))
+    assert not LQ._in_window(datetime(2026, 10, 21, 13, 1, 0, tzinfo=IST))
+    assert not LQ._in_window(datetime(2026, 10, 21, 10, 59, 59, tzinfo=IST))
+    late = datetime(2026, 10, 21, 13, 0, 2, tzinfo=IST)
+    res = LQ.run_once(from_json=FIXTURE, log_path=tmp_path / "QUOTE_LOG.csv", now=late, write=False)
+    assert res.status == "appended" and res.rows[0]["in_window"] == 1
+
+
 def test_outside_window_writes_nothing_and_force_bypasses(tmp_path):
     log = tmp_path / "QUOTE_LOG.csv"
     res = LQ.run_once(from_json=FIXTURE, log_path=log, now=WED_OUT)
@@ -256,8 +359,8 @@ def test_outside_window_writes_nothing_and_force_bypasses(tmp_path):
 
 
 def test_source_unavailable_fails_soft(tmp_path, monkeypatch):
-    def blocked():
-        raise LQ.SourceUnavailable("https://www.nseindia.com/api/option-chain-indices returned HTTP 403")
+    def blocked(*_args):
+        raise LQ.SourceUnavailable("https://www.nseindia.com/api/option-chain-v3 returned HTTP 403")
     monkeypatch.setattr(LQ, "fetch_nse", blocked)
     log = tmp_path / "QUOTE_LOG.csv"
     res = LQ.run_once(source="nse", log_path=log, now=TUE_1130)
@@ -335,8 +438,8 @@ def test_summary_report_reads_break_even_axis(tmp_path, payload):
     LQ.append_rows(log, _snapshot_rows(payload, 0.2, "2026-10-21T11:30:05+05:30"))
     report = SQ.format_report(SQ.load(log), min_snapshots=1)
     assert "break-even axis" in report
-    assert "baseline (expiry-day exits)" in report and "0.47x" in report
-    assert "BELOW" in report                       # 0.2x of the observed spread is well under 0.47x
+    assert "baseline (expiry-day exits)" in report and "0.44x" in report
+    assert "BELOW" in report                       # 0.2x of the observed spread is well under 0.44x
     assert "WARNING: only 1 distinct dates" in report
 
 
