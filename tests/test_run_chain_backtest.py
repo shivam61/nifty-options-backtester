@@ -92,7 +92,7 @@ def test_cli_writes_trades_diag_skips_and_summary(tmp_path, synthetic):
     out = tmp_path / "out"
     rc = cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "2.0",
                    "--archive-dir", str(arch_dir), "--out", str(out),
-                   "--legacy-settlement", "--legacy-costs"])
+                   "--legacy-settlement", "--legacy-costs", "--allow-holdout"])
     assert rc == 0
     assert calls == [(X, cli.DEFAULT_MARKET_START)]     # pinned end (= last exit date, archive cut here), default market history start
 
@@ -120,7 +120,22 @@ def test_cli_rejects_inverted_window(tmp_path, synthetic):
     arch_dir, _ = synthetic
     with pytest.raises(SystemExit):
         cli.main(["--start", str(E), "--end", str(X), "--archive-dir", str(arch_dir),
-                  "--out", str(tmp_path / "bad")])
+                  "--out", str(tmp_path / "bad"), "--allow-holdout"])
+
+
+def test_check_window_refuses_after_dev_end_unless_flagged():
+    cli.check_window(date(2023, 12, 31), allow_holdout=False)     # boundary is allowed
+    with pytest.raises(SystemExit):
+        cli.check_window(date(2024, 1, 1), allow_holdout=False)
+    cli.check_window(date(2024, 1, 1), allow_holdout=True)
+
+
+def test_cli_refuses_holdout_end_without_flag(tmp_path, synthetic):
+    arch_dir, _ = synthetic
+    with pytest.raises(SystemExit):
+        cli.main(["--start", str(S), "--end", "2024-06-30", "--archive-dir", str(arch_dir),
+                  "--out", str(tmp_path / "out")])
+    assert cli.DEFAULT_END == date(2023, 12, 31)
 
 
 def test_analyze_cli_on_chain_output(tmp_path, synthetic):
@@ -130,7 +145,7 @@ def test_analyze_cli_on_chain_output(tmp_path, synthetic):
     arch_dir, _ = synthetic
     out = tmp_path / "out"
     cli.main(["--start", str(S), "--end", str(X), "--slippage", "1.0", "--archive-dir", str(arch_dir),
-              "--out", str(out), "--legacy-settlement", "--legacy-costs"])
+              "--out", str(out), "--legacy-settlement", "--legacy-costs", "--allow-holdout"])
     res_path = tmp_path / "analysis.json"
     assert an.main(["--trades", str(out), "--out", str(res_path)]) == 0
     res = json.load(open(res_path))

@@ -20,8 +20,10 @@ Archive: NseFoArchive(--archive-dir), default $NSE_FO_ARCHIVE_DIR or ~/nse_fo_ar
 input; its parquet cache lives inside the archive directory.
 
 Example:
-    python scripts/run_chain_backtest.py --start 2019-02-11 --end 2026-08-28 \
+    python scripts/run_chain_backtest.py --start 2019-02-11 --end 2023-12-31 \
         --slippage 1.0 1.5 2.0 --out /tmp/chain_out
+
+--end later than 2023-12-31 (the 2024+ holdout) is refused unless --allow-holdout is passed.
 """
 
 from __future__ import annotations
@@ -43,8 +45,17 @@ from backtester.chain_engine import ChainBacktest, ChainConfig  # noqa: E402
 from strategies.weekly_strategies import WeeklyExitArms  # noqa: E402
 
 DEFAULT_START = date(2019, 2, 11)
-DEFAULT_END = date(2026, 8, 28)
+DEV_END = date(2023, 12, 31)
+DEFAULT_END = DEV_END
 DEFAULT_MARKET_START = date(2009, 1, 1)
+
+
+def check_window(end: date, allow_holdout: bool) -> None:
+    """The 2024+ holdout is opened once, for one pre-registered candidate."""
+    if end > DEV_END and not allow_holdout:
+        raise SystemExit(
+            f"refusing --end {end}: later than the development window end {DEV_END}; "
+            "pass --allow-holdout only for the pre-registered holdout step")
 
 
 def _parse_date(s: str) -> date:
@@ -108,6 +119,8 @@ def main(argv=None) -> int:
                     help="first signal date considered (default %(default)s)")
     ap.add_argument("--end", type=_parse_date, default=DEFAULT_END,
                     help="last signal date considered; market data is pinned to this end (default %(default)s)")
+    ap.add_argument("--allow-holdout", action="store_true",
+                    help="permit --end after 2023-12-31 (pre-registered holdout step only)")
     ap.add_argument("--market-start", type=_parse_date, default=DEFAULT_MARKET_START,
                     help="start of market history loaded for 5-day returns (default %(default)s)")
     ap.add_argument("--slippage", type=float, nargs="+", default=[1.0],
@@ -135,6 +148,7 @@ def main(argv=None) -> int:
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
     a = ap.parse_args(argv)
+    check_window(a.end, a.allow_holdout)
     if a.start > a.end:
         ap.error("--start must not be after --end")
     if a.market_start > a.start:
