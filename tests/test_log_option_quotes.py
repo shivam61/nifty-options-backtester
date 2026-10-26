@@ -391,9 +391,8 @@ def test_cli_dry_run_and_summary_line(tmp_path, capsys):
     assert not log.exists()
 
 
-def test_committed_log_is_header_only_and_matches_columns():
+def test_committed_log_header_matches_columns():
     text = COMMITTED_LOG.read_text().splitlines()
-    assert len(text) == 1
     assert text[0].split(",") == LQ.COLUMNS
 
 

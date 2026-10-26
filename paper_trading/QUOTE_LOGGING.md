@@ -50,6 +50,21 @@ snapshot timestamp is already in the log).
   expiry, option-chain-v3 for the next expiry, allIndices), with about 1 s between them. Do not put
   it in a tight loop.
 
+### Run it yourself on any machine (no cron)
+
+```bash
+git clone git@github.com:shivam61/nifty-options-backtester.git && cd nifty-options-backtester
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # skip if .venv already exists
+scripts/run_quote_logger.sh --dry-run    # one fetch and print, writes nothing (add --force outside the window)
+scripts/run_quote_logger.sh              # real run: start on any weekday, it waits for 11:00 IST, snapshots every 10 min, stops after 13:00 IST
+```
+
+Use `nohup scripts/run_quote_logger.sh &` to survive a closed terminal. After each session commit
+the new rows (`git add paper_trading/tracker/QUOTE_LOG.csv && git commit`) so they are not lost,
+and run `.venv/bin/python scripts/summarize_quote_log.py` once you have 5+ dates. The dedupe key
+(`timestamp_ist` + `source`) is per file, so log from one machine per day to avoid duplicate rows
+when merging.
+
 ### Cron (owner's machine)
 
 The machine runs in UTC (`/etc/timezone` = `Etc/UTC`). IST is UTC+05:30, so the 11:00-13:00 IST
