@@ -52,3 +52,24 @@ Written 2026-10-26. Read this first when planning. Each task has a goal, inputs,
 - Keep `git status` clean on the repo; scratch stays in `~/edge_explore`.
 - If the logger is changed, rerun `tests/test_log_option_quotes.py` (36 tests).
 - Commit locally after each task; ask before pushing.
+
+## Update 2026-10-28: real spreads arrived, re-cost results (supersedes the T0-T2 gates above)
+Source: `paper_trading/tracker/QUOTE_LOG.csv`, 13 snapshots, only ONE clean in-window day (2026-10-28, VIX ~16.5, DTE 6, one expiry). Scratch work in `~/edge_explore/` (not in git): `prereg_recost.md`, `results_recost_harness.md`, `results_recost_scans.md`, `indep_results.md`, `basis_gap.md`.
+
+**Measured cost:** median half-spread / model slippage = 0.14x (short legs 0.18x, long 0.09x, ATM 0.46x, p90 structure legs 0.68x). Four-leg condor half-spread sum ~0.2 pts/unit vs ~2.2 in the model. Top-of-book depth at condor legs: median ~1,100 (short) / ~3,000-5,000 (long) units, min 65. T0 (field mapping) is confirmed.
+
+**Re-cost (frozen grid 0.15 / 0.30 primary / 0.60; 490 cells counted):**
+- Unconditional dev cadence net Rs/lot at m=0.15: IC09_200 +35, PCS09_200 +114, CCS09_200 -65. IC break-even ~0.4x, so the condor now survives costs; the filter matters less.
+- 16-rule LOYO + walk-forward harness (reproduces the original exactly at 1.5x; independently re-implemented and matched): drop variant passes 7 of 8 bar items at every m; the walk-forward CI includes zero (lower bound about -170 to -220) so it still FAILS the bar. Worst-case marking of dropped cycles passes 2 of 8 and selects a different rule (CCS09_200|F3). Selected rule in drop variant: IC09_200|VIX 16-20, 8 of 8 LOYO folds, BH q 0.03-0.06, shuffle-null false-pass 0. LOYO mean +616..+665 per traded cycle (87 of 396 cycles); entry-basis haircut of 1-2 pts/unit leaves +584 / +519 at m=0.30.
+- Scan re-run: 91 cells flip from negative at 1.5x to positive at 0.30/0.15, 0 pass the full bar. One monthly cell (DTE30 PCS11_400) passes dev but is -638 on 2024-26. Sixteen scan cells pass dev only; 2024-26 was not run for scans, and most were already positive at 1.5x and rejected for other reasons (OI/PCR entry-day OI is look-ahead; trend gates and holiday-shifted-expiry failed 2024-26 earlier).
+- Sizing at Rs 25L (m=0.30): 1 lot 0.29% CAGR, 20 lots ~5.0%. Achieved ~Rs 142 per lot per cycle vs ~Rs 5,500 per cycle needed for 12%. The 2% risk cap allows ~3 lots at ~Rs 12,940 max loss per lot. 12% CAGR is still not supported.
+
+**Verdict:** cost is no longer the blocker. The remaining blockers are statistical (walk-forward CI, dropped-cycle sensitivity, post-hoc VIX band, 2024-26 reused) and the unmeasured EOD-vs-intraday entry basis.
+
+**Next tasks (replace T1-T3):**
+1. Keep logging until >= 10 clean in-window dates across VIX <13, 13-20, >20 and both Monday/Tuesday entries; re-run `summarize_quote_log.py` per VIX bucket. The VIX >= 25 loss bucket has no coverage.
+2. Fetch bhavcopy for 2026-10-19, 21, 22, 23, 26, 27 and later logged days into `~/nse_fo_archive/daily/` (licence-restricted, never commit), then compute EOD-settle credit minus intraday mid credit (`basis_gap.md` lists what is needed). Intraday mid credit varies 1.1-1.4 pts/unit (condor) and 3.2-3.4 (PCS), more than the spread.
+3. Run 2024-26 for the 16 dev-pass scan cells that have a frozen definition, as one pre-registered batch, before anyone relies on them.
+4. Depth check: share of snapshots with bid/ask qty >= lots x 65 at the short strikes, to cap lots (2% cap is ~3 lots).
+5. Forward paper-trade IC09_200 at VIX 16-20 (frozen), log intended vs achieved fills. This is the only clean holdout.
+6. 12% route remains a user decision.
