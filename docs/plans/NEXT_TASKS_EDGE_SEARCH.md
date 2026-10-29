@@ -73,3 +73,15 @@ Source: `paper_trading/tracker/QUOTE_LOG.csv`, 13 snapshots, only ONE clean in-w
 4. Depth check: share of snapshots with bid/ask qty >= lots x 65 at the short strikes, to cap lots (2% cap is ~3 lots).
 5. Forward paper-trade IC09_200 at VIX 16-20 (frozen), log intended vs achieved fills. This is the only clean holdout.
 6. 12% route remains a user decision.
+
+## Update 2026-10-29: out-of-sample test of the repo's weekly ML entry + exit gates (NO DEMONSTRATED EDGE)
+
+Pre-registered (`~/edge_explore/prereg_ml_gate.md`, scratch) and run as walk-forward on real archive prices: fold Y = `WeeklyEntryLearner` + `ExitStrategyEngine` retrained to Dec 31 of Y-1 (`scripts/train_ml_cutoff.py`), test years 2022-2026 (to 2026-10-16), lots=10, same rule exits and strategy chooser. Gates are `ChainConfig.entry_gate` / `exit_gate` (default off, byte-identical output without them); adapters in `scripts/ml_gate_adapters.py` lag every series that closes after 15:30 IST by one row and raise on missing features. Run: `scripts/run_ml_gate_wf.py`. Preset seed pickles were not used (no recorded training window, so they leak).
+
+Primary cell EX (entry 0.55 + exit prob>=0.75 and pnl<-15%) at m=0.30: n=80 of 222 signals, mean +222 vs baseline +73 per trade, but paired delta per signal +5.7, year-clustered CI [-205, +354], positive in 2 of 5 years (2022 and 2026 only), 80th percentile of a random gate that skips as many signals, entry-score AUC against real win/loss 0.499 mean (0.449 pooled, years 0.37/0.38/0.53/0.75/0.46). Items passed: gated mean >0 at m=0.60, beats F3. Failed: CI, years, random-gate p95, AUC, worst-case marking. An independent re-computation (from the prereg only) reproduced the delta, CI, per-year signs and AUCs.
+- Entry gate alone (E 0.55): +30 per signal, CI [-141, +361], 91st percentile of the random null, AUC as above. The gain comes from taking fewer trades and a higher iron-condor share, not from ranking wins.
+- Exit gate alone (X): -7 per trade vs +73 baseline, paired delta about -109, CI [-224, +18]; it exits recoverable losers (the model learned its own "short strike within 2% while losing" labelling rule).
+- Caveats: trained on Black-Scholes simulator labels; exit model is out of domain (trained on 14-21 day verticals, scored on 5-session condors/PCS; `theta_estimate`, `dte_remaining` not faithful); trained on same-day macro but scored on lagged; `nifty_1d_return` is a constant 0 in train and inference (Amendment 1b); only 5 years and about 220 trades; 2024-26 was seen by earlier scans. Pass-bar item 6 (skips marked at the median loss) is unpassable by any filter that skips signals, a prereg design flaw that does not change the verdict (items 1, 2, 3, 7 fail on their own).
+- Sensitivities (0.50, 0.60 thresholds) are exploratory and also fail item 1.
+
+**Verdict:** the ML gates add no demonstrated edge over the rule-based weekly system; do not wire them into live decisions. The rule-based replay (+73..+133 per lot per trade at 0.30x, CI includes zero) is unchanged by this test.
