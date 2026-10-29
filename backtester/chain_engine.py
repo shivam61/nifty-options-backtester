@@ -43,7 +43,7 @@ import math
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import date, timedelta
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -76,8 +76,11 @@ SKIP_REASONS = (
     "vix_gate", "streak_cooldown", "strategy_gate", "fill_day_missing_archive",
     "no_expiry_in_dte_window", "expiry_not_listed_on_fill", "strike_not_listed",
     "illiquid_leg", "no_price", "no_spot_on_fill", "invalid_structure", "non_positive_credit",
-    "vix_floor",
+    "vix_floor", "ml_gate",
 )
+
+# Exit reason of a trade closed by ChainConfig.exit_gate (a plain string, not strategies.base.ExitReason).
+ML_EXIT_REASON = "ml_exit"
 
 
 @dataclass
@@ -108,6 +111,13 @@ class ChainConfig:
     # STT / exchange rates; GST on brokerage + exchange + SEBI; entry and exit turnover charged
     # separately). True: legacy CostModel round-trip formula on the net credit (GST on brokerage only).
     legacy_costs: bool = False
+    # ML gate hooks (None = no-op; output identical to a run without them). Injected by the caller;
+    # this module loads no model. entry_gate(date, strategy_name, vix, market_row) -> (allow, score),
+    # called on the signal date after the strategy gate; market_row = {nifty_return_5d, vix_change_5d}.
+    # exit_gate(ctx) -> (exit_now, score), called on each open session with dte > 0 (ctx keys are
+    # built in ChainBacktest._gate_ctx). Scores are recorded on the trade as entry/exit_gate_score.
+    entry_gate: Optional[Callable] = None
+    exit_gate: Optional[Callable] = None
 
     @property
     def fully_legacy(self) -> bool:
@@ -306,6 +316,7 @@ class ChainBacktest:
             "stale_marks": 0, "last_marks": [s for s in entry_settle], "expiry_dev_max": None,
             "last_spot": spot,
             "dte_at_signal": (expiry - pend["signal_date"]).days,
+            "entry_gate_score": pend.get("entry_gate_score"),
         }
 
     @staticmethod
@@ -388,11 +399,43 @@ class ChainBacktest:
             action, r2 = strat.should_exit(trade, spot, vix, dte, arms=self.cfg.exit_arms)
             if action == TradeAction.EXIT or dte <= 0:
                 should_exit, reason = True, (r2 if r2 else ExitReason.EXPIRY)
+        if self.cfg.exit_gate is not None and dte > 0:
+            # ML exit is an OR on top of the rules (rules untouched; gate sees rule_exit).
+            ml_exit, ml_score = self.cfg.exit_gate(
+                self._gate_ctx(st, d, spot, vix, dte, holding, rule_exit=should_exit))
+            st["exit_gate_score"] = float(ml_score)
+            if bool(ml_exit) and not should_exit:
+                should_exit, reason = True, ML_EXIT_REASON
         if should_exit:
             return {"date": d, "spot": spot, "vix": vix, "reason": reason, "dte": dte,
                     "marks": marks, "raw_marks": raw_marks, "holding_sessions": holding}
         update_tracker(st["tracker"], trade, spot)
         return None
+
+    def _gate_ctx(self, st: dict, d: date, spot: float, vix: float, dte: int, holding: int,
+                  rule_exit: bool) -> dict:
+        # All values are as of session d's close. P&L uses the entry fills and today's settle
+        # marks, before exit slippage and fees. mark_pnl_pct_credit = mark_pnl_rs / entry credit Rs.
+        # peak_pnl_rs = running max of mark P&L (tracker, floored at 0 at fill) including today.
+        # short_dist_pct = min |spot - short strike| / spot. holding_sessions = trading sessions since
+        # fill (rule convention); holding_days = calendar days since fill. rule_exit = rules fired today.
+        trade = st["trade"]
+        qty = trade.lots * trade.lot_size
+        mark_pnl_rs = sum(leg.pnl for leg in trade.legs)
+        credit_rs = trade.net_credit * qty
+        shorts = [(leg.option_type, leg.strike) for leg in trade.legs if leg.is_short]
+        short_dist = min(abs(spot - k) for _, k in shorts) / spot if shorts and spot > 0 else float("nan")
+        return {
+            "date": d, "trade": trade, "strategy": st["strat_name"], "fill_date": st["fill_date"],
+            "dte": dte, "holding_sessions": holding, "holding_days": (d - st["fill_date"]).days,
+            "entry_spot": trade.entry_spot, "spot": spot,
+            "entry_vix": st["signal_vix"], "vix": vix,
+            "entry_credit_rs": credit_rs, "mark_pnl_rs": mark_pnl_rs,
+            "mark_pnl_pct_credit": mark_pnl_rs / credit_rs if credit_rs > 0 else float("nan"),
+            "peak_pnl_rs": max(st["tracker"].peak_pnl_per_unit, trade.pnl_per_unit) * qty,
+            "short_strikes": shorts, "short_dist_pct": short_dist,
+            "rule_exit": bool(rule_exit),
+        }
 
     def _close(self, st: dict, ex: dict) -> dict:
         trade = st["trade"]
@@ -462,7 +505,8 @@ class ChainBacktest:
             "signal_date": str(st["signal_date"]), "fill_date": str(st["fill_date"]),
             "entry_date": str(st["fill_date"]), "exit_date": str(d), "expiry": str(st["expiry"]),
             "lots": lots, "pnl": pnl, "total_pnl": pnl, "pnl_per_lot": pnl / lots,
-            "exit_reason": ex["reason"].value if ex["reason"] else "unknown",
+            "exit_reason": (ex["reason"] if isinstance(ex["reason"], str) else
+                            ex["reason"].value if ex["reason"] else "unknown"),
             "entry_spot": trade.entry_spot, "exit_spot": spot,
             "entry_vix": st["signal_vix"], "exit_vix": vix,
             "dte_at_signal": st["dte_at_signal"], "dte_at_fill_raw": (st["expiry"] - st["fill_date"]).days,
@@ -475,6 +519,10 @@ class ChainBacktest:
             "legs": legs_out, "slip_multiplier": self.cfg.slippage_multiplier,
         }
         rec.update(extra)  # new-model fields; absent in fully-legacy mode (schema unchanged)
+        if self.cfg.entry_gate is not None:
+            rec["entry_gate_score"] = st["entry_gate_score"]
+        if self.cfg.exit_gate is not None:
+            rec["exit_gate_score"] = st.get("exit_gate_score")  # last evaluated score (None if never)
         return rec
 
     # ------------------------------------------------------------ main loop
@@ -541,11 +589,22 @@ class ChainBacktest:
             if strat.should_enter(spot_sig, vix, market_data) != TradeAction.ENTER:
                 self._skip("strategy_gate", d, strategy=name)
                 continue
+            gate_score = gate_allow = None
+            if self.cfg.entry_gate is not None:
+                gate_allow, gate_score = self.cfg.entry_gate(d, name, vix, market_data)
+                gate_allow, gate_score = bool(gate_allow), float(gate_score)
+                if not gate_allow:
+                    self._skip("ml_gate", d, strategy=name, vix=vix,
+                               entry_gate_score=gate_score, entry_gate_allow=False)
+                    continue
             fill_day = self._next_session(d)
             if fill_day is None:
                 self._skip("fill_day_missing_archive", d, note="no_next_session")
                 continue
             pending = {"signal_date": d, "fill_day": fill_day, "signal_vix": vix, "strategy": name}
+            if self.cfg.entry_gate is not None:
+                pending["entry_gate_score"] = gate_score
+                pending["entry_gate_allow"] = gate_allow
         # force-close anything still open at the end of the window (diagnostic only)
         if open_st is not None:
             self.diag["open_at_end"] += 1
