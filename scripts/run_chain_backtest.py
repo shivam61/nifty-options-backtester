@@ -144,6 +144,16 @@ def main(argv=None) -> int:
                     help="legacy: CostModel round-trip fee formula on the net credit (GST on brokerage only)")
     ap.add_argument("--fixed-capital-protection", action="store_true",
                     help="legacy: capital-protection stop uses a fixed Rs20,000 total at any lot count")
+    ap.add_argument("--entry-gate-model", type=Path, default=None,
+                    help="walk-forward fold root (<root>/<Y>/weekly_entry.pkl): ML entry gate, default off")
+    ap.add_argument("--entry-gate-threshold", type=float, default=0.55,
+                    help="skip a signal when the entry gate score is below this (default %(default)s)")
+    ap.add_argument("--exit-gate-model", type=Path, default=None,
+                    help="walk-forward fold root (<root>/<Y>/exit_model.pkl): ML exit gate, default off")
+    ap.add_argument("--exit-gate-prob", type=float, default=0.75,
+                    help="exit gate fires when exit probability >= this (default %(default)s)")
+    ap.add_argument("--exit-gate-pnl-pct", type=float, default=-15.0,
+                    help="and mark P&L %% of credit is below this (default %(default)s)")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
@@ -175,6 +185,23 @@ def main(argv=None) -> int:
         "cash_settlement": not a.legacy_settlement,
         "legacy_costs": a.legacy_costs,
     }
+    if a.entry_gate_model is not None or a.exit_gate_model is not None:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        import ml_gate_adapters as mga  # noqa: E402
+
+        gate_market = mga.load_gate_market(a.end, a.market_start)
+        if a.entry_gate_model is not None:
+            overrides["entry_gate"] = mga.make_entry_gate(
+                a.entry_gate_model, gate_market, a.entry_gate_threshold)
+        if a.exit_gate_model is not None:
+            overrides["exit_gate"] = mga.make_exit_gate(
+                a.exit_gate_model, gate_market, a.exit_gate_prob, a.exit_gate_pnl_pct)
+        summary["ml_gates"] = {
+            "entry_model": str(a.entry_gate_model) if a.entry_gate_model else None,
+            "entry_threshold": a.entry_gate_threshold if a.entry_gate_model else None,
+            "exit_model": str(a.exit_gate_model) if a.exit_gate_model else None,
+            "exit_prob": a.exit_gate_prob if a.exit_gate_model else None,
+            "exit_pnl_pct": a.exit_gate_pnl_pct if a.exit_gate_model else None}
     summary["arms"] = {"pcs_put_sd": a.pcs_put_sd, "breach_stop": not a.no_breach_stop,
                        "ic_hold_to_expiry": a.ic_hold_to_expiry, "hold_to_expiry": a.no_early_exits}
     summary["cfg"] = {"min_vix_floor": a.min_vix, "capital_protection_per_lot": not a.fixed_capital_protection}
