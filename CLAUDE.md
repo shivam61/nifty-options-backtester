@@ -171,7 +171,7 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
 
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
-- **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 (`monthly_entry_threshold=0.50`) is active and blocks ~43% of days. Don't re-enable bypass unless AUC drops below 0.55.
+- **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 is a trailing-percentile gate (`monthly_gate8_trailing_pctile=0.80`, prior scores only; the fixed 0.50 cap passed 0 days) and blocks ~74% of days; Run #69 = 129 monthly trades. Don't re-enable bypass unless AUC drops below 0.55.
 
 - **Capital utilization ~48%** — At default settings with 50/50 split and Gate 8 at 0.50, ~52% of capital days are idle. Main levers: `vix_simultaneous_cap` (25), `monthly_entry_threshold` (0.50), `dd_recovery_pct` (0.16).
 

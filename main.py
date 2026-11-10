@@ -677,7 +677,9 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"  Loaded {len(data)} trading days")
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
-    wc = WeeklyBacktestConfig(weekly_trade_start_date=weekly_start)
+    # era_aware_signal_day: Thursday-era signals fire Thursday/fill Friday at 6 DTE instead of
+    # ~88% being dropped at 2 DTE (CAGR 0.12% -> 0.80% at Rs 25L, BS-priced, indicative only).
+    wc = WeeklyBacktestConfig(weekly_trade_start_date=weekly_start, era_aware_signal_day=True)
     exit_engine = None
     entry_model = None
     weekly_risk_engine = None

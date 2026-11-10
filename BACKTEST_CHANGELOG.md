@@ -882,3 +882,135 @@ Per-lot net expectancy (Rs), lots=10:
 - Break-even slippage multiplier: baseline ~0.44x, F1 ~1.42x, F2 ~0.80x. About 91% of F1's earlier shortfall was the settlement-model error.
 - Pre-registered rule at 1.5x (beats baseline AND > 0 AND year-cluster CI lower bound > 0 AND >= 4/5 positive years): F1 FAILS (-10; year CI [-218, +189]; 3/5 years), F2 FAILS (-183; 2/5 years). Holdout not evaluated.
 - Open: brokerage on expired/exercised contracts (Rs20/order) is not modelled; exchange/exercise-STT history for 2019-2022 and pre-2020-07 stamp duty are proxies.
+
+---
+## Run #68 — refresh_2026-11-08 — [COMBINED]
+**Date**: 2026-11-08 11:36  
+**Git**: `eeb6e26`  
+**Params**: 2009-01-01 to 2026-11-08 | Capital ₹500,000 | Lots 15
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 0.23% |
+| Monthly P&L | ₹0 |
+| Weekly P&L | ₹20,207 |
+| Monthly Win Rate | 0.0% |
+| Weekly Win Rate | 64.8% |
+| Total P&L | ₹20,207 |
+| Sharpe | 0.16 |
+| Sortino | 0.04 |
+| Calmar | 0.05 |
+| Max Drawdown | 4.7% |
+| Win Rate | 64.8% |
+| Total Trades | 54 |
+| Profit Factor | 1.24 |
+| Best Trade | ₹11,246 |
+| Worst Trade | ₹-16,043 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 0 |
+| Weekly Trades | 54 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 0 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 6.3% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 1 | 1.9% | ₹-16,043 |
+| Loss (-10k to 0) | 18 | 33.3% | ₹-3,694 |
+| Small Win (0 to 10k) | 33 | 61.1% | ₹2,466 |
+| Medium Win (10k to 25k) | 2 | 3.7% | ₹10,682 |
+| Large Win (>= 25k) | 0 | 0.0% | ₹0 |
+| Median | - | - | ₹946 |
+| P10 / P90 | - | - | ₹-4,887 / ₹4,354 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-06-08 | weekly_ic | dte_limit | ₹11,246 |
+| 2026-07-27 | weekly_ic | dte_limit | ₹10,117 |
+| 2026-02-23 | weekly_ic | dte_limit | ₹9,887 |
+| 2023-01-23 | weekly_ic | trailing_delta | ₹9,095 |
+| 2024-04-08 | weekly_pcs | profit_target | ₹4,467 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-16,043 |
+| 2026-09-09 | weekly_pcs | stop_loss | ₹-6,276 |
+| 2026-01-20 | weekly_pcs | stop_loss | ₹-5,609 |
+| 2023-06-23 | weekly_pcs | stop_loss | ₹-5,491 |
+| 2021-10-28 | weekly_ic | trailing_delta | ₹-5,306 |
+
+
+---
+## Run #69 — gate8 trailing P80 + era-aware weekly, 25L/30 lots (BS-priced) — [COMBINED]
+**Date**: 2026-11-10 23:50  
+**Git**: `eeb6e26`  
+**Params**: 2009-01-01 to 2026-11-10 | Capital ₹2,500,000 | Lots 30
+
+### Key Metrics
+| Metric | Value |
+|--------|------:|
+| CAGR | 1.08% |
+| Monthly P&L | ₹142,457 |
+| Weekly P&L | ₹372,480 |
+| Monthly Win Rate | 57.4% |
+| Weekly Win Rate | 71.5% |
+| Total P&L | ₹514,938 |
+| Sharpe | 0.84 |
+| Sortino | 0.52 |
+| Calmar | 0.35 |
+| Max Drawdown | 3.1% |
+| Win Rate | 67.8% |
+| Total Trades | 497 |
+| Profit Factor | 1.60 |
+| Best Trade | ₹22,589 |
+| Worst Trade | ₹-42,417 |
+
+### Engine Stats
+| Stat | Count |
+|------|------:|
+| Monthly Trades | 129 |
+| Weekly Trades | 368 |
+| Cross-track DD Blocks | 0 |
+| Weekly VIX Gate Blocks | 2 |
+| Weekly Open Cap Blocks | 0 |
+| Emergency Weekly Exits | 0 |
+| Capital Utilization | 38.9% |
+
+### Weekly Trade Distribution
+| Bucket | Count | Share | Avg P&L |
+|--------|------:|------:|--------:|
+| Large Loss (< -10k) | 16 | 4.3% | ₹-21,261 |
+| Loss (-10k to 0) | 89 | 24.2% | ₹-3,561 |
+| Small Win (0 to 10k) | 246 | 66.8% | ₹3,179 |
+| Medium Win (10k to 25k) | 17 | 4.6% | ₹14,566 |
+| Large Win (>= 25k) | 0 | 0.0% | ₹0 |
+| Median | - | - | ₹1,527 |
+| P10 / P90 | - | - | ₹-5,567 / ₹7,587 |
+
+### Weekly Top Winners
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2026-05-11 | weekly_ic | dte_limit | ₹22,589 |
+| 2024-01-10 | weekly_ic | dte_limit | ₹18,980 |
+| 2024-10-16 | weekly_ic | dte_limit | ₹18,584 |
+| 2024-02-28 | weekly_ic | dte_limit | ₹18,561 |
+| 2024-02-21 | weekly_ic | dte_limit | ₹17,415 |
+
+### Weekly Top Losers
+| Exit Date | Strategy | Exit Reason | P&L |
+|-----------|----------|-------------|----:|
+| 2025-04-07 | weekly_ic | stop_loss | ₹-42,417 |
+| 2024-03-13 | weekly_pcs | stop_loss | ₹-34,829 |
+| 2025-03-18 | weekly_ic | stop_loss | ₹-31,446 |
+| 2020-01-06 | weekly_pcs | stop_loss | ₹-30,226 |
+| 2026-07-08 | weekly_pcs | stop_loss | ₹-26,675 |
+
