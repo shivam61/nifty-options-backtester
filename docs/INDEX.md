@@ -26,6 +26,7 @@
 - **[Baseline Learnings](BASELINE_LEARNINGS.md)** - Phase transitions, key findings, and standards (start here)
 - **[Experiment Index](EXPERIMENT_INDEX.md)** - Quick reference for all runs, experiments, and decision framework
 - **[Combined Backtest Mode](BACKTEST_COMBINED_MODE.md)** - Technical reference for combined monthly+weekly backtester
+- **[Strategy Evaluation](STRATEGY_EVAL.md)** - Pass-rule scorecard for option-selling strategies (CLI `scripts/eval_strategy.py`)
 
 ## Analysis & Results
 
