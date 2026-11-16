@@ -91,6 +91,36 @@ def per_year_table(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+VIX_BUCKETS = (("<13", -np.inf, 13.0), ("13-16", 13.0, 16.0), ("16-20", 16.0, 20.0),
+               ("20-25", 20.0, 25.0), ("25+", 25.0, np.inf))
+
+
+def vix_bucket_table(df: pd.DataFrame) -> dict:
+    """Per entry-VIX bucket (lower bound inclusive): n, share, expectancy and win rate per lot.
+
+    Uses the optional `entry_vix` column. If the column is absent or has no finite value, returns
+    available=False and the report prints n/a. Trades without a VIX reading are counted in unknown_vix_n.
+    Win rate is context only.
+    """
+    if df.empty or "entry_vix" not in df.columns:
+        return {"available": False, "rows": [], "unknown_vix_n": int(len(df))}
+    vix = df["entry_vix"].to_numpy(float)
+    known = np.isfinite(vix)
+    if not known.any():
+        return {"available": False, "rows": [], "unknown_vix_n": int(len(df))}
+    pl = per_lot(df)
+    rows = []
+    for label, lo, hi in VIX_BUCKETS:
+        m = known & (vix >= lo) & (vix < hi)
+        n = int(m.sum())
+        rows.append({
+            "bucket": label, "n": n, "share": n / len(df),
+            "expectancy_per_lot": float(pl[m].mean()) if n else float("nan"),
+            "win_rate": float((pl[m] > 0).mean()) if n else float("nan"),
+        })
+    return {"available": True, "rows": rows, "unknown_vix_n": int((~known).sum())}
+
+
 def exit_reason_mix(df: pd.DataFrame) -> pd.DataFrame:
     """Count, share and mean per-lot P&L for each exit reason."""
     if df.empty:

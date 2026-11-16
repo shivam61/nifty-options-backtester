@@ -5,8 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 from strategy_eval.hedge import hedge_scorecard
-from strategy_eval.metrics import core_metrics, exit_reason_mix, per_year_table, sizing
-from strategy_eval.stats import DEFAULT_SEED, N_BOOT_DEFAULT, TestRegistry
+from strategy_eval.metrics import core_metrics, exit_reason_mix, per_year_table, sizing, vix_bucket_table
+from strategy_eval.stats import DEFAULT_SEED, N_BOOT_DEFAULT, TestRegistry, resolve_registry
 from strategy_eval.stress import HAIRCUTS_DEFAULT, SLIPPAGE_DEFAULT, stress_grid, stress_trades
 from strategy_eval.verdict import (
     VERDICT_HAIRCUT, VERDICT_SLIPPAGE, apply_windows, evaluate_pass_rule,
@@ -18,7 +18,7 @@ def run_evaluation(candidate: pd.DataFrame, baseline: pd.DataFrame | None = None
                    allow_holdout: bool = False, registry: TestRegistry | None = None,
                    n_boot: int = N_BOOT_DEFAULT, seed: int = DEFAULT_SEED) -> dict:
     """Run every section of the evaluation on normalised tables. Returns a plain dict."""
-    registry = registry if registry is not None else TestRegistry()
+    registry = resolve_registry(registry)     # None -> logs/eval_registry.json
     verdict = evaluate_pass_rule(candidate, baseline, allow_holdout=allow_holdout, registry=registry,
                                  name=name, n_boot=n_boot, seed=seed)
     cand_w, _ = apply_windows(candidate, allow_holdout)
@@ -35,6 +35,7 @@ def run_evaluation(candidate: pd.DataFrame, baseline: pd.DataFrame | None = None
         },
         "stress_grid": stress_grid(cand_w, HAIRCUTS_DEFAULT, SLIPPAGE_DEFAULT).to_dict("records"),
         "per_year": per_year_table(cand_v).to_dict("records"),
+        "vix_buckets": vix_bucket_table(cand_v),
         "exit_mix": exit_reason_mix(cand_v).to_dict("records"),
         "sizing": sizing(cand_v, capital, risk_cap),
         "scorecard": None,

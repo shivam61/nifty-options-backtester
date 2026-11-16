@@ -14,7 +14,8 @@ Units and conventions (every Rs column is a TOTAL for the trade at `lots` lots):
   cost_rs          all costs, Rs (fees, slippage, hedge costs)
   pnl_net_rs       net P&L, identity: pnl_net_rs = pnl_gross_rs - cost_rs (within 1 Rs)
   exit_reason      why the trade closed (string; 'unknown' if not recorded)
-  entry_vix        India VIX at entry (NaN if not recorded)
+  entry_vix        India VIX at entry (NaN if not recorded). Optional; the VIX-bucket table in the
+                   report reads it and prints n/a when it is absent or empty.
   hedge_cost_rs    part of cost_rs attributable to a hedge (0 for unhedged trades)
   slippage_rs      optional. Part of the costs/fills that is slippage. Lets the stress scale
                    slippage alone. NaN = unknown: stress then scales the whole cost_rs.

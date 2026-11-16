@@ -63,7 +63,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=None, help="markdown report path (default logs/eval_<name>.md)")
     ap.add_argument("--json-out", type=Path, default=None, help="JSON summary path (default: --out with .json)")
     ap.add_argument("--allow-holdout", action="store_true",
-                    help=f"include entries after {DEV_END} (pre-registered holdout step only)")
+                    help=f"include entries after {DEV_END} (pre-registered holdout step only). Each use appends "
+                         "a row to logs/holdout_ledger.json and counts as a registry cut.")
     ap.add_argument("--name", type=str, default=None, help="strategy label (default: candidate file stem)")
     ap.add_argument("--adapter", choices=["auto", "normal", "chain", "run69", "h9"], default="auto",
                     help="input format (default: auto-detect)")
@@ -71,7 +72,8 @@ def main(argv=None) -> int:
                     help="credit haircut (%%) already baked into an h9 CSV (regime A = 30). Default 0.")
     ap.add_argument("--lot-size", type=int, default=65, help="lot size for chain-engine records (default 65)")
     ap.add_argument("--registry", type=Path, default=None,
-                    help="JSON file of cuts examined; loaded, extended and saved (Holm runs over all of them)")
+                    help="JSON file of cuts examined; every cut is written here automatically "
+                         "(default logs/eval_registry.json). Holm runs over all cuts in it.")
     ap.add_argument("--n-boot", type=int, default=N_BOOT_DEFAULT)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     a = ap.parse_args(argv)
@@ -83,11 +85,12 @@ def main(argv=None) -> int:
     if a.baseline is not None:
         base = load_trades(a.baseline, adapter=a.adapter, name="baseline",
                            input_haircut_pct=a.input_haircut_pct, lot_size=a.lot_size)
-    registry = TestRegistry.load(a.registry) if a.registry else TestRegistry()
+    # Cuts are written to the registry file as they are recorded; save() also creates the file on a run
+    # that recorded nothing new.
+    registry = TestRegistry.open(a.registry)
     res = run_evaluation(cand, base, name=name, capital=a.capital, risk_cap=a.risk_cap,
                          allow_holdout=a.allow_holdout, registry=registry, n_boot=a.n_boot, seed=a.seed)
-    if a.registry:
-        registry.save(a.registry)
+    registry.save()
 
     out = a.out or (REPO_ROOT / "logs" / f"eval_{name}.md")
     out = Path(out)

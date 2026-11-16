@@ -102,9 +102,19 @@ def render_markdown(res: dict, source: str = "", baseline_source: str = "") -> s
                  f"{boot.get('n_boot')} draws, seed {boot.get('seed')}")
     lines.append(f"- Non-overlapping subsample n={tt.get('n')}, t={_f(tt.get('t'), 2)}, "
                  f"one-sided p={_f(tt.get('p_one_sided'), 4)}, Holm-adjusted p={_f(v.get('p_holm'), 4)}")
+    blk = v.get("block_bootstrap") or {}
+    if blk:
+        lines.append(f"- Monthly-block bootstrap 95% CI of per-lot expectancy (verdict cost, information only, "
+                     f"not the C3 pass criterion): [{_f(blk.get('lo'), 1, True)}, {_f(blk.get('hi'), 1, True)}] Rs/lot, "
+                     f"{blk.get('n_clusters')} months, {blk.get('n_boot')} draws, seed {blk.get('seed')}")
     reg = v["registry"]
-    lines.append(f"- Multiple testing: **{reg['n_cuts']} cuts** recorded in this run's registry "
-                 f"(Holm applied over all of them). Pass the same `--registry` file on every run to accumulate.")
+    lines.append(f"- Multiple testing: **{reg['n_cuts']} cuts** recorded in the registry "
+                 f"(`{reg.get('path') or 'in memory'}`, written automatically; Holm applied over all cuts with a p-value).")
+    hl = v.get("holdout_look")
+    if hl:
+        lines.append(f"- Holdout look #{hl['index']} recorded in the holdout ledger at {hl['timestamp']} "
+                     f"(window {hl['window']['holdout_from']} onward; "
+                     f"{hl['window']['candidate_holdout_trades']} candidate holdout trades).")
     lines.append("")
     yc = v.get("year_consistency") or {}
     if yc:
@@ -152,6 +162,23 @@ def render_markdown(res: dict, source: str = "", baseline_source: str = "") -> s
     rows = [[e["exit_reason"], str(e["n"]), _pct(e["share"]), _f(e["mean_per_lot"], 1, True)]
             for e in res["exit_mix"]]
     lines.append(_table(["exit reason", "n", "share", "mean per lot"], rows) if rows else "_no trades_")
+    lines.append("")
+
+    lines.append("## VIX bucket breakdown (verdict cost, entry VIX)")
+    lines.append("")
+    vb = res.get("vix_buckets") or {"available": False}
+    if vb.get("available"):
+        rows = [[r["bucket"], str(r["n"]), _pct(r["share"]), _f(r["expectancy_per_lot"], 1, True),
+                 _pct(r["win_rate"])] for r in vb["rows"]]
+        lines.append(_table(["entry VIX", "n", "share", "expectancy per lot", "win rate (context)"], rows))
+        lines.append("")
+        if vb.get("unknown_vix_n"):
+            lines.append(f"{vb['unknown_vix_n']} trades have no entry VIX and are not in any bucket.")
+            lines.append("")
+    else:
+        lines.append("n/a: the trade table has no entry_vix values (optional column).")
+        lines.append("")
+    lines.append("Regime is read as the VIX bucket here; the table has no separate regime column.")
     lines.append("")
 
     s = res["sizing"]

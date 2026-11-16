@@ -15,7 +15,17 @@ python scripts/eval_strategy.py ... --allow-holdout          # 2024+ holdout: on
 ```
 
 Writes a markdown report (default `logs/eval_<name>.md`, gitignored) and a JSON summary (same path, `.json`).
-`--registry` keeps every cut examined across runs, so Holm correction counts all of them.
+
+**Auto-registration.** Every cut is written to the registry file as it is recorded: the verdict cut of each
+`run_evaluation` / `evaluate_pass_rule` call, and each holdout look. The default is `logs/eval_registry.json`
+(`--registry` overrides it). Holm correction runs over every cut in that file. Re-running the same `--name`
+on the same data is a no-op; the same name with different data is refused, so use a new `--name` for a changed
+candidate.
+
+**Holdout ledger.** Each `--allow-holdout` (or `allow_holdout=True`) call appends one row to
+`logs/holdout_ledger.json` before any holdout trade is scored: `{index, timestamp, candidate, window, prev_hash, hash}`.
+The file is hash-chained and append-only. Earlier bytes are never rewritten, and `read_ledger()` raises `LedgerError`
+if a row is edited or removed. It is tamper-evident, not tamper-proof. Each look is also a registry cut.
 
 ## Trade schema
 
@@ -75,10 +85,19 @@ Verdicts: `PASS`, `FAIL`, `INSUFFICIENT_DATA` (no baseline, fewer than 30 trades
   from realised per-lot losses. Sizing uses the verdict window only.
 - Hedge scorecard (with `--baseline`): paired difference with bootstrap CI, hedge cost as % of credit, P5 and
   worst change, and a decision: drop the hedge when its cost exceeds the tail loss it removes.
+- Block bootstrap: a monthly-block 95% CI of expectancy is shown beside the year-cluster CI. It is
+  information only. Criterion C3 stays on the year-cluster lower bound.
+- VIX-bucket table (verdict cost): buckets <13, 13-16, 16-20, 20-25, 25+ on the optional `entry_vix` column.
+  Prints n/a when the column is absent or empty. Regime is read as the VIX bucket.
+- Helpers in `strategy_eval/stats.py` for a grid of candidates (not wired into the verdict): `deflated_sharpe_ratio`
+  and `deflated_sharpe_grid` (Bailey and Lopez de Prado 2014, per-trade Sharpe, N = grid size), and
+  `white_reality_check` (White 2000 max-statistic test, circular block bootstrap, centred).
 
 ## Tests
 
-`tests/test_strategy_eval.py` (synthetic data, no network, about 10 s). It covers the schema, hand-computed
-metrics, bootstrap determinism, Holm against a worked example, each pass-rule criterion failing in turn, the
-BS cap, the holdout guard, the hedge scorecard, adapters, and the CLI. Smoke tests run on the scratch research
-files when present and skip otherwise.
+`tests/test_strategy_eval.py` and `tests/test_strategy_eval_v2.py` (synthetic data, no network, about 30 s).
+They cover the schema, hand-computed metrics, bootstrap determinism, Holm against a worked example, each pass-rule
+criterion failing in turn, the BS cap, the holdout guard, the hedge scorecard, adapters, the CLI, auto-registration,
+the holdout ledger (second look, tamper detection), the block bootstrap, the VIX table with and without the column,
+and deflated Sharpe and White's check on known inputs. Autouse fixtures redirect the registry and ledger to a temp
+directory, so tests never touch `logs/`. Smoke tests run on the scratch research files when present and skip otherwise.

@@ -24,6 +24,17 @@ from strategy_eval.stats import nonoverlapping_subsample
 from strategy_eval.verdict import apply_windows
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def _isolated_registry_and_ledger(tmp_path, monkeypatch):
+    """Auto-registration writes to logs/ by default. Tests get their own files so that real cuts from
+    earlier runs never change a test's Holm family or holdout count."""
+    from strategy_eval import holdout_ledger, stats
+    monkeypatch.setattr(stats, "DEFAULT_REGISTRY_PATH", tmp_path / "isolated_registry.json")
+    monkeypatch.setattr(holdout_ledger, "DEFAULT_LEDGER_PATH", tmp_path / "isolated_ledger.json")
+
+
 SCRATCH = Path(os.environ.get(
     "STRATEGY_EVAL_SCRATCH",
     "C:/Users/user/AppData/Local/Temp/claude/ab792cd6a65eab7a/bbf3a506-204c-4d5c-917d-3affd979f39a/scratchpad"))
