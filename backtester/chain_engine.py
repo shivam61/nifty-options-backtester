@@ -34,6 +34,19 @@ Costs:
     engine's entry fill used 0.75x of this, so 1.0x here is harsher than the engine's entry.
 
 Lots: fixed cfg.lots (default 1). Results are reported per lot; no budget-based sizing.
+
+Capital mode (opt-in, ChainConfig.capital_mode=True; default False leaves every output unchanged):
+  - the engine still simulates one lot per trade, so every per-lot field (pnl, pnl_per_lot, fees,
+    legs, marks) is identical to the default path and the trade table is the same
+  - at fill, the trade is sized: max_loss_per_lot = (widest wing - net credit) x lot_size, and
+    margin_per_lot = margin_proxy(...) (default: max_loss_per_lot, a SPAN-like proxy for defined-risk
+    spreads, NOT exchange SPAN). sized_lots = floor(min(risk_cap_pct x capital / max_loss_per_lot,
+    margin_cap_pct x capital / margin_per_lot, max_lots)); 0 is a 'sizing_zero' skip
+  - sized P&L = pnl_per_lot x sized_lots (fees scale with lots too; brokerage is per order, so this
+    slightly overstates it); equity = capital_rs + realised + open mark-to-market
+  - kill switch: equity at or below peak x (1 - kill_dd_pct) halts new entries ('kill_switch' skip)
+    and force-closes an open trade on that session ('capital_kill'). Absorbing: no re-arm.
+  - ChainBacktest.capital_summary() reports the portfolio metrics (see that method)
 """
 
 from __future__ import annotations
@@ -81,6 +94,11 @@ SKIP_REASONS = (
 
 # Exit reason of a trade closed by ChainConfig.exit_gate (a plain string, not strategies.base.ExitReason).
 ML_EXIT_REASON = "ml_exit"
+# Exit reason of an open trade force-closed by the capital-mode kill switch.
+KILL_EXIT_REASON = "capital_kill"
+# Skip reasons that only occur in capital mode (the default mode never produces them).
+CAPITAL_SKIP_REASONS = ("sizing_zero", "invalid_max_loss", "kill_switch")
+TRADING_DAYS_PER_YEAR = 252
 
 
 @dataclass
@@ -118,6 +136,17 @@ class ChainConfig:
     # built in ChainBacktest._gate_ctx). Scores are recorded on the trade as entry/exit_gate_score.
     entry_gate: Optional[Callable] = None
     exit_gate: Optional[Callable] = None
+    # Capital-aware mode (opt-in). False = per-lot results only, identical to the default path.
+    # Requires lots == 1. capital_rs is the sizing and equity base (no compounding of sizing).
+    # margin_proxy(max_loss_per_lot_rs, trade) -> margin per lot Rs; None = margin equals max loss per
+    # lot (SPAN-like proxy for defined-risk spreads; not exchange SPAN).
+    capital_mode: bool = False
+    capital_rs: float = 500_000.0
+    risk_cap_pct: float = 0.10
+    margin_cap_pct: float = 0.20
+    margin_proxy: Optional[Callable] = None
+    max_lots: int = 30
+    kill_dd_pct: float = 0.20
 
     @property
     def fully_legacy(self) -> bool:
@@ -161,6 +190,122 @@ class ChainBacktest:
         self.index_vs_nifty: list[float] = []
         self.signal_days = 0
         self.signals_while_open = 0
+        # capital mode state (inert when cfg.capital_mode is False)
+        self._capital_on = bool(cfg.capital_mode)
+        if self._capital_on and cfg.lots != 1:
+            raise ValueError("capital_mode requires ChainConfig.lots == 1 (sizing is applied per trade)")
+        self.kill_active = False
+        self.kill_date: Optional[date] = None
+        self._realized_rs = 0.0                  # sum of sized P&L of closed trades
+        self._peak_equity = float(cfg.capital_rs)
+        self.capital_curve: list[tuple] = []     # (date, equity, margin_used) per session in [start, end]
+
+    # ------------------------------------------------------------ capital mode helpers
+    def _capital_sizing(self, trade: Trade, credit_unit: float) -> tuple:
+        """(sized_lots, max_loss_per_lot_rs, margin_per_lot_rs, skip_reason or None).
+
+        max loss per unit = widest short/long wing - net credit (the expiry loss of a defined-risk
+        PCS or IC); per lot = x lot_size. lots = floor(min(risk_cap_pct x capital / max_loss_per_lot,
+        margin_cap_pct x capital / margin_per_lot, max_lots)).
+        """
+        widths = []
+        for side in ("CE", "PE"):
+            sh = [l.strike for l in trade.legs if l.option_type == side and l.is_short]
+            lo = [l.strike for l in trade.legs if l.option_type == side and not l.is_short]
+            if sh and lo:
+                widths.append(abs(sh[0] - lo[0]))
+        ml_lot = (max(widths) - credit_unit) * self.lot_size if widths else float("nan")
+        if not ml_lot > 0:
+            return 0, ml_lot, 0.0, "invalid_max_loss"
+        margin_lot = float(self.cfg.margin_proxy(ml_lot, trade)) if self.cfg.margin_proxy else ml_lot
+        cap = float(self.cfg.capital_rs)
+        risk_lots = math.floor(self.cfg.risk_cap_pct * cap / ml_lot)
+        margin_lots = math.floor(self.cfg.margin_cap_pct * cap / margin_lot) if margin_lot > 0 else 0
+        lots = max(0, min(risk_lots, margin_lots, self.cfg.max_lots))
+        return int(lots), ml_lot, margin_lot, None
+
+    def _update_equity(self, d: date, st: Optional[dict] = None) -> tuple:
+        """Equity = capital + realised + open mark-to-market. Updates the peak and the kill switch.
+
+        Returns (equity, margin_used). Breach: equity <= peak x (1 - kill_dd_pct).
+        """
+        eq = float(self.cfg.capital_rs) + self._realized_rs
+        mg = 0.0
+        if st is not None:
+            eq += st["sized_lots"] * st.get("mtm_per_lot", 0.0)
+            mg = st["sized_lots"] * st["margin_per_lot"]
+        self._peak_equity = max(self._peak_equity, eq)
+        if not self.kill_active and eq <= self._peak_equity * (1.0 - self.cfg.kill_dd_pct):
+            self.kill_active = True
+            self.kill_date = d
+        return eq, mg
+
+    def _record_day(self, d: date, st: Optional[dict]) -> None:
+        eq, mg = self._update_equity(d, st)
+        self.capital_curve.append((d, eq, mg))
+
+    def capital_summary(self, echo: bool = True) -> dict:
+        """Portfolio metrics of a capital-mode run. Call after run().
+
+        Equity is the daily session curve (capital + realised + open mark-to-market) from cfg.start to
+        cfg.end. MaxDD is peak-to-trough on that curve. CAGR = (final / capital_rs)^(365.25 / calendar
+        days) - 1 over the curve span. Sharpe = mean / sample-std of daily session returns of the
+        curve x sqrt(252), risk-free rate 0 (daily basis; no per-trade Sharpe). Utilisation = margin used
+        (sized lots x margin per lot) / capital_rs, averaged over all curve sessions (idle days count 0).
+        """
+        cap = float(self.cfg.capital_rs)
+        curve = self.capital_curve
+        eqs = [e for _, e, _ in curve]
+        final = eqs[-1] if eqs else cap
+        years = (curve[-1][0] - curve[0][0]).days / 365.25 if len(curve) > 1 else 0.0
+        cagr = ((final / cap) ** (1.0 / years) - 1.0) * 100.0 if years > 0 and final > 0 else None
+        peak, max_dd = -math.inf, 0.0
+        for e in eqs:
+            peak = max(peak, e)
+            if peak > 0:
+                max_dd = max(max_dd, 1.0 - e / peak)
+        rets = [b / a - 1.0 for a, b in zip(eqs, eqs[1:]) if a > 0]
+        sharpe = None
+        if len(rets) > 1:
+            mu = sum(rets) / len(rets)
+            sd = math.sqrt(sum((r - mu) ** 2 for r in rets) / (len(rets) - 1))
+            sharpe = mu / sd * math.sqrt(TRADING_DAYS_PER_YEAR) if sd > 0 else None
+        utils = [mg / cap for _, _, mg in curve]
+        sized = [int(t["sized_lots"]) for t in self.trades if "sized_lots" in t]
+        pnl_lot = [float(t["pnl_per_lot"]) for t in self.trades]
+        out = {
+            "capital_rs": cap, "risk_cap_pct": self.cfg.risk_cap_pct, "margin_cap_pct": self.cfg.margin_cap_pct,
+            "max_lots": self.cfg.max_lots, "kill_dd_pct": self.cfg.kill_dd_pct,
+            "slippage_multiplier": self.cfg.slippage_multiplier,
+            "start": str(self.cfg.start), "end": str(self.cfg.end),
+            "trades": len(self.trades),
+            "skips": dict(self.skips),
+            "sizing_skips": int(self.skips.get("sizing_zero", 0) + self.skips.get("invalid_max_loss", 0)),
+            "kill_switch_skips": int(self.skips.get("kill_switch", 0)),
+            "kill_switch_active": bool(self.kill_active),
+            "kill_switch_date": str(self.kill_date) if self.kill_date else None,
+            "capital_kill_exits": sum(1 for t in self.trades if t.get("exit_reason") == KILL_EXIT_REASON),
+            "avg_lots": round(sum(sized) / len(sized), 3) if sized else None,
+            "min_lots": min(sized) if sized else None,
+            "max_lots_used": max(sized) if sized else None,
+            "exp_pnl_per_lot": round(sum(pnl_lot) / len(pnl_lot), 2) if pnl_lot else None,
+            "final_equity": round(final, 2),
+            "total_return_pct": round((final / cap - 1.0) * 100.0, 3),
+            "cagr_pct": round(cagr, 3) if cagr is not None else None,
+            "max_dd_pct": round(max_dd * 100.0, 3),
+            "sharpe_daily_ann": round(sharpe, 3) if sharpe is not None else None,
+            "capital_utilisation_avg_pct": round(sum(utils) / len(utils) * 100.0, 3) if utils else 0.0,
+            "capital_utilisation_max_pct": round(max(utils) * 100.0, 3) if utils else 0.0,
+            "curve_sessions": len(curve), "curve_years": round(years, 4),
+        }
+        if echo:
+            print(f"capital mode: trades={out['trades']} final_equity={out['final_equity']:.0f} "
+                  f"CAGR={out['cagr_pct']}% MaxDD={out['max_dd_pct']}% Sharpe(daily)={out['sharpe_daily_ann']}")
+            print(f"  avg_lots={out['avg_lots']} utilisation avg={out['capital_utilisation_avg_pct']}% "
+                  f"max={out['capital_utilisation_max_pct']}%  sizing_skips={out['sizing_skips']} "
+                  f"kill_skips={out['kill_switch_skips']} kill={out['kill_switch_active']} {out['kill_switch_date']}")
+            print(f"  skips={out['skips']}")
+        return out
 
     # ------------------------------------------------------------ helpers
     def _mkt(self, d: date) -> Optional[pd.Series]:
@@ -231,6 +376,9 @@ class ChainBacktest:
     # ------------------------------------------------------------ entry
     def _try_fill(self, pend: dict, day: date) -> Optional[dict]:
         """Fill a pending signal on `day`. Returns an open-trade state dict or None (skip counted)."""
+        if self._capital_on and self.kill_active:
+            self._skip("kill_switch", pend["signal_date"], fill_date=str(day))
+            return None
         if not self.arch.has_day(day):
             self._skip("fill_day_missing_archive", pend["signal_date"], fill_date=str(day))
             return None
@@ -307,6 +455,17 @@ class ChainBacktest:
             self._skip("non_positive_credit", pend["signal_date"], fill_date=str(day), expiry=str(expiry))
             return None
 
+        sized_lots, ml_lot, margin_lot = self.cfg.lots, float("nan"), float("nan")
+        if self._capital_on:
+            sized_lots, ml_lot, margin_lot, why = self._capital_sizing(trade, credit)
+            if why is not None:
+                self._skip(why, pend["signal_date"], fill_date=str(day), expiry=str(expiry))
+                return None
+            if sized_lots == 0:
+                self._skip("sizing_zero", pend["signal_date"], fill_date=str(day), expiry=str(expiry),
+                           max_loss_per_lot_rs=round(ml_lot, 2), margin_per_lot_rs=round(margin_lot, 2))
+                return None
+
         credit_settle = sum((s if lg.is_short else -s) for lg, s in zip(legs, entry_settle))
         return {
             "trade": trade, "strat": strat, "strat_name": strat_name, "expiry": expiry,
@@ -317,6 +476,8 @@ class ChainBacktest:
             "last_spot": spot,
             "dte_at_signal": (expiry - pend["signal_date"]).days,
             "entry_gate_score": pend.get("entry_gate_score"),
+            "sized_lots": sized_lots, "max_loss_per_lot_rs": ml_lot, "margin_per_lot": margin_lot,
+            "mtm_per_lot": 0.0,
         }
 
     @staticmethod
@@ -399,6 +560,11 @@ class ChainBacktest:
             action, r2 = strat.should_exit(trade, spot, vix, dte, arms=self.cfg.exit_arms)
             if action == TradeAction.EXIT or dte <= 0:
                 should_exit, reason = True, (r2 if r2 else ExitReason.EXPIRY)
+        if self._capital_on:
+            st["mtm_per_lot"] = sum(leg.pnl for leg in trade.legs)   # lots == 1: per-lot Rs
+            self._update_equity(d, st)
+            if self.kill_active and not should_exit:
+                should_exit, reason = True, KILL_EXIT_REASON
         if self.cfg.exit_gate is not None and dte > 0:
             # ML exit is an OR on top of the rules (rules untouched; gate sees rule_exit).
             ml_exit, ml_score = self.cfg.exit_gate(
@@ -523,6 +689,12 @@ class ChainBacktest:
             rec["entry_gate_score"] = st["entry_gate_score"]
         if self.cfg.exit_gate is not None:
             rec["exit_gate_score"] = st.get("exit_gate_score")  # last evaluated score (None if never)
+        if self._capital_on:  # sizing fields; pnl / pnl_per_lot above are the unchanged per-lot values
+            n = int(st["sized_lots"])
+            rec.update({"sized_lots": n, "pnl_sized_rs": pnl * n,
+                        "max_loss_per_lot_rs": st["max_loss_per_lot_rs"],
+                        "margin_per_lot_rs": st["margin_per_lot"],
+                        "margin_used_rs": st["margin_per_lot"] * n})
         return rec
 
     # ------------------------------------------------------------ main loop
@@ -539,6 +711,9 @@ class ChainBacktest:
                 if ex is not None:
                     rec = self._close(open_st, ex)
                     self.trades.append(rec)
+                    if self._capital_on:
+                        self._realized_rs += rec["pnl_sized_rs"]
+                        self._update_equity(d)
                     losses = 0 if rec["pnl"] > 0 else losses + 1
                     open_st = None
             if pending is not None and pending["fill_day"] == d:
@@ -546,6 +721,8 @@ class ChainBacktest:
                 pending = None
                 if st is not None:
                     open_st = st
+            if self._capital_on and d <= self.cfg.end:
+                self._record_day(d, open_st)
             if d > self.cfg.end:
                 continue
             if not self.arch.has_day(d):
@@ -557,6 +734,9 @@ class ChainBacktest:
                 self.signals_while_open += 1
                 continue
             if pending is not None:
+                continue
+            if self.kill_active:  # capital mode only: kill switch halts new entries
+                self._skip("kill_switch", d)
                 continue
             mk = self._mkt(d)
             if mk is None or not np.isfinite(mk["vix"]):
