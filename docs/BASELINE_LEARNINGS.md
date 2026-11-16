@@ -2,7 +2,7 @@
 
 **Document**: Standard format for recording findings and phase changes  
 **Last Updated**: 2026-08-24  
-**Baseline**: Run #59 (11.16% CAGR, rule-based)  
+**Baseline**: Run #59 (11.16% CAGR as reported) is **superseded**; the figure is not valid (see caveat below and `BACKTEST_CHANGELOG.md`).  
 **Caveat (2026-10-21)**: the weekly track is priced by Black-Scholes, which overstates entry credit. Real-price repricing gives -170 Rs/lot, and the real-price chain engine gives NOT SUPPORTED. Weekly CAGR figures in this document are not validated. See `BACKTEST_CHANGELOG.md` (2026-10-21).
 
 ---

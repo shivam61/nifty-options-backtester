@@ -1,8 +1,9 @@
 # Nifty Options Backtester — Baseline Backtest Changelog
 
 **Current Status**: Rule-based entry/exit with LightGBM models (no ML ETL gate)  
-**Latest Baseline**: Run #59 (2026-08-24)  
-**CAGR**: 11.16% | **Sharpe**: 1.05 | **Max DD**: 6.9%
+**Latest Baseline**: none valid. Run #59 (2026-08-24, 11.16%) and the 11–12% CAGR runs after it are **superseded**: they came from a weekly repricing bug and Black-Scholes credit overstatement (see the 2026-10-19 and 2026-10-21 entries).  
+**Current model-priced reference**: Run #69 CAGR 1.08% | Sharpe 0.84 | Max DD 3.1% (BS-priced, not evidence of an edge)  
+**Real-price verdict**: chain engine NOT SUPPORTED (expectancy -177/-238/-348 Rs/lot at 1.0/1.5/2.0x slippage)
 
 For complete historical context (Runs #3–#55), see [Archived Runs](docs/archive/ARCHIVED_RUNS.md).
 

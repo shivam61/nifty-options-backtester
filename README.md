@@ -23,9 +23,7 @@ A **dual-track backtester** (monthly 50% + weekly 50% capital) combining:
 **Baseline Performance** (Rule-Based Weekly, LightGBM Monthly)
 > **Caveat (2026-10-21):** weekly figures are Black-Scholes priced and are not validated. The real-price chain engine gives NOT SUPPORTED (expectancy -177 Rs/lot at 1.0x slippage). See `BACKTEST_CHANGELOG.md`.
 
-- **CAGR**: 11.16% | **Sharpe**: 1.05 | **Max DD**: 6.9%
-- **Win Rate**: 59.2% (Monthly 53.3%, Weekly 77.5%) | **P&L**: ₹2.57M (17-year backtest)
-- **Profit Factor**: 4.47 (4.47× win/loss ratio)
+- **Superseded:** the previously advertised 11.16% CAGR (Run #59) and the 11–12% figures from later runs are **not valid**. They came from a weekly exit-repricing bug and Black-Scholes overstating entry credit. Corrected model-priced run #69 gives ~1.1% CAGR (MaxDD 3.1%), and real-price chain results are NOT SUPPORTED. See `BACKTEST_CHANGELOG.md`.
 
 ## High-Level Architecture
 
