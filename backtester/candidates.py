@@ -26,6 +26,11 @@ from typing import Optional
 
 PCS = "put_credit_spread"
 LS = "long_strangle"
+CALL_CREDIT_SPREAD = "call_credit_spread"   # step 0: short CE at spot + k sigma_T, long CE W above it
+IRON_CONDOR = "iron_condor"                 # step 0: PCS and CCS together, equal wings W (defined max loss)
+
+CREDIT_STRUCTURES = (PCS, CALL_CREDIT_SPREAD, IRON_CONDOR)
+KNOWN_STRUCTURES = CREDIT_STRUCTURES + (LS,)
 
 WEEKLY_DTE_WINDOW = (3, 8)
 MONTHLY_DTE_WINDOW = (15, 28)
@@ -35,10 +40,11 @@ TRADING_DAYS_PER_YEAR = 252
 # Skip reasons specific to the candidate path. Counted in ChainBacktest.skips.
 # "expiry_after_end" is not named in the pre-registration. A trade whose expiry falls after the window end
 # cannot settle inside the window, so it is not opened. This interpretation is flagged in the report.
+# "entry_filter" is the opt-in ChainConfig.candidate_entry_filter hook (default: no filter, never counted).
 CANDIDATE_SKIP_REASONS = (
     "vix_out_of_band", "position_open", "no_expiry_in_window", "expiry_after_end", "no_listed_strike",
     "no_price", "missing_data", "invalid_structure", "non_positive_credit", "invalid_max_loss",
-    "sizing_zero", "kill_switch",
+    "sizing_zero", "kill_switch", "entry_filter",
 )
 
 # Phase windows (pre-registration Section 7). The holdout end is set at the time of the look.
@@ -52,13 +58,30 @@ PHASE_WINDOWS = {
 @dataclass(frozen=True)
 class CandidateSpec:
     cell_id: str
-    family: str               # "A" or "B"
-    structure: str            # PCS or LS
+    family: str               # "A", "B", or a later round's label (C, D, E, ...)
+    structure: str            # PCS, LS, CALL_CREDIT_SPREAD or IRON_CONDOR
     k: float                  # strike distance in sigma_T units
-    width: Optional[float]    # A: long-wing width W in index points; B: None
+    width: Optional[float]    # credit structures and wings: long-wing width W in index points; LS: None
     cadence: str              # "weekly" or "monthly" (monthly is declared for B only)
     vix_lo: float             # gate: inclusive lower bound
     vix_hi: float             # gate: exclusive upper bound
+    # Exit rules (step 0, opt-in). Checked on each session's EOD settle marks while the trade is open.
+    # profit_target_pct: close when mark-to-market gain >= this percent of the entry credit (50.0 = 50%).
+    # stop_loss_x: close when mark-to-market loss >= this multiple of the entry credit (2.0 = 2x credit).
+    # None (default) holds to expiry. Credit structures only.
+    profit_target_pct: Optional[float] = None
+    stop_loss_x: Optional[float] = None
+
+    def __post_init__(self) -> None:
+        if self.structure not in KNOWN_STRUCTURES:
+            raise ValueError(f"unknown structure {self.structure!r}")
+        if self.profit_target_pct is not None or self.stop_loss_x is not None:
+            if self.structure not in CREDIT_STRUCTURES:
+                raise ValueError("exit rules (profit target / stop loss) apply to credit structures only")
+        if self.profit_target_pct is not None and not (math.isfinite(self.profit_target_pct) and self.profit_target_pct > 0):
+            raise ValueError("profit_target_pct must be a positive percent of entry credit")
+        if self.stop_loss_x is not None and not (math.isfinite(self.stop_loss_x) and self.stop_loss_x > 0):
+            raise ValueError("stop_loss_x must be a positive multiple of entry credit")
 
     def vix_in_band(self, vix: float) -> bool:
         """Half-open band [vix_lo, vix_hi). A missing VIX is never in band."""
@@ -93,10 +116,12 @@ def sigma_T(spot_f: float, vix_s: float, dte: int) -> float:
 
 
 def target_strikes(spec: CandidateSpec, spot_f: float, vix_s: float, dte: int) -> dict:
-    """Unsnapped strike targets. A: {'PE'}; B: {'CE', 'PE'}. Snapping to listed strikes is the engine's job."""
+    """Unsnapped strike targets. PCS: {'PE'}; CCS: {'CE'}; IC and LS: {'CE', 'PE'}. Snapping is the engine's job."""
     s = sigma_T(spot_f, vix_s, dte)
     if spec.structure == PCS:
         return {"PE": spot_f - spec.k * s}
+    if spec.structure == CALL_CREDIT_SPREAD:
+        return {"CE": spot_f + spec.k * s}
     return {"CE": spot_f + spec.k * s, "PE": spot_f - spec.k * s}
 
 
