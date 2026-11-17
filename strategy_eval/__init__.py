@@ -8,6 +8,7 @@ Layers (import from here):
   stats      year-cluster bootstrap, non-overlapping t-test, Holm, TestRegistry, year consistency
   hedge      hedged-vs-baseline scorecard
   verdict    pass rule with the BS cap and the development/holdout guard
+  walkforward  mechanical TRAIN selection, TEST report, selection cut, holdout guard
   evaluate   run_evaluation(): all sections in one call
   report     markdown and JSON output
 
@@ -32,6 +33,7 @@ from strategy_eval.stats import (
 )
 from strategy_eval.stress import stress_grid, stress_trades
 from strategy_eval.verdict import DEV_END, DEV_START, evaluate_pass_rule
+from strategy_eval.walkforward import HoldoutAccessError, walk_forward_select
 
 __all__ = [
     "REQUIRED_COLUMNS", "TRADE_COLUMNS", "SchemaError", "normalize", "validate", "read_normalized",
@@ -42,5 +44,5 @@ __all__ = [
     "expected_max_sharpe", "deflated_sharpe_ratio", "deflated_sharpe_grid", "white_reality_check",
     "append_holdout_look", "read_ledger", "LedgerError",
     "hedge_scorecard", "evaluate_pass_rule", "DEV_START", "DEV_END", "run_evaluation", "render_markdown",
-    "write_report",
+    "write_report", "walk_forward_select", "HoldoutAccessError",
 ]
