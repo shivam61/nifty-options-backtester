@@ -237,3 +237,22 @@ the T3 plan. Confirm the base before any paper session starts.
 - The archive end date for the holdout is set at the time of the look and recorded in the ledger. It is not fixed here.
 - Whether the monthly cadence for B uses the same `sigma_T` convention as weekly is set by Section 4 and not tested
   independently.
+
+## 15. Implementation clarifications (recorded 2026-11-17, before any real-archive run of either family)
+
+These record how ambiguous sentences were read when the rules were implemented (`backtester/candidates.py`,
+`scripts/run_candidates.py`). They are clarifications, not rule changes, and were fixed before the first look.
+
+1. **A max loss.** Section 3, "Credit is the net F EOD settle credit": max loss per unit = W - settle credit. The
+   trade's recorded credit uses the fill credit (settle plus slippage). Sizing uses the settle-credit definition.
+2. **B debit.** Section 4, "premium of CE + PE at F settle plus entry costs": debit per unit = fill premium (settle plus
+   slippage) plus entry fees divided by quantity. Max loss = debit x lots x lot size. The 5x `Trade.max_loss` fallback is
+   never used; a test enforces this.
+3. **Expiry after the window end.** Not stated in Sections 2 to 7. A trade whose target expiry falls after the window end
+   is not opened (skip reason `expiry_after_end`). This purges window-straddling trades at entry instead of leaving
+   them unsettled, and matches the straddle purge in `strategy_eval.walkforward`.
+4. **Monthly expiry.** The monthly expiry is the last expiry listed on F within its calendar month. `sigma_T` and the
+   DTE windows use calendar days, as the engine does.
+5. **Monthly cadence (B).** The signal day stays the weekly expiry day; only the target expiry changes.
+6. **Trade files.** Candidate trade files are written in the harness's normalised format (with `entry_vix`), so the
+   chain adapter, which recomputes max loss from legs without fees, is bypassed and the Section 4 debit definition holds.
