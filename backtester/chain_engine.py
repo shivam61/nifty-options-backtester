@@ -39,6 +39,11 @@ Costs:
 
 Lots: fixed cfg.lots (default 1). Results are reported per lot; no budget-based sizing.
 
+Candidate families (opt-in, ChainConfig.candidate set; default None leaves every output unchanged): see
+backtester/candidates.py and docs/preregistration_candidates.md. Fixed sigma_T strikes, fill at F settle,
+hold to expiry (no stop, no adjustment), one position at a time. Family B debit max loss is set explicitly
+(never Trade.max_loss, which is 5x |credit| with no short leg).
+
 Capital mode (opt-in, ChainConfig.capital_mode=True; default False leaves every output unchanged):
   - the engine still simulates one lot per trade, so every per-lot field (pnl, pnl_per_lot, fees,
     legs, marks) is identical to the default path and the trade table is the same
@@ -77,6 +82,10 @@ from backtester.nse_option_rates import (
     rate_on,
 )
 from backtester.spread_model import SpreadModel
+from backtester.candidates import (
+    CandidateSpec, PCS, listed_expiries, pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry,
+    target_strikes,
+)
 from strategies.base import Leg, Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
 from backtester.weekly_exit_policy import (
@@ -157,6 +166,10 @@ class ChainConfig:
     # (backtester.spread_model), falling back to the flat CostModel value per leg when the bucket is
     # not calibrated. slippage_multiplier still applies on top of the base value.
     spread_model: Optional[SpreadModel] = None
+    # Candidate family (opt-in; None = the weekly baseline path, output unchanged). When set, the run uses
+    # backtester.candidates: fixed strikes from sigma_T, hold to expiry, no stops, one position at a time.
+    # Requires cash_settlement=True, legacy_costs=False and no entry/exit gate or VIX floor.
+    candidate: Optional[CandidateSpec] = None
 
     @property
     def fully_legacy(self) -> bool:
@@ -211,25 +224,39 @@ class ChainBacktest:
         self._realized_rs = 0.0                  # sum of sized P&L of closed trades
         self._peak_equity = float(cfg.capital_rs)
         self.capital_curve: list[tuple] = []     # (date, equity, margin_used) per session in [start, end]
+        if cfg.candidate is not None:
+            if not cfg.cash_settlement or cfg.legacy_costs:
+                raise ValueError("candidate families require cash_settlement=True and legacy_costs=False")
+            if cfg.entry_gate is not None or cfg.exit_gate is not None or cfg.min_vix_floor is not None:
+                raise ValueError("candidate families take no entry/exit gate and no VIX floor")
 
     # ------------------------------------------------------------ capital mode helpers
-    def _capital_sizing(self, trade: Trade, credit_unit: float) -> tuple:
+    def _capital_sizing(self, trade: Trade, credit_unit: float, debit_unit: Optional[float] = None) -> tuple:
         """(sized_lots, max_loss_per_lot_rs, margin_per_lot_rs, skip_reason or None).
 
         max loss per unit = widest short/long wing - net credit (the expiry loss of a defined-risk
         PCS or IC); per lot = x lot_size. lots = floor(min(risk_cap_pct x capital / max_loss_per_lot,
         margin_cap_pct x capital / margin_per_lot, max_lots)).
+
+        debit_unit (candidate family B, no short leg): max loss per unit = debit paid, per lot = x lot_size,
+        and margin per lot = max loss per lot. The width term and the Trade.max_loss 5x fallback are not used.
         """
-        widths = []
-        for side in ("CE", "PE"):
-            sh = [l.strike for l in trade.legs if l.option_type == side and l.is_short]
-            lo = [l.strike for l in trade.legs if l.option_type == side and not l.is_short]
-            if sh and lo:
-                widths.append(abs(sh[0] - lo[0]))
-        ml_lot = (max(widths) - credit_unit) * self.lot_size if widths else float("nan")
+        if debit_unit is not None:
+            ml_lot = float(debit_unit) * self.lot_size
+            margin_lot = ml_lot
+        else:
+            widths = []
+            for side in ("CE", "PE"):
+                sh = [l.strike for l in trade.legs if l.option_type == side and l.is_short]
+                lo = [l.strike for l in trade.legs if l.option_type == side and not l.is_short]
+                if sh and lo:
+                    widths.append(abs(sh[0] - lo[0]))
+            ml_lot = (max(widths) - credit_unit) * self.lot_size if widths else float("nan")
+            margin_lot = None
         if not ml_lot > 0:
             return 0, ml_lot, 0.0, "invalid_max_loss"
-        margin_lot = float(self.cfg.margin_proxy(ml_lot, trade)) if self.cfg.margin_proxy else ml_lot
+        if margin_lot is None:
+            margin_lot = float(self.cfg.margin_proxy(ml_lot, trade)) if self.cfg.margin_proxy else ml_lot
         cap = float(self.cfg.capital_rs)
         risk_lots = math.floor(self.cfg.risk_cap_pct * cap / ml_lot)
         margin_lots = math.floor(self.cfg.margin_cap_pct * cap / margin_lot) if margin_lot > 0 else 0
@@ -715,8 +742,258 @@ class ChainBacktest:
                         "margin_used_rs": st["margin_per_lot"] * n})
         return rec
 
+    # ------------------------------------------------------------ candidate families (opt-in)
+    def _candidate_fill(self, pend: dict, day: date) -> Optional[dict]:
+        """Open a candidate trade on fill day `day` at its EOD settle. Returns the open-trade state or None."""
+        spec = self.cfg.candidate
+        sig = pend["signal_date"]
+        if self._capital_on and self.kill_active:
+            self._skip("kill_switch", sig, fill_date=str(day))
+            return None
+        if not self.arch.has_day(day):
+            self._skip("missing_data", sig, fill_date=str(day))
+            return None
+        mk = self._mkt(day)
+        if mk is None or not np.isfinite(mk["nifty_close"]):
+            self._skip("missing_data", sig, fill_date=str(day))
+            return None
+        spot = float(mk["nifty_close"])
+        vix = pend["signal_vix"]
+        expiry, dte = pick_expiry(spec, listed_expiries(self.arch, day), day)
+        if expiry is None:
+            self._skip("no_expiry_in_window", sig, fill_date=str(day), cadence=spec.cadence)
+            return None
+        if expiry > self.cfg.end:
+            self._skip("expiry_after_end", sig, fill_date=str(day), expiry=str(expiry))
+            return None
+        if expiry not in self._cal_set or not self.arch.expires_on(expiry):
+            self._skip("missing_data", sig, fill_date=str(day), expiry=str(expiry))
+            return None
+
+        tg = target_strikes(spec, spot, vix, dte)
+        if spec.structure == PCS:
+            ks = self._snap(day, expiry, tg["PE"], "PE")
+            if ks is None:
+                self._skip("no_listed_strike", sig, fill_date=str(day), expiry=str(expiry), opt="PE")
+                return None
+            plan = [("PE", ks, True), ("PE", ks - spec.width, False)]
+        else:
+            kc = self._snap(day, expiry, tg["CE"], "CE")
+            kp = self._snap(day, expiry, tg["PE"], "PE")
+            if kc is None or kp is None:
+                self._skip("no_listed_strike", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            plan = [("CE", kc, False), ("PE", kp, False)]
+
+        qty = self.cfg.lots * self.lot_size
+        legs: list[Leg] = []
+        settles: list[float] = []
+        fills: list[float] = []
+        pen_entry_rs = 0.0
+        for opt, k, short in plan:
+            r = self.arch.row(day, expiry, k, opt)
+            if r is None:
+                self._skip("no_listed_strike", sig, fill_date=str(day), expiry=str(expiry), opt=opt, strike=k)
+                return None
+            if r["px_src"] < 0 or not np.isfinite(r["px"]):
+                self._skip("no_price", sig, fill_date=str(day), expiry=str(expiry), opt=opt, strike=k)
+                return None
+            if r["px_src"] == 1:
+                self.diag["close_fallback_entry"] += 1
+            s = r["px"]
+            if s < TICK:
+                self.diag["settle_floored_entry"] += 1
+                s = TICK
+            slip = self._slip_unit(vix, k, spot, dte=dte, price=s, phase="entry")
+            f = max(s - slip, TICK) if short else s + slip
+            pen_entry_rs += abs(f - s) * qty
+            legs.append(Leg(opt, k, short, f, f, self.cfg.lots, self.lot_size))
+            settles.append(s)
+            fills.append(f)
+
+        if spec.structure == PCS:
+            if not self._structure_ok(legs):
+                self._skip("invalid_structure", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            credit_fill_unit = fills[0] - fills[1]
+            credit_settle_unit = settles[0] - settles[1]
+            if credit_fill_unit <= 0 or credit_settle_unit <= 0:
+                self._skip("non_positive_credit", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            ml_unit = pcs_max_loss_per_unit(spec.width, credit_settle_unit)
+            if not ml_unit > 0:
+                self._skip("invalid_max_loss", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            entry_sold_rs, entry_bought_rs = fills[0] * qty, fills[1] * qty
+            debit_unit = None
+            credit_rs = credit_fill_unit * qty
+            max_loss_rs = ml_unit * qty
+        else:
+            if plan[1][1] >= plan[0][1]:  # plan = [CE, PE]: PE strike must sit below the CE strike
+                self._skip("invalid_structure", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            entry_sold_rs, entry_bought_rs = 0.0, sum(fills) * qty
+            entry_fee_rs = self._order_fees(day, entry_sold_rs, entry_bought_rs, len(legs))["total"]
+            debit_unit = ls_debit_per_unit(sum(fills), entry_fee_rs, qty)
+            if not debit_unit > 0:
+                self._skip("invalid_max_loss", sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            ml_unit = debit_unit
+            credit_settle_unit = -sum(settles)
+            credit_rs = -sum(fills) * qty
+            max_loss_rs = debit_unit * qty
+        trade = Trade(strategy_name=spec.cell_id, entry_date=day, signal_date=sig, legs=legs,
+                      entry_spot=spot, entry_vix=vix, lots=self.cfg.lots, lot_size=self.lot_size)
+
+        sized_lots, ml_lot, margin_lot = self.cfg.lots, float("nan"), float("nan")
+        if self._capital_on:
+            if spec.structure == PCS:
+                sized_lots, ml_lot, margin_lot, why = self._capital_sizing(trade, credit_settle_unit)
+            else:
+                sized_lots, ml_lot, margin_lot, why = self._capital_sizing(trade, 0.0, debit_unit=debit_unit)
+            if why is not None:
+                self._skip(why, sig, fill_date=str(day), expiry=str(expiry))
+                return None
+            if sized_lots == 0:
+                self._skip("sizing_zero", sig, fill_date=str(day), expiry=str(expiry),
+                           max_loss_per_lot_rs=round(ml_lot, 2), margin_per_lot_rs=round(margin_lot, 2))
+                return None
+        credit_settle = sum((s if lg.is_short else -s) for lg, s in zip(legs, settles))
+        return {
+            "trade": trade, "strat": None, "strat_name": spec.cell_id, "expiry": expiry,
+            "signal_date": sig, "signal_vix": vix, "fill_date": day,
+            "entry_settle": settles, "entry_pen_rs": pen_entry_rs,
+            "credit_settle": credit_settle, "tracker": None,
+            "stale_marks": 0, "last_marks": list(settles), "expiry_dev_max": None,
+            "last_spot": spot, "dte_at_signal": (expiry - sig).days,
+            "sized_lots": sized_lots, "max_loss_per_lot_rs": ml_lot, "margin_per_lot": margin_lot,
+            "mtm_per_lot": 0.0,
+            "cand": {"credit_rs": credit_rs, "max_loss_rs": max_loss_rs, "ml_unit": ml_unit,
+                     "dte": dte, "targets": tg, "debit": debit_unit is not None,
+                     "cadence": spec.cadence, "family": spec.family, "k": spec.k, "width": spec.width},
+        }
+
+    def _candidate_mark(self, st: dict, d: date) -> Optional[dict]:
+        """Mark an open candidate trade on session d. Closes only at expiry (or a kill-switch force close)."""
+        trade, expiry = st["trade"], st["expiry"]
+        mk = self._mkt(d)
+        spot = float(mk["nifty_close"]) if mk is not None and np.isfinite(mk["nifty_close"]) else st["last_spot"]
+        st["last_spot"] = spot
+        vix = float(mk["vix"]) if mk is not None and np.isfinite(mk["vix"]) else st["signal_vix"]
+        dte = (expiry - d).days
+        marks, raw_marks = [], []
+        for i, leg in enumerate(trade.legs):
+            r = self.arch.row(d, expiry, leg.strike, leg.option_type)
+            if r is None or r["px_src"] < 0 or not np.isfinite(r["px"]):
+                st["stale_marks"] += 1
+                s = st["last_marks"][i]
+                raw = s
+            else:
+                s = r["px"]
+                raw = s
+                if r["px_src"] == 1:
+                    self.diag["close_fallback_mark"] += 1
+                if r["px_src"] in (2, 3):
+                    self.diag["expiry_intrinsic_mark"] += 1
+                if s < TICK:
+                    self.diag["settle_floored_mark"] += 1
+                    s = TICK
+            marks.append(s)
+            raw_marks.append(raw)
+        st["last_marks"] = marks
+        for leg, s in zip(trade.legs, marks):
+            leg.current_premium = s
+        if dte <= 0:
+            idx = self.arch.expiry_index_value(d)
+            if np.isfinite(idx):
+                self.index_vs_nifty.append(abs(idx - spot))
+            dev = 0.0
+            for i, leg in enumerate(trade.legs):
+                r = self.arch.row(d, expiry, leg.strike, leg.option_type)
+                if r is not None and np.isfinite(r["close"]):
+                    dev = max(dev, abs(r["close"] - marks[i]))
+            st["expiry_dev_max"] = dev
+            self.expiry_intrinsic_dev.append(dev)
+        if self._capital_on:
+            st["mtm_per_lot"] = sum(leg.pnl for leg in trade.legs)
+            self._update_equity(d, st)
+        holding = trading_sessions_held(self._cal_index, st["fill_date"], d)
+        if dte <= 0:
+            return {"date": d, "spot": spot, "vix": vix, "reason": ExitReason.EXPIRY, "dte": dte,
+                    "marks": marks, "raw_marks": raw_marks, "holding_sessions": holding}
+        if self._capital_on and self.kill_active:
+            return {"date": d, "spot": spot, "vix": vix, "reason": KILL_EXIT_REASON, "dte": dte,
+                    "marks": marks, "raw_marks": raw_marks, "holding_sessions": holding}
+        return None
+
+    def _candidate_record(self, st: dict, rec: dict) -> dict:
+        """Add the candidate fields (max loss, credit, cell identity) to a closed trade record."""
+        c = st["cand"]
+        rec.update({
+            "candidate": st["strat_name"], "family": c["family"], "cadence": c["cadence"],
+            "k": c["k"], "width": c["width"], "dte_at_fill": c["dte"],
+            "credit_rs": c["credit_rs"], "max_loss_rs": c["max_loss_rs"],
+            "max_loss_per_unit": c["ml_unit"], "debit_structure": c["debit"],
+            "entry_vix": st["signal_vix"], "pricing_source": "chain",
+        })
+        return rec
+
+    # ------------------------------------------------------------ main loop
+    def _run_candidate(self) -> list[dict]:
+        """Candidate family loop: weekly signal on S, fill F, hold to expiry. One position at a time."""
+        pending = None
+        open_st = None
+        for d in self.cal:
+            if d < self.cfg.start:
+                continue
+            if open_st is not None and d > open_st["fill_date"]:
+                ex = self._candidate_mark(open_st, d)
+                if ex is not None:
+                    rec = self._candidate_record(open_st, self._close(open_st, ex))
+                    self.trades.append(rec)
+                    if self._capital_on:
+                        self._realized_rs += rec["pnl_sized_rs"]
+                        self._update_equity(d)
+                    open_st = None
+            if pending is not None and pending["fill_day"] == d:
+                open_st = self._candidate_fill(pending, d)
+                pending = None
+            if self._capital_on and d <= self.cfg.end:
+                self._record_day(d, open_st)
+            if d > self.cfg.end:
+                continue
+            if not self.arch.has_day(d) or not self.arch.expires_on(d):  # signal only on a listed expiry day
+                continue
+            self.signal_days += 1
+            if self._capital_on and self.kill_active:
+                self._skip("kill_switch", d)
+                continue
+            mk = self._mkt(d)
+            if mk is None or not np.isfinite(mk["vix"]):
+                self._skip("missing_data", d)
+                continue
+            vix = float(mk["vix"])
+            if not self.cfg.candidate.vix_in_band(vix):
+                self._skip("vix_out_of_band", d, vix=vix)
+                continue
+            if open_st is not None or pending is not None:
+                self.signals_while_open += 1
+                self._skip("position_open", d)
+                continue
+            fill_day = self._next_session(d)
+            if fill_day is None:
+                self._skip("missing_data", d, note="no_next_session")
+                continue
+            pending = {"signal_date": d, "fill_day": fill_day, "signal_vix": vix,
+                       "strategy": self.cfg.candidate.cell_id}
+        if open_st is not None:
+            self.diag["open_at_end"] += 1
+        return self.trades
+
     # ------------------------------------------------------------ main loop
     def run(self) -> list[dict]:
+        if self.cfg.candidate is not None:
+            return self._run_candidate()
         pending = None
         open_st = None
         losses = 0

@@ -1,0 +1,191 @@
+"""Candidate families A and B, as pre-registered in docs/preregistration_candidates.md (Sections 2-5).
+
+A  put credit spread (PCS_A_*): sell 1 PE at K_s, buy 1 PE at K_s - W. Gate 16.0 <= VIX_S < 25.0.
+B  long strangle (LS_B_*):      buy 1 CE and 1 PE, no short legs. Gate VIX_S < 13.0.
+
+This module holds the specification and pure helpers only (cells, windows, strike targets, expiry
+selection, skip reasons, harness projection). The simulation itself runs inside
+backtester.chain_engine.ChainBacktest when ChainConfig.candidate is set.
+
+Conventions (all from the pre-registration):
+  signal day S    weekly expiry day; VIX read at S close
+  fill day F      next session after S; strikes and prices at F EOD settle
+  DTE             calendar days from F to the target expiry (as elsewhere in the chain engine)
+  sigma_T         spot_F * (VIX_S / 100) * sqrt(DTE / 252)
+  strike rule     target = spot_F -/+ k * sigma_T, snapped to the nearest listed strike (engine _snap)
+  weekly window   DTE in [3, 8]
+  monthly window  monthly expiry with DTE in [15, 28], closest to 21 (B only)
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass
+from datetime import date
+from typing import Optional
+
+PCS = "put_credit_spread"
+LS = "long_strangle"
+
+WEEKLY_DTE_WINDOW = (3, 8)
+MONTHLY_DTE_WINDOW = (15, 28)
+MONTHLY_DTE_TARGET = 21
+TRADING_DAYS_PER_YEAR = 252
+
+# Skip reasons specific to the candidate path. Counted in ChainBacktest.skips.
+# "expiry_after_end" is not named in the pre-registration. A trade whose expiry falls after the window end
+# cannot settle inside the window, so it is not opened. This interpretation is flagged in the report.
+CANDIDATE_SKIP_REASONS = (
+    "vix_out_of_band", "position_open", "no_expiry_in_window", "expiry_after_end", "no_listed_strike",
+    "no_price", "missing_data", "invalid_structure", "non_positive_credit", "invalid_max_loss",
+    "sizing_zero", "kill_switch",
+)
+
+# Phase windows (pre-registration Section 7). The holdout end is set at the time of the look.
+PHASE_WINDOWS = {
+    "train": (date(2019, 2, 11), date(2021, 12, 31)),
+    "test": (date(2022, 1, 1), date(2023, 12, 31)),
+    "holdout": (date(2024, 1, 1), None),
+}
+
+
+@dataclass(frozen=True)
+class CandidateSpec:
+    cell_id: str
+    family: str               # "A" or "B"
+    structure: str            # PCS or LS
+    k: float                  # strike distance in sigma_T units
+    width: Optional[float]    # A: long-wing width W in index points; B: None
+    cadence: str              # "weekly" or "monthly" (monthly is declared for B only)
+    vix_lo: float             # gate: inclusive lower bound
+    vix_hi: float             # gate: exclusive upper bound
+
+    def vix_in_band(self, vix: float) -> bool:
+        """Half-open band [vix_lo, vix_hi). A missing VIX is never in band."""
+        if vix is None or not math.isfinite(vix):
+            return False
+        return self.vix_lo <= vix < self.vix_hi
+
+
+_A_CELLS = [
+    CandidateSpec(f"PCS_A_k{int(round(k * 10)):02d}_w{int(w)}", "A", PCS, k, float(w), "weekly", 16.0, 25.0)
+    for k in (0.9, 1.1, 1.3) for w in (200, 300)
+]
+_B_CELLS = [
+    CandidateSpec("LS_B_k09_wk", "B", LS, 0.9, None, "weekly", -math.inf, 13.0),
+    CandidateSpec("LS_B_k09_mo", "B", LS, 0.9, None, "monthly", -math.inf, 13.0),
+    CandidateSpec("LS_B_k13_wk", "B", LS, 1.3, None, "weekly", -math.inf, 13.0),
+    CandidateSpec("LS_B_k13_mo", "B", LS, 1.3, None, "monthly", -math.inf, 13.0),
+]
+FAMILY_CELLS = {"A": tuple(_A_CELLS), "B": tuple(_B_CELLS)}
+CELLS = {c.cell_id: c for c in _A_CELLS + _B_CELLS}
+
+
+def get_cell(cell_id: str) -> CandidateSpec:
+    if cell_id not in CELLS:
+        raise KeyError(f"unknown candidate cell {cell_id!r}; declared: {sorted(CELLS)}")
+    return CELLS[cell_id]
+
+
+def sigma_T(spot_f: float, vix_s: float, dte: int) -> float:
+    """Period vol in index points: spot_F x (VIX_S / 100) x sqrt(DTE / 252). DTE in calendar days from F."""
+    return spot_f * (vix_s / 100.0) * math.sqrt(dte / TRADING_DAYS_PER_YEAR)
+
+
+def target_strikes(spec: CandidateSpec, spot_f: float, vix_s: float, dte: int) -> dict:
+    """Unsnapped strike targets. A: {'PE'}; B: {'CE', 'PE'}. Snapping to listed strikes is the engine's job."""
+    s = sigma_T(spot_f, vix_s, dte)
+    if spec.structure == PCS:
+        return {"PE": spot_f - spec.k * s}
+    return {"CE": spot_f + spec.k * s, "PE": spot_f - spec.k * s}
+
+
+def listed_expiries(arch, day: date) -> list:
+    """Every expiry the archive lists on `day` (any DTE), ascending.
+
+    Reads NseFoArchive's per-day expiry index. NseFoArchive.weekly_expiries stops at 14 days, which
+    is shorter than the monthly window, so the full index is needed here.
+    """
+    index = getattr(arch, "_expiries_by_day", None)
+    if index is None:
+        raise RuntimeError("archive does not expose its per-day expiry index")
+    return sorted(index.get(day, []))
+
+
+def monthly_expiries(listed: list, day: date) -> list:
+    """Monthly expiries among `listed` (expiries on or after `day`).
+
+    The monthly expiry of a calendar month is the last listed expiry in that month. Earlier weekly
+    expiries in the same month are not monthly.
+    """
+    last: dict = {}
+    for e in listed:
+        if e < day:
+            continue
+        key = (e.year, e.month)
+        if key not in last or e > last[key]:
+            last[key] = e
+    return sorted(last.values())
+
+
+def pick_expiry(spec: CandidateSpec, listed: list, day: date) -> tuple:
+    """Target expiry for fill day `day`: (expiry, dte), or (None, None) when no expiry is in window.
+
+    weekly : earliest listed expiry with DTE in [3, 8].
+    monthly: monthly expiry with DTE in [15, 28], closest to 21 (ties: earlier expiry).
+    """
+    if spec.cadence == "weekly":
+        lo, hi = WEEKLY_DTE_WINDOW
+        cands = [e for e in listed if e >= day and lo <= (e - day).days <= hi]
+        if not cands:
+            return None, None
+        e = min(cands)
+        return e, (e - day).days
+    lo, hi = MONTHLY_DTE_WINDOW
+    cands = [e for e in monthly_expiries(listed, day) if lo <= (e - day).days <= hi]
+    if not cands:
+        return None, None
+    e = min(cands, key=lambda x: (abs((x - day).days - MONTHLY_DTE_TARGET), x))
+    return e, (e - day).days
+
+
+def pcs_max_loss_per_unit(width: float, credit_settle_unit: float) -> float:
+    """A: max loss per unit = W - net credit, credit on the F EOD settle basis (pre-registration Section 3)."""
+    return width - credit_settle_unit
+
+
+def ls_debit_per_unit(premium_fill_unit: float, entry_fee_rs: float, qty: int) -> float:
+    """B: debit paid per unit = CE + PE premium at F (settle plus entry slippage) plus entry fees spread
+    over the traded quantity. This is the max loss per unit. It never uses the 5x credit fallback."""
+    return premium_fill_unit + entry_fee_rs / qty
+
+
+def harness_record(rec: dict) -> dict:
+    """Project one closed candidate trade onto the strategy_eval normalised columns.
+
+    Only normalised columns are written. There is no 'pnl_per_lot' key, so strategy_eval's adapter
+    auto-detection reads the file as the normalised schema. The chain adapter would instead recompute
+    max loss from the legs, which the pre-registration does not allow for B.
+    """
+    return {
+        "strategy": rec["strategy"],
+        "entry_date": rec["fill_date"],
+        "exit_date": rec["exit_date"],
+        "expiry": rec["expiry"],
+        "lots": rec["lots"],
+        "credit_rs": rec["credit_rs"],
+        "max_loss_rs": rec["max_loss_rs"],
+        "pnl_gross_rs": rec["gross_fill_rs"],
+        "cost_rs": rec["fee_rs"],
+        "pnl_net_rs": rec["pnl"],
+        "exit_reason": rec["exit_reason"],
+        "entry_vix": rec["entry_vix"],
+        "hedge_cost_rs": 0.0,
+        "slippage_rs": rec["entry_pen_rs"] + rec["close_slip_rs"],
+        "base_haircut_pct": 0.0,
+        "pricing_source": "chain",
+        "family": rec["family"],
+        "cadence": rec["cadence"],
+        "signal_date": rec["signal_date"],
+        "legs": rec["legs"],
+    }
