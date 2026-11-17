@@ -26,7 +26,20 @@
 - **[Baseline Learnings](BASELINE_LEARNINGS.md)** - Phase transitions, key findings, and standards (start here)
 - **[Experiment Index](EXPERIMENT_INDEX.md)** - Quick reference for all runs, experiments, and decision framework
 - **[Combined Backtest Mode](BACKTEST_COMBINED_MODE.md)** - Technical reference for combined monthly+weekly backtester
-- **[Strategy Evaluation](STRATEGY_EVAL.md)** - Pass-rule scorecard for option-selling strategies (CLI `scripts/eval_strategy.py`)
+- **[Strategy Evaluation](STRATEGY_EVAL.md)** - Pass-rule scorecard for option-selling strategies (CLI `scripts/eval_strategy.py`). Read before judging any strategy.
+- **[Spread Model](SPREAD_MODEL.md)** - How option fills and slippage are modelled; read before changing fill assumptions
+- **[Costs (NSE options)](COSTS_NSE_OPTIONS.md)** - Brokerage, STT, exchange and GST costs used in the chain engine
+- **Chain backtest** - `python scripts/run_chain_backtest.py`: real-price backtest on the NSE F&O archive (anchors reproduce at lots=10: -133.5 / -253.2 per lot at 1.0x / 1.5x slippage). No validated edge; the old 11-12% CAGR is superseded (see [Backtest Changelog](../BACKTEST_CHANGELOG.md))
+- **Candidate families** - `python scripts/run_candidates.py` runs the pre-registered candidates A and B
+
+## Data & Pre-registration
+
+- **[Archive Query](ARCHIVE_QUERY.md)** - What the NSE F&O archive contains, how to search it (`python -m data.archive_query`), and its caveats. Read before any archive question.
+- **Archive download** - `python scripts/fetch_nse_fo_archive.py`: resumable downloader for the NSE F&O bhavcopy archive (see "What data we have" in Archive Query)
+- **[Log Option Quotes](../scripts/log_option_quotes.py)** - Script that logs live option quotes and spreads (see Spread Model)
+- **[Pre-registration: edge search](preregistration_edge_search.md)** - Original pre-registered edge-search plan. Read for the study design and its hypotheses.
+- **[Pre-registration: candidates](preregistration_candidates.md)** - Candidate families A and B, pass rule and holdout rules. Frozen; do not edit.
+- **[Pre-registration: candidate results](preregistration_candidates_results.md)** - Recorded results for candidates A and B: no edge found; the 2024+ holdout has not been opened.
 
 ## Analysis & Results
 

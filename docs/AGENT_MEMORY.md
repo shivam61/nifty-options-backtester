@@ -5,8 +5,17 @@ Entries decay automatically so stale or one-off advice does not become permanent
 
 ## Current Active Memories
 
+### use-data-archive-query-for-nse-archive-questions
+- Score: 0.7
+- Status: active
+- Tags: archive, duckdb, tokens
+- Summary: Use data.archive_query for NSE archive questions
+- Pitfall: Loading or printing raw rows from the NSE option archive (4M rows) wastes tokens and time, and exploring 2024+ data is a peek at the holdout.
+- Prevention: Query with python -m data.archive_query 'SELECT ...' or data.archive_query.query(sql), aggregate in SQL, keep results small, and record any 2024+ exploration as a look (docs/ARCHIVE_QUERY.md, docs/STRATEGY_EVAL.md).
+- Evidence: docs/ARCHIVE_QUERY.md
+
 ### nse-mcp-data-is-cross-check-only-never-for-training
-- Score: 0.9
+- Score: 0.6871
 - Status: active
 - Tags: nse-mcp, licensing
 - Summary: NSE MCP data is cross-check only, never for training
@@ -15,7 +24,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: NSE MCP terms as stated in the 2026-10-13 task brief.
 
 ### pd-to-datetime-dayfirst-true-misreads-iso-dates-with-day-12
-- Score: 0.8
+- Score: 0.6108
 - Status: active
 - Tags: nse-mcp, date-parsing, cross-check
 - Summary: pd.to_datetime(dayfirst=True) misreads ISO dates with day<=12
@@ -24,7 +33,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: scripts/check_nse_mcp.py live run: Nifty 50 and India VIX matched NSE exactly on 63 overlapping days after the parse and endDate fixes.
 
 ### yahoo-parquet-cache-nsebank-series-is-not-bank-nifty
-- Score: 0.8
+- Score: 0.6108
 - Status: active
 - Tags: cache, data-quality, nifty-bank
 - Summary: Yahoo parquet cache ^NSEBANK series is not Bank Nifty
@@ -33,7 +42,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: scripts/check_nse_mcp.py live run 2026-10-13: 60 Bank Nifty days flagged at +1100% to +1360%; Nifty 50 and India VIX matched NSE exactly.
 
 ### graphify-output-can-drift-without-committed-hooks
-- Score: 0.4974
+- Score: 0.4347
 - Status: active
 - Tags: graphify, hooks, agent-workflow
 - Summary: Graphify output can drift without committed hooks

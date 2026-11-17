@@ -83,6 +83,10 @@ C1, C2 and C5 are unchanged. Window verdicts report criteria ids C3' and C4', an
 suffix (`|test-window`, `|holdout-window`), so they never collide with a dev cut of the same candidate. The walk-forward
 dead-family rule (selected TRAIN expectancy <= 0: no TEST run, no holdout look) is in `strategy_eval/walkforward.py`.
 
+## Exploring before you pre-register
+
+Ask exploratory questions about the NSE archive through `python -m data.archive_query` (see [ARCHIVE_QUERY.md](ARCHIVE_QUERY.md)) before writing a pre-registration, and keep the output to small aggregate tables. Looking at 2024+ data, even in aggregate, is a peek at the holdout: record it in the pre-registration or the changelog so the study's multiple-testing and holdout accounting stays honest. This does not change any pass criterion.
+
 ## Stress conventions
 
 - Haircut h removes h of the credit (P&L falls by h x credit), as in `scratchpad/structure_search.py`

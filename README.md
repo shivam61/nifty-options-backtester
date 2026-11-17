@@ -188,6 +188,7 @@ python main.py --mode optimize
 
 ### 🤖 Agent Tools
 - **[Agent Memory](docs/AGENT_MEMORY.md)** - Decaying record of repo-specific pitfalls for Claude/Codex sessions
+- **[NSE F&O archive](docs/ARCHIVE_QUERY.md)** - Search the local NIFTY options archive with `python -m data.archive_query` (capped SQL, small tables). Download or refresh it with `python scripts/fetch_nse_fo_archive.py` (resumable; use `nohup` for a from-scratch run of about 1 to 1.5 hours). The archive is licence-restricted and is never committed.
 
 ## Agent Automation
 
