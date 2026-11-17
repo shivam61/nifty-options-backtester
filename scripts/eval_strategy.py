@@ -22,6 +22,7 @@ logs/ is gitignored.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -31,6 +32,9 @@ if str(REPO_ROOT) not in sys.path:
 
 from strategy_eval import DEV_END, TestRegistry, load_trades, run_evaluation, write_report  # noqa: E402
 from strategy_eval.stats import DEFAULT_SEED, N_BOOT_DEFAULT  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import portfolio_metrics as pm  # noqa: E402  (Tier 2 numbers; no verdict logic lives there)
 
 
 def _print_summary(res: dict) -> None:
@@ -81,6 +85,9 @@ def main(argv=None) -> int:
                          "every year positive), holdout (2024+, needs --allow-holdout). See docs/STRATEGY_EVAL.md.")
     ap.add_argument("--n-boot", type=int, default=N_BOOT_DEFAULT)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    ap.add_argument("--equity-curve", type=Path, default=None,
+                    help="capital-mode daily equity CSV (date,equity), e.g. from run_candidates.py --capital-mode. "
+                         "Adds the Tier 2 portfolio block (CAGR, MaxDD, Sharpe) beside the verdict; no verdict change.")
     a = ap.parse_args(argv)
 
     if a.window == "holdout" and not a.allow_holdout:
@@ -106,9 +113,22 @@ def main(argv=None) -> int:
     out = Path(out)
     write_report(res, out, a.json_out, source=str(a.trades),
                  baseline_source=str(a.baseline) if a.baseline else "")
+    json_path = Path(a.json_out) if a.json_out else out.with_suffix(".json")
+    t2 = None
+    if a.equity_curve is not None:
+        dates, equity = pm.read_equity_curve(a.equity_curve)
+        t2 = pm.portfolio_metrics(dates, equity, capital_rs=a.capital)
+        out.write_text(out.read_text(encoding="utf-8") + "\n" + pm.tier2_markdown(t2, str(a.equity_curve)),
+                       encoding="utf-8")
+        summary = json.loads(json_path.read_text(encoding="utf-8"))
+        summary["tier2_portfolio"] = t2
+        json_path.write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")
     _print_summary(res)
+    if t2 is not None:
+        print(f"tier 2 (portfolio, not a verdict): CAGR {t2['cagr_pct']}%  MaxDD {t2['max_dd_pct']}%  "
+              f"Sharpe(daily) {t2['sharpe_daily_ann']}  final Rs {t2['final_equity']:,.0f}")
     print(f"report: {out}")
-    print(f"json:   {a.json_out or out.with_suffix('.json')}")
+    print(f"json:   {json_path}")
     return 0
 
 

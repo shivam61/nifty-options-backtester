@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -69,10 +70,26 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
+    # Capital mode (opt-in). Writes curve_<cell>.csv (date,equity,margin_used) and summary_<cell>.json for
+    # scripts/eval_strategy.py --equity-curve (Tier 2). Requires --lots 1: sizing is per trade.
+    ap.add_argument("--capital-mode", action="store_true",
+                    help="size each trade from capital (requires --lots 1); writes the equity curve and summary")
+    ap.add_argument("--capital-rs", type=float, default=2_500_000.0, help="capital base Rs (default %(default)s = 25L)")
+    ap.add_argument("--risk-cap-pct", type=float, default=0.10, help="max loss per trade as a fraction of capital")
+    ap.add_argument("--margin-cap-pct", type=float, default=0.20, help="margin per trade as a fraction of capital")
+    ap.add_argument("--max-lots", type=int, default=30, help="lot cap per trade")
+    ap.add_argument("--kill-dd-pct", type=float, default=0.20, help="kill-switch drawdown from peak equity")
+    ap.add_argument("--equity-sizing", action="store_true",
+                    help="size from current equity instead of --capital-rs (capital mode only)")
+    ap.add_argument("--max-concurrent", type=int, default=1, help="positions open at once (default %(default)s)")
     a = ap.parse_args(argv)
 
     if a.phase == "holdout" and not a.allow_holdout:
         ap.error("--phase holdout requires --allow-holdout (single pre-registered look)")
+    if a.capital_mode and a.lots != 1:
+        ap.error("--capital-mode requires --lots 1 (sizing is applied per trade)")
+    if a.equity_sizing and not a.capital_mode:
+        ap.error("--equity-sizing requires --capital-mode")
     if a.cell != "all" and a.cell not in {c.cell_id for c in FAMILY_CELLS[a.family]}:
         ap.error(f"cell {a.cell!r} is not a cell of family {a.family}")
     cells = list(FAMILY_CELLS[a.family]) if a.cell == "all" else [get_cell(a.cell)]
@@ -90,7 +107,12 @@ def main(argv=None) -> int:
     print(f"family {a.family} phase {a.phase} window {start}..{end} lots={a.lots} slippage={a.slippage}")
     for cell in cells:
         cfg = ChainConfig(slippage_multiplier=a.slippage, lots=a.lots, start=start, end=end,
-                          candidate=cell, cash_settlement=True, legacy_costs=False)
+                          candidate=cell, cash_settlement=True, legacy_costs=False,
+                          max_concurrent=a.max_concurrent)
+        if a.capital_mode:
+            cfg = replace(cfg, capital_mode=True, capital_rs=a.capital_rs, risk_cap_pct=a.risk_cap_pct,
+                          margin_cap_pct=a.margin_cap_pct, max_lots=a.max_lots, kill_dd_pct=a.kill_dd_pct,
+                          equity_based_sizing=a.equity_sizing)
         bt = ChainBacktest(arch, market, cfg)
         trades = [harness_record(t) for t in bt.run()]
         json.dump({"variant": f"candidate_{cell.cell_id}_{a.phase}", "family": a.family, "phase": a.phase,
@@ -102,6 +124,14 @@ def main(argv=None) -> int:
         skips = dict(sorted(bt.skips.items()))
         print(f"{cell.cell_id}: trades={len(trades)} signal_days={bt.signal_days} "
               f"exp_per_lot(lots={a.lots})={_expectancy_per_lot(trades)} skips={skips}")
+        if a.capital_mode:
+            pd.DataFrame([{"date": str(d), "equity": e, "margin_used": m} for d, e, m in bt.capital_curve]).to_csv(
+                a.out / f"curve_{cell.cell_id}.csv", index=False)
+            summary = bt.capital_summary(echo=False)
+            json.dump(summary, open(a.out / f"summary_{cell.cell_id}.json", "w"), indent=1, default=str)
+            print(f"  capital: final_equity={summary['final_equity']:.0f} CAGR={summary['cagr_pct']}% "
+                  f"MaxDD={summary['max_dd_pct']}% Sharpe(daily)={summary['sharpe_daily_ann']} "
+                  f"avg_lots={summary['avg_lots']}")
     print("ledger rows: written by strategy_eval (holdout_ledger / eval_registry), not by this script")
     return 0
 

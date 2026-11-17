@@ -10,6 +10,7 @@ python scripts/eval_strategy.py --trades path/trades.csv
 python scripts/eval_strategy.py --trades hedged.csv --baseline unhedged.csv \
     --capital 2500000 --risk-cap 50000 --out logs/eval_hedged.md --registry logs/eval_registry.json
 python scripts/eval_strategy.py --trades run.json            # chain-engine / run69-style dumps auto-detected
+python scripts/eval_strategy.py --trades t.json --equity-curve curve.csv   # adds Tier 2 portfolio block (no verdict change)
 python scripts/eval_strategy.py --trades h9.csv --adapter h9 --input-haircut-pct 30   # regime-A H9 CSV
 python scripts/eval_strategy.py ... --allow-holdout          # 2024+ holdout: one pre-registered candidate only
 ```
@@ -26,6 +27,12 @@ candidate.
 `logs/holdout_ledger.json` before any holdout trade is scored: `{index, timestamp, candidate, window, prev_hash, hash}`.
 The file is hash-chained and append-only. Earlier bytes are never rewritten, and `read_ledger()` raises `LedgerError`
 if a row is edited or removed. It is tamper-evident, not tamper-proof. Each look is also a registry cut.
+
+## Tier 2: portfolio metrics (`scripts/portfolio_metrics.py`)
+
+`--equity-curve curve.csv` (columns `date,equity`, written by `scripts/run_candidates.py --capital-mode`) adds a
+block beside the per-lot verdict: CAGR, max drawdown, and Sharpe on daily equity returns (rf 0). The block reports
+numbers only. Its pass floors belong to the pre-registration. The verdict and the report's criteria are unchanged.
 
 ## Trade schema
 
