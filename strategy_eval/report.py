@@ -52,8 +52,12 @@ def render_markdown(res: dict, source: str = "", baseline_source: str = "") -> s
     if baseline_source:
         lines.append(f"- Baseline file: `{baseline_source}`")
     lines.append(f"- Capital Rs {res['capital']:,.0f}; risk cap Rs {res['risk_cap']:,.0f} per trade (worst loss)")
-    lines.append(f"- Pass rule: `{v['prereg']}`; development window 2019-02-11..2023-12-31; "
-                 f"holdout {'INCLUDED (allow_holdout)' if res['allow_holdout'] else 'excluded'}")
+    if res.get("window", "dev") == "dev":
+        lines.append(f"- Pass rule: `{v['prereg']}`; development window 2019-02-11..2023-12-31; "
+                     f"holdout {'INCLUDED (allow_holdout)' if res['allow_holdout'] else 'excluded'}")
+    else:
+        lines.append(f"- Pass rule: `{v['prereg']}`; window `{res['window']}` (C3' and C4', not the development "
+                     "window)")
     lines.append("")
     lines.append(f"## Verdict: **{v['verdict']}**")
     lines.append("")

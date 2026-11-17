@@ -36,7 +36,9 @@ from strategy_eval.stats import DEFAULT_SEED, N_BOOT_DEFAULT  # noqa: E402
 def _print_summary(res: dict) -> None:
     v = res["verdict"]
     print(f"strategy: {res['name']}")
-    print(f"VERDICT: {v['verdict']}  (criteria: {v['criteria_verdict']})")
+    win = res.get("window", "dev")
+    print(f"VERDICT: {v['verdict']}  (criteria: {v['criteria_verdict']}"
+          + ("" if win == "dev" else f"; window: {win}") + ")")
     for c in v["criteria"]:
         print(f"  {c['id']} {c['status']:<17} {c['name']}: {c['detail']}")
     m = res["metrics"]["at_verdict_cost"]
@@ -74,10 +76,17 @@ def main(argv=None) -> int:
     ap.add_argument("--registry", type=Path, default=None,
                     help="JSON file of cuts examined; every cut is written here automatically "
                          "(default logs/eval_registry.json). Holm runs over all cuts in it.")
+    ap.add_argument("--window", choices=["dev", "test", "holdout"], default="dev",
+                    help="verdict window: dev (default, C3/C4 on 2019-2023), test (2022-2023, C3'/C4' with "
+                         "every year positive), holdout (2024+, needs --allow-holdout). See docs/STRATEGY_EVAL.md.")
     ap.add_argument("--n-boot", type=int, default=N_BOOT_DEFAULT)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     a = ap.parse_args(argv)
 
+    if a.window == "holdout" and not a.allow_holdout:
+        ap.error("--window holdout requires --allow-holdout (one ledgered holdout look)")
+    if a.window == "test" and a.allow_holdout:
+        ap.error("--window test does not use --allow-holdout")
     name = a.name or a.trades.stem
     cand = load_trades(a.trades, adapter=a.adapter, name=name,
                        input_haircut_pct=a.input_haircut_pct, lot_size=a.lot_size)
@@ -89,7 +98,8 @@ def main(argv=None) -> int:
     # that recorded nothing new.
     registry = TestRegistry.open(a.registry)
     res = run_evaluation(cand, base, name=name, capital=a.capital, risk_cap=a.risk_cap,
-                         allow_holdout=a.allow_holdout, registry=registry, n_boot=a.n_boot, seed=a.seed)
+                         allow_holdout=a.allow_holdout, registry=registry, n_boot=a.n_boot, seed=a.seed,
+                         window=a.window)
     registry.save()
 
     out = a.out or (REPO_ROOT / "logs" / f"eval_{name}.md")

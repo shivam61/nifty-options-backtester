@@ -31,6 +31,16 @@ Registry: every verdict cut is written to the registry file automatically (defau
   logs/eval_registry.json). Pass a TestRegistry (in memory or with its own path) to override.
 Block bootstrap: a monthly-block CI of expectancy is reported next to the year-cluster CI. It is not a
   pass criterion.
+
+Windows (window=, docs/preregistration_candidates.md Section 10). Default 'dev' is the rule above, unchanged.
+  'test'     entries 2022-01-01..2023-12-31; exit must fall inside the window (straddlers purged, as in
+             strategy_eval.walkforward). C3' = monthly-block bootstrap 95% CI lower bound > 0 (same n_boot and
+             seed as C3). C4' = both years 2022 and 2023 have positive per-lot expectancy (2 of 2). Needs
+             allow_holdout=False; allow_holdout=True is refused.
+  'holdout'  entries from 2024-01-01 only. Requires allow_holdout=True, which appends one ledger row before any
+             holdout trade is scored. C3' as above. C4' = every calendar year present in the holdout is positive.
+  C1, C2 and C5 are the same in every window. Window verdicts use criteria ids C3' and C4'. Their cut names
+  carry the window, so a test cut and a dev cut of the same candidate are distinct.
 """
 
 from __future__ import annotations
@@ -58,6 +68,10 @@ MIN_POSITIVE_YEARS = 4
 ALPHA = 0.05
 PREREG_REF = "docs/preregistration_edge_search.md"
 HOLDOUT_START = date(2024, 1, 1)
+TEST_START = date(2022, 1, 1)
+TEST_END = DEV_END
+TEST_YEARS = (2022, 2023)
+WINDOWS = ("dev", "test", "holdout")
 
 PASS, FAIL, INSUFFICIENT, INDICATIVE = "PASS", "FAIL", "INSUFFICIENT_DATA", "INDICATIVE_ONLY"
 
@@ -77,6 +91,28 @@ def apply_windows(df: pd.DataFrame, allow_holdout: bool = False) -> tuple[pd.Dat
     return df.loc[keep].reset_index(drop=True), info
 
 
+def select_window(df: pd.DataFrame, window: str = "dev", allow_holdout: bool = False) -> tuple[pd.DataFrame, dict]:
+    """Rows of the verdict window. 'dev' is apply_windows, unchanged. 'test' and 'holdout' per the docstring."""
+    if window == "dev":
+        return apply_windows(df, allow_holdout)
+    entry = pd.to_datetime(df["entry_date"])
+    exit_ = pd.to_datetime(df["exit_date"])
+    if window == "test":
+        in_w = (entry >= pd.Timestamp(TEST_START)) & (entry <= pd.Timestamp(TEST_END))
+        straddle = in_w & (exit_ > pd.Timestamp(TEST_END))
+        keep = in_w & ~straddle
+        extra = {"straddle_purged": int(straddle.sum()), "pre_window_excluded": int((entry < pd.Timestamp(TEST_START)).sum()),
+                 "post_window_excluded": int((entry > pd.Timestamp(TEST_END)).sum())}
+    elif window == "holdout":
+        keep = entry >= pd.Timestamp(HOLDOUT_START)
+        extra = {"pre_window_excluded": int((entry < pd.Timestamp(HOLDOUT_START)).sum())}
+    else:
+        raise ValueError(f"window must be one of {WINDOWS}, got {window!r}")
+    info = {"window": window, "rows_in": int(len(df)), "rows_kept": int(keep.sum()), "allow_holdout": bool(allow_holdout),
+            "dev_start": str(DEV_START), "dev_end": str(DEV_END), **extra}
+    return df.loc[keep].reset_index(drop=True), info
+
+
 def _crit(cid: str, name: str, status: str, value=None, threshold=None, detail: str = "") -> dict:
     return {"id": cid, "name": name, "status": status, "value": value, "threshold": threshold, "detail": detail}
 
@@ -85,19 +121,28 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
                        allow_holdout: bool = False, registry: TestRegistry | None = None,
                        name: str = "candidate", verdict_slippage: float = VERDICT_SLIPPAGE,
                        verdict_haircut: float = VERDICT_HAIRCUT, n_boot: int = N_BOOT_DEFAULT,
-                       seed: int = DEFAULT_SEED) -> dict:
+                       seed: int = DEFAULT_SEED, window: str = "dev") -> dict:
     """Apply the pre-registered pass rule. See the module docstring for criteria and guards."""
+    if window not in WINDOWS:
+        raise ValueError(f"window must be one of {WINDOWS}, got {window!r}")
+    if window == "test" and allow_holdout:
+        raise ValueError("window='test' is not the holdout; allow_holdout=True is refused for it")
+    if window == "holdout" and not allow_holdout:
+        raise ValueError("window='holdout' requires allow_holdout=True (one ledgered holdout look)")
+    wsuffix = "" if window == "dev" else f"|{window}-window"
     registry = resolve_registry(registry)     # None -> logs/eval_registry.json (auto-registration)
     holdout_look = None
     if allow_holdout:
         # Ledger first, before any holdout trade is scored. Each call is one look.
         cand_late = pd.to_datetime(candidate["entry_date"]).dt.date > DEV_END
-        window = {"dev_start": str(DEV_START), "dev_end": str(DEV_END), "holdout_from": str(HOLDOUT_START),
+        window_row = {"dev_start": str(DEV_START), "dev_end": str(DEV_END), "holdout_from": str(HOLDOUT_START),
                   "candidate_holdout_trades": int(cand_late.sum()),
                   "baseline_holdout_trades": (int((pd.to_datetime(baseline["entry_date"]).dt.date > DEV_END).sum())
                                               if baseline is not None else None),
                   "verdict_slippage": verdict_slippage, "verdict_haircut": verdict_haircut}
-        holdout_look = append_holdout_look(name, window)
+        if window != "dev":
+            window_row = {**window_row, "window": window}
+        holdout_look = append_holdout_look(name, window_row)
         registry.add(f"{name}|holdout-look#{holdout_look['index']}", None, kind="holdout_look",
                      detail=f"holdout look {holdout_look['index']} at {holdout_look['timestamp']}")
     sources_all = set(candidate["pricing_source"].astype(str))
@@ -105,8 +150,8 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
         sources_all |= set(baseline["pricing_source"].astype(str))
     bs_capped = "bs" in sources_all
 
-    cand_w, cand_info = apply_windows(candidate, allow_holdout)
-    base_w, base_info = (apply_windows(baseline, allow_holdout) if baseline is not None else (None, None))
+    cand_w, cand_info = select_window(candidate, window, allow_holdout)
+    base_w, base_info = (select_window(baseline, window, allow_holdout) if baseline is not None else (None, None))
 
     cs = stress_trades(cand_w, verdict_haircut, verdict_slippage) if len(cand_w) else cand_w
     pl = per_lot(cs) if len(cs) else np.array([])
@@ -114,7 +159,8 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
     n = len(pl)
     enough = n >= MIN_TRADES
     cut_key = (f"{name}|verdict|slip{verdict_slippage:g}|hc{verdict_haircut:g}"
-               f"|{'holdout-incl' if allow_holdout else 'dev'}")
+               f"|{'holdout-incl' if allow_holdout else 'dev'}{wsuffix}")
+    wdesc = "" if window == "dev" else f" [{window} window]"
 
     criteria: list[dict] = []
     base_n = 0
@@ -150,41 +196,68 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
         criteria.append(_crit("C2", "per-lot expectancy > 0", PASS if exp > 0 else FAIL, value=exp, threshold=0.0,
                               detail=f"{exp:+.1f} Rs/lot over {n} trades"))
 
-    # C3: year-cluster bootstrap CI lower bound > 0.
-    boot = year_cluster_bootstrap(pl, years, n_boot=n_boot, seed=seed) if n else None
-    # Monthly-block CI: reported only. C3 (the pass criterion) stays on the year cluster.
-    blk = monthly_block_bootstrap(pl, cs["entry_date"], n_boot=n_boot, seed=seed) if n else None
-    if not enough:
-        criteria.append(_crit("C3", "year-cluster bootstrap 95% CI lower bound > 0", INSUFFICIENT,
-                              value=n, threshold=MIN_TRADES, detail=f"{n} trades"))
-    else:
-        criteria.append(_crit("C3", "year-cluster bootstrap 95% CI lower bound > 0",
-                              PASS if boot["lo"] > 0 else FAIL, value=boot["lo"], threshold=0.0,
-                              detail=f"CI [{boot['lo']:+.1f}, {boot['hi']:+.1f}], {boot['n_years']} years, "
-                                     f"{boot['n_boot']} draws, seed {boot['seed']}"))
+    if window == "dev":
+        # C3: year-cluster bootstrap CI lower bound > 0.
+        boot = year_cluster_bootstrap(pl, years, n_boot=n_boot, seed=seed) if n else None
+        # Monthly-block CI: reported only. C3 (the pass criterion) stays on the year cluster.
+        blk = monthly_block_bootstrap(pl, cs["entry_date"], n_boot=n_boot, seed=seed) if n else None
+        if not enough:
+            criteria.append(_crit("C3", "year-cluster bootstrap 95% CI lower bound > 0", INSUFFICIENT,
+                                  value=n, threshold=MIN_TRADES, detail=f"{n} trades"))
+        else:
+            criteria.append(_crit("C3", "year-cluster bootstrap 95% CI lower bound > 0",
+                                  PASS if boot["lo"] > 0 else FAIL, value=boot["lo"], threshold=0.0,
+                                  detail=f"CI [{boot['lo']:+.1f}, {boot['hi']:+.1f}], {boot['n_years']} years, "
+                                         f"{boot['n_boot']} draws, seed {boot['seed']}"))
 
-    # C4: at least 4 of 5 development years positive.
-    yc = year_consistency(pl, years, DEV_YEARS, MIN_POSITIVE_YEARS) if n else None
-    if yc is None or yc["status"] == INSUFFICIENT or not enough:
-        present = yc["years_present"] if yc else 0
-        criteria.append(_crit("C4", ">= 4 of 5 dev years positive", INSUFFICIENT, value=present,
-                              threshold=len(DEV_YEARS), detail=f"{present} of 5 dev years present"))
+        # C4: at least 4 of 5 development years positive.
+        yc = year_consistency(pl, years, DEV_YEARS, MIN_POSITIVE_YEARS) if n else None
+        if yc is None or yc["status"] == INSUFFICIENT or not enough:
+            present = yc["years_present"] if yc else 0
+            criteria.append(_crit("C4", ">= 4 of 5 dev years positive", INSUFFICIENT, value=present,
+                                  threshold=len(DEV_YEARS), detail=f"{present} of 5 dev years present"))
+        else:
+            criteria.append(_crit("C4", ">= 4 of 5 dev years positive", yc["status"], value=yc["positive"],
+                                  threshold=MIN_POSITIVE_YEARS,
+                                  detail=f"{yc['positive']} of {yc['years_present']} dev years positive"))
     else:
-        criteria.append(_crit("C4", ">= 4 of 5 dev years positive", yc["status"], value=yc["positive"],
-                              threshold=MIN_POSITIVE_YEARS,
-                              detail=f"{yc['positive']} of {yc['years_present']} dev years positive"))
+        # Test / holdout windows: C3' on the monthly-block CI (same n_boot and seed), C4' on every window year.
+        boot = None      # the year-cluster CI has fewer than 5 clusters here and is not a criterion
+        blk = monthly_block_bootstrap(pl, cs["entry_date"], n_boot=n_boot, seed=seed) if n else None
+        if not enough:
+            criteria.append(_crit("C3'", "monthly-block bootstrap 95% CI lower bound > 0", INSUFFICIENT,
+                                  value=n, threshold=MIN_TRADES, detail=f"{n} trades"))
+        else:
+            criteria.append(_crit("C3'", "monthly-block bootstrap 95% CI lower bound > 0",
+                                  PASS if blk["lo"] > 0 else FAIL, value=blk["lo"], threshold=0.0,
+                                  detail=f"block CI [{blk['lo']:+.1f}, {blk['hi']:+.1f}], {blk['n_clusters']} months, "
+                                         f"{blk['n_boot']} draws, seed {blk['seed']}"))
+        if window == "test":
+            wyears = TEST_YEARS
+        else:
+            wyears = tuple(sorted({int(y) for y in years})) if n else ()
+        yc = year_consistency(pl, years, wyears, len(wyears)) if (n and wyears) else None
+        if yc is None or yc["status"] == INSUFFICIENT or not enough:
+            present = yc["years_present"] if yc else 0
+            criteria.append(_crit("C4'", "every window year has positive per-lot expectancy", INSUFFICIENT,
+                                  value=present, threshold=len(wyears),
+                                  detail=f"{present} of {len(wyears)} window years present"))
+        else:
+            criteria.append(_crit("C4'", "every window year has positive per-lot expectancy", yc["status"],
+                                  value=yc["positive"], threshold=len(wyears),
+                                  detail=f"{yc['positive']} of {yc['years_present']} window years positive"))
 
     # C5: Holm-adjusted one-sided t-test over the whole registry.
     tt = nonoverlap_ttest(pl, cs["entry_date"], cs["exit_date"]) if n else {"p_one_sided": float("nan"), "n": 0}
     if not enough or not np.isfinite(tt["p_one_sided"]):
         # Recorded without a p-value: it still counts as a cut examined (Holm ignores it until it has one).
         registry.add(cut_key, None, kind="verdict",
-                     detail=f"{name} at {verdict_slippage:g}x: not evaluated ({n} trades)")
+                     detail=f"{name} at {verdict_slippage:g}x{wdesc}: not evaluated ({n} trades)")
         criteria.append(_crit("C5", "Holm-adjusted p < 0.05", INSUFFICIENT, value=None, threshold=ALPHA,
                               detail=f"non-overlapping n={tt.get('n', 0)}"))
         p_holm = None
     else:
-        registry.add(cut_key, tt["p_one_sided"], kind="verdict", detail=f"{name} at {verdict_slippage:g}x")
+        registry.add(cut_key, tt["p_one_sided"], kind="verdict", detail=f"{name} at {verdict_slippage:g}x{wdesc}")
         p_holm = registry.holm()[cut_key]
         criteria.append(_crit("C5", "Holm-adjusted p < 0.05", PASS if p_holm < ALPHA else FAIL,
                               value=p_holm, threshold=ALPHA,
@@ -209,11 +282,14 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
     else:
         verdict = criteria_verdict
 
-    holdout_note = ("holdout (entries after 2023-12-31) INCLUDED: allow_holdout=True"
-                    if allow_holdout else "holdout (entries after 2023-12-31) excluded")
+    if window == "dev":
+        holdout_note = ("holdout (entries after 2023-12-31) INCLUDED: allow_holdout=True"
+                        if allow_holdout else "holdout (entries after 2023-12-31) excluded")
+    else:
+        holdout_note = f"window '{window}': {cand_info['rows_kept']} candidate trades kept; criteria C3' and C4' apply"
     reasons.append(holdout_note)
 
-    return {
+    out = {
         "verdict": verdict,
         "criteria_verdict": criteria_verdict,
         "criteria": criteria,
@@ -231,3 +307,6 @@ def evaluate_pass_rule(candidate: pd.DataFrame, baseline: pd.DataFrame | None = 
         "holdout_look": holdout_look,
         "registry": registry.to_dict(), "prereg": PREREG_REF,
     }
+    if window != "dev":
+        out["window"] = window
+    return out

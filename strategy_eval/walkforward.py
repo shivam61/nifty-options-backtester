@@ -15,6 +15,10 @@ candidate on the TRAIN grid (Bailey and Lopez de Prado, with N = number of candi
 selection enters the Holm family like any other cut. The cut name holds the candidate set and the choice,
 so re-running the same set with changed TRAIN data is refused by the registry (as for any changed cut).
 
+Dead family (docs/preregistration_candidates.md, Section 7): if the selected candidate's TRAIN expectancy at
+the ranking slippage is <= 0, the family is dead. TEST is not scored (test_table is empty), no holdout look is
+made, and the result carries dead=True and a reason. The selection cut is still registered.
+
 Holdout: any trade with entry_date >= 2024-01-01 in a candidate or the baseline raises HoldoutAccessError
 unless allow_holdout=True. With it, the holdout is appended to the ledger (before anything is scored) and
 counted as a registry cut, and the holdout metrics of the selected candidate only are returned.
@@ -32,12 +36,12 @@ from strategy_eval.metrics import core_metrics
 from strategy_eval.schema import normalize
 from strategy_eval.stats import deflated_sharpe_grid, resolve_registry
 from strategy_eval.stress import per_lot, stress_trades
-from strategy_eval.verdict import DEV_END, DEV_START, HOLDOUT_START, MIN_TRADES, VERDICT_SLIPPAGE
+from strategy_eval.verdict import (
+    DEV_START, HOLDOUT_START, MIN_TRADES, TEST_END, TEST_START, VERDICT_SLIPPAGE,
+)
 
 TRAIN_START = DEV_START
 TRAIN_END = date(2021, 12, 31)
-TEST_START = date(2022, 1, 1)
-TEST_END = DEV_END
 HOLDOUT_FROM = HOLDOUT_START
 METRIC = "expectancy"
 
@@ -154,16 +158,24 @@ def walk_forward_select(candidates: dict[str, pd.DataFrame], baseline: pd.DataFr
         train_rows.append(r)
     train_table = pd.DataFrame(train_rows, columns=_TABLE_COLS + ["eligible", "selected"])
 
-    # Test table: the selected candidate only, plus the baseline. Scored on TEST entries only.
-    pl, m = _score(splits[selected]["test"], slippage)
-    test_rows = [_row(selected, "candidate", pl, m, splits[selected]["purged"]["test"])]
-    if base_split is not None:
-        pl_b, m_b = _score(base_split["test"], slippage)
-        test_rows.append(_row("baseline", "baseline", pl_b, m_b, base_split["purged"]["test"]))
-    test_table = pd.DataFrame(test_rows, columns=_TABLE_COLS)
+    dead = bool(train_scores[selected][0].mean() <= 0)
+    reason = None
+    if dead:
+        reason = (f"selected {selected} has TRAIN expectancy {train_scores[selected][0].mean():+.1f} Rs/lot "
+                  f"at {slippage:g}x (<= 0): family is dead, no TEST run and no holdout look "
+                  "(docs/preregistration_candidates.md, Section 7)")
+        test_table = pd.DataFrame([], columns=_TABLE_COLS)
+    else:
+        # Test table: the selected candidate only, plus the baseline. Scored on TEST entries only.
+        pl, m = _score(splits[selected]["test"], slippage)
+        test_rows = [_row(selected, "candidate", pl, m, splits[selected]["purged"]["test"])]
+        if base_split is not None:
+            pl_b, m_b = _score(base_split["test"], slippage)
+            test_rows.append(_row("baseline", "baseline", pl_b, m_b, base_split["purged"]["test"]))
+        test_table = pd.DataFrame(test_rows, columns=_TABLE_COLS)
 
     holdout = None
-    if allow_holdout:
+    if allow_holdout and not dead:
         # Ledger first, before any holdout trade is scored. Each call is one look.
         window = {"walk_forward": True, "train": [str(TRAIN_START), str(TRAIN_END)],
                   "test": [str(TEST_START), str(TEST_END)], "holdout_from": str(HOLDOUT_FROM),
@@ -185,6 +197,8 @@ def walk_forward_select(candidates: dict[str, pd.DataFrame], baseline: pd.DataFr
         "train_table": train_table,
         "test_table": test_table,
         "n_candidates": len(names),
+        "dead": dead,
+        "reason": reason,
         "deflated_sharpe_ratio": dsr,
         "registry_cut": cut,
         "holdout": holdout,

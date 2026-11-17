@@ -223,6 +223,53 @@ def test_allow_holdout_scores_holdout_only_for_selected_candidate():
     assert res["holdout_trades_in_input"]["good"] == 12
 
 
+# ----------------------------------------------------------------------------- dead family (prereg Section 7)
+
+def test_dead_family_is_flagged_and_test_is_never_scored(monkeypatch):
+    from strategy_eval import walkforward
+    dead = _dead_cands()                                    # best TRAIN expectancy is still negative
+    scored = []
+    orig = walkforward._score
+
+    def spy(df, slippage):
+        scored.append(df)
+        return orig(df, slippage)
+
+    monkeypatch.setattr(walkforward, "_score", spy)
+    reg = TestRegistry()
+    res = walk_forward_select(dead, registry=reg)
+    assert res["selected"] == "good" and res["dead"] is True
+    assert "family is dead" in res["reason"] and "Section 7" in res["reason"]
+    assert res["test_table"].empty and list(res["test_table"].columns) == list(res["train_table"].columns[:9])
+    # No frame that reached the scorer holds a TEST-window entry: TEST was never touched.
+    for df in scored:
+        e = pd.to_datetime(df["entry_date"])
+        assert not ((e >= pd.Timestamp(TEST_START)) & (e <= pd.Timestamp(TEST_END))).any()
+    assert len(scored) == len(dead)                          # one TRAIN scoring per candidate, nothing else
+    assert any(c["kind"] == "selection" for c in reg.to_dict()["cuts"])   # selection cut still registered
+
+
+def _dead_cands():
+    """Every TRAIN mean is negative, so the selected candidate is dead. TEST means are positive (a trap)."""
+    return {
+        "good": _cand(-100.0, 1, 600.0, 2, strategy="good"),
+        "trap": _cand(-300.0, 3, 900.0, 4, strategy="trap"),
+    }
+
+
+def test_dead_family_with_allow_holdout_writes_no_ledger_row():
+    dead = _with_holdout(_dead_cands())
+    res = walk_forward_select(dead, registry=TestRegistry(), allow_holdout=True)
+    assert res["dead"] is True and res["holdout"] is None
+    assert not holdout_ledger.DEFAULT_LEDGER_PATH.exists()
+
+
+def test_positive_train_is_not_dead_and_reports_test():
+    res = walk_forward_select(_cands(), registry=TestRegistry())
+    assert res["dead"] is False and res["reason"] is None
+    assert set(res["test_table"]["name"]) == {"good"} and len(res["test_table"]) == 1
+
+
 # ----------------------------------------------------------------------------- (c) chain-engine timing
 
 def _ic_world_with_bogus_signal_day(root):

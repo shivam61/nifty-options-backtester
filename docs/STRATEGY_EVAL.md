@@ -68,6 +68,21 @@ Verdicts: `PASS`, `FAIL`, `INSUFFICIENT_DATA` (no baseline, fewer than 30 trades
 - **Holdout.** Entries after 2023-12-31 are excluded unless `--allow-holdout`. Entries before 2019-02-11 are
   always excluded. Counts appear in the report.
 
+## Verdict windows (`--window dev|test|holdout`)
+
+Default `dev` is the rule above. The pre-registered candidate families (`docs/preregistration_candidates.md`,
+Section 10) use the other two windows:
+
+- `test`: entries 2022-01-01..2023-12-31, exit inside the window (straddlers purged). C3' is the monthly-block
+  bootstrap 95% CI lower bound > 0 (same n_boot and seed as C3). C4' is both 2022 and 2023 positive. `--allow-holdout`
+  is refused.
+- `holdout`: entries from 2024-01-01. Requires `--allow-holdout`, which appends one ledger row before scoring. C3'
+  as above. C4' is every calendar year present positive.
+
+C1, C2 and C5 are unchanged. Window verdicts report criteria ids C3' and C4', and their cut names carry the window
+suffix (`|test-window`, `|holdout-window`), so they never collide with a dev cut of the same candidate. The walk-forward
+dead-family rule (selected TRAIN expectancy <= 0: no TEST run, no holdout look) is in `strategy_eval/walkforward.py`.
+
 ## Stress conventions
 
 - Haircut h removes h of the credit (P&L falls by h x credit), as in `scratchpad/structure_search.py`
