@@ -1,5 +1,7 @@
 # Backtest Experiment Index
 
+> **SUPERSEDED — read first.** Every 11.16% and 12.07% figure in this file is superseded and not valid. They came from a weekly exit-repricing bug and Black-Scholes overstating entry credit. Corrected model-priced run #69 gives about 1.08% CAGR (MaxDD 3.1%, BS-priced, not evidence of an edge). Real-price chain engine verdict: NOT SUPPORTED. See `BACKTEST_CHANGELOG.md` (2026-10-19 and 2026-10-21 entries). The history below is kept as recorded.
+
 **Purpose**: Quick reference for all backtest runs, phases, and experiments  
 **Current Date**: 2026-08-29 | **Last Updated**: 2026-08-24  
 **Baseline**: Run #59 | **Status**: Ready for next experiment

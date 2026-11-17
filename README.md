@@ -90,11 +90,11 @@ python main.py --mode monitor
 ## Recent Changes
 
 - **2026-08-29** — Documentation cleanup: archived runs #3–#55, streamlined changelog, created baseline learnings & experiment index
-- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline
+- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline (superseded 2026-10: not valid, see 2026-10-21 correction)
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 
 - **2026-08-29** — Documentation cleanup: archived runs #3–#55, streamlined changelog, created baseline learnings & experiment index
-- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline
+- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline (superseded 2026-10: not valid, see 2026-10-21 correction)
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 - **2026-08-23** — Mid-session 11 AM IST entry window made permanent baseline (+2.47% CAGR, MaxDD 8.9%→4.7%)
 - **2026-08-23** — Capital split changed from 70/30 to **50/50** monthly/weekly
