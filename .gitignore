@@ -80,3 +80,6 @@ Thumbs.db
 docs/_build/
 site/
 logs/
+
+# Generated from the quote logs; regenerate with backtester/spread_model.py
+data/spread_table.json

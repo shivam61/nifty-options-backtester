@@ -32,6 +32,10 @@ Costs:
     charged adversely on entry (inside the fill price) and on exit (inside the exit fill). The
     multiplier is applied to the unscaled CostModel (the engine's close-side convention); the
     engine's entry fill used 0.75x of this, so 1.0x here is harsher than the engine's entry.
+  - opt-in spread model (ChainConfig.spread_model, default None): the base per-leg slippage is the
+    calibrated observed half-spread for the leg's moneyness/DTE/VIX bucket (backtester.spread_model),
+    falling back to the flat CostModel value when the bucket is not calibrated; the multiplier still
+    applies on top. None leaves every output unchanged. See docs/SPREAD_MODEL.md.
 
 Lots: fixed cfg.lots (default 1). Results are reported per lot; no budget-based sizing.
 
@@ -72,6 +76,7 @@ from backtester.nse_option_rates import (
     STT_SELL_PCT,
     rate_on,
 )
+from backtester.spread_model import SpreadModel
 from strategies.base import Leg, Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
 from backtester.weekly_exit_policy import (
@@ -147,6 +152,11 @@ class ChainConfig:
     margin_proxy: Optional[Callable] = None
     max_lots: int = 30
     kill_dd_pct: float = 0.20
+    # Data-driven half-spread (opt-in; None = flat CostModel slippage, output byte-identical to the
+    # default). When set, each leg's base slippage is the calibrated half-spread for its bucket
+    # (backtester.spread_model), falling back to the flat CostModel value per leg when the bucket is
+    # not calibrated. slippage_multiplier still applies on top of the base value.
+    spread_model: Optional[SpreadModel] = None
 
     @property
     def fully_legacy(self) -> bool:
@@ -185,6 +195,8 @@ class ChainBacktest:
         self.skips: Counter = Counter()
         self.skip_log: list[dict] = []
         self.diag: Counter = Counter()
+        # spread model usage, leg-level: "<entry|exit>:<calibrated|reason>" (empty unless spread_model set)
+        self.spread_stats: Counter = Counter()
         self.trades: list[dict] = []
         self.expiry_intrinsic_dev: list[float] = []
         self.index_vs_nifty: list[float] = []
@@ -314,9 +326,15 @@ class ChainBacktest:
             return None
         return self.market.loc[ts]
 
-    def _slip_unit(self, vix: float, strike: float, spot: float) -> float:
+    def _slip_unit(self, vix: float, strike: float, spot: float, dte: Optional[float] = None,
+                   price: Optional[float] = None, phase: str = "entry") -> float:
         moneyness = strike / spot if spot > 0 else 1.0
-        return self.cm.slippage_per_unit(vix, moneyness) * self.cfg.slippage_multiplier
+        flat = self.cm.slippage_per_unit(vix, moneyness)
+        if self.cfg.spread_model is None:
+            return flat * self.cfg.slippage_multiplier
+        est = self.cfg.spread_model.half_spread(strike, spot, dte, vix, price, flat=flat)
+        self.spread_stats[f"{phase}:{est.reason}"] += 1
+        return est.value * self.cfg.slippage_multiplier
 
     def _fee_rs(self, credit_per_unit: float, n_legs: int, lots: int) -> float:
         """CostModel fee components, identical to total_cost_per_trade minus the slippage term."""
@@ -428,7 +446,7 @@ class ChainBacktest:
             if s < TICK:
                 self.diag["settle_floored_entry"] += 1
                 s = TICK
-            slip = self._slip_unit(vix, k, spot)
+            slip = self._slip_unit(vix, k, spot, dte=dte, price=s, phase="entry")
             if tg.is_short:
                 f = max(s - slip, TICK)
             else:
@@ -628,7 +646,7 @@ class ChainBacktest:
                 if not leg.is_short and s_exit > 0:
                     itm_long_intrinsic_rs += s_exit * q
             else:
-                slip = self._slip_unit(vix, leg.strike, spot)
+                slip = self._slip_unit(vix, leg.strike, spot, dte=ex["dte"], price=s_exit, phase="exit")
                 if leg.is_short:
                     f_exit = s_exit + slip
                     exit_bought_rs += f_exit * q

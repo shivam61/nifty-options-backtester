@@ -118,7 +118,28 @@ def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lot
         diag["cfg"].update({"cash_settlement": cfg.cash_settlement, "legacy_costs": cfg.legacy_costs})
     if cfg.capital_mode:
         diag["capital"] = cap_summary
+    if cfg.spread_model is not None:  # absent by default, so default diag output is unchanged
+        diag["spread"] = spread_usage(bt)
     return trades, diag, bt.skip_log
+
+
+def spread_usage(bt) -> dict:
+    """Leg-level counts of which slippage source each charge used (calibrated bucket or fallback)."""
+    usage = dict(bt.spread_stats)
+    calibrated = sum(v for k, v in usage.items() if k.endswith(":calibrated"))
+    fallback = sum(v for k, v in usage.items() if not k.endswith(":calibrated"))
+    return {"legs_calibrated": calibrated, "legs_fallback": fallback, "by_source": usage}
+
+
+def format_spread_usage(u: dict) -> str:
+    parts = []
+    for phase in ("entry", "exit"):
+        cal = u["by_source"].get(f"{phase}:calibrated", 0)
+        fb = sum(v for k, v in u["by_source"].items() if k.startswith(f"{phase}:") and not k.endswith(":calibrated"))
+        parts.append(f"{phase} legs calibrated={cal} fallback={fb}")
+    return "spread model: " + "; ".join(parts) + f" (fallback reasons: " + ", ".join(
+        f"{k.split(':', 1)[1]}={v}" for k, v in sorted(u["by_source"].items())
+        if not k.endswith(":calibrated")) + ")"
 
 
 def main(argv=None) -> int:
@@ -173,6 +194,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-lots", type=int, default=30, help="lot cap per trade (default %(default)s)")
     ap.add_argument("--kill-dd-pct", type=float, default=0.20,
                     help="equity drawdown from peak that halts entries and force-closes (default %(default)s)")
+    ap.add_argument("--spread-table", type=Path, default=None,
+                    help="data-driven half-spread table (python -m backtester.spread_model --out ...); "
+                         "prints calibrated vs fallback leg counts per run. Default off (flat CostModel)")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
@@ -206,6 +230,16 @@ def main(argv=None) -> int:
         "cash_settlement": not a.legacy_settlement,
         "legacy_costs": a.legacy_costs,
     }
+    if a.spread_table is not None:
+        from backtester.spread_model import SpreadModel
+
+        model = SpreadModel.load(a.spread_table)
+        overrides["spread_model"] = model
+        summary["spread_model"] = {
+            "table": str(a.spread_table), "min_samples": model.min_samples,
+            "min_snapshots": model.min_snapshots, "rows_used": model.table.get("rows_used"),
+            "calibrated_buckets": sum(1 for c in model.coverage() if c["calibrated"]),
+            "observed_buckets": len(model.buckets)}
     if a.capital_mode:
         overrides.update({"capital_mode": True, "capital_rs": a.capital_rs, "risk_cap_pct": a.risk_cap_pct,
                           "margin_cap_pct": a.margin_cap_pct, "max_lots": a.max_lots,
@@ -256,6 +290,9 @@ def main(argv=None) -> int:
                   f"avg_lots={cap['avg_lots']} util={cap['capital_utilisation_avg_pct']}% "
                   f"kill={cap['kill_switch_date']}")
         print(f"{tag}: trades={len(trades)} exp_per_lot={summary['runs'][-1]['exp_per_lot']}")
+        if "spread" in diag:
+            print(f"{tag}: " + format_spread_usage(diag["spread"]))
+            summary["runs"][-1]["spread"] = diag["spread"]
     json.dump(summary, open(a.out / "summary.json", "w"), indent=1)
     return 0
 
