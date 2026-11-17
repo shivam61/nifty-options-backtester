@@ -256,3 +256,15 @@ These record how ambiguous sentences were read when the rules were implemented (
 5. **Monthly cadence (B).** The signal day stays the weekly expiry day; only the target expiry changes.
 6. **Trade files.** Candidate trade files are written in the harness's normalised format (with `entry_vix`), so the
    chain adapter, which recomputes max loss from legs without fees, is bypassed and the Section 4 debit definition holds.
+7. **Run convention (disclosed 2026-11-17).** Trade files for the harness are generated at slippage 1.0x. The harness
+   (`strategy_eval.stress`) treats recorded slippage as the 1.0x base and adds `(m - 1) x slippage` for the 1.5x verdict
+   cost. A first train run was made at 1.5x in the engine; its output was discarded **unread** (only trade counts and
+   skip reasons were inspected, no P&L or expectancy), because scoring it at 1.5x in the harness would have charged
+   about 2.25x. The verdict cost is unchanged at 1.5x. This is a run-convention fix with no results seen, not a rule
+   change.
+8. **`non_positive_credit` skip (disclosed 2026-11-17).** Family A skips a signal whose net credit at the fill is not
+   positive (a credit spread with no credit). This rule was in the implementation during the first (discarded) run and
+   is not stated in Sections 2 to 7. It is declared here as part of the A entry rule: the skip is counted per cell.
+9. **Family B sample size.** The discarded run's counts showed Family B at 13 (weekly) and 3 (monthly) train trades.
+   Section 7 already declares the consequence: with no B cell reaching 30 train trades, B is dead as
+   INSUFFICIENT_DATA. This is applied from the counts, not from any P&L.
