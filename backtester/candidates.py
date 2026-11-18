@@ -41,10 +41,12 @@ TRADING_DAYS_PER_YEAR = 252
 # "expiry_after_end" is not named in the pre-registration. A trade whose expiry falls after the window end
 # cannot settle inside the window, so it is not opened. This interpretation is flagged in the report.
 # "entry_filter" is the opt-in ChainConfig.candidate_entry_filter hook (default: no filter, never counted).
+# "zero_contract_leg" is opt-in ChainConfig.skip_zero_contract_legs (round 2, Section 11.1): any entry leg with
+# 0 contracts traded on the fill day skips the whole trade. Default off, never counted.
 CANDIDATE_SKIP_REASONS = (
     "vix_out_of_band", "position_open", "no_expiry_in_window", "expiry_after_end", "no_listed_strike",
     "no_price", "missing_data", "invalid_structure", "non_positive_credit", "invalid_max_loss",
-    "sizing_zero", "kill_switch", "entry_filter",
+    "sizing_zero", "kill_switch", "entry_filter", "zero_contract_leg",
 )
 
 # Phase windows (pre-registration Section 7). The holdout end is set at the time of the look.

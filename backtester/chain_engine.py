@@ -196,6 +196,10 @@ class ChainConfig:
     # position overlaps the next one only when it is held 8 days, so overlap needs weekly_fixed_weekday/daily.
     signal_cadence: str = "expiry_day"
     signal_weekday: int = 0
+    # skip_zero_contract_legs (candidate mode, opt-in; round 2 Section 11.1): if ANY entry leg has 0 contracts
+    # traded on the fill day, the whole trade is skipped with reason 'zero_contract_leg'. Default False keeps
+    # the settle-priced fill of every leg.
+    skip_zero_contract_legs: bool = False
 
     @property
     def fully_legacy(self) -> bool:
@@ -265,6 +269,8 @@ class ChainBacktest:
             raise ValueError(f"signal_cadence must be one of {SIGNAL_CADENCES}")
         if cfg.candidate is None and cfg.signal_cadence != "expiry_day":
             raise ValueError("signal_cadence applies to candidate families only")
+        if cfg.candidate is None and cfg.skip_zero_contract_legs:
+            raise ValueError("skip_zero_contract_legs applies to candidate families only")
         if not 0 <= cfg.signal_weekday <= 4:
             raise ValueError("signal_weekday must be 0 (Monday) to 4 (Friday)")
 
@@ -867,6 +873,12 @@ class ChainBacktest:
                 self._skip("no_listed_strike", sig, fill_date=str(day), expiry=str(expiry))
                 return None
             plan = [("CE", kc, False), ("PE", kp, False)]
+
+        if self.cfg.skip_zero_contract_legs:
+            entry_rows = [self.arch.row(day, expiry, k, opt) for opt, k, _ in plan]
+            if any(r is not None and r["contracts"] == 0 for r in entry_rows):
+                self._skip("zero_contract_leg", sig, fill_date=str(day), expiry=str(expiry))
+                return None
 
         qty = self.cfg.lots * self.lot_size
         legs: list[Leg] = []

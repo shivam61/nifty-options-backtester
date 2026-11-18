@@ -374,3 +374,83 @@ def test_margin_netting_skips_sizing_zero_when_budget_is_used_up(tmp_path):
     # budget left after entry 1: 250000 - 19 x 12870 = 5470 < one lot, so the Jan 10 entry is sizing_zero
     assert bt.skips["sizing_zero"] >= 1
     assert all(t["fill_date"] != str(D10) for t in trades)
+
+
+# ----------------------------------------------------------------------------- zero-contract legs (round 2, Section 11.1)
+
+def _world_with_contracts(root, days, zero=frozenset()):
+    """A-style Thursday world (test_candidates._write_world) with contracts=0 on every (day, opt, strike) in `zero`."""
+    import gzip
+    import pandas as pd
+    from tests.test_candidates import COLS, THURS, STRIKES, _row
+    prices = dict(A_PRICES)
+    for d in days:
+        rows = []
+        for e in THURS:
+            if e < d or (e - d).days > 60:
+                continue
+            for opt in ("PE", "CE"):
+                for k in STRIKES:
+                    settle = SPOT if e == d else prices.get((d, opt, k), 10.0)
+                    contracts = 0 if (d, opt, k) in zero else 100
+                    rows.append(_row(d, e, k, opt, settle, contracts=contracts))
+        path = root / "daily" / (d.strftime("%Y%m%d") + ".csv.gz")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(path, "wt") as fh:
+            pd.DataFrame(rows, columns=COLS).to_csv(fh, index=False)
+
+
+def test_zero_contract_reason_is_declared_and_flag_defaults_off():
+    from backtester.candidates import CANDIDATE_SKIP_REASONS
+    assert "zero_contract_leg" in CANDIDATE_SKIP_REASONS
+    assert ChainConfig().skip_zero_contract_legs is False
+
+
+def test_zero_contract_flag_requires_candidate_mode(tmp_path):
+    days, mk = _a_world(tmp_path)
+    arch = NseFoArchive(archive_dir=str(tmp_path))
+    with pytest.raises(ValueError):
+        ChainBacktest(arch, mk, ChainConfig(start=S, end=E, skip_zero_contract_legs=True))
+
+
+def test_zero_contract_long_leg_is_traded_by_default(tmp_path):
+    """Default (flag off): the existing behaviour is unchanged, a zero-contract leg is priced at its settle."""
+    days = _weekdays(S, E)
+    _world_with_contracts(tmp_path, days, zero={(F, "PE", LONG_PE_200)})
+    _, trades = _run(tmp_path, days, _market(days), _cfg_spec(get_cell("PCS_A_k09_w200"), S, E))
+    assert len(trades) == 1
+
+
+def test_zero_contract_long_leg_skips_whole_trade_when_flag_on(tmp_path):
+    days = _weekdays(S, E)
+    _world_with_contracts(tmp_path, days, zero={(F, "PE", LONG_PE_200)})
+    bt, trades = _run(tmp_path, days, _market(days),
+                      _cfg_spec(get_cell("PCS_A_k09_w200"), S, E, skip_zero_contract_legs=True))
+    assert trades == []
+    assert bt.skips["zero_contract_leg"] == 1
+    assert bt.skip_log[0]["reason"] == "zero_contract_leg" and bt.skip_log[0]["date"] == str(S)
+
+
+def test_zero_contract_short_leg_skips_whole_trade_when_flag_on(tmp_path):
+    days = _weekdays(S, E)
+    _world_with_contracts(tmp_path, days, zero={(F, "PE", SHORT_PE)})
+    bt, trades = _run(tmp_path, days, _market(days),
+                      _cfg_spec(get_cell("PCS_A_k09_w200"), S, E, skip_zero_contract_legs=True))
+    assert trades == [] and bt.skips["zero_contract_leg"] == 1
+
+
+def test_zero_contract_on_signal_day_or_other_strike_does_not_skip(tmp_path):
+    """Only the fill-day entry legs count. A zero on the signal day or on an unused strike is ignored."""
+    days = _weekdays(S, E)
+    _world_with_contracts(tmp_path, days, zero={(S, "PE", SHORT_PE), (F, "PE", 21000)})
+    bt, trades = _run(tmp_path, days, _market(days),
+                      _cfg_spec(get_cell("PCS_A_k09_w200"), S, E, skip_zero_contract_legs=True))
+    assert len(trades) == 1 and "zero_contract_leg" not in bt.skips
+
+
+def test_zero_contract_flag_on_without_zeros_changes_nothing(tmp_path):
+    days, mk = _a_world(tmp_path)
+    _, base = _run(tmp_path, days, mk, _cfg_spec(get_cell("PCS_A_k09_w200"), S, E))
+    bt, flagged = _run(tmp_path, days, mk,
+                       _cfg_spec(get_cell("PCS_A_k09_w200"), S, E, skip_zero_contract_legs=True))
+    assert flagged == base and "zero_contract_leg" not in bt.skips
