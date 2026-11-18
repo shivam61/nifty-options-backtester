@@ -39,6 +39,7 @@ import portfolio_metrics as pm  # noqa: E402  (Tier 2 numbers; no verdict logic 
 
 def _print_summary(res: dict) -> None:
     v = res["verdict"]
+    print(f"VERDICT COST: {v['cost_level']['slippage_mult']:g}x slippage (--verdict-slippage)")
     print(f"strategy: {res['name']}")
     win = res.get("window", "dev")
     print(f"VERDICT: {v['verdict']}  (criteria: {v['criteria_verdict']}"

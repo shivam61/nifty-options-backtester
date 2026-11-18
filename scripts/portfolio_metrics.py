@@ -63,12 +63,18 @@ def portfolio_metrics(dates: Sequence, equity: Sequence[float], capital_rs: floa
 
 
 def read_equity_curve(path: str | Path) -> tuple[list, list[float]]:
-    """(dates, equity) from a CSV with columns date,equity, in file order."""
+    """(dates, equity) from a CSV with columns date,equity, sorted by date (audit fix 4).
+
+    The sort is stable, so rows with the same date keep their file order. The returns and drawdown are defined on
+    the time order, so an unsorted file must not change the metrics.
+    """
     df = pd.read_csv(path)
     missing = {"date", "equity"} - set(df.columns)
     if missing:
         raise ValueError(f"equity curve {path} lacks columns {sorted(missing)}")
-    return [pd.Timestamp(d).date() for d in df["date"]], [float(e) for e in df["equity"]]
+    df = df.assign(_d=[pd.Timestamp(d).date() for d in df["date"]])
+    df = df.sort_values("_d", kind="mergesort")
+    return list(df["_d"]), [float(e) for e in df["equity"]]
 
 
 def tier2_markdown(m: dict, source: str) -> str:

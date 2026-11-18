@@ -98,3 +98,65 @@ def test_eval_cli_reports_tier2_beside_unchanged_verdict(tmp_path):
     t2 = j1["tier2_portfolio"]
     assert t2["cagr_pct"] is not None and t2["max_dd_pct"] is not None and t2["sharpe_daily_ann"] is not None
     assert "Tier 2" in out1.read_text(encoding="utf-8") and "Tier 2" not in out0.read_text(encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------- audit fix 4: curve order and header
+
+def test_read_equity_curve_sorts_by_date_and_keeps_equity_aligned(tmp_path):
+    p = tmp_path / "curve.csv"
+    p.write_text("date,equity\n2021-01-05,103\n2021-01-01,100\n2021-01-04,102\n2021-01-03,101\n", encoding="utf-8")
+    dates, equity = _pm().read_equity_curve(p)
+    assert [str(d) for d in dates] == ["2021-01-01", "2021-01-03", "2021-01-04", "2021-01-05"]
+    assert equity == [100.0, 101.0, 102.0, 103.0]
+
+
+def test_unsorted_curve_gives_the_same_metrics_as_sorted(tmp_path):
+    pm = _pm()
+    sorted_p, shuffled_p = tmp_path / "s.csv", tmp_path / "u.csv"
+    rows = [("2021-01-01", 500_000.0), ("2021-01-04", 510_000.0), ("2021-01-05", 480_000.0),
+            ("2021-01-06", 520_000.0)]
+    sorted_p.write_text("date,equity\n" + "\n".join(f"{d},{e}" for d, e in rows) + "\n", encoding="utf-8")
+    shuffled = [rows[i] for i in (2, 0, 3, 1)]
+    shuffled_p.write_text("date,equity\n" + "\n".join(f"{d},{e}" for d, e in shuffled) + "\n", encoding="utf-8")
+    m_s = pm.portfolio_metrics(*pm.read_equity_curve(sorted_p), capital_rs=500_000.0)
+    m_u = pm.portfolio_metrics(*pm.read_equity_curve(shuffled_p), capital_rs=500_000.0)
+    assert m_s == m_u
+    assert m_u["max_dd_pct"] == pytest.approx(100.0 * (1 - 480_000.0 / 510_000.0), abs=1e-3)
+
+
+def test_eval_report_and_stdout_state_the_verdict_slippage(tmp_path, capsys):
+    from tests.test_strategy_eval import _chain_pair
+
+    cand, base = _chain_pair()
+    cpath, bpath = tmp_path / "cand.csv", tmp_path / "base.csv"
+    cand.to_csv(cpath, index=False)
+    base.to_csv(bpath, index=False)
+    out = tmp_path / "h.md"
+    _eval_mod("eval_slip").main(["--trades", str(cpath), "--baseline", str(bpath), "--out", str(out),
+                                 "--registry", str(tmp_path / "r.json"), "--name", "slip",
+                                 "--verdict-slippage", "1.0"])
+    text = out.read_text(encoding="utf-8")
+    assert "**Verdict cost: 1x slippage**" in text
+    assert text.index("**Verdict cost") < text.index("## Verdict")          # in the header, above the verdict
+    assert "VERDICT COST: 1x slippage" in capsys.readouterr().out
+
+
+def test_default_verdict_slippage_is_still_one_point_five(tmp_path, monkeypatch):
+    from tests.test_strategy_eval import _chain_pair
+
+    cand, base = _chain_pair()
+    cpath, bpath = tmp_path / "cand.csv", tmp_path / "base.csv"
+    cand.to_csv(cpath, index=False)
+    base.to_csv(bpath, index=False)
+    mod = _eval_mod("eval_default_slip")
+    seen = {}
+    real = mod.run_evaluation
+
+    def spy(*args, **kwargs):
+        seen.update(kwargs)
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(mod, "run_evaluation", spy)
+    mod.main(["--trades", str(cpath), "--baseline", str(bpath), "--out", str(tmp_path / "d.md"),
+              "--registry", str(tmp_path / "r.json"), "--name", "dflt"])
+    assert seen["verdict_slippage"] == 1.5

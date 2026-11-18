@@ -48,6 +48,9 @@ def render_markdown(res: dict, source: str = "", baseline_source: str = "") -> s
     lines: list[str] = []
     lines.append(f"# Strategy evaluation: {res['name']}")
     lines.append("")
+    lines.append(f"**Verdict cost: {v['cost_level']['slippage_mult']:g}x slippage** "
+                 "(set by --verdict-slippage; round-1 rule 1.5x, round-2 pass bar 1.0x)")
+    lines.append("")
     lines.append(f"- Trades file: `{source}`")
     if baseline_source:
         lines.append(f"- Baseline file: `{baseline_source}`")
