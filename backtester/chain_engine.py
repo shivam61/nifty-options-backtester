@@ -68,7 +68,7 @@ from __future__ import annotations
 import copy
 import math
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
 from typing import Callable, Optional
 
@@ -88,8 +88,9 @@ from backtester.nse_option_rates import (
 )
 from backtester.spread_model import SpreadModel
 from backtester.candidates import (
-    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, CandidateSpec, PCS, listed_expiries,
-    pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry, rv20_gap_filter, target_strikes,
+    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, TREND_SPREAD, CandidateSpec, PCS, all_of,
+    is_monthly_signal_day, listed_expiries, pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry,
+    post_spike_filter, rv20_gap_filter, target_strikes, term_structure_filter, trend_structure,
 )
 from strategies.base import Leg, Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
@@ -275,12 +276,23 @@ class ChainBacktest:
             raise ValueError("skip_zero_contract_legs applies to candidate families only")
         if not 0 <= cfg.signal_weekday <= 4:
             raise ValueError("signal_weekday must be 0 (Monday) to 4 (Friday)")
-        # entry filter: the explicit hook, or the spec's RV20 gate (round 2); never both
+        if cfg.candidate is not None and cfg.candidate.monthly_signal and cfg.signal_cadence != "expiry_day":
+            raise ValueError("monthly_signal candidates signal on monthly expiry days (signal_cadence='expiry_day' only)")
+        # entry filter: the explicit hook, or the spec's own filters (round 2 RV20; round 3 post-spike and
+        # term-structure). The spec filters are ANDed together and never combined with the explicit hook.
         self._entry_filter = cfg.candidate_entry_filter
-        if cfg.candidate is not None and cfg.candidate.rv20_gap_min is not None:
+        spec = cfg.candidate
+        spec_filters = []
+        if spec is not None and spec.rv20_gap_min is not None:
+            spec_filters.append(rv20_gap_filter(m["nifty_close"], spec.rv20_gap_min))
+        if spec is not None and spec.spike_level is not None:
+            spec_filters.append(post_spike_filter(m["vix"], spec.spike_level, spec.spike_drop_pct))
+        if spec is not None and spec.term_structure_gate:
+            spec_filters.append(term_structure_filter(self.arch))
+        if spec_filters:
             if cfg.candidate_entry_filter is not None:
-                raise ValueError("a candidate with rv20_gap_min cannot also set candidate_entry_filter")
-            self._entry_filter = rv20_gap_filter(m["nifty_close"], cfg.candidate.rv20_gap_min)
+                raise ValueError("a candidate with its own entry filter cannot also set candidate_entry_filter")
+            self._entry_filter = all_of(spec_filters)
 
     # ------------------------------------------------------------ capital mode helpers
     def _capital_sizing(self, trade: Trade, credit_unit: float, debit_unit: Optional[float] = None,
@@ -842,6 +854,14 @@ class ChainBacktest:
             return None
         spot = float(mk["nifty_close"])
         vix = pend["signal_vix"]
+        resolved_structure = None
+        if spec.structure == TREND_SPREAD:
+            # round 3 item 4: PCS or CCS from NIFTY closes up to and including S (never the fill day)
+            resolved_structure = trend_structure(self.market["nifty_close"], sig, spec.trend_sma_days)
+            if resolved_structure is None:
+                self._skip("missing_data", sig, fill_date=str(day), note="trend_sma_undefined")
+                return None
+            spec = replace(spec, structure=resolved_structure, trend_sma_days=None)
         expiry, dte = pick_expiry(spec, listed_expiries(self.arch, day), day)
         if expiry is None:
             self._skip("no_expiry_in_window", sig, fill_date=str(day), cadence=spec.cadence)
@@ -983,7 +1003,8 @@ class ChainBacktest:
             "mtm_per_lot": 0.0,
             "cand": {"credit_rs": credit_rs, "max_loss_rs": max_loss_rs, "ml_unit": ml_unit,
                      "dte": dte, "targets": tg, "debit": debit_unit is not None,
-                     "cadence": spec.cadence, "family": spec.family, "k": spec.k, "width": spec.width},
+                     "cadence": spec.cadence, "family": spec.family, "k": spec.k, "width": spec.width,
+                     "resolved_structure": resolved_structure},
         }
 
     def _candidate_mark(self, st: dict, d: date) -> None:
@@ -1076,6 +1097,7 @@ class ChainBacktest:
             "credit_rs": c["credit_rs"], "max_loss_rs": c["max_loss_rs"],
             "max_loss_per_unit": c["ml_unit"], "debit_structure": c["debit"],
             "entry_vix": st["signal_vix"], "pricing_source": "chain",
+            **({"resolved_structure": c["resolved_structure"]} if c.get("resolved_structure") else {}),
         })
         return rec
 
@@ -1128,6 +1150,8 @@ class ChainBacktest:
             if cfg.signal_cadence == "expiry_day":
                 if not self.arch.expires_on(d):  # signal only on a listed expiry day
                     continue
+                if spec.monthly_signal and not is_monthly_signal_day(self.arch, d):
+                    continue  # round 3: signal on the monthly expiry only (default: every weekly expiry)
             elif cfg.signal_cadence == "weekly_fixed_weekday":
                 # first session at or after signal_weekday in each ISO week (holidays move it to the next session)
                 wk = d.isocalendar()[:2]

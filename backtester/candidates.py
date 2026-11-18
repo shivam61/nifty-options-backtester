@@ -31,9 +31,12 @@ PCS = "put_credit_spread"
 LS = "long_strangle"
 CALL_CREDIT_SPREAD = "call_credit_spread"   # step 0: short CE at spot + k sigma_T, long CE W above it
 IRON_CONDOR = "iron_condor"                 # step 0: PCS and CCS together, equal wings W (defined max loss)
+# Round 3 (Section 4 item 4): one spread, chosen at fill from NIFTY close_S vs SMA(close up to S): PCS if above, else CCS.
+TREND_SPREAD = "trend_spread"
 
-CREDIT_STRUCTURES = (PCS, CALL_CREDIT_SPREAD, IRON_CONDOR)
+CREDIT_STRUCTURES = (PCS, CALL_CREDIT_SPREAD, IRON_CONDOR, TREND_SPREAD)
 KNOWN_STRUCTURES = CREDIT_STRUCTURES + (LS,)
+CADENCES = ("weekly", "monthly")
 
 WEEKLY_DTE_WINDOW = (3, 8)
 MONTHLY_DTE_WINDOW = (15, 28)
@@ -80,12 +83,47 @@ class CandidateSpec:
     # Round 2 (Section 3): entry only when VIX_S - RV20_S >= rv20_gap_min (vol points). RV20 uses NIFTY closes up
     # to and including S. None (default) applies no realised-vol gate. Enforced by the chain engine.
     rv20_gap_min: Optional[float] = None
+    # Round 3 (opt-in; all None/False leaves every output unchanged). Entry filters read data dated on or before S only.
+    # spike_level / spike_drop_pct (Section 4 item 2): pass only if max VIX over the 20 sessions up to and including S
+    # is >= spike_level AND VIX_S <= (1 - spike_drop_pct) x that max. Set together.
+    spike_level: Optional[float] = None
+    spike_drop_pct: Optional[float] = None
+    # term_structure_gate (Section 4 item 3): pass only if the ATM-straddle implied-move proxy of the nearest weekly
+    # expiry is <= that of the nearest monthly expiry (contango), both read from the archive settles on S.
+    term_structure_gate: bool = False
+    # trend_sma_days (TREND_SPREAD only, Section 4 item 4): SMA window of NIFTY closes up to and including S.
+    trend_sma_days: Optional[int] = None
+    # monthly_signal (cadence='monthly' only, round 3 Section 4 item 1): signal ON the monthly expiry day, then fill the
+    # next session and target the monthly expiry. False keeps the round-1 family B meaning of cadence='monthly':
+    # signal on every weekly expiry day, target the monthly expiry (LS_B_*_mo, pre-registered, unchanged).
+    monthly_signal: bool = False
 
     def __post_init__(self) -> None:
         if self.rv20_gap_min is not None and not math.isfinite(self.rv20_gap_min):
             raise ValueError("rv20_gap_min must be finite (vol points)")
         if self.structure not in KNOWN_STRUCTURES:
             raise ValueError(f"unknown structure {self.structure!r}")
+        if self.cadence not in CADENCES:
+            raise ValueError(f"cadence must be one of {CADENCES}")
+        if not (math.isfinite(self.k) and self.k > 0):
+            raise ValueError("k must be a positive finite multiple of sigma_T")
+        if self.structure in CREDIT_STRUCTURES and not (
+                self.width is not None and math.isfinite(self.width) and self.width > 0):
+            raise ValueError("credit structures need a positive finite width (index points)")
+        if (self.spike_level is None) != (self.spike_drop_pct is None):
+            raise ValueError("spike_level and spike_drop_pct must be set together")
+        if self.spike_level is not None:
+            if not (math.isfinite(self.spike_level) and self.spike_level > 0):
+                raise ValueError("spike_level must be a positive finite VIX level")
+            if not (math.isfinite(self.spike_drop_pct) and 0.0 < self.spike_drop_pct < 1.0):
+                raise ValueError("spike_drop_pct must be a fraction in (0, 1)")
+        if self.structure == TREND_SPREAD:
+            if self.trend_sma_days is None or self.trend_sma_days < 2:
+                raise ValueError("TREND_SPREAD needs trend_sma_days >= 2")
+        elif self.trend_sma_days is not None:
+            raise ValueError("trend_sma_days applies to TREND_SPREAD only")
+        if self.monthly_signal and self.cadence != "monthly":
+            raise ValueError("monthly_signal applies to cadence='monthly' only")
         if self.profit_target_pct is not None or self.stop_loss_x is not None:
             if self.structure not in CREDIT_STRUCTURES:
                 raise ValueError("exit rules (profit target / stop loss) apply to credit structures only")
@@ -169,6 +207,125 @@ def rv20_gap_filter(closes: pd.Series, gap_min: float) -> Callable:
             return None
         return bool(float(row["vix"]) - rv >= gap_min)
     return _filter
+
+
+def all_of(filters: list) -> Callable:
+    """Combine entry filters with AND. Any definite False wins (skip 'entry_filter'); otherwise any None makes the
+    combined result None (skip 'missing_data'); otherwise True. An empty list passes."""
+    def _filter(row):
+        undefined = False
+        for f in filters:
+            r = f(row)
+            if r is None:
+                undefined = True
+            elif not r:
+                return False
+        return None if undefined else True
+    return _filter
+
+
+SPIKE_WINDOW = 20   # round 3 (Section 4 item 2): sessions up to and including S
+
+
+def post_spike_decision(vix: pd.Series, sig, spike_level: float, drop_pct: float) -> Optional[bool]:
+    """Post-spike rule on the VIX closes indexed by date. Reads only values dated <= sig.
+
+    max(last SPIKE_WINDOW closes up to and including sig) >= spike_level AND VIX_sig <= (1 - drop_pct) x that max.
+    None when fewer than SPIKE_WINDOW closes exist up to sig or any of them is missing.
+    """
+    s = vix.loc[:pd.Timestamp(sig)]
+    tail = s.iloc[-SPIKE_WINDOW:].to_numpy(dtype=float)
+    if len(tail) < SPIKE_WINDOW or not np.all(np.isfinite(tail)):
+        return None
+    mx = float(tail.max())
+    vix_s = float(tail[-1])
+    return bool(mx >= spike_level and vix_s <= (1.0 - drop_pct) * mx)
+
+
+def post_spike_filter(vix: pd.Series, spike_level: float, drop_pct: float) -> Callable:
+    """candidate_entry_filter: called with the signal-day market row (row.name is the date)."""
+    def _filter(row) -> Optional[bool]:
+        return post_spike_decision(vix, pd.Timestamp(row.name).date(), spike_level, drop_pct)
+    return _filter
+
+
+def trend_structure(closes: pd.Series, sig, sma_days: int) -> Optional[str]:
+    """TREND_SPREAD structure choice (round 3, Section 4 item 4), decided on S data only.
+
+    PCS when close_S > SMA(sma_days) of the closes up to and including S, otherwise CCS (ties go to CCS).
+    None when fewer than sma_days closes exist up to S or any of them is missing.
+    """
+    s = closes.loc[:pd.Timestamp(sig)].iloc[-sma_days:].to_numpy(dtype=float)
+    if len(s) < sma_days or not np.all(np.isfinite(s)):
+        return None
+    return PCS if s[-1] > float(s.mean()) else CALL_CREDIT_SPREAD
+
+
+def _straddle_chain_settles(chain: pd.DataFrame) -> pd.DataFrame:
+    """Usable settles on a day: positive settle and contracts > 0 (0-contract settles are excluded)."""
+    if chain is None or len(chain) == 0:
+        return pd.DataFrame(columns=["strike", "opt", "settle"])
+    ok = (chain["settle"] > 0) & (chain["contracts"] > 0) & np.isfinite(chain["settle"].astype(float))
+    return chain.loc[ok, ["strike", "opt", "settle"]]
+
+
+def straddle_implied_move(chain: pd.DataFrame, spot: float, dte: int) -> Optional[float]:
+    """Model-free ATM straddle implied-move proxy: (CE + PE at the ATM strike) / (spot x sqrt(DTE / 365)).
+
+    ATM strike = the strike with both CE and PE usable settles that minimises |CE - PE| (ties: lower strike).
+    None when there is no such pair or the inputs are not positive finite.
+    """
+    if not (spot is not None and math.isfinite(spot) and spot > 0) or dte is None or dte <= 0:
+        return None
+    u = _straddle_chain_settles(chain)
+    if u.empty:
+        return None
+    ce = u[u["opt"] == "CE"].groupby("strike")["settle"].first()
+    pe = u[u["opt"] == "PE"].groupby("strike")["settle"].first()
+    both = ce.index.intersection(pe.index)
+    if len(both) == 0:
+        return None
+    diff = (ce.loc[both] - pe.loc[both]).abs()
+    atm = float(diff[diff == diff.min()].index.min())
+    straddle = float(ce.loc[atm] + pe.loc[atm])
+    return straddle / (float(spot) * math.sqrt(dte / 365.0))
+
+
+def term_structure_pass(arch, sig, spot: float) -> Optional[bool]:
+    """Round 3, Section 4 item 3: True when the nearest weekly expiry's straddle proxy <= the nearest monthly's.
+
+    Reads only the archive on day sig (its expiry index and its chains). Expiries after sig only; the expiry
+    falling on sig itself is never used (its rows are intrinsic). Weekly = nearest listed expiry after sig that
+    is not a monthly expiry; monthly = nearest monthly expiry after sig (monthly_expiries on sig). None when either
+    is missing or has no ATM pair.
+    """
+    listed_all = listed_expiries(arch, sig)
+    monthly = set(monthly_expiries(listed_all, sig))
+    after = [e for e in listed_all if e > sig]
+    weekly_c = [e for e in after if e not in monthly]
+    monthly_c = [e for e in after if e in monthly]
+    if not weekly_c or not monthly_c:
+        return None
+    w, m = min(weekly_c), min(monthly_c)
+    pw = straddle_implied_move(arch.chain(sig, w), spot, (w - sig).days)
+    pm = straddle_implied_move(arch.chain(sig, m), spot, (m - sig).days)
+    if pw is None or pm is None:
+        return None
+    return bool(pw <= pm)
+
+
+def term_structure_filter(arch) -> Callable:
+    """candidate_entry_filter for the term-structure gate; row is the signal-day market row."""
+    def _filter(row) -> Optional[bool]:
+        spot = float(row["nifty_close"])
+        return term_structure_pass(arch, pd.Timestamp(row.name).date(), spot)
+    return _filter
+
+
+def is_monthly_signal_day(arch, day: date) -> bool:
+    """True when day is the monthly expiry (last listed expiry of its calendar month) of the archive on that day."""
+    listed = listed_expiries(arch, day)
+    return day in monthly_expiries(listed, day)
 
 
 def sigma_T(spot_f: float, vix_s: float, dte: int) -> float:
