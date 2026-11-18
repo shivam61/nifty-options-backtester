@@ -83,6 +83,8 @@ def main(argv=None) -> int:
     ap.add_argument("--window", choices=["dev", "test", "holdout"], default="dev",
                     help="verdict window: dev (default, C3/C4 on 2019-2023), test (2022-2023, C3'/C4' with "
                          "every year positive), holdout (2024+, needs --allow-holdout). See docs/STRATEGY_EVAL.md.")
+    ap.add_argument("--verdict-slippage", type=float, default=1.5,
+                    help="verdict cost multiplier on the file (default 1.5 = round 1 rule; round 2 pass bar is 1.0)")
     ap.add_argument("--n-boot", type=int, default=N_BOOT_DEFAULT)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--equity-curve", type=Path, default=None,
@@ -106,7 +108,7 @@ def main(argv=None) -> int:
     registry = TestRegistry.open(a.registry)
     res = run_evaluation(cand, base, name=name, capital=a.capital, risk_cap=a.risk_cap,
                          allow_holdout=a.allow_holdout, registry=registry, n_boot=a.n_boot, seed=a.seed,
-                         window=a.window)
+                         window=a.window, verdict_slippage=a.verdict_slippage)
     registry.save()
 
     out = a.out or (REPO_ROOT / "logs" / f"eval_{name}.md")

@@ -158,3 +158,18 @@ def test_holdout_window_negative_year_fails_c4_prime():
                              allow_holdout=True, n_boot=1000)
     assert _statuses(res)["C4'"] == "FAIL" and res["verdict"] == "FAIL"
     assert len(read_ledger()) == 1
+
+
+# ----------------------------------------------------------------------------- verdict slippage (round 2 pass bar)
+
+def test_run_evaluation_verdict_slippage_defaults_to_1_5_and_accepts_1_0():
+    """docs/preregistration_round2.md Section 5/7: the pass bar is 1.0x. The default stays 1.5x (round 1)."""
+    from strategy_eval.stress import per_lot
+    cand = _by_year(TEST_DATES, {2022: 400.0, 2023: 400.0})
+    res_default = run_evaluation(cand, _pair(cand), name="vs-d", registry=TestRegistry(), n_boot=300, window="test")
+    assert res_default["verdict"]["cost_level"]["slippage_mult"] == 1.5
+    res_1x = run_evaluation(cand, _pair(cand), name="vs-1", registry=TestRegistry(), n_boot=300, window="test",
+                            verdict_slippage=1.0)
+    assert res_1x["verdict"]["cost_level"]["slippage_mult"] == 1.0
+    assert res_1x["metrics"]["at_verdict_cost"]["expectancy_per_lot"] == pytest.approx(float(per_lot(cand).mean()))
+    assert "|slip1|" in res_1x["verdict"]["cut_key"] and "|slip1.5|" in res_default["verdict"]["cut_key"]

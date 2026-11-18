@@ -16,15 +16,18 @@ from strategy_eval.verdict import (
 def run_evaluation(candidate: pd.DataFrame, baseline: pd.DataFrame | None = None, *,
                    name: str = "candidate", capital: float = 2_500_000.0, risk_cap: float = 50_000.0,
                    allow_holdout: bool = False, registry: TestRegistry | None = None,
-                   n_boot: int = N_BOOT_DEFAULT, seed: int = DEFAULT_SEED, window: str = "dev") -> dict:
+                   n_boot: int = N_BOOT_DEFAULT, seed: int = DEFAULT_SEED, window: str = "dev",
+                   verdict_slippage: float = VERDICT_SLIPPAGE) -> dict:
     """Run every section of the evaluation on normalised tables. Returns a plain dict.
 
-    window: 'dev' (default), 'test' or 'holdout'. See strategy_eval.verdict for the window rules."""
+    window: 'dev' (default), 'test' or 'holdout'. See strategy_eval.verdict for the window rules.
+    verdict_slippage: verdict cost multiplier (default 1.5 = round 1; round 2 pass bar is 1.0)."""
     registry = resolve_registry(registry)     # None -> logs/eval_registry.json
     verdict = evaluate_pass_rule(candidate, baseline, allow_holdout=allow_holdout, registry=registry,
-                                 name=name, n_boot=n_boot, seed=seed, window=window)
+                                 name=name, n_boot=n_boot, seed=seed, window=window,
+                                 verdict_slippage=verdict_slippage)
     cand_w, _ = select_window(candidate, window, allow_holdout)
-    cand_v = stress_trades(cand_w, VERDICT_HAIRCUT, VERDICT_SLIPPAGE)
+    cand_v = stress_trades(cand_w, VERDICT_HAIRCUT, verdict_slippage)
     result = {
         "name": name,
         "capital": capital,
@@ -48,7 +51,7 @@ def run_evaluation(candidate: pd.DataFrame, baseline: pd.DataFrame | None = None
         result["window"] = window
     if baseline is not None:
         base_w, _ = select_window(baseline, window, allow_holdout)
-        base_v = stress_trades(base_w, VERDICT_HAIRCUT, VERDICT_SLIPPAGE)
+        base_v = stress_trades(base_w, VERDICT_HAIRCUT, verdict_slippage)
         if len(cand_v) and len(base_v):
             result["scorecard"] = hedge_scorecard(cand_v, base_v, n_boot=n_boot, seed=seed)
         result["baseline_metrics"] = {"at_verdict_cost": core_metrics(base_v)}
