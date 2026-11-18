@@ -13,9 +13,12 @@ Code: `backtester/nse_option_rates.py` (rate table, with source URLs), `backtest
   charges page: "STT on exercise ... 0.15% of the intrinsic value on options that are bought and
   exercised" (applies to bought options only; that page's 0.15% is a post-2024 value, see below).
   Short legs assigned at expiry are not charged STT on exercise per that page.
-- Brokerage on expiry: the brief specifies none. Zerodha's charges page says "Brokerage is also
-  charged on expired, exercised, and assigned options contracts" (Rs20 flat). This is NOT modelled
-  here: at Rs20 per leg it is a known gap (up to Rs40-80 per trade). Flagged, not decided.
+- Brokerage on expiry: Zerodha's charges page says "Brokerage is also charged on expired, exercised,
+  and assigned options contracts" (Rs20 flat). The default model does NOT charge it (unchanged results).
+  Opt-in `ChainConfig.expiry_brokerage=True` charges Rs20 plus 18% GST on each leg cash-settled at expiry
+  (the flat Rs20 and GST rates are used on all dates). This is a conservative assumption: every expiring
+  leg is charged, in the money or not, and it is not verified against a contract note. Requires
+  `legacy_costs=False` and cash settlement; it adds `expiry_brokerage_rs` to the trade record.
 - Early exits (before expiry): normal exit slippage and an exit order with fees.
 
 ## Rate table (`backtester/nse_option_rates.py`)

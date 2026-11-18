@@ -204,6 +204,10 @@ class ChainConfig:
     # traded on the fill day, the whole trade is skipped with reason 'zero_contract_leg'. Default False keeps
     # the settle-priced fill of every leg.
     skip_zero_contract_legs: bool = False
+    # expiry_brokerage (audit fix 3, opt-in; default False = unchanged). Each leg cash-settled at expiry is charged
+    # BROKERAGE_PER_ORDER plus GST on that brokerage (docs/COSTS_NSE_OPTIONS.md). Conservative: every expiring leg is
+    # charged, in the money or not. Needs the date-aware cost model and cash settlement (an exit order already pays).
+    expiry_brokerage: bool = False
 
     @property
     def fully_legacy(self) -> bool:
@@ -275,6 +279,8 @@ class ChainBacktest:
             raise ValueError("signal_cadence applies to candidate families only")
         if cfg.candidate is None and cfg.skip_zero_contract_legs:
             raise ValueError("skip_zero_contract_legs applies to candidate families only")
+        if cfg.expiry_brokerage and (cfg.legacy_costs or not cfg.cash_settlement):
+            raise ValueError("expiry_brokerage needs the date-aware cost model (legacy_costs=False) and cash settlement")
         if not 0 <= cfg.signal_weekday <= 4:
             raise ValueError("signal_weekday must be 0 (Monday) to 4 (Friday)")
         if cfg.candidate is not None and cfg.candidate.monthly_signal and cfg.signal_cadence != "expiry_day":
@@ -483,6 +489,13 @@ class ChainBacktest:
         total = stt + exchange + sebi + stamp + brokerage + gst
         return {"stt": stt, "exchange": exchange, "sebi": sebi, "stamp": stamp,
                 "brokerage": brokerage, "gst": gst, "total": total}
+
+    @staticmethod
+    def _expiry_brokerage_rs(n_expiring_legs: int) -> float:
+        """Brokerage on expiring (cash-settled) legs plus 18% GST on it. Flat Rs20 per leg on all dates (the table
+        in backtester.nse_option_rates has no date steps for it). Opt-in: see ChainConfig.expiry_brokerage."""
+        brokerage = BROKERAGE_PER_ORDER * n_expiring_legs
+        return brokerage + brokerage * GST_PCT / 100
 
     @staticmethod
     def _exercise_stt(day: date, itm_long_intrinsic_rs: float) -> float:
@@ -788,9 +801,12 @@ class ChainBacktest:
             ent_fee = ex_fee = ex_stt = None
         else:
             ent = self._order_fees(st["fill_date"], entry_sold_rs, entry_bought_rs, n_legs)
+            exp_brok = 0.0
             if cash:
                 ex_stt = self._exercise_stt(d, itm_long_intrinsic_rs)
-                ex_fee = ex_stt  # no exit order: no exit brokerage, exchange, SEBI, GST or stamp
+                if self.cfg.expiry_brokerage:   # audit fix 3: brokerage + GST on each expiring leg
+                    exp_brok = self._expiry_brokerage_rs(n_legs)
+                ex_fee = ex_stt + exp_brok  # no exit order: no exit exchange, SEBI, GST on exchange, or stamp
             else:
                 ex_fee = self._order_fees(d, exit_sold_rs, exit_bought_rs, n_legs)["total"]
                 ex_stt = None
@@ -798,6 +814,8 @@ class ChainBacktest:
             fee = ent_fee + ex_fee
             extra = {"entry_fee_rs": ent_fee, "exit_fee_rs": ex_fee,
                      "exercise_stt_rs": ex_stt if cash else 0.0}
+            if self.cfg.expiry_brokerage:
+                extra["expiry_brokerage_rs"] = exp_brok
         if not self.cfg.fully_legacy:
             extra["settled_at_expiry"] = cash
         pnl = gross_fill - fee
