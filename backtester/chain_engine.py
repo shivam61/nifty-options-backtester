@@ -88,7 +88,7 @@ from backtester.nse_option_rates import (
 )
 from backtester.spread_model import SpreadModel
 from backtester.candidates import (
-    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, TREND_SPREAD, CandidateSpec, PCS, all_of,
+    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, STRIKE_BASIS_SIGNAL_CLOSE, TREND_SPREAD, CandidateSpec, PCS, all_of,
     is_monthly_signal_day, listed_expiries, pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry,
     post_spike_filter, rv20_gap_filter, target_strikes, term_structure_filter, trend_structure,
 )
@@ -873,7 +873,16 @@ class ChainBacktest:
             self._skip("missing_data", sig, fill_date=str(day), expiry=str(expiry))
             return None
 
-        tg = target_strikes(spec, spot, vix, dte)
+        # audit fix 1: strike targets and sigma_T from the F-day close (default) or the S-day close (known at entry).
+        # Legs, DTE and expiry are unchanged: legs are priced at F settle.
+        tg_spot = spot
+        if spec.strike_basis == STRIKE_BASIS_SIGNAL_CLOSE:
+            mk_s = self._mkt(sig)
+            if mk_s is None or not np.isfinite(mk_s["nifty_close"]):
+                self._skip("missing_data", sig, fill_date=str(day), note="signal_close_missing")
+                return None
+            tg_spot = float(mk_s["nifty_close"])
+        tg = target_strikes(spec, tg_spot, vix, dte)
         if spec.structure == PCS:
             ks = self._snap(day, expiry, tg["PE"], "PE")
             if ks is None:

@@ -37,6 +37,12 @@ TREND_SPREAD = "trend_spread"
 CREDIT_STRUCTURES = (PCS, CALL_CREDIT_SPREAD, IRON_CONDOR, TREND_SPREAD)
 KNOWN_STRUCTURES = CREDIT_STRUCTURES + (LS,)
 CADENCES = ("weekly", "monthly")
+STRIKE_BASIS_FILL_CLOSE = "fill_close"
+STRIKE_BASIS_SIGNAL_CLOSE = "signal_close"
+STRIKE_BASES = (STRIKE_BASIS_FILL_CLOSE, STRIKE_BASIS_SIGNAL_CLOSE)
+MAX_LOSS_BASIS_SETTLE = "settle"
+MAX_LOSS_BASIS_FILL_PLUS_FEES = "fill_plus_fees"
+MAX_LOSS_BASES = (MAX_LOSS_BASIS_SETTLE, MAX_LOSS_BASIS_FILL_PLUS_FEES)
 
 WEEKLY_DTE_WINDOW = (3, 8)
 MONTHLY_DTE_WINDOW = (15, 28)
@@ -97,8 +103,20 @@ class CandidateSpec:
     # next session and target the monthly expiry. False keeps the round-1 family B meaning of cadence='monthly':
     # signal on every weekly expiry day, target the monthly expiry (LS_B_*_mo, pre-registered, unchanged).
     monthly_signal: bool = False
+    # strike_basis (audit fix 1, opt-in): which NIFTY close sizes sigma_T and the strike targets. 'fill_close' (default)
+    # uses the F-day close (historical). 'signal_close' uses the S-day close, known at entry. Legs are still priced at
+    # F settle and DTE / expiry selection is still taken from F.
+    strike_basis: str = STRIKE_BASIS_FILL_CLOSE
+    # max_loss_basis (audit fix 2, opt-in, credit structures only): 'settle' (default) keeps W - net credit on the F
+    # settle basis. 'fill_plus_fees' uses W - net credit at the fill price (after entry slippage) plus round-trip fees
+    # (see fill_basis_max_loss_unit). Used for sizing and for max_loss_rs. Debit structures are unaffected.
+    max_loss_basis: str = MAX_LOSS_BASIS_SETTLE
 
     def __post_init__(self) -> None:
+        if self.strike_basis not in STRIKE_BASES:
+            raise ValueError(f"strike_basis must be one of {STRIKE_BASES}")
+        if self.max_loss_basis not in MAX_LOSS_BASES:
+            raise ValueError(f"max_loss_basis must be one of {MAX_LOSS_BASES}")
         if self.rv20_gap_min is not None and not math.isfinite(self.rv20_gap_min):
             raise ValueError("rv20_gap_min must be finite (vol points)")
         if self.structure not in KNOWN_STRUCTURES:
@@ -390,6 +408,13 @@ def pick_expiry(spec: CandidateSpec, listed: list, day: date) -> tuple:
         return None, None
     e = min(cands, key=lambda x: (abs((x - day).days - MONTHLY_DTE_TARGET), x))
     return e, (e - day).days
+
+
+def fill_basis_max_loss_unit(width: float, credit_fill_unit: float, round_trip_fee_rs: float, qty: int) -> float:
+    """Audit fix 2 (max_loss_basis='fill_plus_fees'): max loss per unit = W - net credit at the fill price (after entry
+    slippage) + round-trip fees spread over the traded quantity. round_trip_fee_rs is a Rs total for qty units; it must
+    be a conservative bound (see the chain engine: entry order fees, mirrored exit order fees, STT on exercise)."""
+    return width - credit_fill_unit + round_trip_fee_rs / qty
 
 
 def pcs_max_loss_per_unit(width: float, credit_settle_unit: float) -> float:
