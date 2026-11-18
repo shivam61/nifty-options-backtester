@@ -88,7 +88,8 @@ from backtester.nse_option_rates import (
 )
 from backtester.spread_model import SpreadModel
 from backtester.candidates import (
-    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, STRIKE_BASIS_SIGNAL_CLOSE, TREND_SPREAD, CandidateSpec, PCS, all_of,
+    CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, MAX_LOSS_BASIS_FILL_PLUS_FEES, STRIKE_BASIS_SIGNAL_CLOSE,
+    TREND_SPREAD, CandidateSpec, PCS, all_of, fill_basis_max_loss_unit,
     is_monthly_signal_day, listed_expiries, pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry,
     post_spike_filter, rv20_gap_filter, target_strikes, term_structure_filter, trend_structure,
 )
@@ -297,7 +298,7 @@ class ChainBacktest:
     # ------------------------------------------------------------ capital mode helpers
     def _capital_sizing(self, trade: Trade, credit_unit: float, debit_unit: Optional[float] = None,
                         capital: Optional[float] = None, committed_ml_rs: float = 0.0,
-                        committed_margin_rs: float = 0.0) -> tuple:
+                        committed_margin_rs: float = 0.0, ml_unit_override: Optional[float] = None) -> tuple:
         """(sized_lots, max_loss_per_lot_rs, margin_per_lot_rs, skip_reason or None).
 
         max loss per unit = widest short/long wing - net credit (the expiry loss of a defined-risk
@@ -312,6 +313,9 @@ class ChainBacktest:
         if debit_unit is not None:
             ml_lot = float(debit_unit) * self.lot_size
             margin_lot = ml_lot
+        elif ml_unit_override is not None:   # audit fix 2: max loss per unit supplied by the caller (fill basis)
+            ml_lot = float(ml_unit_override) * self.lot_size
+            margin_lot = None
         else:
             widths = []
             for side in ("CE", "PE"):
@@ -830,6 +834,17 @@ class ChainBacktest:
         return rec
 
     # ------------------------------------------------------------ candidate families (opt-in)
+    def _max_loss_round_trip_fee_rs(self, day: date, sold_rs: float, bought_rs: float, n_orders: int,
+                                    n_long: int, width: float, qty: int) -> float:
+        """Round-trip fee bound for max_loss_basis='fill_plus_fees' (Rs for qty units). Conservative, fixed at fill:
+        entry order fees on the fill turnover, plus the mirrored exit order fees at the same premiums, plus STT on
+        exercise of each long leg with its intrinsic taken as the wing width W. Realised exercise STT grows with the
+        expiry settle beyond one wing width in the money, so the bound is not a ceiling for every expiry."""
+        entry = self._order_fees(day, sold_rs, bought_rs, n_orders)["total"]
+        mirror = self._order_fees(day, bought_rs, sold_rs, n_orders)["total"]
+        exercise = n_long * width * qty * rate_on(STT_EXERCISE_PCT, day) / 100
+        return entry + mirror + exercise
+
     def _candidate_fill(self, pend: dict, day: date, equity_cap: Optional[float] = None,
                         open_states: Optional[list] = None) -> Optional[dict]:
         """Open a candidate trade on fill day `day` at its EOD settle. Returns the open-trade state or None.
@@ -955,6 +970,13 @@ class ChainBacktest:
                 return None
             # W - net credit: equal wings, so the expiry loss is at most one wing less the credit (PCS, CCS, IC)
             ml_unit = pcs_max_loss_per_unit(spec.width, credit_settle_unit)
+            fill_basis = spec.max_loss_basis == MAX_LOSS_BASIS_FILL_PLUS_FEES
+            if fill_basis:   # audit fix 2: W - net credit at the fill price plus round-trip fees
+                fee_rt_rs = self._max_loss_round_trip_fee_rs(
+                    day, sum(f for lg, f in zip(legs, fills) if lg.is_short) * qty,
+                    sum(f for lg, f in zip(legs, fills) if not lg.is_short) * qty,
+                    len(legs), sum(1 for lg in legs if not lg.is_short), spec.width, qty)
+                ml_unit = fill_basis_max_loss_unit(spec.width, credit_fill_unit, fee_rt_rs, qty)
             if not ml_unit > 0:
                 self._skip("invalid_max_loss", sig, fill_date=str(day), expiry=str(expiry))
                 return None
@@ -988,7 +1010,8 @@ class ChainBacktest:
             if spec.structure in CREDIT_STRUCTURES:
                 sized_lots, ml_lot, margin_lot, why = self._capital_sizing(
                     trade, credit_settle_unit, capital=equity_cap,
-                    committed_ml_rs=com_ml, committed_margin_rs=com_mg)
+                    committed_ml_rs=com_ml, committed_margin_rs=com_mg,
+                    ml_unit_override=ml_unit if fill_basis else None)
             else:
                 sized_lots, ml_lot, margin_lot, why = self._capital_sizing(
                     trade, 0.0, debit_unit=debit_unit, capital=equity_cap,

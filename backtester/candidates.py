@@ -117,6 +117,8 @@ class CandidateSpec:
             raise ValueError(f"strike_basis must be one of {STRIKE_BASES}")
         if self.max_loss_basis not in MAX_LOSS_BASES:
             raise ValueError(f"max_loss_basis must be one of {MAX_LOSS_BASES}")
+        if self.max_loss_basis != MAX_LOSS_BASIS_SETTLE and self.structure not in CREDIT_STRUCTURES:
+            raise ValueError("max_loss_basis other than 'settle' applies to credit structures only")
         if self.rv20_gap_min is not None and not math.isfinite(self.rv20_gap_min):
             raise ValueError("rv20_gap_min must be finite (vol points)")
         if self.structure not in KNOWN_STRUCTURES:
