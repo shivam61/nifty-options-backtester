@@ -187,6 +187,36 @@ ROUND2_CELLS = {c.cell_id: c for c in (
 ROUND2_CELL_IDS = tuple(ROUND2_CELLS)
 
 
+# Round 3 (docs/preregistration_round3.md, Section 3 table): declared grid, no other values. Hold to expiry (no
+# profit target or stop), strikes from the S close (strike_basis='signal_close'), max loss on the fill basis plus fees.
+# Monthly cells (M1-M3) signal ON the monthly expiry day (monthly_signal=True) and target the monthly expiry, DTE [15, 28].
+# Weekly cells sign on weekly expiry days, DTE [3, 8]. Expiry brokerage and zero-contract skips are runner settings.
+_R3_COMMON = dict(strike_basis=STRIKE_BASIS_SIGNAL_CLOSE, max_loss_basis=MAX_LOSS_BASIS_FILL_PLUS_FEES)
+ROUND3_CELLS = {c.cell_id: c for c in (
+    # M1 | IC (hedged) | monthly | 1.0 | 400 | [13, 25) | none
+    CandidateSpec("M1", "M", IRON_CONDOR, 1.0, 400.0, "monthly", 13.0, 25.0, monthly_signal=True, **_R3_COMMON),
+    # M2 | IC (hedged) | monthly | 1.3 | 400 | [13, 25) | none
+    CandidateSpec("M2", "M", IRON_CONDOR, 1.3, 400.0, "monthly", 13.0, 25.0, monthly_signal=True, **_R3_COMMON),
+    # M3 | PCS | monthly | 1.0 | 400 | [13, 25) | none
+    CandidateSpec("M3", "M", PCS, 1.0, 400.0, "monthly", 13.0, 25.0, monthly_signal=True, **_R3_COMMON),
+    # S1 | PCS | weekly | 1.0 | 300 | [13, 35) | post-spike: max VIX over last 20 sessions through S >= 25 and VIX_S <= 0.80 x that max
+    CandidateSpec("S1", "S", PCS, 1.0, 300.0, "weekly", 13.0, 35.0, spike_level=25.0, spike_drop_pct=0.20, **_R3_COMMON),
+    # T1 | PCS | weekly | 1.0 | 300 | [13, 25) | term-structure: weekly ATM straddle implied-move proxy <= monthly proxy at S close
+    CandidateSpec("T1", "T", PCS, 1.0, 300.0, "weekly", 13.0, 25.0, term_structure_gate=True, **_R3_COMMON),
+    # R1 | trend-selected PCS/CCS | weekly | 1.0 | 300 | [13, 25) | PCS if NIFTY close_S > SMA50 through S, else CCS
+    CandidateSpec("R1", "R", TREND_SPREAD, 1.0, 300.0, "weekly", 13.0, 25.0, trend_sma_days=50, **_R3_COMMON),
+    # W1 | IC (hedged) | weekly | 1.5 | 400 | [16, 25) | none
+    CandidateSpec("W1", "W", IRON_CONDOR, 1.5, 400.0, "weekly", 16.0, 25.0, **_R3_COMMON),
+)}
+ROUND3_CELL_IDS = tuple(ROUND3_CELLS)
+
+
+def get_round3_cell(cell_id: str) -> CandidateSpec:
+    if cell_id not in ROUND3_CELLS:
+        raise KeyError(f"unknown round-3 cell {cell_id!r}; declared: {list(ROUND3_CELL_IDS)}")
+    return ROUND3_CELLS[cell_id]
+
+
 def get_round2_cell(cell_id: str) -> CandidateSpec:
     if cell_id not in ROUND2_CELLS:
         raise KeyError(f"unknown round-2 cell {cell_id!r}; declared: {list(ROUND2_CELL_IDS)}")
