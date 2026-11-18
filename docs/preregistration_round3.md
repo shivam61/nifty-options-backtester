@@ -76,3 +76,12 @@ A holdout PASS supports paper trading with quote logging over at least 4 weeks a
 1. Declare `ROUND3_CELLS` and `get_round3_cell` in `backtester/candidates.py` exactly per the Section 3 table, with field-by-field tests against this document.
 2. Add `scripts/run_round3.py` (phase guard copied from `run_round2.py`) that registers train cuts at run time and writes `logs/round3/EXTRA_LOOKS.md` entries for any extra window run.
 3. Verify anchors -133.5 / -253.2 at lots=10 still hold and the registry hash is unchanged by the build.
+
+## 8. Results (2026-11-18)
+
+Train (1.0x, lots=10, Rs/lot): M1 -2187 (n=8), M2 -2639 (n=6), M3 +287 (n=14), S1 +107 (n=16), T1 +624 (n=67, p 0.0012), R1 +79 (n=108), W1 -158 (n=57).
+Survivors by the mechanical rule: T1, R1. M3 and S1 are INSUFFICIENT_DATA. Combination not run (T1 and R1 share 66 of 67 entry dates).
+A read-only audit of T1 found no look-ahead and no pricing bug; the gate mostly screens out trades that land on the monthly expiry (expiry-cycle selection).
+Test 2022-2023 (1.0x): T1 FAIL (n=36, -176.2/lot, raw p 0.59, CAGR -1.04%, MaxDD 6.7%, Sharpe -0.18). R1 FAIL (n=61, +99.3/lot, C3' CI [-531, +710], 1 of 2 years positive, raw p 0.40, CAGR +0.26%, MaxDD 5.2%, Sharpe +0.08).
+Holdout not opened. Registry 30 cuts. Extra looks (sensitivity, baseline, capital runs) are logged in `logs/round3/EXTRA_LOOKS.md`. **No edge found in round 3.**
+Note: the C1 baseline uses fill-close strikes while the cells use signal-close strikes, so C1 is not like-for-like.
