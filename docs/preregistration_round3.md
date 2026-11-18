@@ -85,3 +85,8 @@ A read-only audit of T1 found no look-ahead and no pricing bug; the gate mostly 
 Test 2022-2023 (1.0x): T1 FAIL (n=36, -176.2/lot, raw p 0.59, CAGR -1.04%, MaxDD 6.7%, Sharpe -0.18). R1 FAIL (n=61, +99.3/lot, C3' CI [-531, +710], 1 of 2 years positive, raw p 0.40, CAGR +0.26%, MaxDD 5.2%, Sharpe +0.08).
 Holdout not opened. Registry 30 cuts. Extra looks (sensitivity, baseline, capital runs) are logged in `logs/round3/EXTRA_LOOKS.md`. **No edge found in round 3.**
 Note: the C1 baseline uses fill-close strikes while the cells use signal-close strikes, so C1 is not like-for-like.
+
+## 9. Addendum (2026-11-19): utilisation sweep, descriptive only
+
+Not a verdict, no registry writes, holdout unread. `scripts/utilisation_sweep.py` ran R1, T1, W1 in capital mode on the dev window 2019-02-11..2023-12-31 (train and test already seen), 1.0x slippage, risk_cap_pct 0.05/0.10/0.20/0.40, margin cap and max_lots raised so the risk cap binds.
+Sharpe stays flat as size rises (T1 about 0.44-0.48, R1 about -0.1, W1 about -0.55); CAGR and MaxDD scale together. Best row: T1 at risk cap 0.40 with the kill switch off, CAGR 8.6%, MaxDD 57%. At MaxDD about 20%, T1 reached CAGR 5-6%. No row met 12% CAGR with MaxDD <= 12%. Raising utilisation scales a given edge, it does not create one. T1's train edge did not hold on test (section 8).
