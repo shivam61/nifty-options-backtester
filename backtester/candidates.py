@@ -115,6 +115,26 @@ FAMILY_CELLS = {"A": tuple(_A_CELLS), "B": tuple(_B_CELLS)}
 CELLS = {c.cell_id: c for c in _A_CELLS + _B_CELLS}
 
 
+# Round 2 (docs/preregistration_round2.md Section 3): declared grid, no other values. Width W = 300 index points,
+# put/call offset k = 1.0 sigma_T. Signal on weekly expiry day, VIX read at S, fill at F settle, DTE window [3, 8].
+# Family F (combination) is not declared: it is built only after train, and is never run by the round-2 runner.
+ROUND2_CELLS = {c.cell_id: c for c in (
+    CandidateSpec("C1", "C", PCS, 1.0, 300.0, "weekly", 13.0, 25.0, profit_target_pct=50.0, stop_loss_x=2.0),
+    CandidateSpec("C2", "C", PCS, 1.0, 300.0, "weekly", 13.0, 25.0, profit_target_pct=75.0, stop_loss_x=1.5),
+    CandidateSpec("D1", "D", IRON_CONDOR, 1.0, 300.0, "weekly", 16.0, 25.0, profit_target_pct=50.0, stop_loss_x=2.0),
+    CandidateSpec("D2", "D", IRON_CONDOR, 1.0, 300.0, "weekly", 16.0, 25.0),
+    CandidateSpec("E1", "E", PCS, 1.0, 300.0, "weekly", 13.0, 25.0, rv20_gap_min=2.0),
+    CandidateSpec("E2", "E", PCS, 1.0, 300.0, "weekly", 13.0, 25.0, rv20_gap_min=4.0),
+)}
+ROUND2_CELL_IDS = tuple(ROUND2_CELLS)
+
+
+def get_round2_cell(cell_id: str) -> CandidateSpec:
+    if cell_id not in ROUND2_CELLS:
+        raise KeyError(f"unknown round-2 cell {cell_id!r}; declared: {list(ROUND2_CELL_IDS)}")
+    return ROUND2_CELLS[cell_id]
+
+
 def get_cell(cell_id: str) -> CandidateSpec:
     if cell_id not in CELLS:
         raise KeyError(f"unknown candidate cell {cell_id!r}; declared: {sorted(CELLS)}")
