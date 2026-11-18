@@ -112,3 +112,15 @@ It does not authorise live capital. Tier 2 PASS is required to claim the 12-18% 
 
 - Resolved: author approved Tier 2 floors (CAGR 12%, MaxDD 12%, Sharpe 0.8) and risk_cap_pct 0.05 as drafted.
 - Resolved: overlapping weeklies out of scope for round 2.
+
+## 13. Dated addendum (2026-11-18, harness fix, recorded before any test verdict was read)
+
+`run_evaluation` hard-coded the 1.5x verdict cost, so the frozen 1.0x pass bar (Sections 5 and 7) could not be run. Added `verdict_slippage`
+(CLI `--verdict-slippage`, default 1.5, so earlier results are unchanged) in commit 16e8562. Round 2 verdict cost = 1.0x as frozen.
+Known note: F's C5 uses a non-overlapping subsample that drops the D2 leg (same entry dates), so F's C5 p equals C2's. It does not change F's verdict.
+
+## 14. Results (2026-11-18)
+
+Train (1.0x, lots=10): C1 -25.3, C2 +42.3, D1 -400.3, D2 +56.6, E1 -23.7, E2 -266.9 Rs/lot. Survivors C2, D2.
+Test 2022-2023 (1.0x): C2 FAIL (-279.8/lot), D2 FAIL (+131.2/lot, C3' CI [-1137, +1115], C5 p 0.42), F FAIL (-114.6/lot).
+Tier 2 test, Rs 25L: C2 CAGR -2.62%, D2 +0.18%, F -1.21%; no cell meets 12% / 12% / 0.8. Holdout not opened (no test PASS). Registry 15 cuts. **No edge found in round 2.**
