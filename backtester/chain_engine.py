@@ -117,6 +117,7 @@ ML_EXIT_REASON = "ml_exit"
 KILL_EXIT_REASON = "capital_kill"
 # Skip reasons that only occur in capital mode (the default mode never produces them).
 CAPITAL_SKIP_REASONS = ("sizing_zero", "invalid_max_loss", "kill_switch")
+SIGNAL_CADENCES = ("expiry_day", "weekly_fixed_weekday", "daily")
 TRADING_DAYS_PER_YEAR = 252
 
 
@@ -186,6 +187,15 @@ class ChainConfig:
     # candidate_entry_filter(market_row) -> bool, called on a signal day that passed the VIX band and the
     # position cap. The row is the market frame row for the signal date. False skips it ('entry_filter').
     candidate_entry_filter: Optional[Callable] = None
+    # signal_cadence (candidate families only): when a signal is considered.
+    #   "expiry_day"          (default) signal on each listed weekly expiry day (the pre-registered cadence).
+    #   "weekly_fixed_weekday" signal once a week, on the first session at or after weekday signal_weekday
+    #                          (0 = Monday .. 4 = Friday) in that ISO week; the fill is the next session.
+    #   "daily"               signal on every session.
+    # Target expiry is still picked by pick_expiry from the fill day (DTE window). With 7-day signal spacing a
+    # position overlaps the next one only when it is held 8 days, so overlap needs weekly_fixed_weekday/daily.
+    signal_cadence: str = "expiry_day"
+    signal_weekday: int = 0
 
     @property
     def fully_legacy(self) -> bool:
@@ -251,10 +261,17 @@ class ChainBacktest:
             raise ValueError("max_concurrent and candidate_entry_filter apply to candidate families only")
         if cfg.equity_based_sizing and not cfg.capital_mode:
             raise ValueError("equity_based_sizing requires capital_mode")
+        if cfg.signal_cadence not in SIGNAL_CADENCES:
+            raise ValueError(f"signal_cadence must be one of {SIGNAL_CADENCES}")
+        if cfg.candidate is None and cfg.signal_cadence != "expiry_day":
+            raise ValueError("signal_cadence applies to candidate families only")
+        if not 0 <= cfg.signal_weekday <= 4:
+            raise ValueError("signal_weekday must be 0 (Monday) to 4 (Friday)")
 
     # ------------------------------------------------------------ capital mode helpers
     def _capital_sizing(self, trade: Trade, credit_unit: float, debit_unit: Optional[float] = None,
-                        capital: Optional[float] = None) -> tuple:
+                        capital: Optional[float] = None, committed_ml_rs: float = 0.0,
+                        committed_margin_rs: float = 0.0) -> tuple:
         """(sized_lots, max_loss_per_lot_rs, margin_per_lot_rs, skip_reason or None).
 
         max loss per unit = widest short/long wing - net credit (the expiry loss of a defined-risk
@@ -283,8 +300,10 @@ class ChainBacktest:
         if margin_lot is None:
             margin_lot = float(self.cfg.margin_proxy(ml_lot, trade)) if self.cfg.margin_proxy else ml_lot
         cap = float(self.cfg.capital_rs) if capital is None else float(capital)
-        risk_lots = math.floor(self.cfg.risk_cap_pct * cap / ml_lot)
-        margin_lots = math.floor(self.cfg.margin_cap_pct * cap / margin_lot) if margin_lot > 0 else 0
+        # committed_*: max loss and margin already held by open positions (netted off the caps; 0 = standalone)
+        risk_lots = math.floor((self.cfg.risk_cap_pct * cap - committed_ml_rs) / ml_lot)
+        margin_lots = (math.floor((self.cfg.margin_cap_pct * cap - committed_margin_rs) / margin_lot)
+                       if margin_lot > 0 else 0)
         lots = max(0, min(risk_lots, margin_lots, self.cfg.max_lots))
         return int(lots), ml_lot, margin_lot, None
 
@@ -785,11 +804,15 @@ class ChainBacktest:
         return rec
 
     # ------------------------------------------------------------ candidate families (opt-in)
-    def _candidate_fill(self, pend: dict, day: date, equity_cap: Optional[float] = None) -> Optional[dict]:
+    def _candidate_fill(self, pend: dict, day: date, equity_cap: Optional[float] = None,
+                        open_states: Optional[list] = None) -> Optional[dict]:
         """Open a candidate trade on fill day `day` at its EOD settle. Returns the open-trade state or None.
 
         equity_cap: sizing base for capital mode (current equity under ChainConfig.equity_based_sizing);
         None sizes from ChainConfig.capital_rs.
+        open_states: positions already open on `day`. Their max loss and margin are netted off the risk and
+        margin caps (capital mode), so the caps bind on total committed risk, not per position. Empty for
+        max_concurrent=1, where it changes nothing.
         """
         spec = self.cfg.candidate
         sig = pend["signal_date"]
@@ -910,12 +933,17 @@ class ChainBacktest:
 
         sized_lots, ml_lot, margin_lot = self.cfg.lots, float("nan"), float("nan")
         if self._capital_on:
+            # reuse the stored sizing of open positions: sized lots x per-lot max loss / margin
+            com_ml = sum(st["sized_lots"] * st["max_loss_per_lot_rs"] for st in (open_states or []))
+            com_mg = sum(st["sized_lots"] * st["margin_per_lot"] for st in (open_states or []))
             if spec.structure in CREDIT_STRUCTURES:
                 sized_lots, ml_lot, margin_lot, why = self._capital_sizing(
-                    trade, credit_settle_unit, capital=equity_cap)
+                    trade, credit_settle_unit, capital=equity_cap,
+                    committed_ml_rs=com_ml, committed_margin_rs=com_mg)
             else:
                 sized_lots, ml_lot, margin_lot, why = self._capital_sizing(
-                    trade, 0.0, debit_unit=debit_unit, capital=equity_cap)
+                    trade, 0.0, debit_unit=debit_unit, capital=equity_cap,
+                    committed_ml_rs=com_ml, committed_margin_rs=com_mg)
             if why is not None:
                 self._skip(why, sig, fill_date=str(day), expiry=str(expiry))
                 return None
@@ -1042,6 +1070,7 @@ class ChainBacktest:
         cfg, spec = self.cfg, self.cfg.candidate
         pending = None
         opens: list[dict] = []
+        signalled_weeks: set = set()   # ISO weeks that already took their signal (weekly_fixed_weekday)
         for d in self.cal:
             if d < cfg.start:
                 continue
@@ -1065,7 +1094,7 @@ class ChainBacktest:
                     self._update_equity_open(d, opens)
             if pending is not None and pending["fill_day"] == d:
                 eq_cap = self._equity_now(opens) if cfg.equity_based_sizing else None
-                st = self._candidate_fill(pending, d, equity_cap=eq_cap)
+                st = self._candidate_fill(pending, d, equity_cap=eq_cap, open_states=opens)
                 pending = None
                 if st is not None:
                     opens.append(st)
@@ -1074,8 +1103,17 @@ class ChainBacktest:
                 self.capital_curve.append((d, eq, mg))
             if d > cfg.end:
                 continue
-            if not self.arch.has_day(d) or not self.arch.expires_on(d):  # signal only on a listed expiry day
+            if not self.arch.has_day(d):
                 continue
+            if cfg.signal_cadence == "expiry_day":
+                if not self.arch.expires_on(d):  # signal only on a listed expiry day
+                    continue
+            elif cfg.signal_cadence == "weekly_fixed_weekday":
+                # first session at or after signal_weekday in each ISO week (holidays move it to the next session)
+                wk = d.isocalendar()[:2]
+                if d.weekday() < cfg.signal_weekday or wk in signalled_weeks:
+                    continue
+                signalled_weeks.add(wk)
             self.signal_days += 1
             if self._capital_on and self.kill_active:
                 self._skip("kill_switch", d)

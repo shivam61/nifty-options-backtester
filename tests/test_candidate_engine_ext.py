@@ -265,3 +265,112 @@ def test_entry_filter_receives_signal_day_market_row(tmp_path):
     _run(tmp_path, days, mk, _cfg_spec(get_cell("PCS_A_k09_w200"), S, E, candidate_entry_filter=spy))
     # called on the first signal day (Jan 2) with that day's market row; Jan 9 is a later listed expiry day
     assert seen[0] == (20.0, SPOT) and all(v == (20.0, SPOT) for v in seen)
+
+
+# ----------------------------------------------------------------------------- signal cadence (GAP 1, opt-in)
+# Thursday-expiry world (THURS). Signal weekday 1 (Tuesday) fills Wednesday, and the earliest expiry with DTE in
+# [3, 8] from a Wednesday is the Thursday eight days on, so each position is held 8 days and a new one opens
+# every 7 days while the previous one is still open.
+
+MON6 = date(2025, 1, 6)   # Monday: the first Tuesday signal is 2025-01-07
+
+
+def _cadence_world(root):
+    """Thursday-expiry world from Monday 2025-01-06 (PE credit 2.0 per unit at every strike pair)."""
+    days = _weekdays(MON6, FEB27)
+    prices = {(d, "PE", k): 10.0 + (k - 21000) / 100.0 for d in days for k in STRIKES}
+    _write_world(root, days, prices=prices)
+    return days, _market(days)
+
+
+TUE_JAN7 = date(2025, 1, 7)
+WED_JAN8 = date(2025, 1, 8)
+JAN16 = date(2025, 1, 16)
+JAN15 = date(2025, 1, 15)
+JAN22 = date(2025, 1, 22)
+JAN23 = date(2025, 1, 23)
+
+
+def test_signal_cadence_defaults_and_validation(tmp_path):
+    cfg = ChainConfig()
+    _, mk = _cadence_world(tmp_path)
+    assert cfg.signal_cadence == "expiry_day" and cfg.signal_weekday == 0
+    with pytest.raises(ValueError):   # candidate-only option
+        ChainBacktest(NseFoArchive(archive_dir=str(tmp_path)), mk, ChainConfig(start=S, end=E, signal_cadence="daily"))
+    with pytest.raises(ValueError):
+        ChainBacktest(NseFoArchive(archive_dir=str(tmp_path)), mk,
+                      _cfg_spec(_spec(), S, E, signal_cadence="hourly"))
+    with pytest.raises(ValueError):
+        ChainBacktest(NseFoArchive(archive_dir=str(tmp_path)), mk,
+                      _cfg_spec(_spec(), S, E, signal_cadence="weekly_fixed_weekday", signal_weekday=7))
+
+
+def test_weekly_fixed_weekday_signals_once_a_week_on_that_weekday(tmp_path):
+    days, mk = _cadence_world(tmp_path)
+    bt, trades = _run(tmp_path, days, mk, _cfg_spec(_spec(), MON6, FEB27, signal_cadence="weekly_fixed_weekday",
+                                                   signal_weekday=1, max_concurrent=2))
+    assert bt.signal_days == 8                       # Tuesdays 2025-01-07 .. 2025-02-25
+    assert trades and all(date.fromisoformat(t["signal_date"]).weekday() == 1 for t in trades)
+
+
+def test_weekly_fixed_weekday_opens_second_position_while_first_is_open(tmp_path):
+    days, mk = _cadence_world(tmp_path)
+    _, two = _run(tmp_path, days, mk, _cfg_spec(_spec(), MON6, FEB27, signal_cadence="weekly_fixed_weekday",
+                                               signal_weekday=1, max_concurrent=2))
+    assert [t["fill_date"] for t in two[:3]] == [str(WED_JAN8), str(JAN15), str(JAN22)]
+    assert [t["exit_date"] for t in two[:2]] == [str(JAN16), str(JAN23)]
+    assert two[1]["fill_date"] < two[0]["exit_date"]       # overlap: fill of #2 before expiry of #1
+
+    bt1, one = _run(tmp_path, days, mk, _cfg_spec(_spec(), MON6, FEB27, signal_cadence="weekly_fixed_weekday",
+                                                 signal_weekday=1, max_concurrent=1))
+    assert [t["fill_date"] for t in one[:2]] == [str(WED_JAN8), str(date(2025, 1, 22))]
+    assert bt1.skips["position_open"] >= 1                 # the Jan 14 signal finds one open
+
+
+def test_weekly_fixed_weekday_reads_vix_at_signal_close(tmp_path):
+    days, _ = _cadence_world(tmp_path)
+    mk = _market(days, vix_map={TUE_JAN7: 30.0})          # out of band on the signal day only
+    bt, trades = _run(tmp_path, days, mk, _cfg_spec(_spec(), MON6, FEB27, signal_cadence="weekly_fixed_weekday",
+                                                   signal_weekday=1, max_concurrent=2))
+    assert bt.skips["vix_out_of_band"] >= 1
+    assert trades[0]["fill_date"] == str(JAN15)            # the Jan 7 signal is gone, Jan 14 is next
+    assert trades[0]["entry_vix"] == 20.0
+
+
+def test_daily_cadence_signals_every_session(tmp_path):
+    days, mk = _cadence_world(tmp_path)
+    bt, _ = _run(tmp_path, days, mk, _cfg_spec(_spec(), MON6, FEB27, signal_cadence="daily", max_concurrent=2))
+    assert bt.signal_days == len(days)
+
+
+# ----------------------------------------------------------------------------- margin netting (GAP 4)
+
+def _netting_cfg(**kw):
+    base = dict(capital_mode=True, capital_rs=2_500_000.0, risk_cap_pct=0.20, margin_cap_pct=0.20,
+                max_lots=30, kill_dd_pct=0.20, max_concurrent=2)
+    base.update(kw)
+    return _cfg_spec(_spec(cell_id="MO_T", cadence="monthly"), S, FEB27, **base)
+
+
+def test_margin_netting_sizes_second_entry_from_remaining_budget(tmp_path):
+    """Two overlapping positions (Jan 3 and Jan 10 fills, both expire Jan 30). Max loss per lot is 198 x 65 = 12870.
+    Entry 1: min(38, 38, max_lots 30) = 30 lots, committing 386100 of risk and of margin. Entry 2 may use only
+    0.20 x 2.5M - 386100 = 113900, i.e. floor(113900 / 12870) = 8 lots. Equity-based sizing gives the same here
+    (no mark-to-market move in this world)."""
+    days, mk = _overlap_world(tmp_path)
+    for eq_sizing in (False, True):
+        _, trades = _run(tmp_path, days, mk, _netting_cfg(equity_based_sizing=eq_sizing))
+        by_fill = sorted(trades, key=lambda t: t["fill_date"])
+        assert [t["sized_lots"] for t in by_fill[:2]] == [30, 8]
+        committed = sum(t["sized_lots"] * t["max_loss_per_lot_rs"] for t in by_fill[:2])
+        assert committed <= 0.20 * 2_500_000.0 + 1e-6
+
+
+def test_margin_netting_skips_sizing_zero_when_budget_is_used_up(tmp_path):
+    days, mk = _overlap_world(tmp_path)
+    bt, trades = _run(tmp_path, days, mk, _netting_cfg(risk_cap_pct=0.10, margin_cap_pct=0.20))
+    by_fill = sorted(trades, key=lambda t: t["fill_date"])
+    assert by_fill[0]["sized_lots"] == 19                  # floor(250000 / 12870)
+    # budget left after entry 1: 250000 - 19 x 12870 = 5470 < one lot, so the Jan 10 entry is sizing_zero
+    assert bt.skips["sizing_zero"] >= 1
+    assert all(t["fill_date"] != str(D10) for t in trades)

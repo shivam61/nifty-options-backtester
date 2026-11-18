@@ -5,8 +5,17 @@ Entries decay automatically so stale or one-off advice does not become permanent
 
 ## Current Active Memories
 
-### use-data-archive-query-for-nse-archive-questions
+### weekly-fixed-weekday-signals-only-overlap-when-a-position-is-held-8-days
 - Score: 0.7
+- Status: active
+- Tags: candidates, chain-engine, cadence
+- Summary: Weekly fixed-weekday signals only overlap when a position is held 8 days
+- Pitfall: With 7-day signal spacing and target expiry = earliest listed expiry with DTE in [3,8], the next position fills exactly when the previous one expires, unless the hold is 8 days. max_concurrent>1 with expiry_day cadence never overlaps.
+- Prevention: Use signal_cadence=weekly_fixed_weekday with signal_weekday=1 (Tuesday) on Thursday-expiry data, or signal_cadence=daily for real overlap. Tests: tests/test_candidate_engine_ext.py (cadence section).
+- Evidence: tests/test_candidate_engine_ext.py::test_weekly_fixed_weekday_opens_second_position_while_first_is_open
+
+### use-data-archive-query-for-nse-archive-questions
+- Score: 0.698
 - Status: active
 - Tags: archive, duckdb, tokens
 - Summary: Use data.archive_query for NSE archive questions
@@ -15,7 +24,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: docs/ARCHIVE_QUERY.md
 
 ### nse-mcp-data-is-cross-check-only-never-for-training
-- Score: 0.6871
+- Score: 0.6852
 - Status: active
 - Tags: nse-mcp, licensing
 - Summary: NSE MCP data is cross-check only, never for training
@@ -24,7 +33,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: NSE MCP terms as stated in the 2026-10-13 task brief.
 
 ### pd-to-datetime-dayfirst-true-misreads-iso-dates-with-day-12
-- Score: 0.6108
+- Score: 0.6091
 - Status: active
 - Tags: nse-mcp, date-parsing, cross-check
 - Summary: pd.to_datetime(dayfirst=True) misreads ISO dates with day<=12
@@ -33,7 +42,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: scripts/check_nse_mcp.py live run: Nifty 50 and India VIX matched NSE exactly on 63 overlapping days after the parse and endDate fixes.
 
 ### yahoo-parquet-cache-nsebank-series-is-not-bank-nifty
-- Score: 0.6108
+- Score: 0.6091
 - Status: active
 - Tags: cache, data-quality, nifty-bank
 - Summary: Yahoo parquet cache ^NSEBANK series is not Bank Nifty
@@ -42,7 +51,7 @@ Entries decay automatically so stale or one-off advice does not become permanent
 - Evidence: scripts/check_nse_mcp.py live run 2026-10-13: 60 Bank Nifty days flagged at +1100% to +1360%; Nifty 50 and India VIX matched NSE exactly.
 
 ### graphify-output-can-drift-without-committed-hooks
-- Score: 0.4347
+- Score: 0.434
 - Status: active
 - Tags: graphify, hooks, agent-workflow
 - Summary: Graphify output can drift without committed hooks
