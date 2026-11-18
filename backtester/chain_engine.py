@@ -89,7 +89,7 @@ from backtester.nse_option_rates import (
 from backtester.spread_model import SpreadModel
 from backtester.candidates import (
     CALL_CREDIT_SPREAD, CREDIT_STRUCTURES, IRON_CONDOR, CandidateSpec, PCS, listed_expiries,
-    pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry, target_strikes,
+    pcs_max_loss_per_unit, ls_debit_per_unit, pick_expiry, rv20_gap_filter, target_strikes,
 )
 from strategies.base import Leg, Trade, TradeAction, ExitReason
 from strategies.weekly_strategies import WeeklyExitArms, WeeklyPutCreditSpread, WeeklyIronCondor
@@ -185,7 +185,9 @@ class ChainConfig:
     # positions is not netted off, so with max_concurrent > 1 the margin cap applies per position.
     equity_based_sizing: bool = False
     # candidate_entry_filter(market_row) -> bool, called on a signal day that passed the VIX band and the
-    # position cap. The row is the market frame row for the signal date. False skips it ('entry_filter').
+    # position cap. The row is the market frame row for the signal date. False skips it ('entry_filter');
+    # None means undefined and skips as 'missing_data'. The round-2 RV20 gate (CandidateSpec.rv20_gap_min)
+    # builds this filter itself; do not set both.
     candidate_entry_filter: Optional[Callable] = None
     # signal_cadence (candidate families only): when a signal is considered.
     #   "expiry_day"          (default) signal on each listed weekly expiry day (the pre-registered cadence).
@@ -273,6 +275,12 @@ class ChainBacktest:
             raise ValueError("skip_zero_contract_legs applies to candidate families only")
         if not 0 <= cfg.signal_weekday <= 4:
             raise ValueError("signal_weekday must be 0 (Monday) to 4 (Friday)")
+        # entry filter: the explicit hook, or the spec's RV20 gate (round 2); never both
+        self._entry_filter = cfg.candidate_entry_filter
+        if cfg.candidate is not None and cfg.candidate.rv20_gap_min is not None:
+            if cfg.candidate_entry_filter is not None:
+                raise ValueError("a candidate with rv20_gap_min cannot also set candidate_entry_filter")
+            self._entry_filter = rv20_gap_filter(m["nifty_close"], cfg.candidate.rv20_gap_min)
 
     # ------------------------------------------------------------ capital mode helpers
     def _capital_sizing(self, trade: Trade, credit_unit: float, debit_unit: Optional[float] = None,
@@ -1142,9 +1150,14 @@ class ChainBacktest:
                 self.signals_while_open += 1
                 self._skip("position_open", d)
                 continue
-            if cfg.candidate_entry_filter is not None and not bool(cfg.candidate_entry_filter(mk)):
-                self._skip("entry_filter", d)
-                continue
+            if self._entry_filter is not None:
+                ok = self._entry_filter(mk)
+                if ok is None:   # filter could not decide (e.g. RV20 without enough history)
+                    self._skip("missing_data", d, note="entry_filter_undefined")
+                    continue
+                if not bool(ok):
+                    self._skip("entry_filter", d)
+                    continue
             fill_day = self._next_session(d)
             if fill_day is None:
                 self._skip("missing_data", d, note="no_next_session")

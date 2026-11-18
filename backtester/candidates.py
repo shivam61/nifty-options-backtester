@@ -22,7 +22,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional
+from typing import Callable, Optional
+
+import numpy as np
+import pandas as pd
 
 PCS = "put_credit_spread"
 LS = "long_strangle"
@@ -36,6 +39,7 @@ WEEKLY_DTE_WINDOW = (3, 8)
 MONTHLY_DTE_WINDOW = (15, 28)
 MONTHLY_DTE_TARGET = 21
 TRADING_DAYS_PER_YEAR = 252
+RV_WINDOW = 20   # round 2 (Section 3): RV20 uses the last 20 close-to-close log returns
 
 # Skip reasons specific to the candidate path. Counted in ChainBacktest.skips.
 # "expiry_after_end" is not named in the pre-registration. A trade whose expiry falls after the window end
@@ -73,8 +77,13 @@ class CandidateSpec:
     # None (default) holds to expiry. Credit structures only.
     profit_target_pct: Optional[float] = None
     stop_loss_x: Optional[float] = None
+    # Round 2 (Section 3): entry only when VIX_S - RV20_S >= rv20_gap_min (vol points). RV20 uses NIFTY closes up
+    # to and including S. None (default) applies no realised-vol gate. Enforced by the chain engine.
+    rv20_gap_min: Optional[float] = None
 
     def __post_init__(self) -> None:
+        if self.rv20_gap_min is not None and not math.isfinite(self.rv20_gap_min):
+            raise ValueError("rv20_gap_min must be finite (vol points)")
         if self.structure not in KNOWN_STRUCTURES:
             raise ValueError(f"unknown structure {self.structure!r}")
         if self.profit_target_pct is not None or self.stop_loss_x is not None:
@@ -110,6 +119,36 @@ def get_cell(cell_id: str) -> CandidateSpec:
     if cell_id not in CELLS:
         raise KeyError(f"unknown candidate cell {cell_id!r}; declared: {sorted(CELLS)}")
     return CELLS[cell_id]
+
+
+def rv20_annualised(closes: pd.Series, signal_day) -> float:
+    """RV20 in vol points: sample stdev of the last 20 close-to-close log returns of NIFTY x sqrt(252) x 100.
+
+    `closes` is indexed by date. Only closes up to and including `signal_day` are read (no look-ahead). NaN when
+    fewer than 21 closes exist up to that day, or when any close in the window is missing or non-positive.
+    """
+    s = closes.loc[:pd.Timestamp(signal_day)]
+    if len(s) < RV_WINDOW + 1:
+        return float("nan")
+    tail = s.iloc[-(RV_WINDOW + 1):].to_numpy(dtype=float)
+    if not np.all(np.isfinite(tail)) or np.any(tail <= 0):
+        return float("nan")
+    rets = np.diff(np.log(tail))
+    return float(np.std(rets, ddof=1) * math.sqrt(TRADING_DAYS_PER_YEAR) * 100.0)
+
+
+def rv20_gap_filter(closes: pd.Series, gap_min: float) -> Callable:
+    """candidate_entry_filter for ChainConfig: called with the signal-day market row (row.name is the date).
+
+    Returns True when VIX_S - RV20_S >= gap_min, False when below, and None when RV20 is undefined (the engine
+    counts None as 'missing_data').
+    """
+    def _filter(row) -> Optional[bool]:
+        rv = rv20_annualised(closes, pd.Timestamp(row.name).date())
+        if not math.isfinite(rv):
+            return None
+        return bool(float(row["vix"]) - rv >= gap_min)
+    return _filter
 
 
 def sigma_T(spot_f: float, vix_s: float, dte: int) -> float:

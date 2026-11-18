@@ -317,3 +317,29 @@ def _market_with_vix(days, vix_by_day):
     m = _market(days, vix=15.0)
     m["vix"] = [vix_by_day[d] for d in days]
     return m
+
+# ----------------------------------------------------------------------------- (d) round-2 RV20 gate has no look-ahead
+
+def test_rv20_gate_ignores_closes_after_signal_day_and_is_not_vacuous():
+    """Round 2 Section 3/11.2: VIX_S - RV20_S may read NIFTY closes up to S only. Replacing every close after S
+    must leave the RV20 value and the gate decision unchanged; replacing the close on S must change RV20."""
+    from backtester.candidates import rv20_annualised, rv20_gap_filter
+
+    days = pd.bdate_range("2024-10-01", "2025-03-31")
+    rng = np.random.default_rng(7)
+    closes = pd.Series(23000.0 * np.exp(np.cumsum(rng.normal(0.0, 0.008, len(days)))), index=days)
+    sig = days[120]
+    row = pd.Series({"vix": 21.0}, name=sig)
+    base_rv = rv20_annualised(closes, sig.date())
+    base_flag = rv20_gap_filter(closes, 2.0)(row)
+    assert np.isfinite(base_rv) and base_flag in (True, False)
+
+    poisoned = closes.copy()
+    poisoned.loc[poisoned.index > sig] = np.linspace(1.0, 1.0e6, int((poisoned.index > sig).sum()))
+    assert rv20_annualised(poisoned, sig.date()) == pytest.approx(base_rv, abs=0.0)
+    assert rv20_gap_filter(poisoned, 2.0)(row) == base_flag
+
+    # not vacuous: the close on S itself is inside the window and does move RV20
+    on_s = closes.copy()
+    on_s.loc[sig] = closes.loc[sig] * 1.5
+    assert rv20_annualised(on_s, sig.date()) != pytest.approx(base_rv, abs=1e-6)
