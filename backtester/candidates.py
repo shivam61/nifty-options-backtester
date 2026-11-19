@@ -20,7 +20,7 @@ Conventions (all from the pre-registration):
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Callable, Optional
 
@@ -215,6 +215,17 @@ def get_round3_cell(cell_id: str) -> CandidateSpec:
     if cell_id not in ROUND3_CELLS:
         raise KeyError(f"unknown round-3 cell {cell_id!r}; declared: {list(ROUND3_CELL_IDS)}")
     return ROUND3_CELLS[cell_id]
+
+
+# Round 4 (docs/preregistration_round4.md, Section 2): the round-3 cells unchanged, named G_<id>. The ML exit gate is
+# a ChainConfig callable (exit_gate), not part of the spec.
+ROUND4_CELL_IDS = ("G_M1", "G_M2", "G_M3", "G_S1", "G_T1", "G_R1", "G_W1")
+
+
+def get_round4_cell(cell_id: str) -> CandidateSpec:
+    if cell_id not in ROUND4_CELL_IDS:
+        raise KeyError(f"unknown round-4 cell {cell_id!r}; declared: {list(ROUND4_CELL_IDS)}")
+    return replace(ROUND3_CELLS[cell_id[2:]], cell_id=cell_id)
 
 
 def get_round2_cell(cell_id: str) -> CandidateSpec:
