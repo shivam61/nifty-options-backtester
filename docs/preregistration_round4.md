@@ -1,6 +1,6 @@
 # Pre-registration, round 4: round-3 cells with a leak-free ML exit gate, 0.3x slippage bar (7 cells)
 
-Date: 2026-11-19. Status: **DRAFT, not frozen.** It freezes on author approval, at the commit that records that approval. No round-4 cell has been run.
+Date: 2026-11-19. Status: **FROZEN** on author approval (2026-11-19), at the commit that records this line. No round-4 cell has been run.
 Rules not restated here come from `docs/preregistration_round3.md` (Sections 0, 2, 4) and `docs/preregistration_round2.md`.
 
 ## 0. What is new, and what has already been seen
