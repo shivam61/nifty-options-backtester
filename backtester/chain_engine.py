@@ -265,8 +265,9 @@ class ChainBacktest:
         if cfg.candidate is not None:
             if not cfg.cash_settlement or cfg.legacy_costs:
                 raise ValueError("candidate families require cash_settlement=True and legacy_costs=False")
-            if cfg.entry_gate is not None or cfg.exit_gate is not None or cfg.min_vix_floor is not None:
-                raise ValueError("candidate families take no entry/exit gate and no VIX floor")
+            # exit_gate is allowed (opt-in ML exit, an OR on top of the rules); entry gate and VIX floor are not
+            if cfg.entry_gate is not None or cfg.min_vix_floor is not None:
+                raise ValueError("candidate families take no entry gate and no VIX floor (exit_gate is allowed)")
         if cfg.max_concurrent < 1:
             raise ValueError("max_concurrent must be at least 1")
         if cfg.candidate is None and (cfg.max_concurrent != 1 or cfg.candidate_entry_filter is not None):
@@ -727,6 +728,14 @@ class ChainBacktest:
         update_tracker(st["tracker"], trade, spot)
         return None
 
+    @staticmethod
+    def _peak_pnl_per_unit(st: dict) -> float:
+        # baseline trades carry a tracker; candidate trades (tracker None) keep their own running peak,
+        # floored at 0 at fill and updated each marked session before the gate is consulted.
+        if st["tracker"] is not None:
+            return st["tracker"].peak_pnl_per_unit
+        return st.get("peak_pnl_u", 0.0)
+
     def _gate_ctx(self, st: dict, d: date, spot: float, vix: float, dte: int, holding: int,
                   rule_exit: bool) -> dict:
         # All values are as of session d's close. P&L uses the entry fills and today's settle
@@ -747,7 +756,7 @@ class ChainBacktest:
             "entry_vix": st["signal_vix"], "vix": vix,
             "entry_credit_rs": credit_rs, "mark_pnl_rs": mark_pnl_rs,
             "mark_pnl_pct_credit": mark_pnl_rs / credit_rs if credit_rs > 0 else float("nan"),
-            "peak_pnl_rs": max(st["tracker"].peak_pnl_per_unit, trade.pnl_per_unit) * qty,
+            "peak_pnl_rs": max(self._peak_pnl_per_unit(st), trade.pnl_per_unit) * qty,
             "short_strikes": shorts, "short_dist_pct": short_dist,
             "rule_exit": bool(rule_exit),
         }
@@ -1101,6 +1110,8 @@ class ChainBacktest:
             self.expiry_intrinsic_dev.append(dev)
         if self._capital_on:
             st["mtm_per_lot"] = sum(leg.pnl for leg in trade.legs)
+        if self.cfg.exit_gate is not None:
+            st["peak_pnl_u"] = max(st.get("peak_pnl_u", 0.0), trade.pnl_per_unit)
         st["mark"] = {"date": d, "spot": spot, "vix": vix, "dte": dte, "marks": marks, "raw_marks": raw_marks,
                       "holding_sessions": trading_sessions_held(self._cal_index, st["fill_date"], d)}
 
@@ -1118,6 +1129,13 @@ class ChainBacktest:
             reason = KILL_EXIT_REASON
         else:
             reason = self._candidate_rule_exit(st)
+            if reason is None and self.cfg.exit_gate is not None:
+                # opt-in ML exit: OR on top of the rules, dte > 0 here, exit at today's EOD marks
+                ml_exit, ml_score = self.cfg.exit_gate(self._gate_ctx(
+                    st, d, m["spot"], m["vix"], m["dte"], m["holding_sessions"], rule_exit=False))
+                st["exit_gate_score"] = float(ml_score)
+                if bool(ml_exit):
+                    reason = ML_EXIT_REASON
             if reason is None:
                 return None
         return {"date": d, "spot": m["spot"], "vix": m["vix"], "reason": reason, "dte": m["dte"],

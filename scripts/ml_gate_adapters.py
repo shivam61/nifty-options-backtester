@@ -112,6 +112,21 @@ class _FoldModels:
         return self._cache[year]
 
 
+class _SingleModel:
+    """One model file used for every decision date. No out-of-sample guarantee: caller must vet the file."""
+
+    def __init__(self, path, loader, market_df: pd.DataFrame):
+        self.path = Path(path)
+        self.loader = loader
+        self.market_df = market_df
+        self._model = None
+
+    def get(self, d):
+        if self._model is None:
+            self._model = self.loader(self.market_df.copy(), self.path)
+        return self._model
+
+
 def _finite_or_raise(values: dict, names, where: str, allow_zero: frozenset = frozenset()) -> np.ndarray:
     out = []
     for n in names:
@@ -265,7 +280,10 @@ def make_exit_gate(fold_root, market_df: pd.DataFrame,
         _assert_all_nan(eng, mdf, allow_zero)
         return eng
 
-    models = _FoldModels(fold_root, "exit_model.pkl", _load, market_df)
+    if Path(fold_root).is_file():
+        models = _SingleModel(fold_root, _load, market_df)   # one pkl for every date (may be LEAKY)
+    else:
+        models = _FoldModels(fold_root, "exit_model.pkl", _load, market_df)
     state = {"key": None, "hist": {}}
 
     def exit_gate(ctx):
