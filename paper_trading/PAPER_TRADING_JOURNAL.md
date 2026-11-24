@@ -102,13 +102,14 @@ Every other row below is labelled **Fact (code behaviour)**, **Fact (doc fix)**,
 ## Monthly Checkpoint (Review Every 30 Days from Restart)
 
 ### Checkpoint 1: 2026-11-18 (30 days from 2026-10-19)
-- Trades taken: [ ]
-- Win rate: [ ]%
-- Total P&L: ₹[ ]
-- Largest win: ₹[ ]
-- Largest loss: ₹[ ]
-- Avg hold days: [ ]
-- Status: [ ] On track [ ] Needs review [ ] Pause
+**SIMULATED REPLAY (as-of, BS-est), not live.** See [REPLAY_2026-10-17_to_2026-11-24.md](./analysis/REPLAY_2026-10-17_to_2026-11-24.md).
+- Trades taken: 4 entered (RP-020 to RP-023); 3 closed by 11-18; RP-023 open
+- Win rate: 67% (2 of 3 closed)
+- Total P&L: ₹-19,436 realised (3 closed trades)
+- Largest win: ₹+20,993 (RP-022)
+- Largest loss: ₹-43,730 (RP-020, stop_loss_100pct)
+- Avg hold days: 1.7 (closed trades: 2, 1, 2 sessions)
+- Status: [ ] On track [x] Needs review [ ] Pause
 - Expected: 1–2 trades (low frequency in the restart window; NSE holidays in late Oct and Nov)
 
 **Notes**: Restart pre-flight on Mon 2026-10-19 is in [RESTART_2026-10-19.md](./RESTART_2026-10-19.md). The first signal run is Mon 10-19; Tue 10-20 is an NSE holiday (Dussehra; verified against NSE's holiday master API on 2026-10-18). Earlier dates in this journal (Sep 8 signal, 2026-09-29 checkpoint) are superseded.
@@ -187,7 +188,13 @@ Use this for every skip (with its reason code) and for every trade taken outside
 
 | Date | Signal | Action Taken | Reason | P&L | Learning |
 |------|--------|--------------|--------|-----|----------|
-| | | | | | |
+| 2026-10-19 | Strategy rule | Replay uses the code rule `select_weekly_strategy_name` (IC if VIX 12–22 and |5d| < 2%, else PCS). The Phase-1 text says "PCS if VIX ≤ 16, else IC" | Owner decision 2026-11-24 | — | Operator rules (section a and Trading Rules) must match the code before live use |
+| 2026-10-22 | Stop | RP-020 stop_loss_100pct closed at about 1.7× credit (daily close) | Stop check on the daily close, not intraday | -43,730 | Daily-close stops overshoot; log intraday stop prices once live |
+| 2026-10-26 | Weekly SKIP | No entry: `IC_DECLINED` (new code, not in section c): weekly_ic declined at VIX 16.86 | Gate decline | 0 | Add IC_DECLINED to the reason-code table |
+| 2026-10-27 | Weekly SKIP | No entry: `IC_DECLINED`, VIX 17.16 | Gate decline | 0 | |
+| 2026-11-03 | Weekly SKIP | No entry: `OPEN_POSITION`, RP-021 still open at 11:30 | One weekly trade at a time | 0 | |
+| 2026-11-17 | Weekly SKIP | No entry: `OPEN_POSITION`, RP-023 still open at 11:30 | One weekly trade at a time | 0 | |
+| 2026-11-25 (pending) | Open position past stop | RP-024 (put credit spread, 25100PE, credit ₹39.56) was at about ₹-40,608 on the 11-23 close. The stop threshold is ₹38,571 (100% of credit × 975) | Stop due at the next session close | pending | Exit at the first close beyond the stop |
 
 ---
 

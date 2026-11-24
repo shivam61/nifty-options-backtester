@@ -9,14 +9,14 @@
 
 | Parameter | Current | Target | Status |
 |-----------|---------|--------|--------|
-| **Account Equity** | ₹[ ] | ₹25,00,000 (start) | [ ] |
-| **Peak Equity (since restart)** | ₹[ ] | — | [ ] |
-| **Cumulative P&L** | ₹[ ] | — | [ ] |
-| **Daily P&L** | ₹[ ] | — | [ ] |
-| **Account DD % (vs peak)** | [ ]% | < 15% (pause rule) | [ ] |
-| **Account DD ₹ (vs peak)** | ₹[ ] | < ₹3,75,000 | [ ] |
-| **Win Rate YTD** | [ ]% | >= 75% | [ ] |
-| **Trades (Phase 1)** | [ ] | 0–20 | [ ] |
+| **Account Equity** | ₹24,65,032 (SIMULATED, 2026-11-24) | ₹25,00,000 (start) | Below start |
+| **Peak Equity (since restart)** | ₹26,75,642 (peak from the account's start; predates the restart) | — | — |
+| **Cumulative P&L** | ₹-34,968.27 (SIMULATED, since account start) | — | — |
+| **Daily P&L** | ₹0 (2026-11-24, NSE holiday) | — | — |
+| **Account DD % (vs peak)** | 7.87% | < 15% (pause rule) | OK |
+| **Account DD ₹ (vs peak)** | ₹2,10,610 | < ₹3,75,000 | OK |
+| **Win Rate YTD** | 61% (14 of 23, SIMULATED) | >= 75% | Below target |
+| **Trades (Phase 1)** | 5 simulated (4 closed, RP-024 open); 0 real | 0–20 | OK |
 
 ---
 
@@ -24,7 +24,7 @@
 
 | Position | Entry Date | Entry Price | Current Price | Lots (as printed) | Unrealized P&L | Days Held | Stop Level (100% credit / short strike) |
 |----------|-----------|------------|--------------|-----------|----------------|-----------|-------------|
-| | | ₹ | ₹ | | ₹ | | |
+| RP-024 put_credit_spread 25100PE (SIMULATED) | 2026-11-23 | ₹39.56 (credit) | ₹81.21 (mark, 11-23 close) | 15 | ₹-40,608 | 0 | Stop ₹38,571 (100% of credit) exceeded; exit at the next session close (2026-11-25) |
 
 **Total Open P&L**: ₹[ ]
 **Margin Used (broker)**: ₹[ ] / ₹12,50,000 weekly budget

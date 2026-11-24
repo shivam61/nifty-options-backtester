@@ -154,3 +154,42 @@ Date,Day_of_Week,Account_Equity_₹,Cumulative_P&L_₹,Open_Trades_Count,VIX_Clo
 2026-10-14,Wednesday,2451134,-48865.88,1,14.63,rule-based,0,0,0,0,8.39,56,-2715,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed) | RP-019 open MTM +12,690 (dte 5) [SIMULATED REPLAY (as-of, BS-est)]"
 2026-10-15,Thursday,2471461,-28539.45,0,14.03,rule-based,0,0,0,0,7.63,58,-1502,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu) | CLOSED RP-019 profit_target net +20,326 [SIMULATED REPLAY (as-of, BS-est)]"
 2026-10-16,Friday,2471461,-28539.45,0,14.06,rule-based,0,0,0,0,7.63,58,-1502,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri) [SIMULATED REPLAY (as-of, BS-est)]"
+2026-10-17,Saturday,2471461,-28539.45,0,—,—,0,0,0,0,7.63,58,-1502,Market closed (Weekend) [SIMULATED REPLAY]
+2026-10-18,Sunday,2471461,-28539.45,0,—,—,0,0,0,0,7.63,58,-1502,Market closed (Weekend) [SIMULATED REPLAY]
+2026-10-19,Monday,2471461,-28539.45,1,14.77,rule-based,1,1,0,0,7.63,58,-1502,"TRADE RP-020 entered [SIMULATED REPLAY (as-of, BS-est)]"
+2026-10-20,Tuesday,2471461,-28539.45,1,—,—,0,0,0,0,7.63,58,-1502,Market closed (holiday: Dussehra) [SIMULATED REPLAY]
+2026-10-21,Wednesday,2471461,-28539.45,1,15.68,rule-based,0,0,0,0,7.63,58,-1502,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed) | RP-020 open MTM -25,300 (dte 6) [SIMULATED REPLAY (as-of, BS-est)]"
+2026-10-22,Thursday,2427731,-72269.06,0,15.76,rule-based,0,0,0,0,9.27,55,-3613,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu) | CLOSED RP-020 stop_loss_100pct net -43,730 [SIMULATED REPLAY (as-of, BS-est)]"
+2026-10-23,Friday,2427731,-72269.06,0,16.86,rule-based,0,0,0,0,9.27,55,-3613,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri)
+2026-10-24,Saturday,2427731,-72269.06,0,—,—,0,0,0,0,9.27,55,-3613,Market closed (Weekend) [SIMULATED REPLAY]
+2026-10-25,Sunday,2427731,-72269.06,0,—,—,0,0,0,0,9.27,55,-3613,Market closed (Weekend) [SIMULATED REPLAY]
+2026-10-26,Monday,2427731,-72269.06,0,17.16,rule-based,0,0,0,0,9.27,55,-3613,"SKIP IC_DECLINED: strategy weekly_ic declined entry (VIX=16.86, 5d=-1.73%, vix_chg_5d=+20.17%)"
+2026-10-27,Tuesday,2427731,-72269.06,0,16.40,rule-based,0,0,0,0,9.27,55,-3613,"SKIP IC_DECLINED: strategy weekly_ic declined entry (VIX=17.16, 5d=-1.70%, vix_chg_5d=+22.05%)"
+2026-10-28,Wednesday,2427731,-72269.06,0,16.25,rule-based,0,0,0,0,9.27,55,-3613,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed)
+2026-10-29,Thursday,2427731,-72269.06,0,15.12,rule-based,0,0,0,0,9.27,55,-3613,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu)
+2026-10-30,Friday,2427731,-72269.06,0,15.30,rule-based,0,0,0,0,9.27,55,-3613,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri)
+2026-10-31,Saturday,2427731,-72269.06,0,—,—,0,0,0,0,9.27,55,-3613,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-01,Sunday,2427731,-72269.06,0,—,—,0,0,0,0,9.27,55,-3613,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-02,Monday,2427731,-72269.06,1,15.50,rule-based,1,1,0,0,9.27,55,-3613,"TRADE RP-021 entered [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-03,Tuesday,2431032,-68968.00,0,15.72,rule-based,1,0,0,0,9.14,57,-3284,"SKIP OPEN_POSITION: weekly position RP-021 still open (exp 2026-11-09); engine allows one weekly trade at a time | CLOSED RP-021 profit_target net +3,301 [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-04,Wednesday,2431032,-68968.00,0,15.19,rule-based,0,0,0,0,9.14,57,-3284,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed)
+2026-11-05,Thursday,2431032,-68968.00,0,15.58,rule-based,0,0,0,0,9.14,57,-3284,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu)
+2026-11-06,Friday,2431032,-68968.00,0,17.47,rule-based,0,0,0,0,9.14,57,-3284,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri)
+2026-11-07,Saturday,2431032,-68968.00,0,—,—,0,0,0,0,9.14,57,-3284,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-08,Sunday,2431032,-68968.00,0,—,—,0,0,0,0,9.14,57,-3284,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-09,Monday,2431032,-68968.00,1,17.42,rule-based,1,1,0,0,9.14,57,-3284,"TRADE RP-022 entered [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-10,Tuesday,2431032,-68968.00,1,—,—,0,0,0,0,9.14,57,-3284,Market closed (holiday: Diwali-Balipratipada) [SIMULATED REPLAY]
+2026-11-11,Wednesday,2431032,-68968.00,1,17.56,rule-based,0,0,0,0,9.14,57,-3284,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed) | RP-022 open MTM +16,100 (dte 6) [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-12,Thursday,2452025,-47974.88,0,16.62,rule-based,0,0,0,0,8.36,59,-2181,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu) | CLOSED RP-022 profit_target net +20,993 [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-13,Friday,2452025,-47974.88,0,15.50,rule-based,0,0,0,0,8.36,59,-2181,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri)
+2026-11-14,Saturday,2452025,-47974.88,0,—,—,0,0,0,0,8.36,59,-2181,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-15,Sunday,2452025,-47974.88,0,—,—,0,0,0,0,8.36,59,-2181,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-16,Monday,2452025,-47974.88,1,15.68,rule-based,1,1,0,0,8.36,59,-2181,"TRADE RP-023 entered [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-17,Tuesday,2452025,-47974.88,1,15.52,rule-based,1,0,0,0,8.36,59,-2181,"SKIP OPEN_POSITION: weekly position RP-023 still open (exp 2026-11-23); engine allows one weekly trade at a time | RP-023 open MTM +8,525 (dte 6) [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-18,Wednesday,2452025,-47974.88,1,15.57,rule-based,0,0,0,0,8.36,59,-2181,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Wed) | RP-023 open MTM +5,551 (dte 5) [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-19,Thursday,2465032,-34968.27,0,16.11,rule-based,0,0,0,0,7.87,61,-1520,"SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Thu) | CLOSED RP-023 profit_target net +13,007 [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-20,Friday,2465032,-34968.27,0,17.32,rule-based,0,0,0,0,7.87,61,-1520,SKIP WEEKDAY_NOT_ENTRY_DAY: Weekly entries Mon/Tue only (today Fri)
+2026-11-21,Saturday,2465032,-34968.27,0,—,—,0,0,0,0,7.87,61,-1520,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-22,Sunday,2465032,-34968.27,0,—,—,0,0,0,0,7.87,61,-1520,Market closed (Weekend) [SIMULATED REPLAY]
+2026-11-23,Monday,2465032,-34968.27,1,17.70,rule-based,1,1,0,0,7.87,61,-1520,"TRADE RP-024 entered [SIMULATED REPLAY (as-of, BS-est)]"
+2026-11-24,Tuesday,2465032,-34968.27,1,—,—,0,0,0,0,7.87,61,-1520,Market closed (holiday: Prakash Gurpurb Sri Guru Nanak Dev) [SIMULATED REPLAY]
