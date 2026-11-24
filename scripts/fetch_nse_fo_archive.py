@@ -106,13 +106,14 @@ def _int(s: str) -> str:
 
 
 def _legacy_date(s: str) -> date:
-    """'11-FEB-2019' or '28-Feb-2019'."""
+    """'11-FEB-2019' or '28-Feb-2019'; a 2-digit year ('14-May-12', seen in one 2012 file) means 20YY."""
     d, m, y = s.strip().split("-")
-    return date(int(y), MONTHS.index(m.strip().upper()[:3]) + 1, int(d))
+    year = int(y) + 2000 if len(y.strip()) <= 2 else int(y)
+    return date(year, MONTHS.index(m.strip().upper()[:3]) + 1, int(d))
 
 
-def parse_bhavcopy(raw: bytes, day: date, fmt: str) -> list:
-    """NIFTY CE/PE rows in archive layout. Raises ValueError on schema or date mismatch."""
+def parse_bhavcopy(raw: bytes, day: date, fmt: str, symbol: str = "NIFTY") -> list:
+    """`symbol` (default NIFTY) index CE/PE rows in archive layout. Raises ValueError on schema or date mismatch."""
     with zipfile.ZipFile(io.BytesIO(raw)) as z:
         members = [n for n in z.namelist() if n.lower().endswith(".csv")]
         if len(members) != 1:
@@ -126,7 +127,7 @@ def parse_bhavcopy(raw: bytes, day: date, fmt: str) -> list:
     out = []
     for r in reader:
         if fmt == "legacy":
-            if r["INSTRUMENT"].strip() != "OPTIDX" or r["SYMBOL"].strip() != "NIFTY":
+            if r["INSTRUMENT"].strip() != "OPTIDX" or r["SYMBOL"].strip() != symbol:
                 continue
             opt = r["OPTION_TYP"].strip().upper()
             if opt not in ("CE", "PE"):
@@ -138,7 +139,7 @@ def parse_bhavcopy(raw: bytes, day: date, fmt: str) -> list:
             settle, contracts, oi, und = r["SETTLE_PR"], r["CONTRACTS"], r["OPEN_INT"], ""
             strike = r["STRIKE_PR"]
         else:
-            if r["FinInstrmTp"].strip() != "IDO" or r["TckrSymb"].strip() != "NIFTY":
+            if r["FinInstrmTp"].strip() != "IDO" or r["TckrSymb"].strip() != symbol:
                 continue
             opt = r["OptnTp"].strip().upper()
             if opt not in ("CE", "PE"):
@@ -278,8 +279,9 @@ def parse_args(argv=None):
     ap = argparse.ArgumentParser(description="Download NSE F&O daily bhavcopy (NIFTY options) archive.")
     ap.add_argument("--start", type=date.fromisoformat, default=DEFAULT_START, help="YYYY-MM-DD")
     ap.add_argument("--end", type=date.fromisoformat, default=date.today(), help="YYYY-MM-DD (inclusive)")
-    ap.add_argument("--archive-dir", default=None,
+    ap.add_argument("--archive-dir", "--out-dir", dest="archive_dir", default=None,
                     help="default: env NSE_FO_ARCHIVE_DIR, else ~/nse_fo_archive")
+    ap.add_argument("--symbol", default="NIFTY", help="index symbol to keep (default NIFTY), e.g. BANKNIFTY")
     ap.add_argument("--dry-run", action="store_true", help="print the plan only, no network")
     ap.add_argument("--limit", type=int, default=None, help="stop after N days needing download")
     return ap.parse_args(argv)
@@ -295,8 +297,8 @@ def main(argv=None) -> int:
     os.makedirs(LOG_DIR, exist_ok=True)
     logpath = os.path.join(LOG_DIR, f"fetch_fo_{datetime.now():%Y%m%d_%H%M%S}.log")
     setup_logging(logpath)
-    log.info("archive=%s start=%s end=%s dry_run=%s limit=%s",
-             archive, args.start, args.end, args.dry_run, args.limit)
+    log.info("archive=%s symbol=%s start=%s end=%s dry_run=%s limit=%s",
+             archive, args.symbol, args.start, args.end, args.dry_run, args.limit)
     log.info("log file: %s", logpath)
 
     holidays = load_holidays(HOLIDAY_FILE)
@@ -344,7 +346,7 @@ def main(argv=None) -> int:
             log.warning("NOT PUBLISHED %s: 404 on both formats, weekday not in holiday list; treated as holiday", day)
             continue
         try:
-            rows = parse_bhavcopy(raw, day, fmt)
+            rows = parse_bhavcopy(raw, day, fmt, args.symbol)
             validate_rows(rows, day)
             write_day(path, rows)
         except (ValueError, KeyError, zipfile.BadZipFile, OSError, EOFError) as exc:
