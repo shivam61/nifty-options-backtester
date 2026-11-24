@@ -105,6 +105,7 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 - System Python 3.9.6 is too old. Create the venv with uv: `uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt`.
 - `requirements.txt` does NOT list `lightgbm`, `fastapi` or `httpx`, but the models and `api/` import them. Install them too: `uv pip install --python .venv/bin/python lightgbm fastapi httpx`.
 - macOS: LightGBM needs Homebrew's OpenMP runtime. Run `brew install libomp`, or every LightGBM import fails with `OSError: dlopen(... lib_lightgbm.dylib)` and 7 test modules fail collection.
+- **Tests write to the real paper-trading journal.** `pytest` (notably `tests/test_api_endpoints.py`) appends rows like `test-journal-001` to the tracked `paper_trading/tracker/DAILY_LOG.csv` and `TRADES.csv`. Run `git diff paper_trading/tracker/` after every test run and `git checkout --` those files before committing. Never commit test rows.
 - Known failures in a clean run (as of 2026-11-24): 5 tests in `tests/test_api_endpoints.py` return 400/500 (journal, account, signal and trade endpoints), and `test_archive_query.py::test_real_archive_row_count` needs a complete archive. The other 1407 tests pass.
 
 ---
