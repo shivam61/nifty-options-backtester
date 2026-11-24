@@ -101,6 +101,12 @@ tests/test_fixes.py        — Regression: bug fixes #1–#6 + CAGR improvements
 
 Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
+**Fresh-machine environment** (verified 2026-11-24, macOS arm64):
+- System Python 3.9.6 is too old. Create the venv with uv: `uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r requirements.txt`.
+- `requirements.txt` does NOT list `lightgbm`, `fastapi` or `httpx`, but the models and `api/` import them. Install them too: `uv pip install --python .venv/bin/python lightgbm fastapi httpx`.
+- macOS: LightGBM needs Homebrew's OpenMP runtime. Run `brew install libomp`, or every LightGBM import fails with `OSError: dlopen(... lib_lightgbm.dylib)` and 7 test modules fail collection.
+- Known failures in a clean run (as of 2026-11-24): 5 tests in `tests/test_api_endpoints.py` return 400/500 (journal, account, signal and trade endpoints), and `test_archive_query.py::test_real_archive_row_count` needs a complete archive. The other 1407 tests pass.
+
 ---
 
 ## Runbooks and docs index
@@ -194,6 +200,8 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
   - The seed models are enough for `backtest-combined` / `signal-combined` immediately. There is no `weekly_risk_engine_v2.pkl` in the seed, so the weekly track runs rule-based; this is the documented default, not a defect.
   - Never seed from an unvalidated cache: a regenerated `data/.cache_seed/` must pass `check_cache_health.sh` before it is committed.
   - The NSE F&O option archive is separate and is not in the repo: it lives in `~/nse_fo_archive` (or `NSE_FO_ARCHIVE_DIR`). See [docs/ARCHIVE_QUERY.md](docs/ARCHIVE_QUERY.md) ("What data we have") and `python scripts/fetch_nse_fo_archive.py`.
+  - Fresh download (verified 2026-11-24): `nohup python scripts/fetch_nse_fo_archive.py > logs/fetch_fo_$(date +%Y%m%d_%H%M).log 2>&1 &`. It is resumable and takes about 50 min for the full 2019-02-11 → today range at 1.5 s per request. Check `--dry-run` first. The archive is public NSE bhavcopy data downloaded locally. It is still licence-restricted for our use: never commit it or copy it into the repo.
+  - `data/.cache/` after `bootstrap_cache.sh` passes every integrity check. Only the freshness check fails (seed ends 2026-10-12), so run `python main.py --mode refresh-data` before the freshness check passes.
 
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
