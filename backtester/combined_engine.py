@@ -874,8 +874,12 @@ class CombinedBacktestEngine:
                 quality_score = prediction.get("quality_score", 0)
                 prediction_payload = prediction
 
-                model_threshold = self._monthly_model_threshold()
-                effective_threshold = model_threshold if model_threshold is not None else self.entry_threshold
+                trailing = self._gate8_trailing_threshold(quality_score)
+                if trailing is not None:
+                    effective_threshold = trailing
+                else:
+                    model_threshold = self._monthly_model_threshold()
+                    effective_threshold = model_threshold if model_threshold is not None else self.entry_threshold
                 if self._m_consecutive_losses >= 3:
                     effective_threshold += 0.03
 
@@ -1088,6 +1092,24 @@ class CombinedBacktestEngine:
                 "vix": vix,
             },
         }
+
+    def _gate8_trailing_threshold(self, score: float) -> float | None:
+        """Trailing-percentile Gate 8 threshold from PRIOR scores only (no look-ahead).
+
+        Returns None when disabled (pctile <= 0) so the legacy fixed gate applies.
+        During warm-up (< min_obs prior scores) returns +inf so nothing trades.
+        The current score is appended after the threshold is computed.
+        """
+        pct = float(getattr(self.m_config, "monthly_gate8_trailing_pctile", 0.0) or 0.0)
+        if pct <= 0.0:
+            return None
+        min_obs = int(getattr(self.m_config, "monthly_gate8_trailing_min_obs", 60))
+        hist = self.__dict__.setdefault("_gate8_score_hist", [])
+        thr = float("inf")
+        if len(hist) >= min_obs:
+            thr = float(np.quantile(hist, pct))
+        hist.append(float(score))
+        return thr
 
     def _monthly_model_threshold(self) -> float | None:
         """

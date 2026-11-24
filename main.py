@@ -17,7 +17,9 @@ Modes:
     python main.py --mode signal                     # Today's live trade signal
     python main.py --mode evolve                     # Evolve params per VIX regime
     python main.py --mode monitor                    # Monitor active trades + exits
-    python main.py --mode validate                   # Walk-forward + permutation tests
+    python main.py --mode validate                   # Walk-forward + permutation tests (NON-EVIDENTIAL, legacy engine)
+    python main.py --mode eval-chain --trades T.csv [--baseline B.csv] [--name N]
+                                                     # Pre-registered real-price pass rule (scripts/eval_strategy.py)
     python main.py --mode add-trade  --trade-id ...  # Add trade to active journal
     python main.py --mode close-trade --trade-id .. --realized-pnl ...  # Close/archive trade
     python main.py --mode remove-trade --trade-id .. # Remove trade without archiving
@@ -677,7 +679,9 @@ def run_backtest_combined(config: BacktestConfig, target_dte: int = 21, run_labe
     print(f"  Loaded {len(data)} trading days")
 
     print(f"\n[2/5] Loading final evolve caches (cache-only)...")
-    wc = WeeklyBacktestConfig(weekly_trade_start_date=weekly_start)
+    # era_aware_signal_day: Thursday-era signals fire Thursday/fill Friday at 6 DTE instead of
+    # ~88% being dropped at 2 DTE (CAGR 0.12% -> 0.80% at Rs 25L, BS-priced, indicative only).
+    wc = WeeklyBacktestConfig(weekly_trade_start_date=weekly_start, era_aware_signal_day=True)
     exit_engine = None
     entry_model = None
     weekly_risk_engine = None
@@ -2854,6 +2858,7 @@ def main():
         "--mode",
         choices=[
             "backtest", "backtest-combined", "signal", "signal-combined", "evolve", "monitor", "validate",
+            "eval-chain",
             "add-trade", "close-trade", "remove-trade", "list-trades",
             "ablation", "stress", "refresh-data", "retrain-models",
         ],
@@ -2905,6 +2910,11 @@ def main():
     parser.add_argument("--long-strike", type=float, help="Long strike price (legacy)")
     parser.add_argument("--entry-credit", type=float, help="Credit received per unit (legacy)")
     parser.add_argument("--lot-size", type=int, default=65, help="Lot size (default 65)")
+    parser.add_argument("--trades", type=Path, default=None,
+                        help="eval-chain: candidate trade file (CSV/pickle/JSON, chain-engine format)")
+    parser.add_argument("--baseline", type=Path, default=None,
+                        help="eval-chain: optional baseline trade file on the same entry dates")
+    parser.add_argument("--name", type=str, default=None, help="eval-chain: strategy label (default: trades file stem)")
 
     args = parser.parse_args()
 
@@ -2956,6 +2966,10 @@ def main():
         run_stress_test(config, args)
     elif args.mode == "validate":
         run_validate(config)
+    elif args.mode == "eval-chain":
+        if not args.trades:
+            parser.error("eval-chain requires: --trades (optional: --baseline, --name)")
+        raise SystemExit(run_eval_chain(args))
     elif args.mode == "refresh-data":
         run_data_refresh(config)
     elif args.mode == "retrain-models":
@@ -3701,6 +3715,28 @@ def run_signal_combined(config: BacktestConfig) -> None:
         learner.print_training_report()
 
 
+VALIDATE_NON_EVIDENTIAL_NOTE = (
+    "NON-EVIDENTIAL: validates ML gates on the legacy engine only (20 permutations, min p ~ 0.05). "
+    "Use --mode eval-chain / scripts/eval_strategy.py for the pre-registered real-price pass rule."
+)
+
+
+def run_eval_chain(args) -> int:
+    """Delegate to scripts/eval_strategy.py main() (loaded by path; the scripts dir is not a package)."""
+    import importlib.util
+
+    spec_path = Path(__file__).resolve().parent / "scripts" / "eval_strategy.py"
+    spec = importlib.util.spec_from_file_location("eval_strategy", spec_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    argv = ["--trades", str(args.trades)]
+    if args.baseline is not None:
+        argv += ["--baseline", str(args.baseline)]
+    if args.name:
+        argv += ["--name", args.name]
+    return mod.main(argv)
+
+
 def run_validate(config: BacktestConfig) -> None:
     """Run full production model validation: walk-forward + permutation tests for ALL models."""
     from models.model_validator import run_full_validation
@@ -3708,6 +3744,9 @@ def run_validate(config: BacktestConfig) -> None:
     from config import WeeklyBacktestConfig
 
     wc = WeeklyBacktestConfig()
+    print("\n  " + "!" * 78)
+    print("  " + VALIDATE_NON_EVIDENTIAL_NOTE)
+    print("  " + "!" * 78)
 
     print("\n  Fetching market data...")
     fetcher = MarketDataFetcher(config.start_date, config.end_date)
@@ -3738,6 +3777,10 @@ def run_validate(config: BacktestConfig) -> None:
         n_permutations=20,
         verbose=True,
     )
+
+    print("\n  " + "!" * 78)
+    print("  VALIDATION SUMMARY — " + VALIDATE_NON_EVIDENTIAL_NOTE)
+    print("  " + "!" * 78)
 
 
 if __name__ == "__main__":

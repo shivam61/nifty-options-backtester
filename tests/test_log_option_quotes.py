@@ -382,7 +382,10 @@ def test_missing_vix_is_reported_not_guessed(tmp_path, payload):
     assert ok.status == "appended"
 
 
-def test_cli_dry_run_and_summary_line(tmp_path, capsys):
+def test_cli_dry_run_and_summary_line(tmp_path, capsys, monkeypatch):
+    # main() has no --now flag and falls back to the wall clock; pin it to the fixture's
+    # snapshot time so the fixture's expiries (27-Oct, 03-Nov) stay inside the DTE window.
+    monkeypatch.setattr(LQ, "now_ist", lambda: TUE_1130)
     log = tmp_path / "QUOTE_LOG.csv"
     code = LQ.main(["--from-json", str(FIXTURE), "--log", str(log), "--force", "--dry-run"])
     out = capsys.readouterr().out

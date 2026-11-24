@@ -56,6 +56,7 @@ python main.py --mode validate            # Walk-forward + permutation tests
 python main.py --mode ablation            # Drop-one-out strategy contribution analysis
 python main.py --mode stress              # Crisis period replay (2008, 2020, 2022, 2025)
 python main.py --start 2019-01-01 --capital 1000000 --lots 25 --run-label "v5 test"
+python -m data.archive_query --coverage   # NSE F&O archive: aggregate-only SQL (see docs/ARCHIVE_QUERY.md)
 ```
 
 **Model caches** (`data/.cache/*.pkl`) must exist before running backtest/signal modes. Run `--mode evolve` first or after any strategy/feature changes.
@@ -102,6 +103,23 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
 
 ---
 
+## Runbooks and docs index
+
+| I want to... | Read / run |
+|---|---|
+| Explore or search the NSE option archive | [docs/ARCHIVE_QUERY.md](docs/ARCHIVE_QUERY.md); `python -m data.archive_query --coverage` |
+| Download or refresh the NSE F&O archive | `python scripts/fetch_nse_fo_archive.py` (resumable; use `nohup` for a from-scratch run); [docs/ARCHIVE_QUERY.md](docs/ARCHIVE_QUERY.md) section "What data we have" |
+| Judge a strategy with the pre-registered pass rule | [docs/STRATEGY_EVAL.md](docs/STRATEGY_EVAL.md); `python scripts/eval_strategy.py` (or `python main.py --mode eval-chain`) |
+| Run a real-price backtest on the archive (chain engine, capital mode, spread model) | `scripts/run_chain_backtest.py`; [docs/SPREAD_MODEL.md](docs/SPREAD_MODEL.md); [docs/COSTS_NSE_OPTIONS.md](docs/COSTS_NSE_OPTIONS.md). Anchors reproduce at lots=10 (-133.5 / -253.2 per lot at 1.0x / 1.5x) |
+| Read the pre-registered studies and results | [docs/preregistration_edge_search.md](docs/preregistration_edge_search.md), [docs/preregistration_candidates.md](docs/preregistration_candidates.md), [docs/preregistration_candidates_results.md](docs/preregistration_candidates_results.md) |
+| Run the candidate families | `scripts/run_candidates.py` |
+| Log live quotes and spreads | `scripts/log_option_quotes.py`; [docs/SPREAD_MODEL.md](docs/SPREAD_MODEL.md) |
+| Check past pitfalls | [docs/AGENT_MEMORY.md](docs/AGENT_MEMORY.md) |
+| Find any other doc | [docs/INDEX.md](docs/INDEX.md) |
+
+Honest status: no validated edge. Candidates A and B found no edge, and the 2024+ holdout has not been opened. The
+old 11-12% CAGR is superseded (see [BACKTEST_CHANGELOG.md](BACKTEST_CHANGELOG.md)).
+
 ## Agent Workflow
 
 - Keep `graphify-out/` current. Run `scripts/update_graphify.sh` for a one-shot
@@ -112,6 +130,13 @@ Run: `source .venv/bin/activate && python -m pytest tests/ -q`
   pitfalls with `python3 scripts/agent_memory.py add ...`, mark useful memories
   with `--helpful`, mark stale ones with `--stale`, and run
   `python3 scripts/agent_memory.py decay` to archive low-signal records.
+
+### Exploring the NSE option archive
+
+- For any question about archive contents, use `python -m data.archive_query "SELECT ..."` or
+  `data.archive_query.query(sql)`. Write aggregates in SQL.
+- Never print or load raw archive rows into the conversation. Results are capped (default 200, max 5000).
+- Details, views, caveats and examples: [docs/ARCHIVE_QUERY.md](docs/ARCHIVE_QUERY.md).
 
 ### Git Commit + Push Policy (mandatory)
 
@@ -168,10 +193,11 @@ The `logs/` directory is gitignored. Create it with `mkdir -p logs` if absent.
   - Then run `scripts/check_cache_health.sh` (expect PASS). The seed passes the freshness check only until ~5 business days after 2026-10-12 (about 2026-10-19); after that, extend with `python main.py --mode refresh-data` (needs network) or check the seed as of its own date with `ASOF=2026-10-12`.
   - The seed models are enough for `backtest-combined` / `signal-combined` immediately. There is no `weekly_risk_engine_v2.pkl` in the seed, so the weekly track runs rule-based; this is the documented default, not a defect.
   - Never seed from an unvalidated cache: a regenerated `data/.cache_seed/` must pass `check_cache_health.sh` before it is committed.
+  - The NSE F&O option archive is separate and is not in the repo: it lives in `~/nse_fo_archive` (or `NSE_FO_ARCHIVE_DIR`). See [docs/ARCHIVE_QUERY.md](docs/ARCHIVE_QUERY.md) ("What data we have") and `python scripts/fetch_nse_fo_archive.py`.
 
 - **BWB VIX routing** — `BrokenWingButterflyStrategy` has a `max_vix` param (default 30). The `RegimeAdaptiveStrategy` router sends it VIX 22–30. Before the fix this was hardcoded `> 20`, silently blocking all high-VIX entries. If you change `max_vix`, also check `get_eligible_strategies()` zone boundaries.
 
-- **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 (`monthly_entry_threshold=0.50`) is active and blocks ~43% of days. Don't re-enable bypass unless AUC drops below 0.55.
+- **ML entry model AUC 0.696** — After adding 18 trade-structure features (11 one-hot strategy flags + 7 continuous metrics) and migrating to LightGBM, `RegimeAwareLearner` v4 CV AUC reached 0.696. Gate 8 is a trailing-percentile gate (`monthly_gate8_trailing_pctile=0.80`, prior scores only; the fixed 0.50 cap passed 0 days) and blocks ~74% of days; Run #69 = 129 monthly trades. Don't re-enable bypass unless AUC drops below 0.55.
 
 - **Capital utilization ~48%** — At default settings with 50/50 split and Gate 8 at 0.50, ~52% of capital days are idle. Main levers: `vix_simultaneous_cap` (25), `monthly_entry_threshold` (0.50), `dd_recovery_pct` (0.16).
 

@@ -104,6 +104,12 @@ class BacktestConfig:
     # are no longer suppressed by the artificial 0.30 ceiling. Expect ~150-200 monthly entries
     # (down from 397) keeping only high-confidence setups. If entries drop below 50, lower to 0.40.
     monthly_gate8_enabled: bool = True
+    # Trailing-percentile Gate 8 (2026-11-10): the served quality score is the mean of 3
+    # calibrated sub-models and sits on a different scale than the OOF recommended_threshold,
+    # so the fixed 0.50 cap passed 0/3792 days.  When > 0, a day passes if its score is
+    # >= this percentile of PRIOR scores (no look-ahead).  0 restores the legacy fixed gate.
+    monthly_gate8_trailing_pctile: float = 0.80
+    monthly_gate8_trailing_min_obs: int = 60
     # Re-enabled 2026-08-23: LightGBM AUC reached 0.696 (>0.55 threshold met).
     # Real-trade condition (≥500) intentionally relaxed — sim trades with 18
     # strategy-structure features now produce genuinely discriminative labels

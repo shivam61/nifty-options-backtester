@@ -24,6 +24,10 @@ Example:
         --slippage 1.0 1.5 2.0 --out /tmp/chain_out
 
 --end later than 2023-12-31 (the 2024+ holdout) is refused unless --allow-holdout is passed.
+
+--capital-mode (opt-in, lots must be 1): per-lot trades are unchanged; each trade is sized on Rs
+--capital-rs (risk cap, margin cap, max lots, kill switch; see backtester.chain_engine.ChainConfig).
+Adds <out>/capital_x<mult>.json with the portfolio summary and a capital block in summary.json.
 """
 
 from __future__ import annotations
@@ -93,6 +97,8 @@ def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lot
     cfg = ChainConfig(slippage_multiplier=mult, lots=lots, start=start, end=end, **(overrides or {}))
     bt = ChainBacktest(arch, market, cfg)
     trades = bt.run()
+    if cfg.capital_mode:
+        cap_summary = bt.capital_summary(echo=False)
     diag = {
         "mult": mult, "start": str(start), "end": str(end), "lots": lots,
         "arms": {"pcs_put_sd": cfg.pcs_put_sd, "breach_stop": cfg.exit_arms.breach_stop,
@@ -110,7 +116,30 @@ def run_one(arch, market: pd.DataFrame, start: date, end: date, mult: float, lot
     }
     if not cfg.fully_legacy:  # legacy mode keeps the pre-change diag schema byte for byte
         diag["cfg"].update({"cash_settlement": cfg.cash_settlement, "legacy_costs": cfg.legacy_costs})
+    if cfg.capital_mode:
+        diag["capital"] = cap_summary
+    if cfg.spread_model is not None:  # absent by default, so default diag output is unchanged
+        diag["spread"] = spread_usage(bt)
     return trades, diag, bt.skip_log
+
+
+def spread_usage(bt) -> dict:
+    """Leg-level counts of which slippage source each charge used (calibrated bucket or fallback)."""
+    usage = dict(bt.spread_stats)
+    calibrated = sum(v for k, v in usage.items() if k.endswith(":calibrated"))
+    fallback = sum(v for k, v in usage.items() if not k.endswith(":calibrated"))
+    return {"legs_calibrated": calibrated, "legs_fallback": fallback, "by_source": usage}
+
+
+def format_spread_usage(u: dict) -> str:
+    parts = []
+    for phase in ("entry", "exit"):
+        cal = u["by_source"].get(f"{phase}:calibrated", 0)
+        fb = sum(v for k, v in u["by_source"].items() if k.startswith(f"{phase}:") and not k.endswith(":calibrated"))
+        parts.append(f"{phase} legs calibrated={cal} fallback={fb}")
+    return "spread model: " + "; ".join(parts) + f" (fallback reasons: " + ", ".join(
+        f"{k.split(':', 1)[1]}={v}" for k, v in sorted(u["by_source"].items())
+        if not k.endswith(":calibrated")) + ")"
 
 
 def main(argv=None) -> int:
@@ -154,11 +183,27 @@ def main(argv=None) -> int:
                     help="exit gate fires when exit probability >= this (default %(default)s)")
     ap.add_argument("--exit-gate-pnl-pct", type=float, default=-15.0,
                     help="and mark P&L %% of credit is below this (default %(default)s)")
+    ap.add_argument("--capital-mode", action="store_true",
+                    help="capital-aware sizing on --capital-rs (requires --lots 1); default off")
+    ap.add_argument("--capital-rs", type=float, default=500_000.0,
+                    help="capital base for sizing and the kill switch (default %(default)s)")
+    ap.add_argument("--risk-cap-pct", type=float, default=0.10,
+                    help="max loss per trade as a share of capital (default %(default)s)")
+    ap.add_argument("--margin-cap-pct", type=float, default=0.20,
+                    help="margin per trade as a share of capital (default %(default)s)")
+    ap.add_argument("--max-lots", type=int, default=30, help="lot cap per trade (default %(default)s)")
+    ap.add_argument("--kill-dd-pct", type=float, default=0.20,
+                    help="equity drawdown from peak that halts entries and force-closes (default %(default)s)")
+    ap.add_argument("--spread-table", type=Path, default=None,
+                    help="data-driven half-spread table (python -m backtester.spread_model --out ...); "
+                         "prints calibrated vs fallback leg counts per run. Default off (flat CostModel)")
     ap.add_argument("--out", type=Path, required=True, help="output directory")
     ap.add_argument("--archive-dir", type=str, default=None,
                     help="NSE F&O daily archive directory (default: $NSE_FO_ARCHIVE_DIR or ~/nse_fo_archive)")
     a = ap.parse_args(argv)
     check_window(a.end, a.allow_holdout)
+    if a.capital_mode and a.lots != 1:
+        ap.error("--capital-mode requires --lots 1 (each trade is sized on its own)")
     if a.start > a.end:
         ap.error("--start must not be after --end")
     if a.market_start > a.start:
@@ -185,6 +230,22 @@ def main(argv=None) -> int:
         "cash_settlement": not a.legacy_settlement,
         "legacy_costs": a.legacy_costs,
     }
+    if a.spread_table is not None:
+        from backtester.spread_model import SpreadModel
+
+        model = SpreadModel.load(a.spread_table)
+        overrides["spread_model"] = model
+        summary["spread_model"] = {
+            "table": str(a.spread_table), "min_samples": model.min_samples,
+            "min_snapshots": model.min_snapshots, "rows_used": model.table.get("rows_used"),
+            "calibrated_buckets": sum(1 for c in model.coverage() if c["calibrated"]),
+            "observed_buckets": len(model.buckets)}
+    if a.capital_mode:
+        overrides.update({"capital_mode": True, "capital_rs": a.capital_rs, "risk_cap_pct": a.risk_cap_pct,
+                          "margin_cap_pct": a.margin_cap_pct, "max_lots": a.max_lots,
+                          "kill_dd_pct": a.kill_dd_pct})
+        summary["capital"] = {k: overrides[k] for k in ("capital_rs", "risk_cap_pct", "margin_cap_pct",
+                                                        "max_lots", "kill_dd_pct")}
     if a.entry_gate_model is not None or a.exit_gate_model is not None:
         sys.path.insert(0, str(REPO_ROOT / "scripts"))
         import ml_gate_adapters as mga  # noqa: E402
@@ -220,7 +281,18 @@ def main(argv=None) -> int:
             "total_pnl_per_lot": round(sum(pnl), 1),
             "exp_per_lot": round(sum(pnl) / len(pnl), 1) if pnl else None,
         })
+        if a.capital_mode:
+            cap = diag["capital"]
+            json.dump(cap, open(a.out / f"capital_{tag}.json", "w"), indent=1, default=str)
+            summary["runs"][-1]["capital"] = cap
+            print(f"{tag}: capital trades={cap['trades']} final_equity={cap['final_equity']} "
+                  f"CAGR={cap['cagr_pct']}% MaxDD={cap['max_dd_pct']}% Sharpe={cap['sharpe_daily_ann']} "
+                  f"avg_lots={cap['avg_lots']} util={cap['capital_utilisation_avg_pct']}% "
+                  f"kill={cap['kill_switch_date']}")
         print(f"{tag}: trades={len(trades)} exp_per_lot={summary['runs'][-1]['exp_per_lot']}")
+        if "spread" in diag:
+            print(f"{tag}: " + format_spread_usage(diag["spread"]))
+            summary["runs"][-1]["spread"] = diag["spread"]
     json.dump(summary, open(a.out / "summary.json", "w"), indent=1)
     return 0
 

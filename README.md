@@ -23,9 +23,7 @@ A **dual-track backtester** (monthly 50% + weekly 50% capital) combining:
 **Baseline Performance** (Rule-Based Weekly, LightGBM Monthly)
 > **Caveat (2026-10-21):** weekly figures are Black-Scholes priced and are not validated. The real-price chain engine gives NOT SUPPORTED (expectancy -177 Rs/lot at 1.0x slippage). See `BACKTEST_CHANGELOG.md`.
 
-- **CAGR**: 11.16% | **Sharpe**: 1.05 | **Max DD**: 6.9%
-- **Win Rate**: 59.2% (Monthly 53.3%, Weekly 77.5%) | **P&L**: ₹2.57M (17-year backtest)
-- **Profit Factor**: 4.47 (4.47× win/loss ratio)
+- **Superseded:** the previously advertised 11.16% CAGR (Run #59) and the 11–12% figures from later runs are **not valid**. They came from a weekly exit-repricing bug and Black-Scholes overstating entry credit. Corrected model-priced run #69 gives ~1.1% CAGR (MaxDD 3.1%), and real-price chain results are NOT SUPPORTED. See `BACKTEST_CHANGELOG.md`.
 
 ## High-Level Architecture
 
@@ -92,11 +90,11 @@ python main.py --mode monitor
 ## Recent Changes
 
 - **2026-08-29** — Documentation cleanup: archived runs #3–#55, streamlined changelog, created baseline learnings & experiment index
-- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline
+- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline (superseded 2026-10: not valid, see 2026-10-21 correction)
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 
 - **2026-08-29** — Documentation cleanup: archived runs #3–#55, streamlined changelog, created baseline learnings & experiment index
-- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline
+- **2026-08-24** — **Baseline v10 locked: 11.16% CAGR** (rule-based weekly entries, no ML ETL gate) — +183% vs v9 ML-gated baseline (superseded 2026-10: not valid, see 2026-10-21 correction)
 - **2026-08-23** — LightGBM migration (6 model files); LightGBM AUC 0.696 for entry model (Gate 8 at 0.50 threshold)
 - **2026-08-23** — Mid-session 11 AM IST entry window made permanent baseline (+2.47% CAGR, MaxDD 8.9%→4.7%)
 - **2026-08-23** — Capital split changed from 70/30 to **50/50** monthly/weekly
@@ -190,6 +188,7 @@ python main.py --mode optimize
 
 ### 🤖 Agent Tools
 - **[Agent Memory](docs/AGENT_MEMORY.md)** - Decaying record of repo-specific pitfalls for Claude/Codex sessions
+- **[NSE F&O archive](docs/ARCHIVE_QUERY.md)** - Search the local NIFTY options archive with `python -m data.archive_query` (capped SQL, small tables). Download or refresh it with `python scripts/fetch_nse_fo_archive.py` (resumable; use `nohup` for a from-scratch run of about 1 to 1.5 hours). The archive is licence-restricted and is never committed.
 
 ## Agent Automation
 

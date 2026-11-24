@@ -290,7 +290,7 @@ class MonthlyDiagnosticsCollector:
 
         def _write_json(name: str, data: Any) -> None:
             path = output_dir / name
-            path.write_text(json.dumps(data, indent=2, default=str))
+            path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
             paths[name] = path
 
         def _write_csv(name: str, rows: list[dict[str, Any]]) -> None:
@@ -305,11 +305,11 @@ class MonthlyDiagnosticsCollector:
         _write_csv("monthly_diagnostic_sizing.csv", self.sizing_rows)
 
         md_path = output_dir / "monthly_diagnostic_report.md"
-        md_path.write_text(self._render_markdown(summary))
+        md_path.write_text(self._render_markdown(summary), encoding="utf-8")
         paths["monthly_diagnostic_report.md"] = md_path
 
         html_path = output_dir / "monthly_diagnostic_report.html"
-        html_path.write_text(self._render_html(summary))
+        html_path.write_text(self._render_html(summary), encoding="utf-8")
         paths["monthly_diagnostic_report.html"] = html_path
 
         return paths

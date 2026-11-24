@@ -217,8 +217,9 @@ curl "http://localhost:8000/status?journal_id=phase1-sep-2026"
   "spot_now": 25200,
   "regime": "LOW_VOL",
   "market_date": "2026-09-01",
-  "backtest_baseline_cagr": 12.07,
-  "backtest_baseline_win_rate": 78.0
+  "backtest_baseline_cagr": null,
+  "backtest_baseline_win_rate": null,
+  "backtest_baseline_note": "superseded: model-priced, not validated; real-price chain engine verdict NOT SUPPORTED"
 }
 ```
 
@@ -230,6 +231,8 @@ curl "http://localhost:8000/status?journal_id=phase1-sep-2026"
 | `available_capital` | 80% of equity available for new trades |
 | `reserve_capital` | 20% safety cushion |
 | `regime` | VIX-inferred regime: VERY_LOW_VOL, LOW_VOL, NORMAL, ELEVATED, HIGH, CRISIS |
+| `backtest_baseline_cagr` / `backtest_baseline_win_rate` | Always `null`. The former 11-12% CAGR and 78% win-rate baselines are superseded and not valid (see `BACKTEST_CHANGELOG.md`, 2026-10-21) |
+| `backtest_baseline_note` | Explains why the baseline fields are null |
 
 ---
 

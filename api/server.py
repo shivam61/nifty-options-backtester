@@ -301,8 +301,9 @@ async def get_account_status(journal_id: Optional[str] = Query(None)) -> Dict[st
             "spot_now": spot,
             "regime": _infer_regime(vix),
             "market_date": str(market_date),
-            "backtest_baseline_cagr": 12.07,
-            "backtest_baseline_win_rate": 78.0
+            "backtest_baseline_cagr": None,
+            "backtest_baseline_win_rate": None,
+            "backtest_baseline_note": "superseded: model-priced, not validated; real-price chain engine verdict NOT SUPPORTED"
         }
     except Exception as e:
         logger.error(f"Error getting status: {e}")
